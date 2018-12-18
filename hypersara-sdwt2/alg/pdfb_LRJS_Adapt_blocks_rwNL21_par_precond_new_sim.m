@@ -213,12 +213,14 @@ end
 
 % Main loop. Sequential.
 %maxNumCompThreads(12);
-util_create_pool(24);
+util_create_pool(param.num_workers);
+
+start_loop = tic;
 
 for t = t_start : param.max_iter
     
     %fprintf('Iter %i\n',t);
-    %tic;
+    start_iter = tic;
     
     %% Primal update
     prev_xsol = xsol;
@@ -242,7 +244,7 @@ for t = t_start : param.max_iter
     
     %% L-2,1 function update
     for k = 1:P
-        f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, xhat, weights1{k}, beta1,c);
+        f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, xhat, weights1{k}, beta1);
     end
     
     %% L2 ball projection update
@@ -291,7 +293,7 @@ for t = t_start : param.max_iter
     l21(t) = sum(cell2mat(l21_cell));
     
     %% Display
-    if ~mod(t,25)
+    if ~mod(t,25000)
         
         %SNR
         sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -426,21 +428,22 @@ for t = t_start : param.max_iter
         reweight_last_step_iter = t;
         rw_counts = rw_counts + 1;
         
-        figure(1),
-        subplot(2,2,1);
-        imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,2);
-        imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,3);
-        imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,4);
-        imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        pause(0.1)
+        %         figure(1),
+        %         subplot(2,2,1);
+        %         imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         subplot(2,2,2);
+        %         imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         subplot(2,2,3);
+        %         imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         subplot(2,2,4);
+        %         imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         pause(0.1)
         
     end
     
-    %toc;
+    end_iter = toc(start_iter)
 end
+end_loop = toc(start_loop)
 
 % Calculate residual images:
 for i = 1 : c
@@ -455,27 +458,40 @@ for i = 1 : c
 end
 
 %Final log
+%SNR
+sol = reshape(xsol(:),numel(xsol(:))/c,c);
+SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+psnrh = zeros(c,1);
+for i = 1:c
+    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+end
+SNR_average = mean(psnrh);
+
 if (param.verbose > 0)
     if (flag == 1)
         fprintf('Solution found\n');
-        fprintf(' Relative variation = %e\n', rel_fval(t));
-        fprintf(' Final residual = %e\n', residual_check);
-        fprintf(' epsilon = %e\n', epsilon_check);
+        fprintf('Iter %i\n',t);
+        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear(t), l21(t), rel_fval(t));
+        fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
+        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     else
         fprintf('Maximum number of iterations reached\n');
-        fprintf(' Relative variation = %e\n', rel_fval(t));
-        fprintf(' Final residual = %e\n', residual_check);
-        fprintf(' epsilon = %e\n', epsilon_check);
+        fprintf('Iter %i\n',t);
+        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear(t), l21(t), rel_fval(t));
+        fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
+        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
 end
+
 end
 
-function [v1_, u1_, l21_] = run_par_waverec(v1_, Psit, Psi, xhat, weights1_, beta1, c)
+function [v1_, u1_, l21_] = run_par_waverec(v1_, Psit, Psi, xhat, weights1_, beta1)
 
 r1 = v1_ +  Psit(xhat);
 l2 = sqrt(sum(abs(r1).^2,2));
 l2_soft = max(l2 - beta1*weights1_, 0)./ (l2+eps);
-v1_ = r1 - (repmat(l2_soft,1,c) .* r1);
+%v1_ = r1 - (repmat(l2_soft,1,c) .* r1);
+v1_ = r1 - (l2_soft .* r1);
 u1_ = Psi(v1_);
 
 % local L21 norm of current solution

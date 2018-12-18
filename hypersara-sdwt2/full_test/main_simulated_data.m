@@ -1,13 +1,16 @@
-% function main_simulated_data(num_workers, tot, chunk_width, step)
+function main_simulated_data(num_workers, tot, chunk_width, step, Qx, Qy)
 
-clear all;
-close all;
-clc;
+% clear all;
+% close all;
+% clc;
 
-num_workers = 5;
-tot = 15;
-chunk_width = 5;
-step = 3;
+% Qx = 3; % additional parameters for the faceting
+% Qy = 3;
+%         
+% num_workers = 12;
+% tot = 14;
+% chunk_width = 5;
+% step = 3;
 
 param_HSI.num_workers = num_workers;
 
@@ -176,8 +179,6 @@ for k = 1 : length(percentage)
     
     %% Compute map estimator
     if solve_minimization
-        Qx = 3; % additional parameters for the faceting
-        Qy = 3;
         Solver_simulated_data_splitting_FINAL_sdwt2
     end
     

@@ -297,10 +297,12 @@ spmd
     dwtmode('zpd')
 end
 
+start_loop = tic;
+
 for t = t_start : param.max_iter
     
     %fprintf('Iter %i\n',t);
-    %tic;
+    start_iter = tic;
     
     %% Primal update
     prev_xsol = xsol;
@@ -401,7 +403,7 @@ for t = t_start : param.max_iter
     l21(t) = sum(l21_cell(:));
     
     %% Display
-    if ~mod(t,25)
+    if ~mod(t,25000)
         
         %SNR
         sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -572,21 +574,22 @@ for t = t_start : param.max_iter
         reweight_last_step_iter = t;
         rw_counts = rw_counts + 1;
         
-        figure(1),
-        subplot(2,2,1);
-        imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,2);
-        imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,3);
-        imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,4);
-        imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        pause(0.1)
+        %         figure(1),
+        %         subplot(2,2,1);
+        %         imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         subplot(2,2,2);
+        %         imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         subplot(2,2,3);
+        %         imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         subplot(2,2,4);
+        %         imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         pause(0.1)
         
     end
     
-    %toc;
+    end_iter = toc(start_iter)
 end
+end_loop = toc(start_loop)
 
 % Calculate residual images:
 for i = 1 : c
@@ -601,22 +604,34 @@ for i = 1 : c
 end
 
 %Final log
+%SNR
+sol = reshape(xsol(:),numel(xsol(:))/c,c);
+SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+psnrh = zeros(c,1);
+for i = 1:c
+    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+end
+SNR_average = mean(psnrh);
+
 if (param.verbose > 0)
     if (flag == 1)
         fprintf('Solution found\n');
-        fprintf(' Relative variation = %e\n', rel_fval(t));
-        fprintf(' Final residual = %e\n', residual_check);
-        fprintf(' epsilon = %e\n', epsilon_check);
+        fprintf('Iter %i\n',t);
+        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear(t), l21(t), rel_fval(t));
+        fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
+        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     else
         fprintf('Maximum number of iterations reached\n');
-        fprintf(' Relative variation = %e\n', rel_fval(t));
-        fprintf(' Final residual = %e\n', residual_check);
-        fprintf(' epsilon = %e\n', epsilon_check);
+        fprintf('Iter %i\n',t);
+        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear(t), l21(t), rel_fval(t));
+        fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
+        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
 end
+
 end
 
-function [v1_, u1_, l21_] = run_par_waverec(v1_, Psit, Psi, xhat_split, weights1_, beta1, c)
+function [v1_, u1_, l21_] = run_par_waverec(v1_, Psit, Psi, xhat_split, weights1_, beta1)
 
 l21_ = 0;
 u1_ = cell(length(xhat_split), 1);
