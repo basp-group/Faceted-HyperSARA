@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res] = pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_NL21_split(y, epsilon, A, At, pU, G, W, Sp, Spt, Psi, Psit, param, X0)
+function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_NL21_split(y, epsilon, A, At, pU, G, W, Sp, Spt, Psi, Psit, param, X0)
 
 % This function solves:
 %
@@ -247,21 +247,18 @@ for t = t_start : param.max_iter
     %% Relative change of objective function
     rel_fval(t) = norm(xsol(:) - prev_xsol(:))/norm(xsol(:));
     % Free memory
-    prev_xsol = [];
+    %prev_xsol = [];
     
     %% Dual variables update
     
     %% Nuclear norm function update
-    nuclear(t) = 0;
-    for i = 1 : length(xhat_split)
-        temp = xhat_split{i};
-        xhatm = reshape(temp(:),numel(temp(:))/c_chunk(i),c_chunk(i));
-        [U0,S0,V0] = svd(v0{i} + xhatm,'econ');
-        nuclear(t) = nuclear(t) + norm(diag(S0),1);
-        v0{i} = v0{i} + xhatm - (U0*diag(max(diag(S0) - beta0 * weights0{i}, 0))*V0');
+    parfor i = 1 : length(xhat_split)
+        xhatm{i} = reshape(xhat_split{i},numel(xhat_split{i})/c_chunk(i),c_chunk(i));
+        [U0{i},S0{i},V0{i}] = svd(v0{i} + xhatm{i},'econ');
+        v0{i} = v0{i} + xhatm{i} - (U0{i}*diag(max(diag(S0{i}) - beta0 * weights0{i}, 0))*V0{i}');
     end
     % Free memory
-    U0=[]; S0=[]; V0=[]; xhatm = [];
+    %U0=[]; S0=[]; V0=[]; xhatm = [];
     
     
     %% L-2,1 function update
@@ -291,19 +288,14 @@ for t = t_start : param.max_iter
         Ftx(:,:,i) = real(At(g2));
     end
     % Free memory
-    g2=[]; Fx=[];
+    %g2=[]; Fx=[];
     
     %% Update primal gradient
-    for i = 1 : length(v0)
-        temp = v0{i};
-        for j = 1 : c_chunk(i)
-            g0{i}(:,:,j) = reshape(temp(:,j),M,N);
-        end
-    end
-    
     for i = 1 : length(xhat_split)
+        g0{i} = reshape(v0{i},M,N,c_chunk(i));
         g1{i} = zeros(size(xhat_split{i}));
     end
+    
     for k = 1:P
         [idx, v1_, u1_, l21_] = fetchNext(f);
         v1{idx} = v1_;
@@ -317,13 +309,21 @@ for t = t_start : param.max_iter
     
     g = sigma00*Spt(g0) + sigma11*Spt(g1) + sigma22*Ftx;
     % Free memory
-    g0=[]; g1=[]; Ftx=[];
+    %g0=[]; g1=[]; Ftx=[];
     
     l21(t) = sum(cell2mat(l21_cell));
-    
+
+    end_iter(t) = toc(start_iter);
+    fprintf('Iter = %i, Time = %e\n',t,end_iter(t)); 
+   
     %% Display
     if ~mod(t,25000)
-        
+       
+        nuclear = 0;
+    	for i = 1 : length(xhat_split)
+        	nuclear = nuclear + norm(diag(S0{i}),1);
+    	end
+ 
         %SNR
         sol = reshape(xsol(:),numel(xsol(:))/c,c);
         SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
@@ -336,7 +336,7 @@ for t = t_start : param.max_iter
         %Log
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
-            fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear(t), l21(t), rel_fval(t));
+            fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21(t), rel_fval(t));
             fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
             fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
@@ -434,10 +434,9 @@ for t = t_start : param.max_iter
       
         xsol_split = Sp(xsol);
         for i = 1 : length(xsol_split)
-            temp = xsol_split{i};
-            sol = reshape(temp(:),numel(temp(:))/c_chunk(i),c_chunk(i));
-            [~,S0,~] = svd(sol,'econ');
-            d_val0 = abs(diag(S0));
+            sol = reshape(xsol_split{i},numel(xsol_split{i})/c_chunk(i),c_chunk(i));
+            [~,S00,~] = svd(sol,'econ');
+            d_val0 = abs(diag(S00));
             weights0{i} = reweight_alpha ./ (reweight_alpha + d_val0);
             weights0{i}(d_val0 > max(d_val0) * param.reweight_abs_of_max) = 0;
         end
@@ -490,7 +489,6 @@ for t = t_start : param.max_iter
         
     end
     
-    end_iter = toc(start_iter)
 end
 end_loop = toc(start_loop)
 
@@ -507,6 +505,12 @@ for i = 1 : c
 end
 
 %Final log
+
+nuclear = 0;
+for i = 1 : length(xhat_split)
+    nuclear = nuclear + norm(diag(S0{i}),1);
+end
+
 %SNR
 sol = reshape(xsol(:),numel(xsol(:))/c,c);
 SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
@@ -520,13 +524,13 @@ if (param.verbose > 0)
     if (flag == 1)
         fprintf('Solution found\n');
         fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear(t), l21(t), rel_fval(t));
+        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21(t), rel_fval(t));
         fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
         fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     else
         fprintf('Maximum number of iterations reached\n');
         fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear(t), l21(t), rel_fval(t));
+        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21(t), rel_fval(t));
         fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
         fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end

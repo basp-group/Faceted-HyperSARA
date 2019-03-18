@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res] = pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim(y, epsilon, A, At, pU, G, W, Psi, Psit, param,X0)
+function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim(y, epsilon, A, At, pU, G, W, Psi, Psit, param,X0)
 
 % This function solves:
 %
@@ -230,16 +230,16 @@ for t = t_start : param.max_iter
     %% Relative change of objective function
     rel_fval(t) = norm(xsol(:) - prev_xsol(:))/norm(xsol(:));
     % Free memory
-    prev_xsol = [];
+    %prev_xsol = [];
     
     %% Dual variables update
     %% Nuclear norm function update
-    xhatm = reshape(xhat(:),numel(xhat(:))/c,c);
+    xhatm = reshape(xhat,numel(xhat)/c,c);
     [U0,S0,V0] = svd(v0 + xhatm,'econ');
     nuclear(t) = norm(diag(S0),1);
     v0 = v0 + xhatm - (U0*diag(max(diag(S0) - beta0 * weights0, 0))*V0');
     % Free memory
-    U0=[]; S0=[]; V0=[]; xhatm = [];
+    %U0=[]; S0=[]; V0=[]; xhatm = [];
     
     
     %% L-2,1 function update
@@ -269,13 +269,10 @@ for t = t_start : param.max_iter
         Ftx(:,:,i) = real(At(g2));
     end
     % Free memory
-    g2=[]; Fx=[];
+    %g2=[]; Fx=[];
     
     %% Update primal gradient
-    for i = 1 : c
-        g0(:,:,i) = reshape(v0(:,i),M,N);
-    end
-    
+    g0 = reshape(v0,M,N,c);
     g1 = zeros(size(xsol));
     for k = 1:P
         [idx, v1_, u1_, l21_] = fetchNext(f);
@@ -288,10 +285,13 @@ for t = t_start : param.max_iter
     
     g = sigma00*g0 + sigma11*g1 + sigma22*Ftx;
     % Free memory
-    g0=[]; g1=[]; Ftx=[];
+    %g0=[]; g1=[]; Ftx=[];
     
     l21(t) = sum(cell2mat(l21_cell));
-    
+   
+    end_iter(t) = toc(start_iter); 
+    fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
+ 
     %% Display
     if ~mod(t,25000)
         
@@ -441,7 +441,6 @@ for t = t_start : param.max_iter
         
     end
     
-    end_iter = toc(start_iter)
 end
 end_loop = toc(start_loop)
 

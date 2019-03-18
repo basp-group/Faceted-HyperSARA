@@ -192,7 +192,8 @@ if realistic_UV
     bmax = max(r)
     
     figure, scatter(u1,v1,'r.');
-    
+    save('./results/uv.mat','u1','v1'); 
+ 
     if ~generate_simple_image
         u1 = u1/2;
         v1 = v1/2;

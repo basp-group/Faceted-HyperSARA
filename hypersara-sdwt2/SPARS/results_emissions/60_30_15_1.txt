@@ -1,0 +1,18896 @@
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2018 The MathWorks, Inc.
+                   R2018a (9.4.0.813654) 64-bit (glnxa64)
+                             February 23, 2018
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+
+chunks =
+
+     1    30
+    16    45
+    31    60
+
+
+irtdir =
+
+    '/lustre/home/sc004/aa61/HyperSARA_dist/hypersara-sdwt2/lib/irt'
+
+Path setup for irt appears to have succeeded.
+/*----------------------------------------------------------------*/
+ example: Simulation of wide band radio interferometric data
+/*----------------------------------------------------------------*/
+
+n_src =
+
+    11
+
+
+ans =
+
+     9
+
+
+ans =
+
+     0     1
+
+
+bmax =
+
+    3.0511
+
+
+ans =
+
+     0     1
+
+
+bmax =
+
+    3.0511
+
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 5s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+norm it n=2 norm=1
+norm it n=3 norm=70613.9661
+norm it n=4 norm=221056.8511
+norm it n=5 norm=252345.5717
+norm it n=6 norm=270887.0956
+norm it n=7 norm=283464.9473
+norm it n=8 norm=292984.9297
+norm it n=9 norm=300816.7957
+norm it n=10 norm=307695.111
+norm it n=11 norm=314071.5875
+norm it n=12 norm=320255.5414
+norm it n=13 norm=326466.6141
+norm it n=14 norm=332846.3841
+norm it n=15 norm=339450.7556
+norm it n=16 norm=346239.5942
+norm it n=17 norm=353079.1493
+norm it n=18 norm=359767.5094
+norm it n=19 norm=366080.9066
+norm it n=20 norm=371825.3253
+norm it n=21 norm=376873.8771
+norm it n=22 norm=381178.9943
+norm it n=23 norm=384761.9402
+norm it n=24 norm=387690.419
+norm it n=25 norm=390055.1546
+norm it n=26 norm=391951.7483
+norm it n=27 norm=393469.447
+norm it n=28 norm=394685.7398
+norm it n=29 norm=395664.8627
+norm it n=30 norm=396458.4817
+norm it n=31 norm=397107.3502
+norm it n=32 norm=397643.2275
+norm it n=33 norm=398090.6933
+norm it n=34 norm=398468.7117
+norm it n=35 norm=398791.9076
+norm it n=36 norm=399071.5778
+norm it n=37 norm=399316.4741
+norm it n=38 norm=399533.4045
+norm it n=39 norm=399727.6901
+norm it n=40 norm=399903.5121
+norm it n=41 norm=400064.1743
+norm it n=42 norm=400212.3028
+norm it n=43 norm=400349.9971
+norm it n=44 norm=400478.9459
+norm it n=45 norm=400600.5152
+norm it n=46 norm=400715.8163
+norm it n=47 norm=400825.7583
+norm it n=48 norm=400931.0888
+norm it n=49 norm=401032.4254
+norm it n=50 norm=401130.281
+norm it n=51 norm=401225.0829
+norm it n=52 norm=401317.1889
+norm it n=53 norm=401406.8993
+norm it n=54 norm=401494.4672
+norm it n=55 norm=401580.1061
+norm it n=56 norm=401663.9965
+norm it n=57 norm=401746.2916
+norm it n=58 norm=401827.1212
+norm it n=59 norm=401906.5954
+norm it n=60 norm=401984.8076
+norm it n=61 norm=402061.837
+norm it n=62 norm=402137.7504
+norm it n=63 norm=402212.6046
+norm it n=64 norm=402286.4471
+norm it n=65 norm=402359.3177
+norm it n=66 norm=402431.2498
+norm it n=67 norm=402502.2708
+norm it n=68 norm=402572.4035
+norm it n=69 norm=402641.6662
+norm it n=70 norm=402710.0738
+norm it n=71 norm=402777.6377
+norm it n=72 norm=402844.3671
+norm it n=73 norm=402910.2687
+norm it n=74 norm=402975.3472
+norm it n=75 norm=403039.606
+norm it n=76 norm=403103.0469
+norm it n=77 norm=403165.6707
+norm it n=78 norm=403227.4774
+norm it n=79 norm=403288.4662
+norm it n=80 norm=403348.6358
+norm it n=81 norm=403407.9848
+norm it n=82 norm=403466.5111
+norm it n=83 norm=403524.2128
+norm it n=84 norm=403581.088
+norm it n=85 norm=403637.1347
+norm it n=86 norm=403692.3511
+norm it n=87 norm=403746.7356
+norm it n=88 norm=403800.2871
+norm it n=89 norm=403853.0044
+norm it n=90 norm=403904.887
+norm it n=91 norm=403955.9347
+norm it n=92 norm=404006.1477
+norm it n=93 norm=404055.5266
+norm it n=94 norm=404104.0726
+norm it n=95 norm=404151.7873
+norm it n=96 norm=404198.6727
+norm it n=97 norm=404244.7315
+norm it n=98 norm=404289.9666
+norm it n=99 norm=404334.3816
+norm it n=100 norm=404377.9806
+norm it n=101 norm=404420.768
+norm it n=102 norm=404462.7488
+norm it n=103 norm=404503.9284
+norm it n=104 norm=404544.3127
+norm it n=105 norm=404583.9078
+norm it n=106 norm=404622.7205
+norm it n=107 norm=404660.7577
+norm it n=108 norm=404698.0271
+norm it n=109 norm=404734.5362
+norm it n=110 norm=404770.2932
+norm it n=111 norm=404805.3065
+norm it n=112 norm=404839.5848
+norm it n=113 norm=404873.137
+norm it n=114 norm=404905.9725
+norm it n=115 norm=404938.1005
+norm it n=116 norm=404969.5309
+norm it n=117 norm=405000.2734
+norm it n=118 norm=405030.338
+norm it n=119 norm=405059.7349
+norm it n=120 norm=405088.4744
+norm it n=121 norm=405116.567
+norm it n=122 norm=405144.0231
+norm it n=123 norm=405170.8533
+norm it n=124 norm=405197.0683
+norm it n=125 norm=405222.6788
+norm it n=126 norm=405247.6956
+norm it n=127 norm=405272.1293
+norm it n=128 norm=405295.9908
+norm it n=129 norm=405319.2909
+norm it n=130 norm=405342.0402
+norm it n=131 norm=405364.2495
+norm it n=132 norm=405385.9295
+norm it n=133 norm=405407.0907
+norm it n=134 norm=405427.7437
+norm it n=135 norm=405447.8991
+norm it n=136 norm=405467.5672
+norm it n=137 norm=405486.7583
+norm it n=138 norm=405505.4827
+norm it n=139 norm=405523.7504
+norm it n=140 norm=405541.5715
+norm it n=141 norm=405558.9559
+norm it n=142 norm=405575.9134
+norm it n=143 norm=405592.4536
+norm it n=144 norm=405608.586
+norm it n=145 norm=405624.3201
+norm it n=146 norm=405639.6651
+norm it n=147 norm=405654.6302
+norm it n=148 norm=405669.2242
+norm it n=149 norm=405683.4561
+norm it n=150 norm=405697.3346
+norm it n=151 norm=405710.8682
+norm it n=152 norm=405724.0653
+norm it n=153 norm=405736.9341
+norm it n=154 norm=405749.4829
+norm it n=155 norm=405761.7194
+norm it n=156 norm=405773.6517
+norm it n=157 norm=405785.2872
+norm it n=158 norm=405796.6335
+norm it n=159 norm=405807.698
+norm it n=160 norm=405818.4879
+norm it n=161 norm=405829.0103
+norm it n=162 norm=405839.2721
+norm it n=163 norm=405849.28
+norm it n=164 norm=405859.0407
+norm it n=165 norm=405868.5607
+norm it n=166 norm=405877.8464
+norm it n=167 norm=405886.9039
+norm it n=168 norm=405895.7393
+norm it n=169 norm=405904.3586
+norm it n=170 norm=405912.7676
+norm it n=171 norm=405920.972
+norm it n=172 norm=405928.9772
+norm it n=173 norm=405936.7888
+norm it n=174 norm=405944.412
+norm it n=175 norm=405951.852
+norm it n=176 norm=405959.1139
+norm it n=177 norm=405966.2025
+norm it n=178 norm=405973.1227
+norm it n=179 norm=405979.8791
+norm it n=180 norm=405986.4765
+norm it n=181 norm=405992.9191
+norm it n=182 norm=405999.2115
+norm it n=183 norm=406005.3579
+norm it n=184 norm=406011.3624
+norm it n=185 norm=406017.229
+norm it n=186 norm=406022.9619
+norm it n=187 norm=406028.5647
+norm it n=188 norm=406034.0413
+norm it n=189 norm=406039.3953
+norm it n=190 norm=406044.6304
+norm it n=191 norm=406049.75
+norm it n=192 norm=406054.7575
+norm it n=193 norm=406059.6562
+norm it n=194 norm=406064.4494
+norm it n=195 norm=406069.1403
+norm it n=196 norm=406073.7319
+norm it n=197 norm=406078.2272
+norm it n=198 norm=406082.6292
+norm it n=199 norm=406086.9406
+norm it n=200 norm=406091.1644
+ 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  WARNING: Change DWT Extension Mode  !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                        
+****************************************
+**  DWT Extension Mode: Zero Padding  **
+****************************************
+                                        
+norm it n=2 norm=1
+norm it n=3 norm=1.5811
+norm it n=4 norm=1.8439
+norm it n=5 norm=1.9554
+norm it n=6 norm=1.9884
+norm it n=7 norm=1.9971
+norm it n=8 norm=1.9993
+norm it n=9 norm=1.9998
+norm it n=10 norm=2
+norm it n=11 norm=2
+norm it n=12 norm=2
+norm it n=13 norm=2
+norm it n=14 norm=2
+norm it n=15 norm=2
+norm it n=16 norm=2
+                                        
+****************************************
+**  DWT Extension Mode: Zero Padding  **
+****************************************
+                                        
+norm it n=2 norm=1
+norm it n=3 norm=1.5812
+norm it n=4 norm=1.844
+norm it n=5 norm=1.9554
+norm it n=6 norm=1.9884
+norm it n=7 norm=1.9971
+norm it n=8 norm=1.9993
+norm it n=9 norm=1.9998
+norm it n=10 norm=2
+norm it n=11 norm=2
+norm it n=12 norm=2
+norm it n=13 norm=2
+norm it n=14 norm=2
+norm it n=15 norm=2
+norm it n=16 norm=2
+-----------------------------------------
+HyperSARA
+-----------------------------------------
+xsol NOT uploaded 
+
+v0 NOT uploaded 
+
+weights0 NOT uploaded 
+
+v1 NOT uploaded 
+
+weights1 NOT uploaded 
+
+v2 NOT uploaded 
+
+g NOT uploaded 
+
+proj NOT uploaded 
+
+t t_block NOT uploaded 
+
+Starting parallel pool (parpool) using the 'local' profile ...
+connected to 32 workers.
+Created parallel pool ... 
+Setting DWT mode ... 
+Lab  1: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  2: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  3: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  4: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  5: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  6: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  7: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  8: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  9: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 10: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 11: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 12: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 13: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 14: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 15: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 16: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 17: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 18: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 19: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 20: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 21: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 22: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 23: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 24: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 25: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 26: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 27: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 28: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 29: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 30: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 31: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 32: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+
+end_iter =
+
+   10.6535
+
+
+end_iter =
+
+    8.8276
+
+
+end_iter =
+
+    9.2365
+
+
+end_iter =
+
+    8.8892
+
+
+end_iter =
+
+    8.6565
+
+
+end_iter =
+
+   11.4561
+
+
+end_iter =
+
+   15.4194
+
+
+end_iter =
+
+   13.5665
+
+
+end_iter =
+
+   13.3818
+
+
+end_iter =
+
+   12.4672
+
+
+end_iter =
+
+    9.2226
+
+
+end_iter =
+
+    9.2343
+
+
+end_iter =
+
+    8.9821
+
+
+end_iter =
+
+    8.9987
+
+
+end_iter =
+
+    8.6631
+
+
+end_iter =
+
+    8.7372
+
+
+end_iter =
+
+    8.6793
+
+
+end_iter =
+
+    8.4823
+
+
+end_iter =
+
+    8.7934
+
+
+end_iter =
+
+    8.7696
+
+
+end_iter =
+
+    8.4334
+
+
+end_iter =
+
+    8.4332
+
+
+end_iter =
+
+    8.4621
+
+
+end_iter =
+
+    8.6451
+
+
+end_iter =
+
+    9.2201
+
+
+end_iter =
+
+    8.3644
+
+
+end_iter =
+
+    8.6635
+
+
+end_iter =
+
+    9.3371
+
+
+end_iter =
+
+    8.5854
+
+
+end_iter =
+
+    8.3588
+
+
+end_iter =
+
+    8.4391
+
+
+end_iter =
+
+    8.9565
+
+
+end_iter =
+
+   11.2593
+
+
+end_iter =
+
+   14.5386
+
+
+end_iter =
+
+   13.3111
+
+
+end_iter =
+
+   13.7156
+
+
+end_iter =
+
+   12.1902
+
+
+end_iter =
+
+   11.1623
+
+
+end_iter =
+
+    9.4096
+
+
+end_iter =
+
+    9.0416
+
+
+end_iter =
+
+    9.2600
+
+
+end_iter =
+
+    8.1014
+
+
+end_iter =
+
+    7.9709
+
+
+end_iter =
+
+    8.6117
+
+
+end_iter =
+
+    8.6004
+
+
+end_iter =
+
+    8.2518
+
+
+end_iter =
+
+    8.2245
+
+
+end_iter =
+
+    9.2576
+
+
+end_iter =
+
+    8.2777
+
+
+end_iter =
+
+    8.5952
+
+
+end_iter =
+
+    8.8489
+
+
+end_iter =
+
+    8.1089
+
+
+end_iter =
+
+    8.3381
+
+
+end_iter =
+
+    8.7887
+
+
+end_iter =
+
+    8.0816
+
+
+end_iter =
+
+    8.0968
+
+
+end_iter =
+
+    8.5856
+
+
+end_iter =
+
+    7.9983
+
+
+end_iter =
+
+    8.8136
+
+
+end_iter =
+
+    8.4804
+
+
+end_iter =
+
+    8.0293
+
+
+end_iter =
+
+    8.1297
+
+
+end_iter =
+
+    8.5911
+
+
+end_iter =
+
+    8.6374
+
+
+end_iter =
+
+   10.2404
+
+
+end_iter =
+
+   13.1465
+
+
+end_iter =
+
+   12.8361
+
+
+end_iter =
+
+   13.0044
+
+
+end_iter =
+
+   12.7310
+
+
+end_iter =
+
+    9.6228
+
+
+end_iter =
+
+    9.1572
+
+
+end_iter =
+
+    8.7905
+
+
+end_iter =
+
+    8.2257
+
+
+end_iter =
+
+    8.3699
+
+
+end_iter =
+
+    8.7826
+
+
+end_iter =
+
+    8.2291
+
+
+end_iter =
+
+    8.2775
+
+
+end_iter =
+
+    8.3523
+
+
+end_iter =
+
+    8.2518
+
+
+end_iter =
+
+    7.9514
+
+
+end_iter =
+
+    8.2975
+
+
+end_iter =
+
+    8.0468
+
+
+end_iter =
+
+    8.5337
+
+
+end_iter =
+
+    8.1535
+
+
+end_iter =
+
+    8.0446
+
+
+end_iter =
+
+    8.1344
+
+
+end_iter =
+
+    7.4472
+
+
+end_iter =
+
+    7.5732
+
+
+end_iter =
+
+    7.4821
+
+
+end_iter =
+
+    7.2637
+
+
+end_iter =
+
+    7.9650
+
+
+end_iter =
+
+    7.6973
+
+
+end_iter =
+
+    7.5765
+
+
+end_iter =
+
+    7.5521
+
+
+end_iter =
+
+    7.4799
+
+
+end_iter =
+
+    7.5502
+
+
+end_iter =
+
+    7.6164
+
+
+end_iter =
+
+    7.0501
+
+
+end_iter =
+
+    7.2744
+
+
+end_iter =
+
+    6.8860
+
+
+end_iter =
+
+    7.0030
+
+
+end_iter =
+
+    7.2239
+
+
+end_iter =
+
+    6.7902
+
+
+end_iter =
+
+    6.8583
+
+
+end_iter =
+
+    6.9102
+
+
+end_iter =
+
+    7.2032
+
+
+end_iter =
+
+    7.0825
+
+
+end_iter =
+
+    7.0317
+
+
+end_iter =
+
+    6.9804
+
+
+end_iter =
+
+    6.8036
+
+
+end_iter =
+
+    6.8381
+
+
+end_iter =
+
+    7.3266
+
+
+end_iter =
+
+    7.4897
+
+
+end_iter =
+
+    7.4124
+
+
+end_iter =
+
+    7.5127
+
+
+end_iter =
+
+    7.4289
+
+
+end_iter =
+
+    7.6532
+
+
+end_iter =
+
+    7.8748
+
+
+end_iter =
+
+    7.5885
+
+
+end_iter =
+
+    7.8912
+
+
+end_iter =
+
+    8.7674
+
+
+end_iter =
+
+    8.9549
+
+
+end_iter =
+
+    8.1319
+
+
+end_iter =
+
+    8.3201
+
+
+end_iter =
+
+    8.3561
+
+
+end_iter =
+
+    8.0601
+
+
+end_iter =
+
+    8.4040
+
+
+end_iter =
+
+    8.0165
+
+
+end_iter =
+
+    9.1790
+
+
+end_iter =
+
+    8.5664
+
+
+end_iter =
+
+    8.5554
+
+
+end_iter =
+
+    8.0886
+
+
+end_iter =
+
+    8.8546
+
+
+end_iter =
+
+   12.3553
+
+
+end_iter =
+
+   12.5393
+
+
+end_iter =
+
+    9.4680
+
+
+end_iter =
+
+   10.3239
+
+
+end_iter =
+
+   11.9900
+
+
+end_iter =
+
+   11.5661
+
+
+end_iter =
+
+   10.4944
+
+
+end_iter =
+
+   13.0012
+
+
+end_iter =
+
+   11.2285
+
+
+end_iter =
+
+   12.4689
+
+
+end_iter =
+
+    9.9143
+
+
+end_iter =
+
+    9.4195
+
+
+end_iter =
+
+    8.2288
+
+
+end_iter =
+
+    8.8762
+
+
+end_iter =
+
+    8.1026
+
+
+end_iter =
+
+    8.8495
+
+
+end_iter =
+
+    8.8693
+
+
+end_iter =
+
+    8.6324
+
+
+end_iter =
+
+    8.2718
+
+
+end_iter =
+
+    8.1589
+
+
+end_iter =
+
+    9.1940
+
+
+end_iter =
+
+    7.8624
+
+
+end_iter =
+
+    8.7354
+
+
+end_iter =
+
+    8.8322
+
+
+end_iter =
+
+    7.9390
+
+
+end_iter =
+
+    8.4454
+
+
+end_iter =
+
+    8.9875
+
+
+end_iter =
+
+    8.6376
+
+
+end_iter =
+
+    8.7328
+
+
+end_iter =
+
+    8.0767
+
+
+end_iter =
+
+    8.1148
+
+
+end_iter =
+
+   10.5683
+
+
+end_iter =
+
+   13.4797
+
+
+end_iter =
+
+   13.4643
+
+
+end_iter =
+
+   11.8379
+
+
+end_iter =
+
+    9.6926
+
+
+end_iter =
+
+    8.8149
+
+
+end_iter =
+
+    8.2328
+
+
+end_iter =
+
+    8.0715
+
+
+end_iter =
+
+    8.3017
+
+
+end_iter =
+
+    7.8456
+
+
+end_iter =
+
+    7.6980
+
+
+end_iter =
+
+    7.8321
+
+
+end_iter =
+
+    7.6866
+
+
+end_iter =
+
+    8.2538
+
+
+end_iter =
+
+    7.7505
+
+
+end_iter =
+
+    7.9681
+
+
+end_iter =
+
+    7.5942
+
+
+end_iter =
+
+    8.0750
+
+
+end_iter =
+
+    8.9566
+
+
+end_iter =
+
+   12.4063
+
+
+end_iter =
+
+   13.6091
+
+
+end_iter =
+
+   11.3456
+
+
+end_iter =
+
+   11.2703
+
+
+end_iter =
+
+    9.5089
+
+
+end_iter =
+
+    8.6051
+
+
+end_iter =
+
+    8.1976
+
+
+end_iter =
+
+    8.3890
+
+
+end_iter =
+
+    8.2552
+
+
+end_iter =
+
+    8.1292
+
+
+end_iter =
+
+    8.5047
+
+
+end_iter =
+
+    8.9000
+
+
+end_iter =
+
+    8.3314
+
+
+end_iter =
+
+    8.0327
+
+
+end_iter =
+
+   11.4440
+
+
+end_iter =
+
+   13.4276
+
+
+end_iter =
+
+   13.2777
+
+
+end_iter =
+
+   11.4373
+
+
+end_iter =
+
+   10.2616
+
+
+end_iter =
+
+    9.4282
+
+
+end_iter =
+
+    8.7042
+
+
+end_iter =
+
+    8.3611
+
+
+end_iter =
+
+    7.9857
+
+
+end_iter =
+
+    7.8656
+
+
+end_iter =
+
+    8.1765
+
+
+end_iter =
+
+    7.9462
+
+
+end_iter =
+
+    7.9787
+
+
+end_iter =
+
+    9.4205
+
+
+end_iter =
+
+    8.2374
+
+
+end_iter =
+
+    8.1558
+
+
+end_iter =
+
+    8.7367
+
+
+end_iter =
+
+    8.5928
+
+
+end_iter =
+
+   11.5931
+
+
+end_iter =
+
+   14.2978
+
+
+end_iter =
+
+   12.0510
+
+
+end_iter =
+
+   11.7567
+
+
+end_iter =
+
+   11.0598
+
+
+end_iter =
+
+   12.4540
+
+
+end_iter =
+
+   12.2417
+
+
+end_iter =
+
+    9.3780
+
+
+end_iter =
+
+   10.4366
+
+
+end_iter =
+
+   11.7312
+
+
+end_iter =
+
+   12.6768
+
+
+end_iter =
+
+   10.3343
+
+
+end_iter =
+
+   10.0313
+
+
+end_iter =
+
+    9.6771
+
+
+end_iter =
+
+    9.0814
+
+
+end_iter =
+
+    8.2910
+
+
+end_iter =
+
+    8.2386
+
+
+end_iter =
+
+    8.3039
+
+
+end_iter =
+
+    8.3523
+
+
+end_iter =
+
+    8.3943
+
+
+end_iter =
+
+    8.5701
+
+
+end_iter =
+
+    8.4894
+
+
+end_iter =
+
+    7.6614
+
+
+end_iter =
+
+    7.6760
+
+
+end_iter =
+
+    8.0929
+
+
+end_iter =
+
+    8.1163
+
+
+end_iter =
+
+    8.0391
+
+
+end_iter =
+
+    8.9717
+
+
+end_iter =
+
+    8.7661
+
+
+end_iter =
+
+    8.8554
+
+
+end_iter =
+
+    8.6114
+
+
+end_iter =
+
+    8.4020
+
+
+end_iter =
+
+    8.7263
+
+
+end_iter =
+
+    8.1994
+
+
+end_iter =
+
+    8.2756
+
+
+end_iter =
+
+    7.9042
+
+
+end_iter =
+
+    8.4965
+
+
+end_iter =
+
+    8.6830
+
+
+end_iter =
+
+    8.5316
+
+
+end_iter =
+
+    9.0146
+
+
+end_iter =
+
+    8.5268
+
+
+end_iter =
+
+    8.6296
+
+
+end_iter =
+
+    8.8711
+
+
+end_iter =
+
+    8.5450
+
+
+end_iter =
+
+    8.2813
+
+
+end_iter =
+
+    7.9174
+
+
+end_iter =
+
+    7.8121
+
+
+end_iter =
+
+    8.4044
+
+
+end_iter =
+
+    8.3380
+
+
+end_iter =
+
+    8.9917
+
+
+end_iter =
+
+    7.7374
+
+
+end_iter =
+
+    7.7017
+
+
+end_iter =
+
+    8.2263
+
+
+end_iter =
+
+    8.3359
+
+
+end_iter =
+
+    7.6385
+
+
+end_iter =
+
+    8.3175
+
+
+end_iter =
+
+    8.4051
+
+
+end_iter =
+
+    8.3266
+
+
+end_iter =
+
+    8.2264
+
+
+end_iter =
+
+    8.4839
+
+
+end_iter =
+
+    8.3565
+
+
+end_iter =
+
+    9.0260
+
+
+end_iter =
+
+   12.7926
+
+
+end_iter =
+
+   11.8014
+
+
+end_iter =
+
+    9.3532
+
+
+end_iter =
+
+   10.3730
+
+
+end_iter =
+
+    8.9494
+
+
+end_iter =
+
+    7.9130
+
+
+end_iter =
+
+    7.8006
+
+
+end_iter =
+
+    8.8592
+
+
+end_iter =
+
+    8.3378
+
+
+end_iter =
+
+    7.8736
+
+
+end_iter =
+
+    8.4802
+
+
+end_iter =
+
+    9.0807
+
+
+end_iter =
+
+    8.7232
+
+
+end_iter =
+
+    8.6036
+
+
+end_iter =
+
+    8.5860
+
+
+end_iter =
+
+    8.6866
+
+
+end_iter =
+
+    8.8353
+
+
+end_iter =
+
+    8.3579
+
+
+end_iter =
+
+    8.2907
+
+
+end_iter =
+
+    8.2368
+
+
+end_iter =
+
+    8.5653
+
+
+end_iter =
+
+   10.7461
+
+
+end_iter =
+
+   14.2449
+
+
+end_iter =
+
+   11.6583
+
+
+end_iter =
+
+   11.6547
+
+
+end_iter =
+
+   10.6142
+
+
+end_iter =
+
+    9.7202
+
+
+end_iter =
+
+    8.1959
+
+
+end_iter =
+
+    7.1454
+
+
+end_iter =
+
+    7.4912
+
+
+end_iter =
+
+    7.4233
+
+
+end_iter =
+
+    7.1623
+
+
+end_iter =
+
+    7.0758
+
+
+end_iter =
+
+    7.4172
+
+
+end_iter =
+
+    8.1839
+
+
+end_iter =
+
+    7.8204
+
+
+end_iter =
+
+    7.1535
+
+
+end_iter =
+
+    7.1467
+
+
+end_iter =
+
+    7.1437
+
+
+end_iter =
+
+    7.6060
+
+
+end_iter =
+
+    7.5781
+
+
+end_iter =
+
+    7.9489
+
+
+end_iter =
+
+    7.9394
+
+
+end_iter =
+
+    7.9965
+
+
+end_iter =
+
+    9.2329
+
+
+end_iter =
+
+    8.4170
+
+
+end_iter =
+
+    8.2998
+
+
+end_iter =
+
+    7.8431
+
+
+end_iter =
+
+    8.7098
+
+
+end_iter =
+
+    8.5142
+
+
+end_iter =
+
+    8.4112
+
+
+end_iter =
+
+   11.7359
+
+
+end_iter =
+
+   13.4544
+
+
+end_iter =
+
+   10.3037
+
+
+end_iter =
+
+   10.5488
+
+
+end_iter =
+
+    9.1565
+
+
+end_iter =
+
+    9.1800
+
+
+end_iter =
+
+    8.0136
+
+
+end_iter =
+
+    8.4873
+
+
+end_iter =
+
+    8.8250
+
+
+end_iter =
+
+    8.6778
+
+
+end_iter =
+
+    9.9022
+
+
+end_iter =
+
+   13.0522
+
+
+end_iter =
+
+   11.9482
+
+
+end_iter =
+
+   12.2647
+
+
+end_iter =
+
+   11.2866
+
+
+end_iter =
+
+   11.8554
+
+
+end_iter =
+
+   10.2262
+
+
+end_iter =
+
+   11.4668
+
+
+end_iter =
+
+    9.1420
+
+
+end_iter =
+
+    8.5865
+
+
+end_iter =
+
+    8.8665
+
+
+end_iter =
+
+    8.6309
+
+
+end_iter =
+
+    8.5857
+
+
+end_iter =
+
+    8.0023
+
+
+end_iter =
+
+    8.2394
+
+
+end_iter =
+
+    9.2851
+
+
+end_iter =
+
+    8.4720
+
+
+end_iter =
+
+    7.6774
+
+
+end_iter =
+
+    9.6453
+
+
+end_iter =
+
+    8.7668
+
+
+end_iter =
+
+    8.4550
+
+
+end_iter =
+
+    8.7103
+
+
+end_iter =
+
+    8.5941
+
+
+end_iter =
+
+    8.4713
+
+
+end_iter =
+
+    8.2892
+
+
+end_iter =
+
+    8.0090
+
+
+end_iter =
+
+    8.5940
+
+
+end_iter =
+
+    8.4656
+
+
+end_iter =
+
+    8.1556
+
+
+end_iter =
+
+    8.3146
+
+
+end_iter =
+
+    9.0214
+
+
+end_iter =
+
+    8.5020
+
+
+end_iter =
+
+    9.2836
+
+
+end_iter =
+
+    8.6421
+
+
+end_iter =
+
+    8.2372
+
+
+end_iter =
+
+    9.1948
+
+
+end_iter =
+
+    8.3701
+
+
+end_iter =
+
+    8.6696
+
+
+end_iter =
+
+    8.8515
+
+
+end_iter =
+
+    8.1851
+
+
+end_iter =
+
+    9.0079
+
+
+end_iter =
+
+    9.4231
+
+
+end_iter =
+
+    8.5046
+
+
+end_iter =
+
+    8.3874
+
+
+end_iter =
+
+    8.1563
+
+
+end_iter =
+
+    8.1632
+
+
+end_iter =
+
+    8.7782
+
+
+end_iter =
+
+    9.0345
+
+
+end_iter =
+
+    8.9145
+
+
+end_iter =
+
+    8.5033
+
+
+end_iter =
+
+    8.9343
+
+
+end_iter =
+
+    9.3104
+
+
+end_iter =
+
+    8.8049
+
+
+end_iter =
+
+    8.5566
+
+
+end_iter =
+
+    8.6683
+
+
+end_iter =
+
+    8.3826
+
+
+end_iter =
+
+    8.4177
+
+
+end_iter =
+
+    9.0745
+
+
+end_iter =
+
+    8.3511
+
+
+end_iter =
+
+    8.2198
+
+
+end_iter =
+
+    8.3339
+
+
+end_iter =
+
+    9.0991
+
+
+end_iter =
+
+   13.1113
+
+
+end_iter =
+
+   12.3551
+
+
+end_iter =
+
+   10.5757
+
+
+end_iter =
+
+    9.3310
+
+
+end_iter =
+
+    8.4101
+
+
+end_iter =
+
+    8.2709
+
+
+end_iter =
+
+    8.1337
+
+
+end_iter =
+
+    8.1411
+
+
+end_iter =
+
+    8.3517
+
+
+end_iter =
+
+    7.9938
+
+
+end_iter =
+
+    8.5742
+
+
+end_iter =
+
+    8.2484
+
+
+end_iter =
+
+    8.1029
+
+
+end_iter =
+
+   11.0979
+
+
+end_iter =
+
+   14.0074
+
+
+end_iter =
+
+   13.5665
+
+
+end_iter =
+
+    9.5393
+
+
+end_iter =
+
+    8.6013
+
+
+end_iter =
+
+    9.0328
+
+
+end_iter =
+
+    8.5468
+
+
+end_iter =
+
+    8.9526
+
+
+end_iter =
+
+    8.1338
+
+
+end_iter =
+
+   10.2068
+
+
+end_iter =
+
+   13.0176
+
+
+end_iter =
+
+   13.1154
+
+
+end_iter =
+
+   12.5894
+
+
+end_iter =
+
+   12.3377
+
+
+end_iter =
+
+   10.8959
+
+
+end_iter =
+
+    9.2690
+
+
+end_iter =
+
+    9.5804
+
+
+end_iter =
+
+    8.9617
+
+
+end_iter =
+
+    8.8807
+
+
+end_iter =
+
+    8.4115
+
+
+end_iter =
+
+    8.6023
+
+
+end_iter =
+
+    8.6810
+
+
+end_iter =
+
+    8.7701
+
+
+end_iter =
+
+    8.3963
+
+
+end_iter =
+
+    7.5103
+
+
+end_iter =
+
+    7.8246
+
+
+end_iter =
+
+    8.3523
+
+
+end_iter =
+
+    8.1423
+
+
+end_iter =
+
+   11.3559
+
+
+end_iter =
+
+   14.3433
+
+
+end_iter =
+
+   12.7686
+
+
+end_iter =
+
+   12.5876
+
+
+end_iter =
+
+   12.6506
+
+
+end_iter =
+
+   12.9421
+
+
+end_iter =
+
+   12.1970
+
+
+end_iter =
+
+   11.7450
+
+
+end_iter =
+
+   11.1845
+
+
+end_iter =
+
+   10.8414
+
+
+end_iter =
+
+    8.8204
+
+
+end_iter =
+
+    7.8482
+
+
+end_iter =
+
+    8.3912
+
+
+end_iter =
+
+    8.2753
+
+
+end_iter =
+
+    8.2606
+
+
+end_iter =
+
+    8.8964
+
+
+end_iter =
+
+    8.4585
+
+
+end_iter =
+
+    8.1808
+
+
+end_iter =
+
+    8.1214
+
+
+end_iter =
+
+    8.6592
+
+
+end_iter =
+
+    8.5066
+
+
+end_iter =
+
+    7.7314
+
+
+end_iter =
+
+    7.6897
+
+
+end_iter =
+
+    7.6693
+
+
+end_iter =
+
+    8.9020
+
+
+end_iter =
+
+    8.9640
+
+
+end_iter =
+
+    8.2520
+
+
+end_iter =
+
+    8.8389
+
+
+end_iter =
+
+    9.2376
+
+
+end_iter =
+
+    8.0977
+
+
+end_iter =
+
+    8.9704
+
+
+end_iter =
+
+    8.7710
+
+
+end_iter =
+
+    8.0997
+
+
+end_iter =
+
+    8.8807
+
+
+end_iter =
+
+    8.5261
+
+
+end_iter =
+
+    8.9226
+
+
+end_iter =
+
+    8.1786
+
+
+end_iter =
+
+    8.0994
+
+
+end_iter =
+
+    8.6552
+
+
+end_iter =
+
+    8.6244
+
+
+end_iter =
+
+    8.6111
+
+
+end_iter =
+
+    8.2576
+
+
+end_iter =
+
+    9.5452
+
+
+end_iter =
+
+    8.6729
+
+
+end_iter =
+
+    8.0637
+
+
+end_iter =
+
+    8.6627
+
+
+end_iter =
+
+    8.5398
+
+
+end_iter =
+
+    8.1738
+
+
+end_iter =
+
+    9.0774
+
+
+end_iter =
+
+    8.9968
+
+
+end_iter =
+
+    9.4811
+
+
+end_iter =
+
+    7.9043
+
+
+end_iter =
+
+    9.1551
+
+
+end_iter =
+
+    8.2664
+
+
+end_iter =
+
+    8.7257
+
+
+end_iter =
+
+    7.8474
+
+
+end_iter =
+
+    7.8952
+
+
+end_iter =
+
+    8.4422
+
+
+end_iter =
+
+    7.7845
+
+
+end_iter =
+
+    7.6028
+
+
+end_iter =
+
+    7.7389
+
+
+end_iter =
+
+    7.5455
+
+
+end_iter =
+
+    7.0640
+
+
+end_iter =
+
+    7.9914
+
+
+end_iter =
+
+    7.7695
+
+
+end_iter =
+
+    8.0182
+
+
+end_iter =
+
+    7.4983
+
+
+end_iter =
+
+    7.7490
+
+
+end_iter =
+
+    7.4199
+
+
+end_iter =
+
+    7.9733
+
+
+end_iter =
+
+    7.6197
+
+
+end_iter =
+
+    7.5819
+
+
+end_iter =
+
+    7.7834
+
+
+end_iter =
+
+    7.4600
+
+
+end_iter =
+
+    7.3985
+
+
+end_iter =
+
+    7.3482
+
+
+end_iter =
+
+    7.6834
+
+
+end_iter =
+
+    7.5889
+
+
+end_iter =
+
+   10.0206
+
+
+end_iter =
+
+   10.6338
+
+
+end_iter =
+
+    8.7154
+
+
+end_iter =
+
+    8.5021
+
+
+end_iter =
+
+    9.6510
+
+
+end_iter =
+
+    8.7438
+
+
+end_iter =
+
+    9.2020
+
+
+end_iter =
+
+    9.5168
+
+
+end_iter =
+
+    8.1966
+
+
+end_iter =
+
+    8.0500
+
+
+end_iter =
+
+    8.5335
+
+
+end_iter =
+
+    8.2490
+
+
+end_iter =
+
+    8.0604
+
+
+end_iter =
+
+    8.7114
+
+Reweighting: 0
+
+
+end_iter =
+
+   17.6119
+
+
+end_iter =
+
+    8.5341
+
+
+end_iter =
+
+    9.1638
+
+
+end_iter =
+
+    8.4575
+
+
+end_iter =
+
+    8.6009
+
+
+end_iter =
+
+    8.1174
+
+
+end_iter =
+
+    8.5923
+
+
+end_iter =
+
+    7.9778
+
+
+end_iter =
+
+    8.9427
+
+
+end_iter =
+
+    8.2320
+
+
+end_iter =
+
+    8.7365
+
+
+end_iter =
+
+    8.8321
+
+
+end_iter =
+
+    9.1782
+
+
+end_iter =
+
+    9.9981
+
+
+end_iter =
+
+    8.5094
+
+
+end_iter =
+
+    9.4741
+
+
+end_iter =
+
+   12.0960
+
+
+end_iter =
+
+   12.1385
+
+
+end_iter =
+
+   10.5406
+
+
+end_iter =
+
+   10.2125
+
+
+end_iter =
+
+   11.2448
+
+
+end_iter =
+
+   10.5912
+
+
+end_iter =
+
+   11.7475
+
+
+end_iter =
+
+   11.1836
+
+
+end_iter =
+
+   11.0858
+
+
+end_iter =
+
+    9.1103
+
+
+end_iter =
+
+    8.7925
+
+
+end_iter =
+
+    8.6459
+
+
+end_iter =
+
+    8.9096
+
+
+end_iter =
+
+    8.3087
+
+
+end_iter =
+
+    8.9477
+
+
+end_iter =
+
+    8.3382
+
+
+end_iter =
+
+    8.2032
+
+
+end_iter =
+
+    7.9949
+
+
+end_iter =
+
+    8.5421
+
+
+end_iter =
+
+    8.6568
+
+
+end_iter =
+
+    8.4870
+
+
+end_iter =
+
+    9.1009
+
+
+end_iter =
+
+    8.6131
+
+
+end_iter =
+
+    9.5221
+
+
+end_iter =
+
+    9.3808
+
+
+end_iter =
+
+    8.2506
+
+
+end_iter =
+
+    8.1293
+
+
+end_iter =
+
+    8.7681
+
+
+end_iter =
+
+   10.2396
+
+
+end_iter =
+
+   12.9204
+
+
+end_iter =
+
+   15.3781
+
+
+end_iter =
+
+   13.4904
+
+
+end_iter =
+
+   13.2355
+
+
+end_iter =
+
+   11.1436
+
+
+end_iter =
+
+   10.4180
+
+
+end_iter =
+
+   10.1421
+
+
+end_iter =
+
+    8.9195
+
+
+end_iter =
+
+    9.0752
+
+
+end_iter =
+
+    8.7314
+
+
+end_iter =
+
+    8.4218
+
+
+end_iter =
+
+    8.8505
+
+
+end_iter =
+
+    7.9710
+
+
+end_iter =
+
+    7.9114
+
+
+end_iter =
+
+    8.4774
+
+
+end_iter =
+
+    8.5904
+
+
+end_iter =
+
+    8.1363
+
+
+end_iter =
+
+    8.6857
+
+
+end_iter =
+
+    8.2876
+
+
+end_iter =
+
+    8.4573
+
+
+end_iter =
+
+    8.3127
+
+
+end_iter =
+
+    9.1634
+
+
+end_iter =
+
+    8.6059
+
+
+end_iter =
+
+    8.7308
+
+
+end_iter =
+
+    8.0129
+
+
+end_iter =
+
+    8.3873
+
+
+end_iter =
+
+    8.8958
+
+
+end_iter =
+
+    8.6482
+
+
+end_iter =
+
+    8.9556
+
+
+end_iter =
+
+    9.0660
+
+
+end_iter =
+
+    8.3995
+
+
+end_iter =
+
+    8.0772
+
+
+end_iter =
+
+    7.8126
+
+
+end_iter =
+
+    8.5079
+
+
+end_iter =
+
+    8.8902
+
+
+end_iter =
+
+    9.0362
+
+
+end_iter =
+
+    8.8411
+
+
+end_iter =
+
+    8.4972
+
+
+end_iter =
+
+    9.2094
+
+
+end_iter =
+
+    8.2244
+
+
+end_iter =
+
+    8.2778
+
+
+end_iter =
+
+    8.3782
+
+
+end_iter =
+
+    8.3305
+
+
+end_iter =
+
+    9.1379
+
+
+end_iter =
+
+    9.0597
+
+
+end_iter =
+
+    8.2080
+
+
+end_iter =
+
+    9.1006
+
+
+end_iter =
+
+    8.6384
+
+
+end_iter =
+
+    9.6021
+
+
+end_iter =
+
+    8.7637
+
+
+end_iter =
+
+    8.6474
+
+
+end_iter =
+
+    8.6161
+
+
+end_iter =
+
+    8.1933
+
+
+end_iter =
+
+    8.2969
+
+
+end_iter =
+
+    8.4599
+
+
+end_iter =
+
+    9.0289
+
+
+end_iter =
+
+    7.9307
+
+
+end_iter =
+
+    8.4143
+
+
+end_iter =
+
+    8.9466
+
+
+end_iter =
+
+    8.7003
+
+
+end_iter =
+
+    9.9584
+
+
+end_iter =
+
+   13.3781
+
+
+end_iter =
+
+   12.6742
+
+
+end_iter =
+
+   12.5039
+
+
+end_iter =
+
+   10.9311
+
+
+end_iter =
+
+    9.5291
+
+
+end_iter =
+
+    9.1248
+
+
+end_iter =
+
+    9.0762
+
+
+end_iter =
+
+    8.2658
+
+
+end_iter =
+
+    8.2250
+
+
+end_iter =
+
+    8.4604
+
+
+end_iter =
+
+    8.2555
+
+
+end_iter =
+
+    8.0778
+
+
+end_iter =
+
+    8.6439
+
+
+end_iter =
+
+    8.5266
+
+
+end_iter =
+
+    8.7477
+
+
+end_iter =
+
+    9.8572
+
+
+end_iter =
+
+    8.3966
+
+
+end_iter =
+
+    8.6997
+
+
+end_iter =
+
+    8.5565
+
+
+end_iter =
+
+    8.5539
+
+
+end_iter =
+
+    9.3841
+
+
+end_iter =
+
+    8.4566
+
+
+end_iter =
+
+    7.9654
+
+
+end_iter =
+
+    8.2571
+
+
+end_iter =
+
+    8.5860
+
+
+end_iter =
+
+    9.1773
+
+
+end_iter =
+
+    8.4841
+
+
+end_iter =
+
+    8.3176
+
+
+end_iter =
+
+    8.8407
+
+
+end_iter =
+
+    8.1343
+
+
+end_iter =
+
+    7.9547
+
+
+end_iter =
+
+    8.7632
+
+
+end_iter =
+
+    8.3885
+
+
+end_iter =
+
+    8.6415
+
+
+end_iter =
+
+    8.3403
+
+
+end_iter =
+
+    8.1439
+
+
+end_iter =
+
+    8.0894
+
+
+end_iter =
+
+    8.2227
+
+
+end_iter =
+
+    8.6074
+
+
+end_iter =
+
+    9.4328
+
+
+end_iter =
+
+    8.8852
+
+
+end_iter =
+
+    8.4980
+
+
+end_iter =
+
+    8.1887
+
+
+end_iter =
+
+    8.7976
+
+
+end_iter =
+
+   10.0201
+
+
+end_iter =
+
+    8.7189
+
+
+end_iter =
+
+    9.6498
+
+
+end_iter =
+
+   13.4221
+
+
+end_iter =
+
+   13.6785
+
+
+end_iter =
+
+   13.1127
+
+
+end_iter =
+
+   11.5589
+
+
+end_iter =
+
+   11.7278
+
+
+end_iter =
+
+   13.5511
+
+
+end_iter =
+
+   12.0070
+
+
+end_iter =
+
+   11.2781
+
+
+end_iter =
+
+    9.6307
+
+
+end_iter =
+
+    8.4988
+
+
+end_iter =
+
+    7.9318
+
+
+end_iter =
+
+    7.9072
+
+
+end_iter =
+
+    8.5677
+
+
+end_iter =
+
+    7.9843
+
+
+end_iter =
+
+    8.0958
+
+
+end_iter =
+
+    8.0542
+
+
+end_iter =
+
+    8.9143
+
+
+end_iter =
+
+    8.5053
+
+
+end_iter =
+
+    8.2900
+
+
+end_iter =
+
+    8.5906
+
+
+end_iter =
+
+    8.2894
+
+
+end_iter =
+
+    8.1775
+
+
+end_iter =
+
+    7.7802
+
+
+end_iter =
+
+    7.7910
+
+
+end_iter =
+
+    8.2420
+
+
+end_iter =
+
+    8.7517
+
+
+end_iter =
+
+    8.5441
+
+
+end_iter =
+
+    7.6439
+
+
+end_iter =
+
+    7.9234
+
+
+end_iter =
+
+    7.9390
+
+
+end_iter =
+
+    8.2715
+
+
+end_iter =
+
+    8.2381
+
+
+end_iter =
+
+    8.4953
+
+
+end_iter =
+
+    8.3998
+
+
+end_iter =
+
+    8.3180
+
+
+end_iter =
+
+    8.2812
+
+
+end_iter =
+
+    8.4809
+
+
+end_iter =
+
+    8.0846
+
+
+end_iter =
+
+    8.3132
+
+
+end_iter =
+
+    8.4312
+
+
+end_iter =
+
+    8.8825
+
+
+end_iter =
+
+    8.3335
+
+
+end_iter =
+
+   10.0610
+
+
+end_iter =
+
+   12.9930
+
+
+end_iter =
+
+   12.4983
+
+
+end_iter =
+
+   11.9176
+
+
+end_iter =
+
+   12.9192
+
+
+end_iter =
+
+   12.0313
+
+
+end_iter =
+
+   12.9008
+
+
+end_iter =
+
+    9.8411
+
+
+end_iter =
+
+    8.6694
+
+
+end_iter =
+
+    7.7914
+
+
+end_iter =
+
+    8.4692
+
+
+end_iter =
+
+    8.8225
+
+
+end_iter =
+
+    8.3705
+
+
+end_iter =
+
+    9.4610
+
+
+end_iter =
+
+    8.6541
+
+
+end_iter =
+
+    8.7679
+
+
+end_iter =
+
+    8.9885
+
+
+end_iter =
+
+    8.0442
+
+
+end_iter =
+
+    9.6678
+
+
+end_iter =
+
+    8.2658
+
+
+end_iter =
+
+    8.5006
+
+
+end_iter =
+
+    8.6638
+
+
+end_iter =
+
+    8.2905
+
+
+end_iter =
+
+    8.4083
+
+
+end_iter =
+
+    8.7484
+
+
+end_iter =
+
+    8.8764
+
+
+end_iter =
+
+    9.1092
+
+
+end_iter =
+
+    8.3708
+
+
+end_iter =
+
+    8.9072
+
+
+end_iter =
+
+    8.4701
+
+
+end_iter =
+
+    8.4660
+
+
+end_iter =
+
+    9.1686
+
+
+end_iter =
+
+    8.4762
+
+
+end_iter =
+
+    8.2396
+
+
+end_iter =
+
+    8.2047
+
+
+end_iter =
+
+    8.6528
+
+
+end_iter =
+
+    8.5010
+
+
+end_iter =
+
+    8.9075
+
+
+end_iter =
+
+    8.8145
+
+
+end_iter =
+
+    8.1660
+
+
+end_iter =
+
+    8.7780
+
+
+end_iter =
+
+    8.0508
+
+
+end_iter =
+
+    8.7347
+
+
+end_iter =
+
+    7.8156
+
+
+end_iter =
+
+    8.0139
+
+
+end_iter =
+
+    8.1845
+
+
+end_iter =
+
+    8.2625
+
+
+end_iter =
+
+    7.5331
+
+
+end_iter =
+
+    8.2434
+
+
+end_iter =
+
+    7.3199
+
+
+end_iter =
+
+    7.3731
+
+
+end_iter =
+
+    9.1492
+
+
+end_iter =
+
+   12.3508
+
+
+end_iter =
+
+   11.7987
+
+
+end_iter =
+
+   11.4018
+
+
+end_iter =
+
+   11.1486
+
+
+end_iter =
+
+    9.1291
+
+
+end_iter =
+
+    8.8764
+
+
+end_iter =
+
+    8.6496
+
+
+end_iter =
+
+    8.9005
+
+
+end_iter =
+
+    8.3122
+
+
+end_iter =
+
+    8.3674
+
+
+end_iter =
+
+    8.8026
+
+
+end_iter =
+
+    8.8920
+
+
+end_iter =
+
+    8.5452
+
+
+end_iter =
+
+    8.1233
+
+
+end_iter =
+
+    8.1529
+
+
+end_iter =
+
+    8.6364
+
+
+end_iter =
+
+    8.0319
+
+
+end_iter =
+
+    7.9217
+
+
+end_iter =
+
+    8.2944
+
+
+end_iter =
+
+    8.4332
+
+
+end_iter =
+
+    8.2815
+
+
+end_iter =
+
+    8.2172
+
+
+end_iter =
+
+    8.6916
+
+
+end_iter =
+
+    8.6647
+
+
+end_iter =
+
+    8.2228
+
+
+end_iter =
+
+    8.8635
+
+
+end_iter =
+
+    8.3797
+
+
+end_iter =
+
+    8.4518
+
+
+end_iter =
+
+    8.8423
+
+
+end_iter =
+
+    8.0426
+
+
+end_iter =
+
+    8.5814
+
+
+end_iter =
+
+    8.5349
+
+
+end_iter =
+
+    8.4848
+
+
+end_iter =
+
+    8.3026
+
+
+end_iter =
+
+    8.7369
+
+
+end_iter =
+
+    8.3737
+
+
+end_iter =
+
+    8.6099
+
+
+end_iter =
+
+    8.2070
+
+
+end_iter =
+
+    8.3432
+
+
+end_iter =
+
+    8.4385
+
+
+end_iter =
+
+    8.7669
+
+
+end_iter =
+
+    8.4163
+
+
+end_iter =
+
+    8.6494
+
+
+end_iter =
+
+    8.9558
+
+
+end_iter =
+
+    8.8885
+
+
+end_iter =
+
+    8.6194
+
+
+end_iter =
+
+    8.2982
+
+
+end_iter =
+
+    8.1910
+
+
+end_iter =
+
+    8.3479
+
+
+end_iter =
+
+    8.6339
+
+
+end_iter =
+
+    8.0769
+
+
+end_iter =
+
+    7.5260
+
+
+end_iter =
+
+    7.5851
+
+Reweighting: 1
+
+
+end_iter =
+
+   19.1444
+
+
+end_iter =
+
+    8.0452
+
+
+end_iter =
+
+    8.1020
+
+
+end_iter =
+
+    8.0819
+
+
+end_iter =
+
+    9.1125
+
+
+end_iter =
+
+    8.7082
+
+
+end_iter =
+
+    9.0174
+
+
+end_iter =
+
+    7.8500
+
+
+end_iter =
+
+    7.8599
+
+
+end_iter =
+
+    7.9820
+
+
+end_iter =
+
+    8.4210
+
+
+end_iter =
+
+    7.6451
+
+
+end_iter =
+
+    8.4156
+
+
+end_iter =
+
+   13.0293
+
+
+end_iter =
+
+   12.1193
+
+
+end_iter =
+
+   11.8227
+
+
+end_iter =
+
+   11.3672
+
+
+end_iter =
+
+   11.3246
+
+
+end_iter =
+
+   11.7561
+
+
+end_iter =
+
+   12.9405
+
+
+end_iter =
+
+   10.5350
+
+
+end_iter =
+
+    9.3185
+
+
+end_iter =
+
+    8.4328
+
+
+end_iter =
+
+    8.7775
+
+
+end_iter =
+
+    8.6554
+
+
+end_iter =
+
+    8.2172
+
+
+end_iter =
+
+    8.1643
+
+
+end_iter =
+
+    9.1747
+
+
+end_iter =
+
+    9.0513
+
+
+end_iter =
+
+    8.6370
+
+
+end_iter =
+
+    8.3074
+
+
+end_iter =
+
+    9.5257
+
+
+end_iter =
+
+    8.9874
+
+
+end_iter =
+
+    8.8922
+
+
+end_iter =
+
+    8.3192
+
+
+end_iter =
+
+    8.7847
+
+
+end_iter =
+
+    8.3884
+
+
+end_iter =
+
+    8.2230
+
+
+end_iter =
+
+    8.4096
+
+
+end_iter =
+
+    8.9735
+
+
+end_iter =
+
+    8.0457
+
+
+end_iter =
+
+    8.1215
+
+
+end_iter =
+
+    8.5831
+
+
+end_iter =
+
+    8.9377
+
+
+end_iter =
+
+    7.8570
+
+
+end_iter =
+
+    9.2615
+
+
+end_iter =
+
+    8.0527
+
+
+end_iter =
+
+    8.6733
+
+
+end_iter =
+
+    7.9197
+
+
+end_iter =
+
+    7.8267
+
+
+end_iter =
+
+    8.7337
+
+
+end_iter =
+
+    8.5815
+
+
+end_iter =
+
+    9.0186
+
+
+end_iter =
+
+    8.4144
+
+
+end_iter =
+
+    8.6873
+
+
+end_iter =
+
+    8.9956
+
+
+end_iter =
+
+    8.7486
+
+
+end_iter =
+
+    8.2111
+
+
+end_iter =
+
+    8.4737
+
+
+end_iter =
+
+    8.4496
+
+
+end_iter =
+
+    9.1800
+
+
+end_iter =
+
+   11.0313
+
+
+end_iter =
+
+   14.5040
+
+
+end_iter =
+
+   11.9365
+
+
+end_iter =
+
+   10.6048
+
+
+end_iter =
+
+    8.6312
+
+
+end_iter =
+
+    8.2163
+
+
+end_iter =
+
+    8.5881
+
+
+end_iter =
+
+    7.8516
+
+
+end_iter =
+
+    7.4172
+
+
+end_iter =
+
+    8.3126
+
+
+end_iter =
+
+    8.4837
+
+
+end_iter =
+
+    9.5746
+
+
+end_iter =
+
+    8.0915
+
+
+end_iter =
+
+    7.9367
+
+
+end_iter =
+
+    8.0469
+
+
+end_iter =
+
+    9.0069
+
+
+end_iter =
+
+    9.7160
+
+
+end_iter =
+
+   12.4975
+
+
+end_iter =
+
+   13.2353
+
+
+end_iter =
+
+   12.8509
+
+
+end_iter =
+
+   14.3378
+
+
+end_iter =
+
+   10.9687
+
+
+end_iter =
+
+   10.1477
+
+
+end_iter =
+
+    9.5708
+
+
+end_iter =
+
+    9.0295
+
+
+end_iter =
+
+    8.3285
+
+
+end_iter =
+
+    8.6788
+
+
+end_iter =
+
+    8.5075
+
+
+end_iter =
+
+    7.8263
+
+
+end_iter =
+
+    8.9753
+
+
+end_iter =
+
+    8.3754
+
+
+end_iter =
+
+    8.2258
+
+
+end_iter =
+
+    8.4014
+
+
+end_iter =
+
+    8.7849
+
+
+end_iter =
+
+    8.1349
+
+
+end_iter =
+
+    7.6714
+
+
+end_iter =
+
+    8.6688
+
+
+end_iter =
+
+    8.2922
+
+
+end_iter =
+
+    8.5670
+
+
+end_iter =
+
+    8.2609
+
+
+end_iter =
+
+    8.7943
+
+
+end_iter =
+
+    8.5037
+
+
+end_iter =
+
+    8.7434
+
+
+end_iter =
+
+   10.0709
+
+
+end_iter =
+
+   13.4903
+
+
+end_iter =
+
+   14.0403
+
+
+end_iter =
+
+   12.9923
+
+
+end_iter =
+
+   10.9878
+
+
+end_iter =
+
+   11.0445
+
+
+end_iter =
+
+   12.3286
+
+
+end_iter =
+
+   10.0887
+
+
+end_iter =
+
+    8.9426
+
+
+end_iter =
+
+    8.0838
+
+
+end_iter =
+
+    8.5781
+
+
+end_iter =
+
+    8.2431
+
+
+end_iter =
+
+    8.7966
+
+
+end_iter =
+
+    8.0962
+
+
+end_iter =
+
+    8.2924
+
+
+end_iter =
+
+    7.8964
+
+
+end_iter =
+
+    8.6296
+
+
+end_iter =
+
+    8.1907
+
+
+end_iter =
+
+    9.1062
+
+
+end_iter =
+
+    8.5494
+
+
+end_iter =
+
+    8.4456
+
+
+end_iter =
+
+    8.8814
+
+
+end_iter =
+
+    8.6328
+
+
+end_iter =
+
+    8.3308
+
+
+end_iter =
+
+    8.7786
+
+
+end_iter =
+
+    8.5297
+
+
+end_iter =
+
+    8.5059
+
+
+end_iter =
+
+    9.0381
+
+
+end_iter =
+
+    8.2783
+
+
+end_iter =
+
+    8.7618
+
+
+end_iter =
+
+   10.1673
+
+
+end_iter =
+
+   13.6217
+
+
+end_iter =
+
+   13.0643
+
+
+end_iter =
+
+   10.9521
+
+
+end_iter =
+
+   11.8357
+
+
+end_iter =
+
+   12.5134
+
+
+end_iter =
+
+   13.5188
+
+
+end_iter =
+
+   12.3848
+
+
+end_iter =
+
+   11.4928
+
+
+end_iter =
+
+   10.5720
+
+
+end_iter =
+
+   10.1176
+
+
+end_iter =
+
+    9.0388
+
+
+end_iter =
+
+    8.5342
+
+
+end_iter =
+
+    8.4746
+
+
+end_iter =
+
+    8.4119
+
+
+end_iter =
+
+    8.3883
+
+
+end_iter =
+
+    8.2357
+
+
+end_iter =
+
+    8.6804
+
+
+end_iter =
+
+    8.5707
+
+
+end_iter =
+
+    8.5129
+
+
+end_iter =
+
+    8.8560
+
+
+end_iter =
+
+    8.6992
+
+
+end_iter =
+
+    8.0772
+
+
+end_iter =
+
+    8.4086
+
+
+end_iter =
+
+    8.0490
+
+
+end_iter =
+
+    8.2399
+
+
+end_iter =
+
+    8.6371
+
+
+end_iter =
+
+    8.8421
+
+
+end_iter =
+
+    8.0360
+
+
+end_iter =
+
+   10.2473
+
+
+end_iter =
+
+   14.1211
+
+
+end_iter =
+
+   13.1024
+
+
+end_iter =
+
+   12.7627
+
+
+end_iter =
+
+   11.5804
+
+
+end_iter =
+
+   10.2849
+
+
+end_iter =
+
+   10.2189
+
+
+end_iter =
+
+    8.9036
+
+
+end_iter =
+
+    8.5093
+
+
+end_iter =
+
+    8.1436
+
+
+end_iter =
+
+    8.6593
+
+
+end_iter =
+
+    8.2189
+
+
+end_iter =
+
+    8.6700
+
+
+end_iter =
+
+    8.2728
+
+
+end_iter =
+
+    8.1132
+
+
+end_iter =
+
+    8.2302
+
+
+end_iter =
+
+    8.2882
+
+
+end_iter =
+
+    7.9196
+
+
+end_iter =
+
+    8.1432
+
+
+end_iter =
+
+    7.7232
+
+
+end_iter =
+
+    7.9603
+
+
+end_iter =
+
+    8.2588
+
+
+end_iter =
+
+    8.4171
+
+
+end_iter =
+
+    8.4101
+
+
+end_iter =
+
+    8.7681
+
+
+end_iter =
+
+    7.9284
+
+
+end_iter =
+
+    8.3109
+
+
+end_iter =
+
+    8.6079
+
+
+end_iter =
+
+    8.5793
+
+
+end_iter =
+
+    8.8057
+
+
+end_iter =
+
+    7.8787
+
+
+end_iter =
+
+    8.2935
+
+
+end_iter =
+
+    8.4214
+
+
+end_iter =
+
+    8.7255
+
+
+end_iter =
+
+    7.9972
+
+
+end_iter =
+
+    9.0523
+
+
+end_iter =
+
+    7.8914
+
+
+end_iter =
+
+    7.8369
+
+
+end_iter =
+
+    9.0408
+
+
+end_iter =
+
+    8.0349
+
+
+end_iter =
+
+    7.8638
+
+
+end_iter =
+
+    8.4644
+
+
+end_iter =
+
+    8.6336
+
+
+end_iter =
+
+    8.9498
+
+
+end_iter =
+
+    8.2239
+
+
+end_iter =
+
+    9.1240
+
+
+end_iter =
+
+    8.0970
+
+
+end_iter =
+
+    8.0861
+
+
+end_iter =
+
+    8.8162
+
+
+end_iter =
+
+    8.6420
+
+
+end_iter =
+
+   11.8755
+
+
+end_iter =
+
+   14.2931
+
+
+end_iter =
+
+   12.7826
+
+
+end_iter =
+
+   11.2055
+
+
+end_iter =
+
+   10.2634
+
+
+end_iter =
+
+    8.9319
+
+
+end_iter =
+
+    9.0127
+
+
+end_iter =
+
+    8.6361
+
+
+end_iter =
+
+    7.9406
+
+
+end_iter =
+
+    8.9141
+
+
+end_iter =
+
+    7.9779
+
+
+end_iter =
+
+    8.2059
+
+
+end_iter =
+
+    8.8700
+
+
+end_iter =
+
+    7.8846
+
+
+end_iter =
+
+    8.9557
+
+
+end_iter =
+
+    8.4869
+
+
+end_iter =
+
+    9.2367
+
+
+end_iter =
+
+    8.1446
+
+
+end_iter =
+
+    9.2522
+
+
+end_iter =
+
+    8.2970
+
+
+end_iter =
+
+    7.7770
+
+
+end_iter =
+
+    8.3465
+
+
+end_iter =
+
+    9.1633
+
+
+end_iter =
+
+    8.2593
+
+
+end_iter =
+
+    8.8388
+
+
+end_iter =
+
+    7.5937
+
+
+end_iter =
+
+    8.4118
+
+
+end_iter =
+
+    8.7822
+
+
+end_iter =
+
+    8.6460
+
+
+end_iter =
+
+    8.0832
+
+
+end_iter =
+
+    8.8333
+
+
+end_iter =
+
+    9.1662
+
+
+end_iter =
+
+    8.8307
+
+
+end_iter =
+
+   12.1987
+
+
+end_iter =
+
+   13.8895
+
+
+end_iter =
+
+   12.2724
+
+
+end_iter =
+
+   12.1135
+
+
+end_iter =
+
+   11.9567
+
+
+end_iter =
+
+   12.5904
+
+
+end_iter =
+
+   12.6592
+
+
+end_iter =
+
+   11.3054
+
+
+end_iter =
+
+   11.0868
+
+
+end_iter =
+
+    9.1320
+
+
+end_iter =
+
+    8.0910
+
+
+end_iter =
+
+    9.1914
+
+
+end_iter =
+
+    8.1003
+
+
+end_iter =
+
+    8.5354
+
+
+end_iter =
+
+    8.1171
+
+
+end_iter =
+
+    8.5169
+
+
+end_iter =
+
+    8.5203
+
+
+end_iter =
+
+    8.8832
+
+
+end_iter =
+
+    8.9951
+
+
+end_iter =
+
+    9.1071
+
+
+end_iter =
+
+    7.9843
+
+
+end_iter =
+
+    8.9279
+
+
+end_iter =
+
+    8.5894
+
+
+end_iter =
+
+    8.7473
+
+
+end_iter =
+
+    8.9947
+
+
+end_iter =
+
+    8.2537
+
+
+end_iter =
+
+    8.8282
+
+
+end_iter =
+
+    8.2461
+
+
+end_iter =
+
+    8.4948
+
+
+end_iter =
+
+    8.0131
+
+
+end_iter =
+
+    8.8888
+
+
+end_iter =
+
+    9.1882
+
+
+end_iter =
+
+    8.3202
+
+
+end_iter =
+
+    8.8082
+
+
+end_iter =
+
+    8.6052
+
+
+end_iter =
+
+    8.2010
+
+
+end_iter =
+
+    8.3717
+
+
+end_iter =
+
+    9.0933
+
+
+end_iter =
+
+    8.3964
+
+
+end_iter =
+
+    7.9022
+
+
+end_iter =
+
+    8.6646
+
+
+end_iter =
+
+    8.6814
+
+
+end_iter =
+
+   11.8502
+
+
+end_iter =
+
+   14.6215
+
+
+end_iter =
+
+   12.8723
+
+
+end_iter =
+
+   10.5595
+
+
+end_iter =
+
+   10.8238
+
+
+end_iter =
+
+    8.5875
+
+
+end_iter =
+
+    8.2262
+
+
+end_iter =
+
+    8.4363
+
+
+end_iter =
+
+    8.4309
+
+
+end_iter =
+
+    8.4509
+
+
+end_iter =
+
+    7.7781
+
+
+end_iter =
+
+    8.6599
+
+Reweighting: 2
+
+
+end_iter =
+
+   22.3687
+
+
+end_iter =
+
+   14.7377
+
+
+end_iter =
+
+   12.2807
+
+
+end_iter =
+
+   12.3760
+
+
+end_iter =
+
+   11.2596
+
+
+end_iter =
+
+   13.5786
+
+
+end_iter =
+
+   12.3855
+
+
+end_iter =
+
+   11.1524
+
+
+end_iter =
+
+    9.5442
+
+
+end_iter =
+
+    8.5393
+
+
+end_iter =
+
+    8.6253
+
+
+end_iter =
+
+    8.4853
+
+
+end_iter =
+
+    7.9663
+
+
+end_iter =
+
+    8.7159
+
+
+end_iter =
+
+    8.3442
+
+
+end_iter =
+
+    8.3945
+
+
+end_iter =
+
+    7.8643
+
+
+end_iter =
+
+    8.5709
+
+
+end_iter =
+
+    7.9224
+
+
+end_iter =
+
+    8.3804
+
+
+end_iter =
+
+    8.1090
+
+
+end_iter =
+
+    8.3343
+
+
+end_iter =
+
+    8.4204
+
+
+end_iter =
+
+    7.9302
+
+
+end_iter =
+
+    8.8694
+
+
+end_iter =
+
+    8.1700
+
+
+end_iter =
+
+    8.6746
+
+
+end_iter =
+
+    8.6654
+
+
+end_iter =
+
+    8.4021
+
+
+end_iter =
+
+    9.0036
+
+
+end_iter =
+
+    8.3514
+
+
+end_iter =
+
+    8.3315
+
+
+end_iter =
+
+    8.6484
+
+
+end_iter =
+
+    8.2259
+
+
+end_iter =
+
+    7.6661
+
+
+end_iter =
+
+    8.8645
+
+
+end_iter =
+
+    8.4210
+
+
+end_iter =
+
+    8.4764
+
+
+end_iter =
+
+    8.4107
+
+
+end_iter =
+
+   10.5881
+
+
+end_iter =
+
+   13.9180
+
+
+end_iter =
+
+   12.0878
+
+
+end_iter =
+
+   12.3186
+
+
+end_iter =
+
+   10.3080
+
+
+end_iter =
+
+   10.4298
+
+
+end_iter =
+
+    8.2426
+
+
+end_iter =
+
+    8.3118
+
+
+end_iter =
+
+    8.1488
+
+
+end_iter =
+
+    8.3318
+
+
+end_iter =
+
+    7.6863
+
+
+end_iter =
+
+    7.1914
+
+
+end_iter =
+
+    7.0404
+
+
+end_iter =
+
+    7.9446
+
+
+end_iter =
+
+    7.8224
+
+
+end_iter =
+
+    7.3619
+
+
+end_iter =
+
+    7.5193
+
+
+end_iter =
+
+    7.7664
+
+
+end_iter =
+
+    8.0706
+
+
+end_iter =
+
+    7.5782
+
+
+end_iter =
+
+    7.2887
+
+
+end_iter =
+
+    7.0149
+
+
+end_iter =
+
+    7.0216
+
+
+end_iter =
+
+    7.0167
+
+
+end_iter =
+
+    7.1702
+
+
+end_iter =
+
+    6.9518
+
+
+end_iter =
+
+    6.9090
+
+
+end_iter =
+
+    7.1784
+
+
+end_iter =
+
+    7.7614
+
+
+end_iter =
+
+    8.6915
+
+
+end_iter =
+
+    7.6871
+
+
+end_iter =
+
+    8.1758
+
+
+end_iter =
+
+   10.4566
+
+
+end_iter =
+
+   12.7050
+
+
+end_iter =
+
+   11.8307
+
+
+end_iter =
+
+   10.0458
+
+
+end_iter =
+
+   11.5392
+
+
+end_iter =
+
+   11.4735
+
+
+end_iter =
+
+    9.7540
+
+
+end_iter =
+
+    8.6661
+
+
+end_iter =
+
+    8.2303
+
+
+end_iter =
+
+    8.0063
+
+
+end_iter =
+
+    8.7930
+
+
+end_iter =
+
+    7.9916
+
+
+end_iter =
+
+    8.7490
+
+
+end_iter =
+
+    8.6606
+
+
+end_iter =
+
+    9.2516
+
+
+end_iter =
+
+    9.1794
+
+
+end_iter =
+
+    8.2492
+
+
+end_iter =
+
+    8.1088
+
+
+end_iter =
+
+    7.9073
+
+
+end_iter =
+
+    7.4453
+
+
+end_iter =
+
+    7.5771
+
+
+end_iter =
+
+    8.4276
+
+
+end_iter =
+
+    7.0510
+
+
+end_iter =
+
+    6.9333
+
+
+end_iter =
+
+    7.2760
+
+
+end_iter =
+
+    6.9960
+
+
+end_iter =
+
+    6.8961
+
+
+end_iter =
+
+    7.4194
+
+
+end_iter =
+
+    8.2158
+
+
+end_iter =
+
+    7.8739
+
+
+end_iter =
+
+    9.4704
+
+
+end_iter =
+
+   10.6348
+
+
+end_iter =
+
+   11.4902
+
+
+end_iter =
+
+   10.1325
+
+
+end_iter =
+
+    9.4230
+
+
+end_iter =
+
+    7.8244
+
+
+end_iter =
+
+    7.9406
+
+
+end_iter =
+
+    8.1759
+
+
+end_iter =
+
+    7.9108
+
+
+end_iter =
+
+    7.7238
+
+
+end_iter =
+
+    7.6091
+
+
+end_iter =
+
+    8.0296
+
+
+end_iter =
+
+    7.1601
+
+
+end_iter =
+
+    6.7023
+
+
+end_iter =
+
+    6.9957
+
+
+end_iter =
+
+    7.5445
+
+
+end_iter =
+
+    8.5638
+
+
+end_iter =
+
+   11.0196
+
+
+end_iter =
+
+   10.1114
+
+
+end_iter =
+
+    9.5070
+
+
+end_iter =
+
+    8.9131
+
+
+end_iter =
+
+    8.8852
+
+
+end_iter =
+
+    8.3154
+
+
+end_iter =
+
+    9.2205
+
+
+end_iter =
+
+   11.8869
+
+
+end_iter =
+
+   13.4106
+
+
+end_iter =
+
+   11.2959
+
+
+end_iter =
+
+   11.3613
+
+
+end_iter =
+
+    9.7208
+
+
+end_iter =
+
+    8.7951
+
+
+end_iter =
+
+    9.5375
+
+
+end_iter =
+
+   10.0448
+
+
+end_iter =
+
+   10.5349
+
+
+end_iter =
+
+   10.2414
+
+
+end_iter =
+
+    8.0165
+
+
+end_iter =
+
+    7.8670
+
+
+end_iter =
+
+    7.5514
+
+
+end_iter =
+
+    8.8309
+
+
+end_iter =
+
+    7.7338
+
+
+end_iter =
+
+    8.5992
+
+
+end_iter =
+
+    8.1307
+
+
+end_iter =
+
+    7.9749
+
+
+end_iter =
+
+    8.5493
+
+
+end_iter =
+
+    7.9565
+
+
+end_iter =
+
+    8.0753
+
+
+end_iter =
+
+   10.8584
+
+
+end_iter =
+
+   12.9739
+
+
+end_iter =
+
+   12.7004
+
+
+end_iter =
+
+   12.7242
+
+
+end_iter =
+
+    9.8825
+
+
+end_iter =
+
+    8.8083
+
+
+end_iter =
+
+    9.1623
+
+
+end_iter =
+
+    7.9429
+
+
+end_iter =
+
+    7.7387
+
+
+end_iter =
+
+    7.4143
+
+
+end_iter =
+
+    7.2277
+
+
+end_iter =
+
+    7.9091
+
+
+end_iter =
+
+    8.0654
+
+
+end_iter =
+
+    7.9722
+
+
+end_iter =
+
+    7.3170
+
+
+end_iter =
+
+    6.9865
+
+
+end_iter =
+
+    6.8593
+
+
+end_iter =
+
+    6.7934
+
+
+end_iter =
+
+    7.3260
+
+
+end_iter =
+
+    6.9404
+
+
+end_iter =
+
+    7.1741
+
+
+end_iter =
+
+    7.5975
+
+
+end_iter =
+
+    8.7078
+
+
+end_iter =
+
+    9.7922
+
+
+end_iter =
+
+   13.9945
+
+
+end_iter =
+
+   12.5267
+
+
+end_iter =
+
+   10.2675
+
+
+end_iter =
+
+   11.7231
+
+
+end_iter =
+
+   13.1709
+
+
+end_iter =
+
+   10.7839
+
+
+end_iter =
+
+    9.0754
+
+
+end_iter =
+
+    8.5011
+
+
+end_iter =
+
+    8.8352
+
+
+end_iter =
+
+    8.4615
+
+
+end_iter =
+
+    7.8207
+
+
+end_iter =
+
+    7.8010
+
+
+end_iter =
+
+    7.8522
+
+
+end_iter =
+
+    8.3034
+
+
+end_iter =
+
+    8.5705
+
+
+end_iter =
+
+    8.6793
+
+
+end_iter =
+
+    7.6412
+
+
+end_iter =
+
+    8.1616
+
+
+end_iter =
+
+   11.1113
+
+
+end_iter =
+
+   12.5491
+
+
+end_iter =
+
+   12.6548
+
+
+end_iter =
+
+   11.0036
+
+
+end_iter =
+
+   12.1383
+
+
+end_iter =
+
+   11.3627
+
+
+end_iter =
+
+   10.4619
+
+
+end_iter =
+
+    9.4460
+
+
+end_iter =
+
+    8.8820
+
+
+end_iter =
+
+    8.0593
+
+
+end_iter =
+
+    8.1716
+
+
+end_iter =
+
+    7.9797
+
+
+end_iter =
+
+    8.4755
+
+
+end_iter =
+
+    7.5473
+
+
+end_iter =
+
+    8.4670
+
+
+end_iter =
+
+    7.8947
+
+
+end_iter =
+
+    8.5662
+
+
+end_iter =
+
+    8.4334
+
+
+end_iter =
+
+    8.0993
+
+
+end_iter =
+
+    7.5959
+
+
+end_iter =
+
+    8.4704
+
+
+end_iter =
+
+    7.5276
+
+
+end_iter =
+
+    8.9445
+
+
+end_iter =
+
+   11.7695
+
+
+end_iter =
+
+   12.7412
+
+
+end_iter =
+
+   13.1503
+
+
+end_iter =
+
+   11.9984
+
+
+end_iter =
+
+   12.5581
+
+
+end_iter =
+
+   12.4390
+
+
+end_iter =
+
+   12.1938
+
+
+end_iter =
+
+   11.0426
+
+
+end_iter =
+
+   10.0154
+
+
+end_iter =
+
+    9.5163
+
+
+end_iter =
+
+    8.6969
+
+
+end_iter =
+
+    7.8811
+
+
+end_iter =
+
+    8.7366
+
+
+end_iter =
+
+    8.5470
+
+
+end_iter =
+
+    7.7876
+
+
+end_iter =
+
+    7.4760
+
+
+end_iter =
+
+    8.3444
+
+
+end_iter =
+
+    8.4384
+
+
+end_iter =
+
+    7.9995
+
+
+end_iter =
+
+    8.7867
+
+
+end_iter =
+
+    9.0014
+
+
+end_iter =
+
+    9.0862
+
+
+end_iter =
+
+    8.3418
+
+
+end_iter =
+
+    8.1978
+
+
+end_iter =
+
+    8.9130
+
+
+end_iter =
+
+    8.3068
+
+
+end_iter =
+
+    9.1940
+
+
+end_iter =
+
+    9.1372
+
+
+end_iter =
+
+    7.9150
+
+
+end_iter =
+
+    8.0247
+
+
+end_iter =
+
+    8.1772
+
+
+end_iter =
+
+    8.1433
+
+
+end_iter =
+
+    8.2759
+
+
+end_iter =
+
+    8.4035
+
+
+end_iter =
+
+    9.9852
+
+
+end_iter =
+
+   12.3078
+
+
+end_iter =
+
+   11.9039
+
+
+end_iter =
+
+   12.5059
+
+
+end_iter =
+
+   11.7826
+
+
+end_iter =
+
+    9.6143
+
+
+end_iter =
+
+    9.0900
+
+
+end_iter =
+
+    9.3995
+
+
+end_iter =
+
+    8.3092
+
+
+end_iter =
+
+    8.0118
+
+
+end_iter =
+
+    8.2574
+
+
+end_iter =
+
+    9.3138
+
+
+end_iter =
+
+    8.7053
+
+
+end_iter =
+
+    8.2243
+
+
+end_iter =
+
+    8.5760
+
+
+end_iter =
+
+    7.5436
+
+
+end_iter =
+
+    7.9113
+
+
+end_iter =
+
+    8.1850
+
+
+end_iter =
+
+    8.5917
+
+
+end_iter =
+
+    8.1366
+
+
+end_iter =
+
+    7.7447
+
+
+end_iter =
+
+    8.0589
+
+
+end_iter =
+
+    9.0671
+
+
+end_iter =
+
+    7.8542
+
+
+end_iter =
+
+    8.0582
+
+
+end_iter =
+
+    8.2332
+
+
+end_iter =
+
+    8.1288
+
+
+end_iter =
+
+    8.0697
+
+
+end_iter =
+
+    8.3881
+
+
+end_iter =
+
+    8.0627
+
+
+end_iter =
+
+    9.7596
+
+
+end_iter =
+
+   11.3113
+
+
+end_iter =
+
+   11.7917
+
+
+end_iter =
+
+   11.3959
+
+
+end_iter =
+
+   10.1057
+
+
+end_iter =
+
+    9.1638
+
+
+end_iter =
+
+    8.2380
+
+
+end_iter =
+
+    8.4841
+
+
+end_iter =
+
+    7.9015
+
+
+end_iter =
+
+    7.9824
+
+
+end_iter =
+
+    7.5492
+
+
+end_iter =
+
+    8.2326
+
+
+end_iter =
+
+    7.5101
+
+
+end_iter =
+
+    7.2558
+
+
+end_iter =
+
+    7.3670
+
+
+end_iter =
+
+    7.3038
+
+
+end_iter =
+
+    7.5197
+
+
+end_iter =
+
+    7.2987
+
+
+end_iter =
+
+    8.7800
+
+
+end_iter =
+
+    7.8195
+
+
+end_iter =
+
+    7.5733
+
+
+end_iter =
+
+    7.5757
+
+
+end_iter =
+
+    7.5966
+
+
+end_iter =
+
+    7.1848
+
+
+end_iter =
+
+    8.0150
+
+Reweighting: 3
+
+
+end_iter =
+
+   16.8752
+
+
+end_iter =
+
+    7.6605
+
+
+end_iter =
+
+    7.7854
+
+
+end_iter =
+
+    7.3443
+
+
+end_iter =
+
+    7.0584
+
+
+end_iter =
+
+    7.0681
+
+
+end_iter =
+
+    6.9601
+
+
+end_iter =
+
+    7.1166
+
+
+end_iter =
+
+    7.8054
+
+
+end_iter =
+
+    7.7605
+
+
+end_iter =
+
+    7.7681
+
+
+end_iter =
+
+    9.1011
+
+
+end_iter =
+
+    8.8137
+
+
+end_iter =
+
+   10.0742
+
+
+end_iter =
+
+   13.5320
+
+
+end_iter =
+
+   13.1858
+
+
+end_iter =
+
+   13.4780
+
+
+end_iter =
+
+   13.1165
+
+
+end_iter =
+
+   13.5500
+
+
+end_iter =
+
+   11.9212
+
+
+end_iter =
+
+   10.2780
+
+
+end_iter =
+
+    9.6281
+
+
+end_iter =
+
+    7.9538
+
+
+end_iter =
+
+    7.9340
+
+
+end_iter =
+
+    7.8354
+
+
+end_iter =
+
+    8.3631
+
+
+end_iter =
+
+    8.3762
+
+
+end_iter =
+
+    8.2523
+
+
+end_iter =
+
+    8.5650
+
+
+end_iter =
+
+    7.6534
+
+
+end_iter =
+
+    8.3025
+
+
+end_iter =
+
+    8.4267
+
+
+end_iter =
+
+    7.7937
+
+
+end_iter =
+
+    7.7981
+
+
+end_iter =
+
+    8.0436
+
+
+end_iter =
+
+   11.0977
+
+
+end_iter =
+
+   12.1332
+
+
+end_iter =
+
+   11.6157
+
+
+end_iter =
+
+   11.3853
+
+
+end_iter =
+
+   11.1423
+
+
+end_iter =
+
+   10.1589
+
+
+end_iter =
+
+   10.9542
+
+
+end_iter =
+
+   10.9605
+
+
+end_iter =
+
+    7.8982
+
+
+end_iter =
+
+    8.2086
+
+
+end_iter =
+
+    8.5286
+
+
+end_iter =
+
+    7.9403
+
+
+end_iter =
+
+    8.5799
+
+
+end_iter =
+
+    7.8960
+
+
+end_iter =
+
+    7.9930
+
+
+end_iter =
+
+    8.2999
+
+
+end_iter =
+
+    8.5784
+
+
+end_iter =
+
+    8.4490
+
+
+end_iter =
+
+    7.9421
+
+
+end_iter =
+
+    9.0544
+
+
+end_iter =
+
+    8.3928
+
+
+end_iter =
+
+    7.4367
+
+
+end_iter =
+
+    7.5273
+
+
+end_iter =
+
+    8.3564
+
+
+end_iter =
+
+    7.9913
+
+
+end_iter =
+
+    8.3230
+
+
+end_iter =
+
+    7.7829
+
+
+end_iter =
+
+    8.1930
+
+
+end_iter =
+
+    8.2841
+
+
+end_iter =
+
+    8.4142
+
+
+end_iter =
+
+    8.3468
+
+
+end_iter =
+
+    8.2993
+
+
+end_iter =
+
+    9.1823
+
+
+end_iter =
+
+    8.6250
+
+
+end_iter =
+
+    8.1669
+
+
+end_iter =
+
+    8.0948
+
+
+end_iter =
+
+    7.8785
+
+
+end_iter =
+
+    8.5065
+
+
+end_iter =
+
+    7.2855
+
+
+end_iter =
+
+    7.6243
+
+
+end_iter =
+
+    7.9346
+
+
+end_iter =
+
+    8.4360
+
+
+end_iter =
+
+    9.0557
+
+
+end_iter =
+
+    8.6373
+
+
+end_iter =
+
+    8.2828
+
+
+end_iter =
+
+    8.1885
+
+
+end_iter =
+
+    7.6822
+
+
+end_iter =
+
+    7.9274
+
+
+end_iter =
+
+    8.4566
+
+
+end_iter =
+
+    8.0888
+
+
+end_iter =
+
+    8.1457
+
+
+end_iter =
+
+    8.4536
+
+
+end_iter =
+
+    7.9988
+
+
+end_iter =
+
+    7.9360
+
+
+end_iter =
+
+    7.4009
+
+
+end_iter =
+
+    8.6373
+
+
+end_iter =
+
+    8.6184
+
+
+end_iter =
+
+    7.4919
+
+
+end_iter =
+
+    8.4662
+
+
+end_iter =
+
+    8.9529
+
+
+end_iter =
+
+   12.6445
+
+
+end_iter =
+
+   13.9939
+
+
+end_iter =
+
+   12.2457
+
+
+end_iter =
+
+   11.6492
+
+
+end_iter =
+
+   11.2870
+
+
+end_iter =
+
+   10.6446
+
+
+end_iter =
+
+   10.2321
+
+
+end_iter =
+
+    8.5821
+
+
+end_iter =
+
+    8.2696
+
+
+end_iter =
+
+    8.0967
+
+
+end_iter =
+
+    7.6931
+
+
+end_iter =
+
+    7.8552
+
+
+end_iter =
+
+    8.2942
+
+
+end_iter =
+
+    8.4276
+
+
+end_iter =
+
+    8.0244
+
+
+end_iter =
+
+    9.3309
+
+
+end_iter =
+
+    7.9130
+
+
+end_iter =
+
+    8.0687
+
+
+end_iter =
+
+    7.6481
+
+
+end_iter =
+
+    7.7252
+
+
+end_iter =
+
+    8.1119
+
+
+end_iter =
+
+    8.1946
+
+
+end_iter =
+
+    7.8467
+
+
+end_iter =
+
+    7.4952
+
+
+end_iter =
+
+    7.3283
+
+
+end_iter =
+
+    8.1210
+
+
+end_iter =
+
+    7.5551
+
+
+end_iter =
+
+    7.6881
+
+
+end_iter =
+
+    7.5561
+
+
+end_iter =
+
+    8.3305
+
+
+end_iter =
+
+    8.6557
+
+
+end_iter =
+
+    8.1940
+
+
+end_iter =
+
+    8.6967
+
+
+end_iter =
+
+    7.9034
+
+
+end_iter =
+
+    8.3829
+
+
+end_iter =
+
+    8.0126
+
+
+end_iter =
+
+    7.4689
+
+
+end_iter =
+
+    8.2254
+
+
+end_iter =
+
+   10.5386
+
+
+end_iter =
+
+    8.8096
+
+
+end_iter =
+
+    8.5116
+
+
+end_iter =
+
+    8.3044
+
+
+end_iter =
+
+    7.9263
+
+
+end_iter =
+
+    8.0313
+
+
+end_iter =
+
+    8.4636
+
+
+end_iter =
+
+    8.3324
+
+
+end_iter =
+
+    8.5395
+
+
+end_iter =
+
+    8.9894
+
+
+end_iter =
+
+    7.9171
+
+
+end_iter =
+
+   10.4865
+
+
+end_iter =
+
+    8.1967
+
+
+end_iter =
+
+    8.3932
+
+
+end_iter =
+
+    8.2951
+
+
+end_iter =
+
+    9.0147
+
+
+end_iter =
+
+    8.5597
+
+
+end_iter =
+
+    8.4165
+
+
+end_iter =
+
+    8.0885
+
+
+end_iter =
+
+   10.0495
+
+
+end_iter =
+
+   12.0597
+
+
+end_iter =
+
+   12.8770
+
+
+end_iter =
+
+   12.6444
+
+
+end_iter =
+
+   11.6899
+
+
+end_iter =
+
+   12.1498
+
+
+end_iter =
+
+   12.5773
+
+
+end_iter =
+
+   11.5793
+
+
+end_iter =
+
+   12.1063
+
+
+end_iter =
+
+   12.5874
+
+
+end_iter =
+
+    9.9113
+
+
+end_iter =
+
+    9.9467
+
+
+end_iter =
+
+    8.6017
+
+
+end_iter =
+
+    8.0042
+
+
+end_iter =
+
+    8.3242
+
+
+end_iter =
+
+    7.7863
+
+
+end_iter =
+
+    8.1260
+
+
+end_iter =
+
+    8.4207
+
+
+end_iter =
+
+    8.5283
+
+
+end_iter =
+
+    8.8898
+
+
+end_iter =
+
+    8.1741
+
+
+end_iter =
+
+    8.6991
+
+
+end_iter =
+
+    8.4511
+
+
+end_iter =
+
+    8.2306
+
+
+end_iter =
+
+    9.5508
+
+
+end_iter =
+
+    8.2070
+
+
+end_iter =
+
+    8.0882
+
+
+end_iter =
+
+    8.3482
+
+
+end_iter =
+
+    8.7907
+
+
+end_iter =
+
+    8.2120
+
+
+end_iter =
+
+    8.1571
+
+
+end_iter =
+
+    7.7486
+
+
+end_iter =
+
+    8.3894
+
+
+end_iter =
+
+    7.9506
+
+
+end_iter =
+
+    8.1061
+
+
+end_iter =
+
+    9.0711
+
+
+end_iter =
+
+    7.9162
+
+
+end_iter =
+
+    7.7997
+
+
+end_iter =
+
+    8.2896
+
+
+end_iter =
+
+    8.6210
+
+
+end_iter =
+
+    8.0459
+
+
+end_iter =
+
+    8.6217
+
+
+end_iter =
+
+    7.7135
+
+
+end_iter =
+
+    7.8833
+
+
+end_iter =
+
+    8.7817
+
+
+end_iter =
+
+    8.2254
+
+
+end_iter =
+
+    7.9437
+
+
+end_iter =
+
+    7.9689
+
+
+end_iter =
+
+    7.8668
+
+
+end_iter =
+
+    7.6436
+
+
+end_iter =
+
+    8.1366
+
+
+end_iter =
+
+    8.2134
+
+
+end_iter =
+
+    8.3300
+
+
+end_iter =
+
+    8.3716
+
+
+end_iter =
+
+    8.6663
+
+
+end_iter =
+
+    8.1910
+
+
+end_iter =
+
+    8.3775
+
+
+end_iter =
+
+    8.6746
+
+
+end_iter =
+
+   11.3286
+
+
+end_iter =
+
+   13.4935
+
+
+end_iter =
+
+   11.7870
+
+
+end_iter =
+
+   12.1139
+
+
+end_iter =
+
+   12.0039
+
+
+end_iter =
+
+   10.2596
+
+
+end_iter =
+
+    9.7912
+
+
+end_iter =
+
+    8.3689
+
+
+end_iter =
+
+    7.9087
+
+
+end_iter =
+
+    7.9126
+
+
+end_iter =
+
+    8.1270
+
+
+end_iter =
+
+    8.1299
+
+
+end_iter =
+
+    7.9372
+
+
+end_iter =
+
+    7.9588
+
+
+end_iter =
+
+    7.9601
+
+
+end_iter =
+
+    8.0220
+
+
+end_iter =
+
+    7.9195
+
+
+end_iter =
+
+    8.1710
+
+
+end_iter =
+
+    8.8053
+
+
+end_iter =
+
+    8.4193
+
+
+end_iter =
+
+    8.5452
+
+
+end_iter =
+
+    8.1748
+
+
+end_iter =
+
+    8.2664
+
+
+end_iter =
+
+    7.8910
+
+
+end_iter =
+
+    8.0423
+
+
+end_iter =
+
+    8.2190
+
+
+end_iter =
+
+    9.4587
+
+
+end_iter =
+
+    8.1338
+
+
+end_iter =
+
+    8.0229
+
+
+end_iter =
+
+    8.6476
+
+
+end_iter =
+
+    8.5608
+
+
+end_iter =
+
+    8.1712
+
+
+end_iter =
+
+    8.1574
+
+
+end_iter =
+
+    7.8282
+
+
+end_iter =
+
+    8.3856
+
+
+end_iter =
+
+    7.6663
+
+
+end_iter =
+
+    7.8349
+
+
+end_iter =
+
+    7.7757
+
+
+end_iter =
+
+    8.0228
+
+
+end_iter =
+
+    7.6027
+
+
+end_iter =
+
+    7.9861
+
+
+end_iter =
+
+    8.0968
+
+
+end_iter =
+
+    8.8843
+
+
+end_iter =
+
+    7.9057
+
+
+end_iter =
+
+    8.5333
+
+
+end_iter =
+
+    8.0541
+
+
+end_iter =
+
+    9.0717
+
+
+end_iter =
+
+   12.9420
+
+
+end_iter =
+
+   13.5524
+
+
+end_iter =
+
+   12.4099
+
+
+end_iter =
+
+   11.6867
+
+
+end_iter =
+
+   10.4140
+
+
+end_iter =
+
+    8.0409
+
+
+end_iter =
+
+    7.9453
+
+
+end_iter =
+
+    7.5988
+
+
+end_iter =
+
+    7.8728
+
+
+end_iter =
+
+    8.2259
+
+
+end_iter =
+
+    8.0053
+
+
+end_iter =
+
+    7.9798
+
+
+end_iter =
+
+    7.9805
+
+
+end_iter =
+
+    7.6891
+
+
+end_iter =
+
+    7.1948
+
+
+end_iter =
+
+    7.3673
+
+
+end_iter =
+
+    8.1327
+
+
+end_iter =
+
+    7.5248
+
+
+end_iter =
+
+    8.3150
+
+
+end_iter =
+
+    8.0058
+
+
+end_iter =
+
+    8.8298
+
+
+end_iter =
+
+    8.6316
+
+
+end_iter =
+
+    8.1681
+
+
+end_iter =
+
+    8.2091
+
+
+end_iter =
+
+    8.5711
+
+
+end_iter =
+
+    8.1490
+
+
+end_iter =
+
+    8.2213
+
+
+end_iter =
+
+    8.4790
+
+
+end_iter =
+
+    8.1154
+
+
+end_iter =
+
+    8.3374
+
+
+end_iter =
+
+    8.3702
+
+
+end_iter =
+
+    7.4216
+
+
+end_iter =
+
+    7.3456
+
+
+end_iter =
+
+    7.8142
+
+
+end_iter =
+
+    8.7677
+
+
+end_iter =
+
+    8.4446
+
+
+end_iter =
+
+    8.4297
+
+
+end_iter =
+
+    8.2096
+
+
+end_iter =
+
+    8.2248
+
+
+end_iter =
+
+    7.8630
+
+
+end_iter =
+
+    8.1930
+
+
+end_iter =
+
+    8.0805
+
+
+end_iter =
+
+    7.7075
+
+Reweighting: 4
+
+
+end_iter =
+
+   18.1095
+
+
+end_iter =
+
+    7.9788
+
+
+end_iter =
+
+    8.3171
+
+
+end_iter =
+
+    8.6964
+
+
+end_iter =
+
+    7.9243
+
+
+end_iter =
+
+    8.9189
+
+
+end_iter =
+
+   12.0344
+
+
+end_iter =
+
+   12.0259
+
+
+end_iter =
+
+   11.7075
+
+
+end_iter =
+
+    8.3304
+
+
+end_iter =
+
+    8.4301
+
+
+end_iter =
+
+    8.2107
+
+
+end_iter =
+
+    8.5812
+
+
+end_iter =
+
+    7.9799
+
+
+end_iter =
+
+    9.1891
+
+
+end_iter =
+
+    8.5641
+
+
+end_iter =
+
+    8.7363
+
+
+end_iter =
+
+    8.4915
+
+
+end_iter =
+
+    8.5279
+
+
+end_iter =
+
+   11.1854
+
+
+end_iter =
+
+   12.2252
+
+
+end_iter =
+
+   11.6901
+
+
+end_iter =
+
+   10.8919
+
+
+end_iter =
+
+   11.3739
+
+
+end_iter =
+
+   12.3732
+
+
+end_iter =
+
+   12.1108
+
+
+end_iter =
+
+   10.9894
+
+
+end_iter =
+
+   10.1915
+
+
+end_iter =
+
+    9.1256
+
+
+end_iter =
+
+   12.6555
+
+
+end_iter =
+
+   11.2413
+
+
+end_iter =
+
+    9.4896
+
+
+end_iter =
+
+    7.7834
+
+
+end_iter =
+
+    7.9003
+
+
+end_iter =
+
+    8.6094
+
+
+end_iter =
+
+    9.1613
+
+
+end_iter =
+
+    8.1698
+
+
+end_iter =
+
+    8.3268
+
+
+end_iter =
+
+    7.6959
+
+
+end_iter =
+
+    8.1534
+
+
+end_iter =
+
+    8.6153
+
+
+end_iter =
+
+    8.4529
+
+
+end_iter =
+
+    8.6788
+
+
+end_iter =
+
+    8.3316
+
+
+end_iter =
+
+    8.5211
+
+
+end_iter =
+
+    8.6377
+
+
+end_iter =
+
+    8.5744
+
+
+end_iter =
+
+    7.8428
+
+
+end_iter =
+
+    8.6104
+
+
+end_iter =
+
+    7.7376
+
+
+end_iter =
+
+    7.9914
+
+
+end_iter =
+
+    7.5989
+
+
+end_iter =
+
+    7.8018
+
+
+end_iter =
+
+    7.7056
+
+
+end_iter =
+
+    7.8789
+
+
+end_iter =
+
+    7.7678
+
+
+end_iter =
+
+    8.0126
+
+
+end_iter =
+
+    7.3128
+
+
+end_iter =
+
+    8.8724
+
+
+end_iter =
+
+    8.3325
+
+
+end_iter =
+
+    7.9292
+
+
+end_iter =
+
+    7.7379
+
+
+end_iter =
+
+    7.8079
+
+
+end_iter =
+
+    7.7416
+
+
+end_iter =
+
+    8.3330
+
+
+end_iter =
+
+    7.8627
+
+
+end_iter =
+
+    7.7577
+
+
+end_iter =
+
+    7.2208
+
+
+end_iter =
+
+    7.4394
+
+
+end_iter =
+
+    7.3496
+
+
+end_iter =
+
+    8.1268
+
+
+end_iter =
+
+    7.8371
+
+
+end_iter =
+
+    7.8436
+
+
+end_iter =
+
+    8.1557
+
+
+end_iter =
+
+    8.2443
+
+
+end_iter =
+
+    8.2955
+
+
+end_iter =
+
+    7.7290
+
+
+end_iter =
+
+    8.4335
+
+
+end_iter =
+
+    7.9072
+
+
+end_iter =
+
+    8.7732
+
+
+end_iter =
+
+    7.9234
+
+
+end_iter =
+
+    8.6221
+
+
+end_iter =
+
+    8.0539
+
+
+end_iter =
+
+    7.9368
+
+
+end_iter =
+
+    7.7814
+
+
+end_iter =
+
+    7.7948
+
+
+end_iter =
+
+    9.8172
+
+
+end_iter =
+
+   12.4221
+
+
+end_iter =
+
+   10.0382
+
+
+end_iter =
+
+    7.9553
+
+
+end_iter =
+
+    8.3926
+
+
+end_iter =
+
+    8.6015
+
+
+end_iter =
+
+    8.2489
+
+
+end_iter =
+
+    8.3672
+
+
+end_iter =
+
+    8.7178
+
+
+end_iter =
+
+    8.3088
+
+
+end_iter =
+
+    8.2811
+
+
+end_iter =
+
+    8.7912
+
+
+end_iter =
+
+    8.4281
+
+
+end_iter =
+
+    7.6086
+
+
+end_iter =
+
+    8.3481
+
+
+end_iter =
+
+    9.9137
+
+
+end_iter =
+
+   11.9206
+
+
+end_iter =
+
+    9.4035
+
+
+end_iter =
+
+    8.6354
+
+
+end_iter =
+
+    9.0753
+
+
+end_iter =
+
+    7.6868
+
+
+end_iter =
+
+    8.5283
+
+
+end_iter =
+
+    8.7214
+
+
+end_iter =
+
+    8.3686
+
+
+end_iter =
+
+    8.2955
+
+
+end_iter =
+
+    8.0582
+
+
+end_iter =
+
+    8.2393
+
+
+end_iter =
+
+    7.7392
+
+
+end_iter =
+
+    7.9816
+
+
+end_iter =
+
+    8.2121
+
+
+end_iter =
+
+    8.1151
+
+
+end_iter =
+
+    8.8728
+
+
+end_iter =
+
+    8.0092
+
+
+end_iter =
+
+    8.2905
+
+
+end_iter =
+
+    8.1868
+
+
+end_iter =
+
+    8.2565
+
+
+end_iter =
+
+   12.0233
+
+
+end_iter =
+
+   10.9137
+
+
+end_iter =
+
+    9.0427
+
+
+end_iter =
+
+    8.7168
+
+
+end_iter =
+
+    8.7131
+
+
+end_iter =
+
+    8.1108
+
+
+end_iter =
+
+    8.1099
+
+
+end_iter =
+
+    8.4246
+
+
+end_iter =
+
+    7.9231
+
+
+end_iter =
+
+    8.1909
+
+
+end_iter =
+
+    7.7122
+
+
+end_iter =
+
+    8.5036
+
+
+end_iter =
+
+    7.7588
+
+
+end_iter =
+
+    7.9508
+
+
+end_iter =
+
+    8.6295
+
+
+end_iter =
+
+    7.6631
+
+
+end_iter =
+
+    8.5591
+
+
+end_iter =
+
+    7.7861
+
+
+end_iter =
+
+    8.4758
+
+
+end_iter =
+
+    6.9705
+
+
+end_iter =
+
+    6.9946
+
+
+end_iter =
+
+    6.8875
+
+
+end_iter =
+
+    6.8247
+
+
+end_iter =
+
+    6.6304
+
+
+end_iter =
+
+    6.6475
+
+
+end_iter =
+
+    6.8973
+
+
+end_iter =
+
+    7.6082
+
+
+end_iter =
+
+    9.3450
+
+
+end_iter =
+
+   11.4812
+
+
+end_iter =
+
+   10.6994
+
+
+end_iter =
+
+    9.1596
+
+
+end_iter =
+
+    7.5333
+
+
+end_iter =
+
+    7.5887
+
+
+end_iter =
+
+    7.6488
+
+
+end_iter =
+
+    8.0156
+
+
+end_iter =
+
+   10.0724
+
+
+end_iter =
+
+   12.7534
+
+
+end_iter =
+
+   12.9026
+
+
+end_iter =
+
+   12.3384
+
+
+end_iter =
+
+   12.6060
+
+
+end_iter =
+
+    8.6042
+
+
+end_iter =
+
+    8.7873
+
+
+end_iter =
+
+    8.1622
+
+
+end_iter =
+
+    8.1661
+
+
+end_iter =
+
+    8.0026
+
+
+end_iter =
+
+    8.4814
+
+
+end_iter =
+
+    8.2780
+
+
+end_iter =
+
+    8.2016
+
+
+end_iter =
+
+    8.1525
+
+
+end_iter =
+
+    8.3230
+
+
+end_iter =
+
+    7.7062
+
+
+end_iter =
+
+    8.0740
+
+
+end_iter =
+
+    8.5646
+
+
+end_iter =
+
+    8.2773
+
+
+end_iter =
+
+    8.2085
+
+
+end_iter =
+
+    8.9253
+
+
+end_iter =
+
+    8.5872
+
+
+end_iter =
+
+    8.4976
+
+
+end_iter =
+
+    8.2246
+
+
+end_iter =
+
+    8.2134
+
+
+end_iter =
+
+    8.6454
+
+
+end_iter =
+
+    7.5137
+
+
+end_iter =
+
+    8.5079
+
+
+end_iter =
+
+    7.7775
+
+
+end_iter =
+
+    8.2746
+
+
+end_iter =
+
+    7.4360
+
+
+end_iter =
+
+    8.1409
+
+
+end_iter =
+
+    8.7774
+
+
+end_iter =
+
+    8.3670
+
+
+end_iter =
+
+    8.2240
+
+
+end_iter =
+
+    8.2546
+
+
+end_iter =
+
+    8.3419
+
+
+end_iter =
+
+   11.6119
+
+
+end_iter =
+
+   13.6655
+
+
+end_iter =
+
+   12.5273
+
+
+end_iter =
+
+   10.7881
+
+
+end_iter =
+
+   11.9549
+
+
+end_iter =
+
+   11.3884
+
+
+end_iter =
+
+   10.5080
+
+
+end_iter =
+
+    9.3146
+
+
+end_iter =
+
+    8.9703
+
+
+end_iter =
+
+    8.3921
+
+
+end_iter =
+
+    8.3247
+
+
+end_iter =
+
+    8.8586
+
+
+end_iter =
+
+    8.1623
+
+
+end_iter =
+
+    7.6293
+
+
+end_iter =
+
+    7.4984
+
+
+end_iter =
+
+    8.4539
+
+
+end_iter =
+
+    7.9503
+
+
+end_iter =
+
+    8.0936
+
+
+end_iter =
+
+    7.9485
+
+
+end_iter =
+
+    7.5424
+
+
+end_iter =
+
+    7.6190
+
+
+end_iter =
+
+    7.9811
+
+
+end_iter =
+
+    8.4253
+
+
+end_iter =
+
+    8.1503
+
+
+end_iter =
+
+   11.8560
+
+
+end_iter =
+
+   13.0918
+
+
+end_iter =
+
+   12.5601
+
+
+end_iter =
+
+   12.1671
+
+
+end_iter =
+
+   10.1580
+
+
+end_iter =
+
+   10.0415
+
+
+end_iter =
+
+    8.1270
+
+
+end_iter =
+
+   10.8430
+
+
+end_iter =
+
+   12.2703
+
+
+end_iter =
+
+    8.6774
+
+
+end_iter =
+
+    8.1363
+
+
+end_iter =
+
+    7.7184
+
+
+end_iter =
+
+    7.6419
+
+
+end_iter =
+
+    7.5911
+
+
+end_iter =
+
+    8.4088
+
+
+end_iter =
+
+    7.6455
+
+
+end_iter =
+
+    7.4780
+
+
+end_iter =
+
+    8.4850
+
+
+end_iter =
+
+    8.3834
+
+
+end_iter =
+
+    8.0250
+
+
+end_iter =
+
+    8.0618
+
+
+end_iter =
+
+    8.4262
+
+
+end_iter =
+
+    7.3584
+
+
+end_iter =
+
+    8.0230
+
+
+end_iter =
+
+    7.7758
+
+
+end_iter =
+
+    8.1142
+
+
+end_iter =
+
+    8.2832
+
+
+end_iter =
+
+    8.1950
+
+
+end_iter =
+
+    7.9642
+
+
+end_iter =
+
+    8.1946
+
+
+end_iter =
+
+    7.8485
+
+
+end_iter =
+
+    8.7487
+
+
+end_iter =
+
+    8.7763
+
+
+end_iter =
+
+    7.7059
+
+
+end_iter =
+
+    8.2778
+
+
+end_iter =
+
+    7.9573
+
+
+end_iter =
+
+    8.8271
+
+
+end_iter =
+
+    7.7461
+
+
+end_iter =
+
+    7.7749
+
+
+end_iter =
+
+    7.7729
+
+
+end_iter =
+
+    8.3403
+
+
+end_iter =
+
+    8.4052
+
+
+end_iter =
+
+    7.9493
+
+
+end_iter =
+
+    8.1082
+
+
+end_iter =
+
+    8.3792
+
+
+end_iter =
+
+    8.4507
+
+
+end_iter =
+
+    8.3833
+
+
+end_iter =
+
+    8.4637
+
+
+end_iter =
+
+    7.8806
+
+
+end_iter =
+
+   10.6065
+
+
+end_iter =
+
+   13.4965
+
+
+end_iter =
+
+    9.9183
+
+
+end_iter =
+
+    8.3434
+
+
+end_iter =
+
+    8.5378
+
+
+end_iter =
+
+    8.1959
+
+
+end_iter =
+
+    8.1452
+
+
+end_iter =
+
+    7.9909
+
+
+end_iter =
+
+    8.1355
+
+
+end_iter =
+
+    8.7423
+
+
+end_iter =
+
+    8.3914
+
+
+end_iter =
+
+   11.0627
+
+
+end_iter =
+
+   13.1114
+
+
+end_iter =
+
+    9.5209
+
+
+end_iter =
+
+    8.2300
+
+
+end_iter =
+
+    7.9487
+
+
+end_iter =
+
+    8.1199
+
+
+end_iter =
+
+    7.5411
+
+
+end_iter =
+
+    7.8493
+
+
+end_iter =
+
+    8.5567
+
+
+end_iter =
+
+    9.2084
+
+
+end_iter =
+
+   12.2222
+
+
+end_iter =
+
+   11.2944
+
+
+end_iter =
+
+   11.9777
+
+
+end_iter =
+
+   12.8298
+
+
+end_iter =
+
+   12.2393
+
+
+end_iter =
+
+   10.5334
+
+
+end_iter =
+
+    9.5807
+
+
+end_iter =
+
+    8.2326
+
+
+end_iter =
+
+    8.8041
+
+
+end_iter =
+
+    9.1302
+
+
+end_iter =
+
+    8.3916
+
+
+end_iter =
+
+    8.5977
+
+Reweighting: 5
+
+
+end_iter =
+
+   21.3174
+
+
+end_iter =
+
+   14.2557
+
+
+end_iter =
+
+   11.8745
+
+
+end_iter =
+
+   12.0231
+
+
+end_iter =
+
+   12.1062
+
+
+end_iter =
+
+   11.6767
+
+
+end_iter =
+
+    9.1511
+
+
+end_iter =
+
+    8.7882
+
+
+end_iter =
+
+    8.2551
+
+
+end_iter =
+
+    8.8848
+
+
+end_iter =
+
+    8.5093
+
+
+end_iter =
+
+    8.3356
+
+
+end_iter =
+
+    8.7365
+
+
+end_iter =
+
+    8.4465
+
+
+end_iter =
+
+    7.9695
+
+
+end_iter =
+
+    8.2776
+
+
+end_iter =
+
+    8.4938
+
+
+end_iter =
+
+    8.4194
+
+
+end_iter =
+
+    8.3000
+
+
+end_iter =
+
+    8.8248
+
+
+end_iter =
+
+    7.9442
+
+
+end_iter =
+
+    7.9838
+
+
+end_iter =
+
+    9.0343
+
+
+end_iter =
+
+    7.5693
+
+
+end_iter =
+
+    7.8202
+
+
+end_iter =
+
+    7.9434
+
+
+end_iter =
+
+    7.7066
+
+
+end_iter =
+
+    6.8733
+
+
+end_iter =
+
+    6.8486
+
+
+end_iter =
+
+    7.2237
+
+
+end_iter =
+
+    8.0901
+
+
+end_iter =
+
+    7.6914
+
+
+end_iter =
+
+    7.1422
+
+
+end_iter =
+
+    7.1795
+
+
+end_iter =
+
+    6.5001
+
+
+end_iter =
+
+    6.5148
+
+
+end_iter =
+
+    6.5035
+
+
+end_iter =
+
+    6.8732
+
+
+end_iter =
+
+    6.7523
+
+
+end_iter =
+
+    6.6098
+
+
+end_iter =
+
+    6.9233
+
+
+end_iter =
+
+    6.6623
+
+
+end_iter =
+
+    6.6187
+
+
+end_iter =
+
+    6.9150
+
+
+end_iter =
+
+    6.5090
+
+
+end_iter =
+
+    6.7902
+
+
+end_iter =
+
+    6.5119
+
+
+end_iter =
+
+    6.3512
+
+
+end_iter =
+
+    6.4849
+
+
+end_iter =
+
+    6.5680
+
+
+end_iter =
+
+    6.7989
+
+
+end_iter =
+
+    9.5564
+
+
+end_iter =
+
+   10.4769
+
+
+end_iter =
+
+    9.8016
+
+
+end_iter =
+
+    8.2739
+
+
+end_iter =
+
+   10.1208
+
+
+end_iter =
+
+   11.6161
+
+
+end_iter =
+
+   10.9585
+
+
+end_iter =
+
+   11.8302
+
+
+end_iter =
+
+   10.8738
+
+
+end_iter =
+
+    9.4799
+
+
+end_iter =
+
+    9.4120
+
+
+end_iter =
+
+    7.5180
+
+
+end_iter =
+
+    7.5138
+
+
+end_iter =
+
+    7.6929
+
+
+end_iter =
+
+    7.2870
+
+
+end_iter =
+
+    6.7087
+
+
+end_iter =
+
+    7.4497
+
+
+end_iter =
+
+    6.6526
+
+
+end_iter =
+
+    7.0013
+
+
+end_iter =
+
+    6.8082
+
+
+end_iter =
+
+    6.8145
+
+
+end_iter =
+
+    7.4554
+
+
+end_iter =
+
+    7.0373
+
+
+end_iter =
+
+    6.8445
+
+
+end_iter =
+
+    6.8506
+
+
+end_iter =
+
+    6.9513
+
+
+end_iter =
+
+    8.0273
+
+
+end_iter =
+
+    8.4250
+
+
+end_iter =
+
+    7.7530
+
+
+end_iter =
+
+    9.2674
+
+
+end_iter =
+
+   12.6201
+
+
+end_iter =
+
+   13.0787
+
+
+end_iter =
+
+    9.9475
+
+
+end_iter =
+
+    9.2895
+
+
+end_iter =
+
+    9.3556
+
+
+end_iter =
+
+    9.2925
+
+
+end_iter =
+
+    8.3701
+
+
+end_iter =
+
+    8.6198
+
+
+end_iter =
+
+    8.8210
+
+
+end_iter =
+
+    8.4062
+
+
+end_iter =
+
+    8.6774
+
+
+end_iter =
+
+    8.6426
+
+
+end_iter =
+
+    7.8814
+
+
+end_iter =
+
+    7.7599
+
+
+end_iter =
+
+    8.5312
+
+
+end_iter =
+
+    9.3423
+
+
+end_iter =
+
+   13.6126
+
+
+end_iter =
+
+   12.8146
+
+
+end_iter =
+
+   11.8964
+
+
+end_iter =
+
+   12.1955
+
+
+end_iter =
+
+   12.0278
+
+
+end_iter =
+
+   11.6455
+
+
+end_iter =
+
+   11.4122
+
+
+end_iter =
+
+   11.1048
+
+
+end_iter =
+
+    8.9500
+
+
+end_iter =
+
+    8.7587
+
+
+end_iter =
+
+    8.8145
+
+
+end_iter =
+
+    7.7370
+
+
+end_iter =
+
+    7.8238
+
+
+end_iter =
+
+    8.1211
+
+
+end_iter =
+
+    8.8707
+
+
+end_iter =
+
+    9.0829
+
+
+end_iter =
+
+    8.3520
+
+
+end_iter =
+
+    8.6257
+
+
+end_iter =
+
+    8.3474
+
+
+end_iter =
+
+    7.7136
+
+
+end_iter =
+
+    8.4535
+
+
+end_iter =
+
+    8.0081
+
+
+end_iter =
+
+    8.4152
+
+
+end_iter =
+
+    8.1607
+
+
+end_iter =
+
+    7.7439
+
+
+end_iter =
+
+    7.6696
+
+
+end_iter =
+
+    7.9969
+
+
+end_iter =
+
+    8.4056
+
+
+end_iter =
+
+    8.6629
+
+
+end_iter =
+
+    7.8350
+
+
+end_iter =
+
+    9.0127
+
+
+end_iter =
+
+   11.1975
+
+
+end_iter =
+
+   13.3183
+
+
+end_iter =
+
+   12.0152
+
+
+end_iter =
+
+   12.5576
+
+
+end_iter =
+
+   11.0901
+
+
+end_iter =
+
+    9.9893
+
+
+end_iter =
+
+    9.5906
+
+
+end_iter =
+
+    8.9562
+
+
+end_iter =
+
+    7.7193
+
+
+end_iter =
+
+    7.9660
+
+
+end_iter =
+
+    9.1518
+
+
+end_iter =
+
+    8.3300
+
+
+end_iter =
+
+    8.1623
+
+
+end_iter =
+
+    8.2667
+
+
+end_iter =
+
+    7.8643
+
+
+end_iter =
+
+    7.9322
+
+
+end_iter =
+
+    8.1119
+
+
+end_iter =
+
+    8.3295
+
+
+end_iter =
+
+    7.7919
+
+
+end_iter =
+
+    8.2077
+
+
+end_iter =
+
+    7.9813
+
+
+end_iter =
+
+    7.9955
+
+
+end_iter =
+
+    8.0348
+
+
+end_iter =
+
+    8.5689
+
+
+end_iter =
+
+    7.8103
+
+
+end_iter =
+
+   10.8433
+
+
+end_iter =
+
+   12.7326
+
+
+end_iter =
+
+   11.7764
+
+
+end_iter =
+
+   11.7542
+
+
+end_iter =
+
+    9.6235
+
+
+end_iter =
+
+    8.4731
+
+
+end_iter =
+
+    9.6466
+
+
+end_iter =
+
+    7.9879
+
+
+end_iter =
+
+    8.6030
+
+
+end_iter =
+
+    9.1129
+
+
+end_iter =
+
+    7.8965
+
+
+end_iter =
+
+    7.8530
+
+
+end_iter =
+
+    9.0374
+
+
+end_iter =
+
+   12.1338
+
+
+end_iter =
+
+   13.2216
+
+
+end_iter =
+
+   11.9388
+
+
+end_iter =
+
+   11.2793
+
+
+end_iter =
+
+   10.6253
+
+
+end_iter =
+
+   10.9095
+
+
+end_iter =
+
+   12.3347
+
+
+end_iter =
+
+   11.1209
+
+
+end_iter =
+
+   10.9237
+
+
+end_iter =
+
+   10.4809
+
+
+end_iter =
+
+    8.4072
+
+
+end_iter =
+
+    8.3189
+
+
+end_iter =
+
+    8.2739
+
+
+end_iter =
+
+    9.2196
+
+
+end_iter =
+
+    7.8062
+
+
+end_iter =
+
+    8.1701
+
+
+end_iter =
+
+    7.8720
+
+
+end_iter =
+
+    7.9804
+
+
+end_iter =
+
+    8.1457
+
+
+end_iter =
+
+    7.6888
+
+
+end_iter =
+
+    8.2197
+
+
+end_iter =
+
+    7.8895
+
+
+end_iter =
+
+    8.0488
+
+
+end_iter =
+
+    8.0891
+
+
+end_iter =
+
+    8.6916
+
+
+end_iter =
+
+    9.2690
+
+
+end_iter =
+
+    8.6287
+
+
+end_iter =
+
+    7.9611
+
+
+end_iter =
+
+    8.2142
+
+
+end_iter =
+
+    8.4152
+
+
+end_iter =
+
+    8.5790
+
+
+end_iter =
+
+    7.9819
+
+
+end_iter =
+
+    7.9654
+
+
+end_iter =
+
+    8.0788
+
+
+end_iter =
+
+    8.6073
+
+
+end_iter =
+
+    8.6590
+
+
+end_iter =
+
+    8.3364
+
+
+end_iter =
+
+    8.4833
+
+
+end_iter =
+
+    8.1518
+
+
+end_iter =
+
+    8.6338
+
+
+end_iter =
+
+    9.3950
+
+
+end_iter =
+
+    7.7326
+
+
+end_iter =
+
+    7.8979
+
+
+end_iter =
+
+    7.9553
+
+
+end_iter =
+
+    8.1821
+
+
+end_iter =
+
+    7.6783
+
+
+end_iter =
+
+    9.1350
+
+
+end_iter =
+
+    8.1659
+
+
+end_iter =
+
+    8.3903
+
+
+end_iter =
+
+    8.4467
+
+
+end_iter =
+
+    9.7044
+
+
+end_iter =
+
+    8.8157
+
+
+end_iter =
+
+    8.0700
+
+
+end_iter =
+
+    8.3841
+
+
+end_iter =
+
+    8.0733
+
+
+end_iter =
+
+    8.3539
+
+
+end_iter =
+
+    8.9251
+
+
+end_iter =
+
+   10.0098
+
+
+end_iter =
+
+    8.3880
+
+
+end_iter =
+
+    8.1792
+
+
+end_iter =
+
+    7.9651
+
+
+end_iter =
+
+    9.3011
+
+
+end_iter =
+
+   10.8870
+
+
+end_iter =
+
+   12.4462
+
+
+end_iter =
+
+   11.3637
+
+
+end_iter =
+
+   10.5655
+
+
+end_iter =
+
+   11.0918
+
+
+end_iter =
+
+   10.3992
+
+
+end_iter =
+
+   11.1082
+
+
+end_iter =
+
+    9.9947
+
+
+end_iter =
+
+    8.9837
+
+
+end_iter =
+
+    8.2328
+
+
+end_iter =
+
+    8.3858
+
+
+end_iter =
+
+    9.3428
+
+
+end_iter =
+
+    7.7587
+
+
+end_iter =
+
+    8.0621
+
+
+end_iter =
+
+    7.8661
+
+
+end_iter =
+
+    8.3712
+
+
+end_iter =
+
+    8.4089
+
+
+end_iter =
+
+    9.1047
+
+
+end_iter =
+
+    7.6318
+
+
+end_iter =
+
+    8.3442
+
+
+end_iter =
+
+    8.2401
+
+
+end_iter =
+
+    8.1098
+
+
+end_iter =
+
+    8.2990
+
+
+end_iter =
+
+    8.6290
+
+
+end_iter =
+
+    8.0225
+
+
+end_iter =
+
+    8.8122
+
+
+end_iter =
+
+    8.4215
+
+
+end_iter =
+
+    8.8949
+
+
+end_iter =
+
+    8.2096
+
+
+end_iter =
+
+    8.4149
+
+
+end_iter =
+
+    8.1241
+
+
+end_iter =
+
+    8.2713
+
+
+end_iter =
+
+    7.8997
+
+
+end_iter =
+
+    8.6515
+
+
+end_iter =
+
+   11.5531
+
+
+end_iter =
+
+   13.4676
+
+
+end_iter =
+
+   12.0178
+
+
+end_iter =
+
+   10.9880
+
+
+end_iter =
+
+   11.6154
+
+
+end_iter =
+
+   11.3676
+
+
+end_iter =
+
+   10.6292
+
+
+end_iter =
+
+    9.5237
+
+
+end_iter =
+
+    7.9705
+
+
+end_iter =
+
+    8.9963
+
+
+end_iter =
+
+    8.1537
+
+
+end_iter =
+
+    7.7743
+
+
+end_iter =
+
+    8.2346
+
+
+end_iter =
+
+    7.8070
+
+
+end_iter =
+
+    7.4128
+
+
+end_iter =
+
+    7.8486
+
+
+end_iter =
+
+    8.1523
+
+
+end_iter =
+
+    8.5932
+
+
+end_iter =
+
+    9.6305
+
+
+end_iter =
+
+    7.8361
+
+
+end_iter =
+
+    7.5753
+
+
+end_iter =
+
+    7.5224
+
+
+end_iter =
+
+    7.9285
+
+
+end_iter =
+
+    8.1241
+
+
+end_iter =
+
+    8.3578
+
+
+end_iter =
+
+    8.7674
+
+
+end_iter =
+
+    8.0520
+
+
+end_iter =
+
+    8.2645
+
+
+end_iter =
+
+    8.0201
+
+
+end_iter =
+
+    7.8796
+
+
+end_iter =
+
+   10.6073
+
+
+end_iter =
+
+   13.1956
+
+
+end_iter =
+
+   11.8406
+
+
+end_iter =
+
+   12.0310
+
+
+end_iter =
+
+   10.0072
+
+
+end_iter =
+
+    8.9438
+
+
+end_iter =
+
+   10.1963
+
+
+end_iter =
+
+    8.2047
+
+Reweighting: 6
+
+
+end_iter =
+
+   16.2211
+
+
+end_iter =
+
+    7.8828
+
+
+end_iter =
+
+    8.0831
+
+
+end_iter =
+
+    7.3403
+
+
+end_iter =
+
+    7.0256
+
+
+end_iter =
+
+    7.9015
+
+
+end_iter =
+
+    7.1303
+
+
+end_iter =
+
+    7.6675
+
+
+end_iter =
+
+    8.1884
+
+
+end_iter =
+
+    7.9960
+
+
+end_iter =
+
+    7.9930
+
+
+end_iter =
+
+    7.6174
+
+
+end_iter =
+
+    7.7425
+
+
+end_iter =
+
+    7.5717
+
+
+end_iter =
+
+    8.2736
+
+
+end_iter =
+
+    8.1783
+
+
+end_iter =
+
+    8.2939
+
+
+end_iter =
+
+    8.3912
+
+
+end_iter =
+
+    7.8932
+
+
+end_iter =
+
+    8.1483
+
+
+end_iter =
+
+    8.3925
+
+
+end_iter =
+
+    8.0244
+
+
+end_iter =
+
+    8.0201
+
+
+end_iter =
+
+    7.4417
+
+
+end_iter =
+
+    9.6987
+
+
+end_iter =
+
+   12.7754
+
+
+end_iter =
+
+   11.8259
+
+
+end_iter =
+
+   11.7697
+
+
+end_iter =
+
+   11.9536
+
+
+end_iter =
+
+   11.7420
+
+
+end_iter =
+
+   11.7868
+
+
+end_iter =
+
+   12.8384
+
+
+end_iter =
+
+   10.8357
+
+
+end_iter =
+
+    9.9779
+
+
+end_iter =
+
+    9.0320
+
+
+end_iter =
+
+    8.2508
+
+
+end_iter =
+
+    7.8008
+
+
+end_iter =
+
+    8.4507
+
+
+end_iter =
+
+    8.7253
+
+
+end_iter =
+
+    8.2267
+
+
+end_iter =
+
+    8.3125
+
+
+end_iter =
+
+    8.4514
+
+
+end_iter =
+
+    7.9924
+
+
+end_iter =
+
+    8.3502
+
+
+end_iter =
+
+    8.3899
+
+
+end_iter =
+
+    8.0257
+
+
+end_iter =
+
+    8.3228
+
+
+end_iter =
+
+    8.4932
+
+
+end_iter =
+
+    7.6335
+
+
+end_iter =
+
+    8.2527
+
+
+end_iter =
+
+    7.8517
+
+
+end_iter =
+
+    8.5464
+
+
+end_iter =
+
+    8.1845
+
+
+end_iter =
+
+    7.7826
+
+
+end_iter =
+
+    8.5400
+
+
+end_iter =
+
+    7.7685
+
+
+end_iter =
+
+    8.0269
+
+
+end_iter =
+
+    7.9067
+
+
+end_iter =
+
+    8.0193
+
+
+end_iter =
+
+    8.3183
+
+
+end_iter =
+
+    8.3443
+
+
+end_iter =
+
+    8.3733
+
+
+end_iter =
+
+    8.1893
+
+
+end_iter =
+
+    8.0222
+
+
+end_iter =
+
+    7.5772
+
+
+end_iter =
+
+    7.5009
+
+
+end_iter =
+
+    8.0180
+
+
+end_iter =
+
+    8.2032
+
+
+end_iter =
+
+    8.6246
+
+
+end_iter =
+
+    8.4593
+
+
+end_iter =
+
+    9.1991
+
+
+end_iter =
+
+    8.0120
+
+
+end_iter =
+
+    8.3514
+
+
+end_iter =
+
+    8.7905
+
+
+end_iter =
+
+    7.7092
+
+
+end_iter =
+
+    7.6238
+
+
+end_iter =
+
+    8.4656
+
+
+end_iter =
+
+    8.9180
+
+
+end_iter =
+
+    8.3208
+
+
+end_iter =
+
+    7.6362
+
+
+end_iter =
+
+    8.2516
+
+
+end_iter =
+
+    7.6476
+
+
+end_iter =
+
+    7.8514
+
+
+end_iter =
+
+    8.5457
+
+
+end_iter =
+
+    7.7120
+
+
+end_iter =
+
+    7.5903
+
+
+end_iter =
+
+    7.9441
+
+
+end_iter =
+
+    7.6542
+
+
+end_iter =
+
+    8.5407
+
+
+end_iter =
+
+    8.6134
+
+
+end_iter =
+
+    7.8645
+
+
+end_iter =
+
+    8.1198
+
+
+end_iter =
+
+    8.1938
+
+
+end_iter =
+
+    7.9794
+
+
+end_iter =
+
+   10.0448
+
+
+end_iter =
+
+   13.6716
+
+
+end_iter =
+
+   13.8534
+
+
+end_iter =
+
+   12.4057
+
+
+end_iter =
+
+   11.6338
+
+
+end_iter =
+
+   12.0694
+
+
+end_iter =
+
+   12.3252
+
+
+end_iter =
+
+   11.0003
+
+
+end_iter =
+
+    8.8558
+
+
+end_iter =
+
+    8.4233
+
+
+end_iter =
+
+    8.4543
+
+
+end_iter =
+
+    8.5691
+
+
+end_iter =
+
+    8.3572
+
+
+end_iter =
+
+    8.4314
+
+
+end_iter =
+
+    7.9534
+
+
+end_iter =
+
+    8.6195
+
+
+end_iter =
+
+    7.4625
+
+
+end_iter =
+
+    7.7460
+
+
+end_iter =
+
+    8.2749
+
+
+end_iter =
+
+    8.1453
+
+
+end_iter =
+
+    7.8772
+
+
+end_iter =
+
+    7.8942
+
+
+end_iter =
+
+    7.6743
+
+
+end_iter =
+
+    7.8434
+
+
+end_iter =
+
+    8.6109
+
+
+end_iter =
+
+    8.3020
+
+
+end_iter =
+
+    8.2789
+
+
+end_iter =
+
+    7.8797
+
+
+end_iter =
+
+    8.4065
+
+
+end_iter =
+
+    7.7455
+
+
+end_iter =
+
+    8.3286
+
+
+end_iter =
+
+    8.9496
+
+
+end_iter =
+
+   11.8851
+
+
+end_iter =
+
+   12.3692
+
+
+end_iter =
+
+   12.6588
+
+
+end_iter =
+
+   12.0117
+
+
+end_iter =
+
+   11.6133
+
+
+end_iter =
+
+   12.2226
+
+
+end_iter =
+
+   10.3540
+
+
+end_iter =
+
+   10.0503
+
+
+end_iter =
+
+    8.7984
+
+
+end_iter =
+
+    7.7915
+
+
+end_iter =
+
+    7.5191
+
+
+end_iter =
+
+    7.4948
+
+
+end_iter =
+
+    7.8504
+
+
+end_iter =
+
+    7.3046
+
+
+end_iter =
+
+    7.0235
+
+
+end_iter =
+
+    6.7788
+
+
+end_iter =
+
+    6.7371
+
+
+end_iter =
+
+    6.7744
+
+
+end_iter =
+
+    6.9063
+
+
+end_iter =
+
+    7.7212
+
+
+end_iter =
+
+    7.8598
+
+
+end_iter =
+
+    8.3969
+
+
+end_iter =
+
+    7.8416
+
+
+end_iter =
+
+    8.2082
+
+
+end_iter =
+
+    7.4378
+
+
+end_iter =
+
+    8.0556
+
+
+end_iter =
+
+    8.4172
+
+
+end_iter =
+
+    7.9718
+
+
+end_iter =
+
+    7.7040
+
+
+end_iter =
+
+    8.0766
+
+
+end_iter =
+
+    8.4847
+
+
+end_iter =
+
+    7.5917
+
+
+end_iter =
+
+    7.3213
+
+
+end_iter =
+
+    8.7037
+
+
+end_iter =
+
+   12.0932
+
+
+end_iter =
+
+   10.7703
+
+
+end_iter =
+
+   10.5093
+
+
+end_iter =
+
+   11.2403
+
+
+end_iter =
+
+   10.0464
+
+
+end_iter =
+
+    9.6943
+
+
+end_iter =
+
+   11.9528
+
+
+end_iter =
+
+   11.3502
+
+
+end_iter =
+
+   10.3496
+
+
+end_iter =
+
+   10.3885
+
+
+end_iter =
+
+    8.4189
+
+
+end_iter =
+
+    7.8073
+
+
+end_iter =
+
+    7.8225
+
+
+end_iter =
+
+    8.1165
+
+
+end_iter =
+
+    8.5203
+
+
+end_iter =
+
+    8.1493
+
+
+end_iter =
+
+    9.1425
+
+
+end_iter =
+
+    8.2675
+
+
+end_iter =
+
+    7.9162
+
+
+end_iter =
+
+    8.0309
+
+
+end_iter =
+
+    7.7835
+
+
+end_iter =
+
+    8.7028
+
+
+end_iter =
+
+    8.7462
+
+
+end_iter =
+
+    7.7586
+
+
+end_iter =
+
+    8.0259
+
+
+end_iter =
+
+    8.2481
+
+
+end_iter =
+
+    9.2706
+
+
+end_iter =
+
+    8.0828
+
+
+end_iter =
+
+    7.8854
+
+
+end_iter =
+
+    7.8508
+
+
+end_iter =
+
+    8.1375
+
+
+end_iter =
+
+    7.7223
+
+
+end_iter =
+
+    8.1773
+
+
+end_iter =
+
+    7.8565
+
+
+end_iter =
+
+    8.3659
+
+
+end_iter =
+
+    8.1138
+
+
+end_iter =
+
+    8.5467
+
+
+end_iter =
+
+    7.9102
+
+
+end_iter =
+
+    8.0479
+
+
+end_iter =
+
+    8.5307
+
+
+end_iter =
+
+    7.7243
+
+
+end_iter =
+
+    7.9949
+
+
+end_iter =
+
+    7.9130
+
+
+end_iter =
+
+    8.6155
+
+
+end_iter =
+
+    8.2437
+
+
+end_iter =
+
+    8.0095
+
+
+end_iter =
+
+    7.8859
+
+
+end_iter =
+
+    7.5961
+
+
+end_iter =
+
+    7.8204
+
+
+end_iter =
+
+    8.5597
+
+
+end_iter =
+
+    7.7333
+
+
+end_iter =
+
+    9.1015
+
+
+end_iter =
+
+    9.2238
+
+
+end_iter =
+
+   12.7400
+
+
+end_iter =
+
+   12.0079
+
+
+end_iter =
+
+   12.2026
+
+
+end_iter =
+
+   11.4398
+
+
+end_iter =
+
+    9.1609
+
+
+end_iter =
+
+    9.0425
+
+
+end_iter =
+
+    9.2735
+
+
+end_iter =
+
+    8.6796
+
+
+end_iter =
+
+    7.9499
+
+
+end_iter =
+
+    7.6502
+
+
+end_iter =
+
+    8.3615
+
+
+end_iter =
+
+    8.4544
+
+
+end_iter =
+
+    9.7284
+
+
+end_iter =
+
+   14.1394
+
+
+end_iter =
+
+   12.9957
+
+
+end_iter =
+
+   13.1811
+
+
+end_iter =
+
+   10.2159
+
+
+end_iter =
+
+    8.9662
+
+
+end_iter =
+
+    8.4391
+
+
+end_iter =
+
+    8.7189
+
+
+end_iter =
+
+    8.7812
+
+
+end_iter =
+
+    8.2006
+
+
+end_iter =
+
+    8.2512
+
+
+end_iter =
+
+    8.6890
+
+
+end_iter =
+
+    8.6549
+
+
+end_iter =
+
+    9.0841
+
+
+end_iter =
+
+    8.6118
+
+
+end_iter =
+
+    8.0062
+
+
+end_iter =
+
+    8.4324
+
+
+end_iter =
+
+    8.5144
+
+
+end_iter =
+
+    9.9472
+
+
+end_iter =
+
+   13.0974
+
+
+end_iter =
+
+   11.4516
+
+
+end_iter =
+
+   11.7130
+
+
+end_iter =
+
+   10.9631
+
+
+end_iter =
+
+   11.0790
+
+
+end_iter =
+
+    8.3851
+
+
+end_iter =
+
+    8.1574
+
+
+end_iter =
+
+    8.4134
+
+
+end_iter =
+
+    8.5609
+
+
+end_iter =
+
+    8.7182
+
+
+end_iter =
+
+    7.8179
+
+
+end_iter =
+
+    7.9709
+
+
+end_iter =
+
+    9.0117
+
+
+end_iter =
+
+    8.6770
+
+
+end_iter =
+
+    9.0091
+
+
+end_iter =
+
+    8.0836
+
+
+end_iter =
+
+    8.7187
+
+
+end_iter =
+
+    8.2142
+
+
+end_iter =
+
+    8.2726
+
+
+end_iter =
+
+    7.7593
+
+
+end_iter =
+
+    7.4336
+
+
+end_iter =
+
+    7.8896
+
+
+end_iter =
+
+    8.0401
+
+
+end_iter =
+
+    8.0416
+
+
+end_iter =
+
+    7.9529
+
+
+end_iter =
+
+    8.2148
+
+
+end_iter =
+
+    7.8746
+
+
+end_iter =
+
+    8.0959
+
+
+end_iter =
+
+    8.3003
+
+
+end_iter =
+
+    8.5446
+
+
+end_iter =
+
+    8.3664
+
+
+end_iter =
+
+    8.6014
+
+
+end_iter =
+
+    7.6259
+
+
+end_iter =
+
+    7.9718
+
+
+end_iter =
+
+    7.6333
+
+
+end_iter =
+
+    8.4779
+
+
+end_iter =
+
+    7.6743
+
+
+end_iter =
+
+    8.1723
+
+
+end_iter =
+
+    8.1551
+
+
+end_iter =
+
+    7.7366
+
+
+end_iter =
+
+    7.9067
+
+
+end_iter =
+
+    8.5934
+
+
+end_iter =
+
+    8.3494
+
+
+end_iter =
+
+    8.1658
+
+
+end_iter =
+
+   10.2240
+
+
+end_iter =
+
+   10.7536
+
+
+end_iter =
+
+    8.6277
+
+
+end_iter =
+
+    8.3298
+
+
+end_iter =
+
+    7.5518
+
+
+end_iter =
+
+    7.9841
+
+
+end_iter =
+
+    7.7744
+
+
+end_iter =
+
+    9.0163
+
+
+end_iter =
+
+   11.4407
+
+
+end_iter =
+
+    8.8396
+
+
+end_iter =
+
+    8.0184
+
+
+end_iter =
+
+    8.5229
+
+Reweighting: 7
+
+
+end_iter =
+
+   16.6650
+
+
+end_iter =
+
+    9.8686
+
+
+end_iter =
+
+   11.3141
+
+
+end_iter =
+
+    8.3481
+
+
+end_iter =
+
+    8.1574
+
+
+end_iter =
+
+    8.4620
+
+
+end_iter =
+
+    8.5478
+
+
+end_iter =
+
+    9.0576
+
+
+end_iter =
+
+   11.0572
+
+
+end_iter =
+
+    9.3522
+
+
+end_iter =
+
+    8.1328
+
+
+end_iter =
+
+    9.1028
+
+
+end_iter =
+
+    8.4177
+
+
+end_iter =
+
+    8.5222
+
+
+end_iter =
+
+   10.9774
+
+
+end_iter =
+
+   10.4660
+
+
+end_iter =
+
+    8.7063
+
+
+end_iter =
+
+    8.5074
+
+
+end_iter =
+
+    8.7330
+
+
+end_iter =
+
+   11.6620
+
+
+end_iter =
+
+    9.5938
+
+
+end_iter =
+
+    8.3419
+
+
+end_iter =
+
+    8.5752
+
+
+end_iter =
+
+    8.4498
+
+
+end_iter =
+
+    7.9429
+
+
+end_iter =
+
+   10.5949
+
+
+end_iter =
+
+   10.2400
+
+
+end_iter =
+
+   10.1660
+
+
+end_iter =
+
+   11.8747
+
+
+end_iter =
+
+   12.1662
+
+
+end_iter =
+
+   11.8511
+
+
+end_iter =
+
+   11.0072
+
+
+end_iter =
+
+    9.7319
+
+
+end_iter =
+
+   10.4178
+
+
+end_iter =
+
+   11.2982
+
+
+end_iter =
+
+   10.5658
+
+
+end_iter =
+
+    9.3463
+
+
+end_iter =
+
+    9.0618
+
+
+end_iter =
+
+    7.5892
+
+
+end_iter =
+
+    7.2368
+
+
+end_iter =
+
+    6.7075
+
+
+end_iter =
+
+    7.9772
+
+
+end_iter =
+
+    7.7163
+
+
+end_iter =
+
+    7.8378
+
+
+end_iter =
+
+    7.6915
+
+
+end_iter =
+
+    7.3719
+
+
+end_iter =
+
+    7.4829
+
+
+end_iter =
+
+    7.3910
+
+
+end_iter =
+
+    7.5149
+
+
+end_iter =
+
+    7.4523
+
+
+end_iter =
+
+    7.5169
+
+
+end_iter =
+
+    7.7421
+
+
+end_iter =
+
+    7.4448
+
+
+end_iter =
+
+    8.3347
+
+
+end_iter =
+
+    7.8015
+
+
+end_iter =
+
+    7.0195
+
+
+end_iter =
+
+    6.8850
+
+
+end_iter =
+
+    6.8741
+
+
+end_iter =
+
+    6.7553
+
+
+end_iter =
+
+    6.7819
+
+
+end_iter =
+
+    7.6612
+
+
+end_iter =
+
+    7.5289
+
+
+end_iter =
+
+    7.5277
+
+
+end_iter =
+
+    7.5733
+
+
+end_iter =
+
+    7.6853
+
+
+end_iter =
+
+    7.4661
+
+
+end_iter =
+
+    7.3779
+
+
+end_iter =
+
+    7.4821
+
+
+end_iter =
+
+    7.7624
+
+
+end_iter =
+
+    7.4247
+
+
+end_iter =
+
+    7.4402
+
+
+end_iter =
+
+    7.4212
+
+
+end_iter =
+
+    7.6044
+
+
+end_iter =
+
+    7.3662
+
+
+end_iter =
+
+    7.4747
+
+
+end_iter =
+
+    7.5137
+
+
+end_iter =
+
+    7.1241
+
+
+end_iter =
+
+    6.5700
+
+
+end_iter =
+
+    6.5669
+
+
+end_iter =
+
+    6.7282
+
+
+end_iter =
+
+    6.6605
+
+
+end_iter =
+
+    6.7464
+
+
+end_iter =
+
+    7.0441
+
+
+end_iter =
+
+    7.0051
+
+
+end_iter =
+
+    6.7848
+
+
+end_iter =
+
+    7.7321
+
+
+end_iter =
+
+    7.7930
+
+
+end_iter =
+
+    8.4494
+
+
+end_iter =
+
+   10.5378
+
+
+end_iter =
+
+   11.3191
+
+
+end_iter =
+
+   12.8793
+
+
+end_iter =
+
+   11.2140
+
+
+end_iter =
+
+   12.4813
+
+
+end_iter =
+
+   11.2642
+
+
+end_iter =
+
+    9.7443
+
+
+end_iter =
+
+    8.5330
+
+
+end_iter =
+
+    8.9414
+
+
+end_iter =
+
+    7.6406
+
+
+end_iter =
+
+    8.5287
+
+
+end_iter =
+
+    7.7737
+
+
+end_iter =
+
+    7.8896
+
+
+end_iter =
+
+    8.9357
+
+
+end_iter =
+
+    8.6006
+
+
+end_iter =
+
+    7.9534
+
+
+end_iter =
+
+    8.0126
+
+
+end_iter =
+
+    8.3150
+
+
+end_iter =
+
+    8.5286
+
+
+end_iter =
+
+    7.8971
+
+
+end_iter =
+
+    7.6898
+
+
+end_iter =
+
+    8.1459
+
+
+end_iter =
+
+    8.4498
+
+
+end_iter =
+
+    7.9413
+
+
+end_iter =
+
+    7.8755
+
+
+end_iter =
+
+    7.8722
+
+
+end_iter =
+
+    8.1562
+
+
+end_iter =
+
+    7.9491
+
+
+end_iter =
+
+    9.2267
+
+
+end_iter =
+
+   10.0891
+
+
+end_iter =
+
+   13.3886
+
+
+end_iter =
+
+   13.2632
+
+
+end_iter =
+
+   11.7712
+
+
+end_iter =
+
+   12.3208
+
+
+end_iter =
+
+   12.0785
+
+
+end_iter =
+
+   10.7197
+
+
+end_iter =
+
+   10.2239
+
+
+end_iter =
+
+    9.0691
+
+
+end_iter =
+
+    8.2679
+
+
+end_iter =
+
+    7.8922
+
+
+end_iter =
+
+    7.5317
+
+
+end_iter =
+
+    8.3453
+
+
+end_iter =
+
+    8.4684
+
+
+end_iter =
+
+    7.6324
+
+
+end_iter =
+
+    8.0682
+
+
+end_iter =
+
+    7.8122
+
+
+end_iter =
+
+    7.9933
+
+
+end_iter =
+
+    8.4157
+
+
+end_iter =
+
+    8.0705
+
+
+end_iter =
+
+    7.9940
+
+
+end_iter =
+
+    8.3593
+
+
+end_iter =
+
+    8.2299
+
+
+end_iter =
+
+    9.0588
+
+
+end_iter =
+
+    8.8646
+
+
+end_iter =
+
+    8.3520
+
+
+end_iter =
+
+    7.7032
+
+
+end_iter =
+
+    8.4488
+
+
+end_iter =
+
+    7.8894
+
+
+end_iter =
+
+    7.5101
+
+
+end_iter =
+
+    9.2041
+
+
+end_iter =
+
+    8.2663
+
+
+end_iter =
+
+    7.8503
+
+
+end_iter =
+
+    8.0913
+
+
+end_iter =
+
+    8.0683
+
+
+end_iter =
+
+    7.8710
+
+
+end_iter =
+
+    7.9801
+
+
+end_iter =
+
+    8.8245
+
+
+end_iter =
+
+    8.5413
+
+
+end_iter =
+
+    8.9025
+
+
+end_iter =
+
+    8.3162
+
+
+end_iter =
+
+    9.1450
+
+
+end_iter =
+
+    8.7085
+
+
+end_iter =
+
+    8.3613
+
+
+end_iter =
+
+    9.1960
+
+
+end_iter =
+
+    7.9582
+
+
+end_iter =
+
+    8.3066
+
+
+end_iter =
+
+    8.0572
+
+
+end_iter =
+
+    8.2176
+
+
+end_iter =
+
+    7.9103
+
+
+end_iter =
+
+    7.9880
+
+
+end_iter =
+
+    7.3386
+
+
+end_iter =
+
+    7.9967
+
+
+end_iter =
+
+    8.6963
+
+
+end_iter =
+
+    8.0701
+
+
+end_iter =
+
+    8.7389
+
+
+end_iter =
+
+    8.3951
+
+
+end_iter =
+
+    7.9634
+
+
+end_iter =
+
+    7.9326
+
+
+end_iter =
+
+   10.2444
+
+
+end_iter =
+
+   13.3412
+
+
+end_iter =
+
+   12.9851
+
+
+end_iter =
+
+   12.2620
+
+
+end_iter =
+
+   10.6471
+
+
+end_iter =
+
+    7.9030
+
+
+end_iter =
+
+    8.4260
+
+
+end_iter =
+
+    8.7248
+
+
+end_iter =
+
+    8.1957
+
+
+end_iter =
+
+    7.7716
+
+
+end_iter =
+
+    8.3548
+
+
+end_iter =
+
+    8.9359
+
+
+end_iter =
+
+    8.4041
+
+
+end_iter =
+
+    8.2438
+
+
+end_iter =
+
+    8.6307
+
+
+end_iter =
+
+    8.2762
+
+
+end_iter =
+
+    8.9488
+
+
+end_iter =
+
+    8.0365
+
+
+end_iter =
+
+    8.7540
+
+
+end_iter =
+
+    8.4819
+
+
+end_iter =
+
+    8.6050
+
+
+end_iter =
+
+    7.6498
+
+
+end_iter =
+
+    8.3892
+
+
+end_iter =
+
+    8.6504
+
+
+end_iter =
+
+    7.7191
+
+
+end_iter =
+
+    8.7781
+
+
+end_iter =
+
+    7.9262
+
+
+end_iter =
+
+    8.0976
+
+
+end_iter =
+
+    8.5984
+
+
+end_iter =
+
+    8.1558
+
+
+end_iter =
+
+    8.2467
+
+
+end_iter =
+
+    9.6726
+
+
+end_iter =
+
+    8.0828
+
+
+end_iter =
+
+    8.4409
+
+
+end_iter =
+
+    8.2140
+
+
+end_iter =
+
+    8.3136
+
+
+end_iter =
+
+    8.6658
+
+
+end_iter =
+
+    8.3367
+
+
+end_iter =
+
+    8.1667
+
+
+end_iter =
+
+    8.1738
+
+
+end_iter =
+
+    8.9062
+
+
+end_iter =
+
+    8.9821
+
+
+end_iter =
+
+   11.1301
+
+
+end_iter =
+
+   13.5943
+
+
+end_iter =
+
+   12.5105
+
+
+end_iter =
+
+   11.3783
+
+
+end_iter =
+
+   11.7770
+
+
+end_iter =
+
+   10.0017
+
+
+end_iter =
+
+    9.7193
+
+
+end_iter =
+
+    8.7432
+
+
+end_iter =
+
+    8.8444
+
+
+end_iter =
+
+    8.2538
+
+
+end_iter =
+
+    7.3257
+
+
+end_iter =
+
+    8.3128
+
+
+end_iter =
+
+    7.6105
+
+
+end_iter =
+
+    7.8971
+
+
+end_iter =
+
+    7.5883
+
+
+end_iter =
+
+    8.2851
+
+
+end_iter =
+
+    7.8919
+
+
+end_iter =
+
+    7.5859
+
+
+end_iter =
+
+    7.8857
+
+
+end_iter =
+
+    8.3776
+
+
+end_iter =
+
+    7.9015
+
+
+end_iter =
+
+    7.7498
+
+
+end_iter =
+
+    8.0586
+
+
+end_iter =
+
+    8.2281
+
+
+end_iter =
+
+    8.5673
+
+
+end_iter =
+
+    8.7685
+
+
+end_iter =
+
+   12.5448
+
+
+end_iter =
+
+   13.1360
+
+
+end_iter =
+
+   12.0429
+
+
+end_iter =
+
+   13.1997
+
+
+end_iter =
+
+   12.0861
+
+
+end_iter =
+
+   11.1058
+
+
+end_iter =
+
+   10.6854
+
+
+end_iter =
+
+   10.2781
+
+
+end_iter =
+
+    8.9300
+
+
+end_iter =
+
+    8.6943
+
+
+end_iter =
+
+    7.9376
+
+
+end_iter =
+
+    8.1894
+
+
+end_iter =
+
+    8.2864
+
+
+end_iter =
+
+    8.1349
+
+
+end_iter =
+
+    8.1747
+
+
+end_iter =
+
+    8.8915
+
+
+end_iter =
+
+    8.2731
+
+
+end_iter =
+
+    8.5472
+
+
+end_iter =
+
+    8.3626
+
+
+end_iter =
+
+    7.9105
+
+
+end_iter =
+
+    8.4422
+
+
+end_iter =
+
+    8.3354
+
+
+end_iter =
+
+    8.7575
+
+
+end_iter =
+
+    8.9793
+
+
+end_iter =
+
+    8.4125
+
+
+end_iter =
+
+    8.2912
+
+
+end_iter =
+
+    8.3489
+
+
+end_iter =
+
+    8.3513
+
+
+end_iter =
+
+    8.7956
+
+
+end_iter =
+
+    7.9641
+
+
+end_iter =
+
+    8.4717
+
+
+end_iter =
+
+    7.6802
+
+
+end_iter =
+
+    8.2115
+
+
+end_iter =
+
+    7.9051
+
+
+end_iter =
+
+    7.7931
+
+
+end_iter =
+
+    9.0785
+
+
+end_iter =
+
+    7.7371
+
+
+end_iter =
+
+    9.2879
+
+
+end_iter =
+
+    8.5310
+
+
+end_iter =
+
+    8.7810
+
+
+end_iter =
+
+    8.1643
+
+
+end_iter =
+
+    8.7302
+
+
+end_iter =
+
+    8.2429
+
+
+end_iter =
+
+    8.4044
+
+
+end_iter =
+
+    8.0596
+
+
+end_iter =
+
+    9.0629
+
+
+end_iter =
+
+    7.8621
+
+
+end_iter =
+
+    8.6598
+
+
+end_iter =
+
+    9.1828
+
+
+end_iter =
+
+   12.3334
+
+
+end_iter =
+
+   13.8721
+
+
+end_iter =
+
+   13.0259
+
+
+end_iter =
+
+   11.9631
+
+
+end_iter =
+
+   12.3477
+
+
+end_iter =
+
+   11.7965
+
+
+end_iter =
+
+    9.9600
+
+Reweighting: 8
+
+
+end_iter =
+
+   17.1952
+
+
+end_iter =
+
+    8.4912
+
+
+end_iter =
+
+    8.3930
+
+
+end_iter =
+
+    7.8594
+
+
+end_iter =
+
+    8.2161
+
+
+end_iter =
+
+    7.9689
+
+
+end_iter =
+
+    8.8422
+
+
+end_iter =
+
+    8.3783
+
+
+end_iter =
+
+    8.4762
+
+
+end_iter =
+
+    7.8858
+
+
+end_iter =
+
+    8.6334
+
+
+end_iter =
+
+    8.2226
+
+
+end_iter =
+
+    8.7029
+
+
+end_iter =
+
+    8.4706
+
+
+end_iter =
+
+    7.9615
+
+
+end_iter =
+
+    8.0632
+
+
+end_iter =
+
+    8.4007
+
+
+end_iter =
+
+    8.2725
+
+
+end_iter =
+
+    8.1485
+
+
+end_iter =
+
+    7.9376
+
+
+end_iter =
+
+    7.8551
+
+
+end_iter =
+
+    8.8881
+
+
+end_iter =
+
+   12.6911
+
+
+end_iter =
+
+   12.1520
+
+
+end_iter =
+
+   10.3064
+
+
+end_iter =
+
+   11.5117
+
+
+end_iter =
+
+   13.3999
+
+
+end_iter =
+
+   12.4612
+
+
+end_iter =
+
+   12.9269
+
+
+end_iter =
+
+   11.6926
+
+
+end_iter =
+
+   10.3758
+
+
+end_iter =
+
+    9.1393
+
+
+end_iter =
+
+    8.2847
+
+
+end_iter =
+
+    7.9821
+
+
+end_iter =
+
+    8.1951
+
+
+end_iter =
+
+    7.8345
+
+
+end_iter =
+
+    8.2586
+
+
+end_iter =
+
+    8.5667
+
+
+end_iter =
+
+    7.6990
+
+
+end_iter =
+
+    8.0455
+
+
+end_iter =
+
+    7.8570
+
+
+end_iter =
+
+    7.4842
+
+
+end_iter =
+
+    8.3805
+
+
+end_iter =
+
+    7.1931
+
+
+end_iter =
+
+    7.0547
+
+
+end_iter =
+
+    6.9629
+
+
+end_iter =
+
+    7.2624
+
+
+end_iter =
+
+    7.0220
+
+
+end_iter =
+
+    8.2662
+
+
+end_iter =
+
+    7.4177
+
+
+end_iter =
+
+    8.0905
+
+
+end_iter =
+
+    8.0083
+
+
+end_iter =
+
+    9.0718
+
+
+end_iter =
+
+    8.2196
+
+
+end_iter =
+
+    8.6563
+
+
+end_iter =
+
+    8.0485
+
+
+end_iter =
+
+    8.8977
+
+
+end_iter =
+
+    8.0548
+
+
+end_iter =
+
+    8.6053
+
+
+end_iter =
+
+    9.3796
+
+
+end_iter =
+
+   11.8161
+
+
+end_iter =
+
+   12.0399
+
+
+end_iter =
+
+   11.8198
+
+
+end_iter =
+
+   12.3975
+
+
+end_iter =
+
+   11.3211
+
+
+end_iter =
+
+   10.2171
+
+
+end_iter =
+
+    8.2993
+
+
+end_iter =
+
+    8.9164
+
+
+end_iter =
+
+    8.1788
+
+
+end_iter =
+
+    8.6094
+
+
+end_iter =
+
+    8.0131
+
+
+end_iter =
+
+    8.5621
+
+
+end_iter =
+
+    7.9830
+
+
+end_iter =
+
+    8.4050
+
+
+end_iter =
+
+    8.3576
+
+
+end_iter =
+
+    8.3537
+
+
+end_iter =
+
+    7.9427
+
+
+end_iter =
+
+    8.2321
+
+
+end_iter =
+
+    8.6886
+
+
+end_iter =
+
+    8.1753
+
+
+end_iter =
+
+    8.2068
+
+
+end_iter =
+
+    8.2757
+
+
+end_iter =
+
+    8.4314
+
+
+end_iter =
+
+    7.8300
+
+
+end_iter =
+
+    8.2270
+
+
+end_iter =
+
+    7.6984
+
+
+end_iter =
+
+    7.1403
+
+
+end_iter =
+
+    7.6085
+
+
+end_iter =
+
+    8.8540
+
+
+end_iter =
+
+    8.4933
+
+
+end_iter =
+
+    7.8764
+
+
+end_iter =
+
+    9.5621
+
+
+end_iter =
+
+    8.0775
+
+
+end_iter =
+
+    8.6226
+
+
+end_iter =
+
+    9.2258
+
+
+end_iter =
+
+   13.2589
+
+
+end_iter =
+
+   12.3340
+
+
+end_iter =
+
+   11.7912
+
+
+end_iter =
+
+    9.6372
+
+
+end_iter =
+
+    8.2907
+
+
+end_iter =
+
+    8.7881
+
+
+end_iter =
+
+    8.0397
+
+
+end_iter =
+
+    7.9490
+
+
+end_iter =
+
+    8.5856
+
+
+end_iter =
+
+    7.6422
+
+
+end_iter =
+
+    8.1914
+
+
+end_iter =
+
+    7.7523
+
+
+end_iter =
+
+    7.9276
+
+
+end_iter =
+
+    8.3738
+
+
+end_iter =
+
+    9.3272
+
+
+end_iter =
+
+    8.4579
+
+
+end_iter =
+
+    9.0480
+
+
+end_iter =
+
+    7.6519
+
+
+end_iter =
+
+    8.2490
+
+
+end_iter =
+
+    8.1147
+
+
+end_iter =
+
+    7.7962
+
+
+end_iter =
+
+    7.9046
+
+
+end_iter =
+
+    7.9961
+
+
+end_iter =
+
+    8.3672
+
+
+end_iter =
+
+    9.3882
+
+
+end_iter =
+
+   12.6453
+
+
+end_iter =
+
+   12.6190
+
+
+end_iter =
+
+   11.4823
+
+
+end_iter =
+
+   12.3148
+
+
+end_iter =
+
+   12.4865
+
+
+end_iter =
+
+    9.8950
+
+
+end_iter =
+
+    8.1296
+
+
+end_iter =
+
+    8.3642
+
+
+end_iter =
+
+    7.7122
+
+
+end_iter =
+
+    8.3022
+
+
+end_iter =
+
+    7.9103
+
+
+end_iter =
+
+    7.8381
+
+
+end_iter =
+
+    7.5430
+
+
+end_iter =
+
+    8.2534
+
+
+end_iter =
+
+    8.3787
+
+
+end_iter =
+
+    8.2703
+
+
+end_iter =
+
+    8.3962
+
+
+end_iter =
+
+    8.2305
+
+
+end_iter =
+
+    8.4890
+
+
+end_iter =
+
+    8.3119
+
+
+end_iter =
+
+    8.2262
+
+
+end_iter =
+
+    7.9742
+
+
+end_iter =
+
+    8.3399
+
+
+end_iter =
+
+    8.3184
+
+
+end_iter =
+
+    7.8949
+
+
+end_iter =
+
+    8.0654
+
+
+end_iter =
+
+    8.1892
+
+
+end_iter =
+
+    8.4917
+
+
+end_iter =
+
+    8.4249
+
+
+end_iter =
+
+    8.3591
+
+
+end_iter =
+
+    8.9535
+
+
+end_iter =
+
+    7.9567
+
+
+end_iter =
+
+    7.8436
+
+
+end_iter =
+
+    8.5104
+
+
+end_iter =
+
+    7.9173
+
+
+end_iter =
+
+    7.6719
+
+
+end_iter =
+
+    8.5012
+
+
+end_iter =
+
+    8.5132
+
+
+end_iter =
+
+    9.1012
+
+
+end_iter =
+
+    8.3206
+
+
+end_iter =
+
+    8.6128
+
+
+end_iter =
+
+    8.0597
+
+
+end_iter =
+
+    8.2783
+
+
+end_iter =
+
+    8.6608
+
+
+end_iter =
+
+    8.5465
+
+
+end_iter =
+
+   10.5474
+
+
+end_iter =
+
+   12.7201
+
+
+end_iter =
+
+   11.4008
+
+
+end_iter =
+
+    9.9602
+
+
+end_iter =
+
+   10.2196
+
+
+end_iter =
+
+    9.7454
+
+
+end_iter =
+
+    8.8007
+
+
+end_iter =
+
+    8.7437
+
+
+end_iter =
+
+    7.9570
+
+
+end_iter =
+
+    7.6154
+
+
+end_iter =
+
+    7.5569
+
+
+end_iter =
+
+    7.6849
+
+
+end_iter =
+
+    7.3523
+
+
+end_iter =
+
+    6.6947
+
+
+end_iter =
+
+    6.6868
+
+
+end_iter =
+
+    6.7374
+
+
+end_iter =
+
+    6.9034
+
+
+end_iter =
+
+    7.3451
+
+
+end_iter =
+
+    7.9480
+
+
+end_iter =
+
+    8.3771
+
+
+end_iter =
+
+    8.1423
+
+
+end_iter =
+
+    8.5272
+
+
+end_iter =
+
+    8.7794
+
+
+end_iter =
+
+   11.3947
+
+
+end_iter =
+
+   11.9570
+
+
+end_iter =
+
+   10.7940
+
+
+end_iter =
+
+   11.0745
+
+
+end_iter =
+
+   11.9170
+
+
+end_iter =
+
+   11.4716
+
+
+end_iter =
+
+   10.1445
+
+
+end_iter =
+
+    8.2701
+
+
+end_iter =
+
+    8.2183
+
+
+end_iter =
+
+    7.2880
+
+
+end_iter =
+
+    6.9038
+
+
+end_iter =
+
+    7.0916
+
+
+end_iter =
+
+    7.4448
+
+
+end_iter =
+
+    7.5920
+
+
+end_iter =
+
+    7.6536
+
+
+end_iter =
+
+    7.4974
+
+
+end_iter =
+
+    8.3896
+
+
+end_iter =
+
+    8.3363
+
+
+end_iter =
+
+    8.2482
+
+
+end_iter =
+
+    8.8050
+
+
+end_iter =
+
+    8.2457
+
+
+end_iter =
+
+    8.1463
+
+
+end_iter =
+
+    7.9779
+
+
+end_iter =
+
+    8.0087
+
+
+end_iter =
+
+    8.0664
+
+
+end_iter =
+
+    8.0052
+
+
+end_iter =
+
+    8.3119
+
+
+end_iter =
+
+    7.8085
+
+
+end_iter =
+
+    8.5042
+
+
+end_iter =
+
+    8.0888
+
+
+end_iter =
+
+    8.5726
+
+
+end_iter =
+
+    7.4471
+
+
+end_iter =
+
+    8.8275
+
+
+end_iter =
+
+    8.0970
+
+
+end_iter =
+
+    7.8628
+
+
+end_iter =
+
+    9.8569
+
+
+end_iter =
+
+   13.5335
+
+
+end_iter =
+
+   12.7398
+
+
+end_iter =
+
+   12.3994
+
+
+end_iter =
+
+   11.2283
+
+
+end_iter =
+
+   12.8545
+
+
+end_iter =
+
+   11.5778
+
+
+end_iter =
+
+   10.7555
+
+
+end_iter =
+
+    9.4639
+
+
+end_iter =
+
+    8.1990
+
+
+end_iter =
+
+    7.9241
+
+
+end_iter =
+
+    8.0599
+
+
+end_iter =
+
+    8.0976
+
+
+end_iter =
+
+    7.8353
+
+
+end_iter =
+
+    7.4172
+
+
+end_iter =
+
+    7.6944
+
+
+end_iter =
+
+    8.4046
+
+
+end_iter =
+
+    8.2969
+
+
+end_iter =
+
+    8.4502
+
+
+end_iter =
+
+    8.5321
+
+
+end_iter =
+
+    8.1592
+
+
+end_iter =
+
+    8.2768
+
+
+end_iter =
+
+    8.0634
+
+
+end_iter =
+
+    7.8138
+
+
+end_iter =
+
+    8.2452
+
+
+end_iter =
+
+    7.6412
+
+
+end_iter =
+
+    7.4936
+
+
+end_iter =
+
+    8.6023
+
+
+end_iter =
+
+    9.3686
+
+
+end_iter =
+
+    8.1814
+
+
+end_iter =
+
+    8.3823
+
+
+end_iter =
+
+    8.6765
+
+
+end_iter =
+
+    8.0877
+
+
+end_iter =
+
+    7.3317
+
+
+end_iter =
+
+    7.9200
+
+
+end_iter =
+
+    8.0536
+
+
+end_iter =
+
+    8.4774
+
+
+end_iter =
+
+    8.5465
+
+
+end_iter =
+
+    8.1606
+
+
+end_iter =
+
+    8.8315
+
+
+end_iter =
+
+    8.3452
+
+
+end_iter =
+
+    8.1446
+
+
+end_iter =
+
+    7.9631
+
+
+end_iter =
+
+    7.9275
+
+
+end_iter =
+
+    8.1163
+
+
+end_iter =
+
+    8.2580
+
+
+end_iter =
+
+    7.7494
+
+
+end_iter =
+
+    8.5536
+
+
+end_iter =
+
+    7.9972
+
+
+end_iter =
+
+    8.4245
+
+
+end_iter =
+
+    8.0164
+
+
+end_iter =
+
+    8.1626
+
+
+end_iter =
+
+    8.1053
+
+
+end_iter =
+
+    9.0279
+
+
+end_iter =
+
+   12.6123
+
+
+end_iter =
+
+   14.6381
+
+
+end_iter =
+
+   12.2791
+
+
+end_iter =
+
+   11.7579
+
+
+end_iter =
+
+   10.2176
+
+
+end_iter =
+
+    9.2855
+
+
+end_iter =
+
+    8.5115
+
+
+end_iter =
+
+    7.9686
+
+
+end_iter =
+
+    7.4630
+
+
+end_iter =
+
+    8.3672
+
+
+end_iter =
+
+    8.1546
+
+
+end_iter =
+
+    8.0822
+
+
+end_iter =
+
+    8.5937
+
+
+end_iter =
+
+    7.7727
+
+
+end_iter =
+
+    8.7298
+
+
+end_iter =
+
+    8.2198
+
+
+end_iter =
+
+    7.5662
+
+
+end_iter =
+
+   10.7019
+
+
+end_iter =
+
+   12.9681
+
+
+end_iter =
+
+   13.4974
+
+
+end_iter =
+
+   10.4636
+
+
+end_iter =
+
+   10.8858
+
+
+end_iter =
+
+    8.8448
+
+Reweighting: 9
+
+
+end_iter =
+
+   17.8517
+
+
+end_iter =
+
+    7.9942
+
+
+end_iter =
+
+    8.3157
+
+
+end_iter =
+
+    7.9685
+
+
+end_iter =
+
+    8.6508
+
+
+end_iter =
+
+    8.4330
+
+
+end_iter =
+
+    8.1884
+
+
+end_iter =
+
+    8.0514
+
+
+end_iter =
+
+    8.2799
+
+
+end_iter =
+
+    8.3796
+
+
+end_iter =
+
+    8.8457
+
+
+end_iter =
+
+    9.1749
+
+
+end_iter =
+
+    8.4404
+
+
+end_iter =
+
+    7.8744
+
+
+end_iter =
+
+    8.0275
+
+
+end_iter =
+
+    8.2913
+
+
+end_iter =
+
+    7.8386
+
+
+end_iter =
+
+    8.1481
+
+
+end_iter =
+
+    8.6888
+
+
+end_iter =
+
+    8.0037
+
+
+end_iter =
+
+    8.9516
+
+
+end_iter =
+
+    7.7779
+
+
+end_iter =
+
+    8.9193
+
+
+end_iter =
+
+   12.3467
+
+
+end_iter =
+
+   12.2596
+
+
+end_iter =
+
+   11.9795
+
+
+end_iter =
+
+   11.6213
+
+
+end_iter =
+
+   12.5189
+
+
+end_iter =
+
+   10.6585
+
+
+end_iter =
+
+    9.8611
+
+
+end_iter =
+
+    9.2325
+
+
+end_iter =
+
+    8.2180
+
+
+end_iter =
+
+    8.2512
+
+
+end_iter =
+
+    8.0857
+
+
+end_iter =
+
+    8.6892
+
+
+end_iter =
+
+    8.7451
+
+
+end_iter =
+
+    8.7202
+
+
+end_iter =
+
+    9.3676
+
+
+end_iter =
+
+    8.6728
+
+
+end_iter =
+
+    8.4031
+
+
+end_iter =
+
+    7.6398
+
+
+end_iter =
+
+    7.8510
+
+
+end_iter =
+
+    8.6885
+
+
+end_iter =
+
+    7.7161
+
+
+end_iter =
+
+    8.3560
+
+
+end_iter =
+
+    8.3701
+
+
+end_iter =
+
+    8.0822
+
+
+end_iter =
+
+    7.7820
+
+
+end_iter =
+
+    7.9505
+
+
+end_iter =
+
+    7.7362
+
+
+end_iter =
+
+    8.1273
+
+
+end_iter =
+
+    7.9980
+
+
+end_iter =
+
+    8.8968
+
+
+end_iter =
+
+    8.5803
+
+
+end_iter =
+
+    8.5686
+
+
+end_iter =
+
+    8.6744
+
+
+end_iter =
+
+    8.1243
+
+
+end_iter =
+
+    8.3012
+
+
+end_iter =
+
+    9.1881
+
+
+end_iter =
+
+    8.5724
+
+
+end_iter =
+
+    8.3759
+
+
+end_iter =
+
+    7.8654
+
+
+end_iter =
+
+    8.6534
+
+
+end_iter =
+
+    8.8865
+
+
+end_iter =
+
+    8.3049
+
+
+end_iter =
+
+    7.4840
+
+
+end_iter =
+
+    8.2638
+
+
+end_iter =
+
+    8.0287
+
+
+end_iter =
+
+    9.2893
+
+
+end_iter =
+
+   13.1098
+
+
+end_iter =
+
+   12.4582
+
+
+end_iter =
+
+   11.7444
+
+
+end_iter =
+
+   11.6722
+
+
+end_iter =
+
+   11.8727
+
+
+end_iter =
+
+   11.6590
+
+
+end_iter =
+
+   11.3723
+
+
+end_iter =
+
+   11.2437
+
+
+end_iter =
+
+   11.1240
+
+
+end_iter =
+
+    8.5162
+
+
+end_iter =
+
+    7.9401
+
+
+end_iter =
+
+    7.9407
+
+
+end_iter =
+
+    7.8989
+
+
+end_iter =
+
+    7.7499
+
+
+end_iter =
+
+    8.4082
+
+
+end_iter =
+
+    7.8893
+
+
+end_iter =
+
+    7.8550
+
+
+end_iter =
+
+    8.3469
+
+
+end_iter =
+
+    8.3220
+
+
+end_iter =
+
+    9.1613
+
+
+end_iter =
+
+    7.4796
+
+
+end_iter =
+
+    8.2596
+
+
+end_iter =
+
+    7.8883
+
+
+end_iter =
+
+    9.2385
+
+
+end_iter =
+
+    8.1376
+
+
+end_iter =
+
+    8.0527
+
+
+end_iter =
+
+    8.0617
+
+
+end_iter =
+
+    7.4482
+
+
+end_iter =
+
+    8.5394
+
+
+end_iter =
+
+    9.2139
+
+
+end_iter =
+
+    8.6373
+
+
+end_iter =
+
+    9.7185
+
+
+end_iter =
+
+    8.4956
+
+
+end_iter =
+
+    8.4189
+
+
+end_iter =
+
+    7.3183
+
+
+end_iter =
+
+    7.7876
+
+
+end_iter =
+
+    7.8615
+
+
+end_iter =
+
+    8.2631
+
+
+end_iter =
+
+    8.6713
+
+
+end_iter =
+
+   12.6993
+
+
+end_iter =
+
+   12.7570
+
+
+end_iter =
+
+   10.9916
+
+
+end_iter =
+
+    8.1666
+
+
+end_iter =
+
+    8.4057
+
+
+end_iter =
+
+    8.1853
+
+
+end_iter =
+
+    8.7952
+
+
+end_iter =
+
+    8.0769
+
+
+end_iter =
+
+    8.7441
+
+
+end_iter =
+
+   11.6521
+
+
+end_iter =
+
+   14.2962
+
+
+end_iter =
+
+   11.9513
+
+
+end_iter =
+
+    8.6867
+
+
+end_iter =
+
+    9.0196
+
+
+end_iter =
+
+    8.4143
+
+
+end_iter =
+
+    7.9916
+
+
+end_iter =
+
+    8.7936
+
+
+end_iter =
+
+    8.9569
+
+
+end_iter =
+
+   12.6626
+
+
+end_iter =
+
+   12.7341
+
+
+end_iter =
+
+   10.0605
+
+
+end_iter =
+
+    8.9298
+
+
+end_iter =
+
+    9.4897
+
+
+end_iter =
+
+    9.9243
+
+
+end_iter =
+
+   12.3569
+
+
+end_iter =
+
+   11.7077
+
+
+end_iter =
+
+   12.1167
+
+
+end_iter =
+
+   10.8765
+
+
+end_iter =
+
+   11.0923
+
+
+end_iter =
+
+   10.4293
+
+
+end_iter =
+
+   10.2319
+
+
+end_iter =
+
+    9.8317
+
+
+end_iter =
+
+    9.3391
+
+
+end_iter =
+
+    8.7294
+
+
+end_iter =
+
+    9.1376
+
+
+end_iter =
+
+    8.2480
+
+
+end_iter =
+
+    8.3290
+
+
+end_iter =
+
+    8.1841
+
+
+end_iter =
+
+    8.7048
+
+
+end_iter =
+
+    7.8998
+
+
+end_iter =
+
+    8.8487
+
+
+end_iter =
+
+    8.5535
+
+
+end_iter =
+
+    8.0222
+
+
+end_iter =
+
+    7.9428
+
+
+end_iter =
+
+    7.9357
+
+
+end_iter =
+
+    7.4546
+
+
+end_iter =
+
+    7.1952
+
+
+end_iter =
+
+    7.7033
+
+
+end_iter =
+
+    7.9550
+
+
+end_iter =
+
+    7.8586
+
+
+end_iter =
+
+    7.2549
+
+
+end_iter =
+
+    7.5558
+
+
+end_iter =
+
+    8.7639
+
+
+end_iter =
+
+    8.4483
+
+
+end_iter =
+
+    7.7345
+
+
+end_iter =
+
+    8.0945
+
+
+end_iter =
+
+    7.9213
+
+
+end_iter =
+
+    7.7492
+
+
+end_iter =
+
+    8.4500
+
+
+end_iter =
+
+    8.0099
+
+
+end_iter =
+
+    9.3871
+
+
+end_iter =
+
+   12.5215
+
+
+end_iter =
+
+   13.3713
+
+
+end_iter =
+
+   11.3002
+
+
+end_iter =
+
+   12.9605
+
+
+end_iter =
+
+   10.6575
+
+
+end_iter =
+
+    8.4156
+
+
+end_iter =
+
+    8.2800
+
+
+end_iter =
+
+    9.4531
+
+
+end_iter =
+
+    8.5053
+
+
+end_iter =
+
+    7.8504
+
+
+end_iter =
+
+    7.5920
+
+
+end_iter =
+
+    7.4010
+
+
+end_iter =
+
+    8.3531
+
+
+end_iter =
+
+    7.6752
+
+
+end_iter =
+
+    8.8598
+
+
+end_iter =
+
+    8.5505
+
+
+end_iter =
+
+    8.0898
+
+
+end_iter =
+
+    9.1722
+
+
+end_iter =
+
+    8.4907
+
+
+end_iter =
+
+    8.4357
+
+
+end_iter =
+
+    8.1120
+
+
+end_iter =
+
+    8.3991
+
+
+end_iter =
+
+    8.7154
+
+
+end_iter =
+
+    7.9575
+
+
+end_iter =
+
+    8.5987
+
+
+end_iter =
+
+    7.9722
+
+
+end_iter =
+
+    8.7959
+
+
+end_iter =
+
+    8.0376
+
+
+end_iter =
+
+    7.8109
+
+
+end_iter =
+
+    8.4937
+
+
+end_iter =
+
+    7.2315
+
+
+end_iter =
+
+    7.3670
+
+
+end_iter =
+
+    8.0748
+
+
+end_iter =
+
+    8.0846
+
+
+end_iter =
+
+    8.4296
+
+
+end_iter =
+
+    7.9905
+
+
+end_iter =
+
+    7.6179
+
+
+end_iter =
+
+    7.7682
+
+
+end_iter =
+
+    7.7351
+
+
+end_iter =
+
+    7.8425
+
+
+end_iter =
+
+    7.6780
+
+
+end_iter =
+
+    7.6722
+
+
+end_iter =
+
+   10.7840
+
+
+end_iter =
+
+   11.8776
+
+
+end_iter =
+
+   10.9518
+
+
+end_iter =
+
+   10.5091
+
+
+end_iter =
+
+   11.2393
+
+
+end_iter =
+
+   10.6538
+
+
+end_iter =
+
+   12.1784
+
+
+end_iter =
+
+   11.3596
+
+
+end_iter =
+
+   10.0057
+
+
+end_iter =
+
+    8.7161
+
+
+end_iter =
+
+    8.7188
+
+
+end_iter =
+
+    8.5565
+
+
+end_iter =
+
+    7.7792
+
+
+end_iter =
+
+    8.3401
+
+
+end_iter =
+
+    8.7153
+
+
+end_iter =
+
+    8.6011
+
+
+end_iter =
+
+    8.6285
+
+
+end_iter =
+
+    8.5235
+
+
+end_iter =
+
+    7.5371
+
+
+end_iter =
+
+    8.0163
+
+
+end_iter =
+
+    8.5425
+
+
+end_iter =
+
+    8.0125
+
+
+end_iter =
+
+    7.7486
+
+
+end_iter =
+
+    8.0602
+
+
+end_iter =
+
+    8.2104
+
+
+end_iter =
+
+    8.1945
+
+
+end_iter =
+
+    8.1701
+
+
+end_iter =
+
+    8.3589
+
+
+end_iter =
+
+    7.6630
+
+
+end_iter =
+
+    7.6729
+
+
+end_iter =
+
+    7.7203
+
+
+end_iter =
+
+    8.3695
+
+
+end_iter =
+
+    9.3242
+
+
+end_iter =
+
+   13.5500
+
+
+end_iter =
+
+   12.4702
+
+
+end_iter =
+
+   11.9728
+
+
+end_iter =
+
+   10.8325
+
+
+end_iter =
+
+   10.7761
+
+
+end_iter =
+
+    9.0248
+
+
+end_iter =
+
+    8.2477
+
+
+end_iter =
+
+    7.7176
+
+
+end_iter =
+
+    7.9737
+
+
+end_iter =
+
+    8.4385
+
+
+end_iter =
+
+    8.8590
+
+
+end_iter =
+
+    8.1257
+
+
+end_iter =
+
+    7.9327
+
+
+end_iter =
+
+    7.5776
+
+
+end_iter =
+
+    7.8000
+
+
+end_iter =
+
+    9.0913
+
+
+end_iter =
+
+    8.1054
+
+
+end_iter =
+
+    8.4015
+
+
+end_iter =
+
+    8.4289
+
+
+end_iter =
+
+    7.5920
+
+
+end_iter =
+
+    8.5106
+
+
+end_iter =
+
+    7.7427
+
+
+end_iter =
+
+    7.6935
+
+
+end_iter =
+
+    8.5994
+
+
+end_iter =
+
+    7.6928
+
+
+end_iter =
+
+    8.1782
+
+
+end_iter =
+
+    8.3223
+
+
+end_iter =
+
+    8.6579
+
+
+end_iter =
+
+    8.8285
+
+
+end_iter =
+
+    8.5003
+
+
+end_iter =
+
+    8.0113
+
+
+end_iter =
+
+    7.6076
+
+
+end_iter =
+
+    8.0143
+
+
+end_iter =
+
+    7.8508
+
+
+end_iter =
+
+    8.2944
+
+
+end_iter =
+
+    8.6042
+
+
+end_iter =
+
+    8.1531
+
+
+end_iter =
+
+    8.0863
+
+
+end_iter =
+
+    8.5900
+
+
+end_iter =
+
+   12.3883
+
+
+end_iter =
+
+   12.4697
+
+
+end_iter =
+
+   12.0457
+
+
+end_iter =
+
+   12.5800
+
+
+end_iter =
+
+   10.7520
+
+
+end_iter =
+
+    7.6859
+
+
+end_iter =
+
+    8.3449
+
+
+end_iter =
+
+    8.8170
+
+
+end_iter =
+
+    8.2111
+
+
+end_iter =
+
+    8.0397
+
+
+end_iter =
+
+    8.2493
+
+
+end_iter =
+
+    8.2005
+
+
+end_iter =
+
+    8.0762
+
+
+end_iter =
+
+    8.0970
+
+
+end_iter =
+
+    8.6390
+
+
+end_iter =
+
+    8.4157
+
+
+end_iter =
+
+    8.4584
+
+Reweighting: 10
+
+
+
+ No more reweights 
+
+
+end_loop =
+
+   3.1647e+04
+
+Maximum number of iterations reached
+Iter 3534
+N-norm = 9.811229e+02, L21-norm = 5.523617e+04, rel_fval = 4.099464e-05
+ epsilon = 2.684695e+02, residual = 2.574533e+02
+ SNR = 3.242927e+01, aSNR = 3.199986e+01
+
+
+SNR =
+
+   32.4293
+
+
+SNR_average =
+
+   31.9999
+

@@ -160,7 +160,11 @@ for q = 1 : length(input_snr) * num_tests %number of tests x number of InSNRs
 if solve_HS
     
     %% HyperSARA
-    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res] = ...
+if flag_algo == 1
+    disp('-----------------------------------------')
+    disp('HyperSARA')
+    disp('-----------------------------------------')
+    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
         pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Psi, Psit, param_HSI, X0);
     
     c = size(xsol,3);
@@ -171,14 +175,19 @@ if solve_HS
         psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
     end
     SNR_average = mean(psnrh)
+   
+    Time_iter_average = mean(end_iter) 
     
-    
-    save('./results/result_HyperSARA.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
+    save('./results/result_HyperSARA.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
     fitswrite(xsol,'./results/xsol_HyperSARA.fits')
     fitswrite(x0,'./results/x0.fits')
-    
+end
     
     %% Split L21 + Nuclear + wavelets
+if flag_algo == 2
+    disp('-----------------------------------------')
+    disp('Split L21 + Nuclear + wavelets')
+    disp('-----------------------------------------')
     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res] = ...
     pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_sim_NL21_split_sdwt2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel);   
 
@@ -195,10 +204,14 @@ if solve_HS
     save('./results/result_split_NL21_wavelets.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
     fitswrite(xsol,'./results/xsol_split_NL21_wavelets.fits')
     fitswrite(x0,'./results/x0.fits')
-    
+end    
     
     %% Split L21 + Nuclear
-    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res] = ...
+if flag_algo == 3
+    disp('-----------------------------------------')
+    disp('Split L21 + Nuclear')
+    disp('-----------------------------------------')
+    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
     pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_NL21_split(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi, Psit, param_HSI, X0);  
 
     c = size(xsol,3);
@@ -210,49 +223,60 @@ if solve_HS
     end
     SNR_average = mean(psnrh)
     
-    
-    save('./results/result_split_NL21.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
+    Time_iter_average = mean(end_iter)    
+
+    save('./results/result_split_NL21.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
     fitswrite(xsol,'./results/xsol_split_NL21.fits')
     fitswrite(x0,'./results/x0.fits')
+end
     
     %% Split Nuclear
-%     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res] = ...
-%     pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_nuc_split(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi, Psit, param_HSI, X0);
-% 
-%     c = size(xsol,3);
-%     sol = reshape(xsol(:),numel(xsol(:))/c,c);
-%     SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)))
-%     psnrh = zeros(c,1);
-%     for i = ch
-%         psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-%     end
-%     SNR_average = mean(psnrh)
-%     
-%     
-%     save('./results/result_split_N.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
-%     fitswrite(xsol,'./results/xsol_split_N.fits')
-%     fitswrite(x0,'./results/x0.fits')
-    
+if flag_algo == 4
+    disp('-----------------------------------------')
+    disp('Split Nuclear')
+    disp('-----------------------------------------')
+     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+     pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_nuc_split(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi, Psit, param_HSI, X0);
+ 
+     c = size(xsol,3);
+     sol = reshape(xsol(:),numel(xsol(:))/c,c);
+     SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)))
+     psnrh = zeros(c,1);
+     for i = ch
+         psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+     end
+     SNR_average = mean(psnrh)
+ 
+     Time_iter_average = mean(end_iter)    
+      
+     save('./results/result_split_N.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
+     fitswrite(xsol,'./results/xsol_split_N.fits')
+     fitswrite(x0,'./results/x0.fits')
+end
     
     %% Split L21
-%     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res] = ...
-%     pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_l21_split(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi, Psit, param_HSI, X0);
-% 
-%     c = size(xsol,3);
-%     sol = reshape(xsol(:),numel(xsol(:))/c,c);
-%     SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)))
-%     psnrh = zeros(c,1);
-%     for i = ch
-%         psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-%     end
-%     SNR_average = mean(psnrh)
-%     
-%     
-%     save('./results/result_split_L21.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
-%     fitswrite(xsol,'./results/xsol_split_L21.fits')
-%     fitswrite(x0,'./results/x0.fits')
-    
-    
+if flag_algo == 5
+    disp('-----------------------------------------')
+    disp('Split L21')
+    disp('-----------------------------------------')
+     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+     pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_l21_split(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi, Psit, param_HSI, X0);
+ 
+     c = size(xsol,3);
+     sol = reshape(xsol(:),numel(xsol(:))/c,c);
+     SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)))
+     psnrh = zeros(c,1);
+     for i = ch
+         psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+     end
+     SNR_average = mean(psnrh)
+     
+     Time_iter_average = mean(end_iter)
+     
+     save('./results/result_split_L21.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
+     fitswrite(xsol,'./results/xsol_split_L21.fits')
+     fitswrite(x0,'./results/x0.fits')   
+end
 
 end
 

@@ -46,6 +46,10 @@ No = size(W{1}{1}, 1);
 [M, N] = size(At(zeros(No, 1)));
 Np = [M, N];
 
+M
+N
+c
+
 for i = 1 : c
     x0(:,:,i) = reshape(X0(:,i),M,N);
 end

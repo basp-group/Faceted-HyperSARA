@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res] = pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_l21_split(y, epsilon, A, At, pU, G, W, Sp, Spt, Psi, Psit, param, X0)
+function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_l21_split(y, epsilon, A, At, pU, G, W, Sp, Spt, Psi, Psit, param, X0)
 
 % This function solves:
 %
@@ -222,12 +222,14 @@ end
 
 % Main loop. Sequential.
 %maxNumCompThreads(12);
-util_create_pool(24);
+util_create_pool(param.num_workers);
+
+start_loop = tic;
 
 for t = t_start : param.max_iter
     
     %fprintf('Iter %i\n',t);
-    %tic;
+    start_iter = tic;
     
     %% Primal update
     prev_xsol = xsol;
@@ -238,7 +240,7 @@ for t = t_start : param.max_iter
     %% Relative change of objective function
     rel_fval(t) = norm(xsol(:) - prev_xsol(:))/norm(xsol(:));
     % Free memory
-    prev_xsol = [];
+    %prev_xsol = [];
     
     %% Dual variables update
     
@@ -248,12 +250,12 @@ for t = t_start : param.max_iter
     nuclear(t) = norm(diag(S0),1);
     v0 = v0 + xhatm - (U0*diag(max(diag(S0) - beta0 * weights0, 0))*V0');
     % Free memory
-    U0=[]; S0=[]; V0=[]; xhatm = [];
+    %U0=[]; S0=[]; V0=[]; xhatm = [];
     
     
     %% L-2,1 function update
     for k = 1:P
-        f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, xhat_split, weights1{k}, beta1,c_chunk);
+        f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, xhat_split, weights1{k}, beta1);
     end
     
     %% L2 ball projection update
@@ -278,13 +280,10 @@ for t = t_start : param.max_iter
         Ftx(:,:,i) = real(At(g2));
     end
     % Free memory
-    g2=[]; Fx=[];
+    %g2=[]; Fx=[];
     
     %% Update primal gradient
-    for i = 1 : c
-        g0(:,:,i) = reshape(v0(:,i),M,N);
-    end
-    
+    g0 = reshape(v0,M,N,c);
     for i = 1 : length(xhat_split)
         g1{i} = zeros(size(xhat_split{i}));
     end
@@ -301,12 +300,14 @@ for t = t_start : param.max_iter
     
     g = sigma00*(g0) + sigma11*Spt(g1) + sigma22*Ftx;
     % Free memory
-    g0=[]; g1=[]; Ftx=[];
+    %g0=[]; g1=[]; Ftx=[];
     
     l21(t) = sum(cell2mat(l21_cell));
     
-    %% Display
-    if ~mod(t,25)
+    end_iter(t) = toc(start_iter);
+    fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
+
+    if ~mod(t,25000)
         
         %SNR
         sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -459,21 +460,21 @@ for t = t_start : param.max_iter
         reweight_last_step_iter = t;
         rw_counts = rw_counts + 1;
         
-        figure(1),
-        subplot(2,2,1);
-        imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,2);
-        imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,3);
-        imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,4);
-        imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        pause(0.1)
-        
+        %         figure(1),
+        %         subplot(2,2,1);
+        %         imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         subplot(2,2,2);
+        %         imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         subplot(2,2,3);
+        %         imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         subplot(2,2,4);
+        %         imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+        %         pause(0.1)
+
     end
-    
-    %toc;
+
 end
+end_loop = toc(start_loop)
 
 % Calculate residual images:
 for i = 1 : c
@@ -503,14 +504,15 @@ if (param.verbose > 0)
 end
 end
 
-function [v1_, u1_, l21_] = run_par_waverec(v1_, Psit, Psi, xhat_split, weights1_, beta1, c)
+function [v1_, u1_, l21_] = run_par_waverec(v1_, Psit, Psi, xhat_split, weights1_, beta1)
 
 l21_ = 0;
 for i = 1 : length(xhat_split)
     r1 = v1_{i} +  Psit(xhat_split{i});
     l2 = sqrt(sum(abs(r1).^2,2));
     l2_soft = max(l2 - beta1*weights1_{i}, 0)./ (l2+eps);
-    v1_{i} = r1 - (repmat(l2_soft,1,c(i)) .* r1);
+    %v1_{i} = r1 - (repmat(l2_soft,1,c(i)) .* r1);
+    v1_{i} = r1 - (l2_soft .* r1);
     u1_{i} = Psi(v1_{i});
     
     % local L21 norm of current solution
