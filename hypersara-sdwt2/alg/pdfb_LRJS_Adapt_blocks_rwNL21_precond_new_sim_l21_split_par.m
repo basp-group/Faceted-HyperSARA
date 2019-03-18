@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_NL21_split(y, epsilon, A, At, pU, G, W, Sp, Spt, Psi, Psit, param, X0)
+function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_Adapt_blocks_rwNL21_precond_new_sim_l21_split_par(y, epsilon, A, At, pU, G, W, Sp, Spt, Psi, Psit, param, X0)
 
 % This function solves:
 %
@@ -32,23 +32,21 @@ else
     fprintf('xsol NOT uploaded \n\n')
 end
 x_split = Sp(xsol);
-for i = 1 : length(x_split)
+K = length(x_split);
+
+for i = 1 : K
     temp = x_split{i};
     c_chunk(i) = size(temp,3);
     xhat_split_zeros{i} = zeros(size(x_split{i}));
 end
 
 %Initial dual variables
+sol = reshape(xsol(:),numel(xsol(:))/c,c);
 if isfield(param,'init_v0')
     v0 = param.init_v0;
     fprintf('v0 uploaded \n\n')
 else
-    v0 = cell(length(x_split),1);
-    for i = 1: length(x_split)
-        temp = x_split{i};
-        xm = reshape(temp(:),numel(temp(:))/size(temp,3),size(temp,3));
-        v0{i} = zeros(size(xm));
-    end
+    v0 = zeros(size(sol));
     fprintf('v0 NOT uploaded \n\n')
 end
 
@@ -56,38 +54,24 @@ if isfield(param,'init_weights0')
     weights0 = param.init_weights0;
     fprintf('weights0 uploaded \n\n')
 else
-    x_split = Sp(xsol);
-    for i = 1 : length(x_split)
-        temp = x_split{i};
-        weights0{i} = ones(size(temp,3),1);
-    end
+    weights0 = ones(c,1);
     fprintf('weights0 NOT uploaded \n\n')
 end
 
 %Initial dual variables
 if isfield(param,'init_v1')
-    l2 = cell(P,1);
-    l21_cell = cell(P, 1);
-    u1 = cell(P, 1);
-    v1 = cell(P, 1);
     v1 = param.init_v1;
-    for k = 1:P
+    for i = 1 : K
         % initial L1 descent step
-        u1{k} = zeros(size(Psi{k}(v1{k})));
+        u1{i} = zeros(size(Psi(v1{i})));
     end
     fprintf('v1 uploaded \n\n')
 else
-    l2 = cell(P,1);
-    l21_cell = cell(P, 1);
-    u1 = cell(P, 1);
-    v1 = cell(P, 1);
-    for k = 1:P
-        for i = 1 : length(x_split)
-            % start from zero solution
-            v1{k}{i} = zeros(size(Psit{k}(x_split{i})));
-            % initial L1 descent step
-            u1{k}{i} = zeros(size(Psi{k}(v1{k}{i})));
-        end
+    for i = 1 : K
+        % start from zero solution
+        v1{i} = zeros(size(Psit(x_split{i})));
+        % initial L1 descent step
+        u1{i} = zeros(size(Psi(v1{i})));
     end
     fprintf('v1 NOT uploaded \n\n')
 end
@@ -97,15 +81,11 @@ if isfield(param,'init_weights1')
     weights1 = param.init_weights1;
     fprintf('weights1 uploaded \n\n')
 else
-    weights1 = cell(P, 1);
-    for k = 1:P
-        for i = 1 : length(x_split)
-            weights1{k}{i} = ones(size(v1{k}{i},1),1);
-        end
+    for i = 1 : K
+        weights1{i} = ones(size(v1{i},1),1);
     end
     fprintf('weights1 NOT uploaded \n\n')
 end
-
 
 if isfield(param,'init_v2')
     v2 = param.init_v2;
@@ -140,7 +120,6 @@ else
     fprintf('g NOT uploaded \n\n')
 end
 
-g0 = cell(size(x_split));
 Fx = zeros(No,c);
 Ftx = zeros(size(xsol));
 
@@ -222,15 +201,15 @@ end
 
 A = afclean(A);
 At = afclean(At);
-for k = 1 : P
-    Psi{k} = afclean(Psi{k});
-    Psit{k} = afclean(Psit{k});
-end
+Psi = afclean(Psi);
+Psit = afclean(Psit);
+
+
 
 
 % Main loop. Sequential.
-%maxNumCompThreads(12);
 util_create_pool(param.num_workers);
+maxNumCompThreads(param.num_workers);
 
 start_loop = tic;
 
@@ -252,21 +231,18 @@ for t = t_start : param.max_iter
     
     %% Dual variables update
     
-    %% Nuclear norm function update
-    parfor i = 1 : length(xhat_split)
-        xhatm{i} = reshape(xhat_split{i},numel(xhat_split{i})/c_chunk(i),c_chunk(i));
-        [U0{i},S0{i},V0{i}] = svd(v0{i} + xhatm{i},'econ');
-        v0{i} = v0{i} + xhatm{i} - (U0{i}*diag(max(diag(S0{i}) - beta0 * weights0{i}, 0))*V0{i}');
-        g0{i} = reshape(v0{i},M,N,c_chunk(i));
+    %% L-2,1 function update
+    for i = 1 : K
+        f(i) = parfeval(@run_par_l21, 2, v1{i}, Psit, Psi, xhat_split{i}, weights1{i}, beta1);
     end
+    
+    %% Nuclear norm function update
+    xhatm = reshape(xhat,numel(xhat)/c,c);
+    [U0,S0,V0] = svd(v0 + xhatm,'econ');
+    v0 = v0 + xhatm - (U0*diag(max(diag(S0) - beta0 * weights0, 0))*V0');
+    %nuclear(t) = norm(diag(S0),1);
     % Free memory
     %U0=[]; S0=[]; V0=[]; xhatm = [];
-    
-    
-    %% L-2,1 function update
-    for k = 1:P
-        f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, xhat_split, weights1{k}, beta1);
-    end
     
     %% L2 ball projection update
     counter = 1;
@@ -293,23 +269,18 @@ for t = t_start : param.max_iter
     %g2=[]; Fx=[];
     
     %% Update primal gradient
-    g1 = xhat_split_zeros;
-    for k = 1:P
-        [idx, v1_, u1_, l21_] = fetchNext(f);
+    
+    for i = 1 : K
+        [idx, v1_, u1_] = fetchNext(f);
         v1{idx} = v1_;
         u1{idx} = u1_;
-        l21_cell{idx} = l21_;
-        
-        for i = 1 : length(g1)
-            g1{i} = g1{i} + u1{idx}{i};
-        end
+        %l21_cell{idx} = l21_;
     end
     
-    g = sigma00*Spt(g0) + sigma11*Spt(g1) + sigma22*Ftx;
+    g0 = reshape(v0,M,N,c);
+    g = sigma00*g0 + sigma11*Spt(u1) + sigma22*Ftx;
     % Free memory
     %g0=[]; g1=[]; Ftx=[];
-    
-    l21(t) = sum(cell2mat(l21_cell));
 
     end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t)); 
@@ -317,10 +288,12 @@ for t = t_start : param.max_iter
     %% Display
     if ~mod(t,25000)
        
-        nuclear = 0;
-    	for i = 1 : length(xhat_split)
-        	nuclear = nuclear + norm(diag(S0{i}),1);
-    	end
+        xhatm = reshape(xsol,numel(xsol)/c,c);
+        [~,S0,~] = svd(xhatm,'econ');
+        nuclear = norm(diag(S0),1);
+        
+        l2 = sqrt(sum(abs(Psit(xsol)).^2,2));
+        l21 = norm(l2(:),1);
  
         %SNR
         sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -334,7 +307,7 @@ for t = t_start : param.max_iter
         %Log
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
-            fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21(t), rel_fval(t));
+            fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
             fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
             fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
@@ -415,7 +388,7 @@ for t = t_start : param.max_iter
     %        prod(prod(residual_check < param.adapt_eps_tol_out*epsilon_check)) && prod(prod(residual_check > param.adapt_eps_tol_in*epsilon_check))  && ...
     %       t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr)
     
-    if param.step_flag && rel_fval(t) < param.reweight_rel_obj % && (norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check))
+    if (param.step_flag && rel_fval(t) < param.reweight_rel_obj) % && (norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check))
         reweight_steps = [t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size)];
         param.step_flag = 0;
     end
@@ -430,21 +403,18 @@ for t = t_start : param.max_iter
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
       
-        xsol_split = Sp(xsol);
-        for i = 1 : length(xsol_split)
-            sol = reshape(xsol_split{i},numel(xsol_split{i})/c_chunk(i),c_chunk(i));
-            [~,S00,~] = svd(sol,'econ');
-            d_val0 = abs(diag(S00));
-            weights0{i} = reweight_alpha ./ (reweight_alpha + d_val0);
-            weights0{i}(d_val0 > max(d_val0) * param.reweight_abs_of_max) = 0;
-        end
         
-        for k = 1 : P
-            for i = 1 : length(xhat_split)
-            d_val1 = sqrt(sum(abs(Psit{k}(xsol_split{i})).^2,2));
-            weights1{k}{i} = reweight_alpha ./ (reweight_alpha + d_val1);
-            weights1{k}{i}(d_val1 > max(d_val1) * param.reweight_abs_of_max) = 0;
-            end
+        sol = reshape(xsol(:),numel(xsol(:))/c,c);
+        [~,S0,~] = svd(sol,'econ');
+        d_val0 = abs(diag(S0));
+        weights0 = reweight_alpha ./ (reweight_alpha + d_val0);
+        weights0(d_val0 > max(d_val0) * param.reweight_abs_of_max) = 0;
+        
+        xsol_split = Sp(xsol);
+        for i = 1 : K
+            d_val1 = sqrt(sum(abs(Psit(xsol_split{i})).^2,2));
+            weights1{i} = reweight_alpha ./ (reweight_alpha + d_val1);
+            weights1{i}(d_val1 > max(d_val1) * param.reweight_abs_of_max) = 0;
         end
         reweight_alpha = reweight_alpha_ff .* reweight_alpha;
         
@@ -504,10 +474,12 @@ end
 
 %Final log
 
-nuclear = 0;
-for i = 1 : length(xhat_split)
-    nuclear = nuclear + norm(diag(S0{i}),1);
-end
+xhatm = reshape(xsol,numel(xsol)/c,c);
+[~,S0,~] = svd(xhatm,'econ');
+nuclear = norm(diag(S0),1);
+
+l2 = sqrt(sum(abs(Psit(xsol)).^2,2));
+l21 = norm(l2(:),1);
 
 %SNR
 sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -522,13 +494,13 @@ if (param.verbose > 0)
     if (flag == 1)
         fprintf('Solution found\n');
         fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21(t), rel_fval(t));
+        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
         fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
         fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     else
         fprintf('Maximum number of iterations reached\n');
         fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21(t), rel_fval(t));
+        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
         fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
         fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
@@ -537,19 +509,17 @@ end
 
 end
 
-function [v1_, u1_, l21_] = run_par_waverec(v1_, Psit, Psi, xhat_split, weights1_, beta1)
+function [v1, u1] = run_par_l21(v1, Psit, Psi, xhat, weights1, beta1)
 
-l21_ = 0;
-for i = 1 : length(xhat_split)
-    r1 = v1_{i} +  Psit(xhat_split{i});
+    r1 = v1 +  Psit(xhat);
     l2 = sqrt(sum(abs(r1).^2,2));
-    l2_soft = max(l2 - beta1*weights1_{i}, 0)./ (l2+eps);
-    %v1_{i} = r1 - (repmat(l2_soft,1,c(i)) .* r1);
-    v1_{i} = r1 - (l2_soft .* r1);
-    u1_{i} = Psi(v1_{i});
-    
-    % local L21 norm of current solution
-    l21_ = l21_ + norm(l2(:),1);
-end
+    l2_soft = max(l2 - beta1*weights1, 0)./ (l2+eps);
+    v1 = r1 - (l2_soft .* r1);
+    u1 = Psi(v1);
+    %l21 = norm(l2(:),1);
 
 end
+
+
+
+

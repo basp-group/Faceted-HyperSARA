@@ -253,6 +253,7 @@ for t = t_start : param.max_iter
         xhatm{i} = reshape(xhat_split{i},numel(xhat_split{i})/c_chunk(i),c_chunk(i));
         [U0{i},S0{i},V0{i}] = svd(v0{i} + xhatm{i},'econ');
         v0{i} = v0{i} + xhatm{i} - (U0{i}*diag(max(diag(S0{i}) - beta0 * weights0{i}, 0))*V0{i}');
+        g0{i} = reshape(v0{i},M,N,c_chunk(i));
     end
     % Free memory
     %U0=[]; S0=[]; V0=[]; xhatm = [];
@@ -290,10 +291,6 @@ for t = t_start : param.max_iter
     %g2=[]; Fx=[];
     
     %% Update primal gradient
-    for i = 1 : length(xhat_split)
-        g0{i} = reshape(v0{i},M,N,c_chunk(i));
-    end
-    
     g1 = zeros(size(xsol));
     for k = 1:P
         [idx, v1_, u1_, l21_] = fetchNext(f);

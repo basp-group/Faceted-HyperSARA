@@ -165,7 +165,7 @@ if flag_algo == 1
     disp('HyperSARA')
     disp('-----------------------------------------')
     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-        pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Psi, Psit, param_HSI, X0);
+        pdfb_LRJS_Adapt_blocks_rwNL21_precond_new_sim(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Psi_full, Psit_full, param_HSI, X0);
     
     c = size(xsol,3);
     sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -212,7 +212,7 @@ if flag_algo == 3
     disp('Split L21 + Nuclear')
     disp('-----------------------------------------')
     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-    pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_NL21_split(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi, Psit, param_HSI, X0);  
+    pdfb_LRJS_Adapt_blocks_rwNL21_precond_new_sim_NL21_split_par(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi_full, Psit_full, param_HSI, X0);  
 
     c = size(xsol,3);
     sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -236,7 +236,7 @@ if flag_algo == 4
     disp('Split Nuclear')
     disp('-----------------------------------------')
      [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-     pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_nuc_split(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi, Psit, param_HSI, X0);
+     pdfb_LRJS_Adapt_blocks_rwNL21_precond_new_sim_nuc_split_par(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi_full, Psit_full, param_HSI, X0);
  
      c = size(xsol,3);
      sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -260,7 +260,7 @@ if flag_algo == 5
     disp('Split L21')
     disp('-----------------------------------------')
      [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-     pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim_l21_split(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi, Psit, param_HSI, X0);
+     pdfb_LRJS_Adapt_blocks_rwNL21_precond_new_sim_l21_split_par(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi_full, Psit_full, param_HSI, X0);
  
      c = size(xsol,3);
      sol = reshape(xsol(:),numel(xsol(:))/c,c);

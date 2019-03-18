@@ -35,6 +35,7 @@ x_split = Sp(xsol);
 for i = 1 : length(x_split)
     temp = x_split{i};
     c_chunk(i) = size(temp,3);
+    xhat_split_zeros{i} = zeros(size(x_split{i}));
 end
 
 sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -284,9 +285,7 @@ for t = t_start : param.max_iter
     
     %% Update primal gradient
     g0 = reshape(v0,M,N,c);
-    for i = 1 : length(xhat_split)
-        g1{i} = zeros(size(xhat_split{i}));
-    end
+    g1 = xhat_split_zeros;
     for k = 1:P
         [idx, v1_, u1_, l21_] = fetchNext(f);
         v1{idx} = v1_;
