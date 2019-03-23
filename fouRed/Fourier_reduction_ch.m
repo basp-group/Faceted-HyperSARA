@@ -20,10 +20,10 @@ for i = 1:length(ch)
     if param_fouRed.enable_estimatethreshold
         param_fouRed.x2 = norm(x0(:, :, i));
         param_fouRed.dirty2 = norm(Phi_t{i}(y{i})) / sqrt(numel(x0(:,:,i)));
-        if numel(sigma_noise{i}) == 1
-            param_fouRed.sigma_noise = sigma_noise{i};
+        if numel(sigma_noise_ch{i}) == 1
+            param_fouRed.sigma_noise = sigma_noise_ch{i};
         else 
-            tmp = sigma_noise{i};
+            tmp = sigma_noise_ch{i};
             param_fouRed.sigma_noise = mean(tmp(:));
         end
     end

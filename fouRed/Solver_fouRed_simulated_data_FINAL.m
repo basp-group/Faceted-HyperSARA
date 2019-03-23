@@ -132,18 +132,13 @@ param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipso
 param_HSI.precondition = usingPrecondition;
 
 %%
-for q = 1 : length(input_snr) * num_tests %number of tests x number of InSNRs
+for q = 1 : length(sigma_noise) * num_tests %number of tests x number of InSNRs
     
 %% L21 + Nuclear
 if solve_HS
 %     [xsol,v0,v1,v2,g,weights0,weights1,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res] = pdfb_LRJS_Adapt_blocks_rwNL21_par_sing_new_sim(yT, [Ny, Nx, length(ch)], epsilons_t, FIpsf, FIpsf_t, T, W, Psi, Psit, param_HSI, X0);
     [xsol,v0,v1,v2,g,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res] = pdfb_LRJS_Adapt_blocks_rwNL21_par_sing_precond_new_sim(yT, [Ny, Nx, length(ch)], epsilons_t, FIpsf, FIpsf_t, aW, T, W, Psi, Psit, param_HSI,X0);
     c = size(xsol,3);
-    if normalize_data
-        for i = 1:length(ch)
-            xsol(:,:,i) = xsol(:,:,i)*sigma_noise(i)/sqrt(2);
-        end
-    end
     sol = reshape(xsol(:),numel(xsol(:))/c,c);
     SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)))
     psnrh = zeros(c,1);
@@ -161,11 +156,6 @@ if solve_1B
         [xsol(:,:,i),v1,v2,g,weights1,t_block,reweight_alpha,epsilon,iterh,rel_fval,l11,norm_res,res] = pdfb_L11_Adapt_blocks_rw_par_new({ry_t{i}},{epsilons_t{i}}, B{i}, Bt{i}, {T{i}}, {W{i}}, Psi, Psit, param_HSI, i);
     end
     c = length(ch);
-    if normalize_data
-        for i = 1:length(ch)
-            xsol(:,:,i) = xsol(:,:,i)*sigma_noise(i)/sqrt(2);
-        end
-    end
     sol = reshape(xsol(:),numel(xsol(:))/c,c);
     SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)))
     psnrh = zeros(c,1);
