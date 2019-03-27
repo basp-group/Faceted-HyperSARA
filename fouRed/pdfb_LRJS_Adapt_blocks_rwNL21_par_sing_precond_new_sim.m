@@ -438,16 +438,16 @@ for t = t_start : param.max_iter
         reweight_last_step_iter = t;
         rw_counts = rw_counts + 1;
         
-        figure(1),
-        subplot(2,2,1);
-        imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,2);
-        imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,3);
-        imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,4);
-        imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        pause(0.1)
+%         figure(1),
+%         subplot(2,2,1);
+%         imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+%         subplot(2,2,2);
+%         imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+%         subplot(2,2,3);
+%         imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+%         subplot(2,2,4);
+%         imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
+%         pause(0.1)
         
     end
     

@@ -100,7 +100,7 @@ param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
 param_HSI.gamma0 = 1;
 param_HSI.gamma = 1e-2;  %convergence parameter L1 (soft th parameter)
 param_HSI.rel_obj = 1e-5; % stopping criterion
-param_HSI.max_iter = 300; % max number of iterations
+param_HSI.max_iter = 500; % max number of iterations
 
 param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
 param_HSI.adapt_eps_start = 500; % minimum num of iter before stating adjustment

@@ -22,7 +22,7 @@ usingReduction = 1;
 usingReductionPar = 0;
 usingPrecondition = 1;
 normalize_data = 0;
-klargestpercent = 15;
+klargestpercent = 20;
 
 
 generate_groundtruth = 1; % Default 60 channels cube with line emissions

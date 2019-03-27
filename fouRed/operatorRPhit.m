@@ -1,5 +1,6 @@
 function y = operatorRPhit(x, Ipsf, Sigma, Mask, imsize)
 % Adjoint of the new reduced measurement operator: Ipsf * F^T * S * Sigma
+% Complex -> Real
 IFT2 = @(x) fftshift(ifft2(ifftshift(x)));
 Ny = imsize(1);
 Nx = imsize(2);
