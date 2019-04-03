@@ -2,9 +2,11 @@
 
 #### select resources
 
+#PBS -l place=excl
+
 #PBS -l select=1:ncpus=36
 
-#PBS -l walltime=15:00:00
+#PBS -l walltime=20:00:00
 
 #### Replace [budget code] below with your project code (e.g. t01)      
 #PBS -A sc004
@@ -16,10 +18,10 @@ cd /lustre/home/sc004/aa61/HyperSARA_dist/hypersara-sdwt2/SPARS/
 module load matlab/R2018a
 
 rm -rf /tmp/dot_matlab_${PBS_JOBID}*
-mkdir /tmp/dot_matlab_${PBS_JOBID}
-cp -pr ~/.matlab /tmp/dot_matlab_${PBS_JOBID}
-export MATLAB_PREFDIR=/tmp/dot_matlab_${PBS_JOBID}/.matlab/R2018a
-matlab -nodisplay -nodisplay -nodesktop -r "main_simulated_data("$num_workers","$tot","$chunk_width","$step","$Qx","$Qy","$flag_algo")" > ${tot}_${chunk_width}_${step}_${flag_algo}.txt 
+mkdir /tmp/dot_matlab_${PBS_JOBID}_1
+cp -pr ~/.matlab /tmp/dot_matlab_${PBS_JOBID}_1
+export MATLAB_PREFDIR=/tmp/dot_matlab_${PBS_JOBID}_1/.matlab/R2018a
+matlab -nodisplay -nodisplay -nodesktop -r "main_simulated_data_test("$flag_algo","$tot","$num_chunk")" > ${flag_algo}_${tot}_${num_chunk}.txt
 
 rm -rf /tmp/dot_matlab_${PBS_JOBID}*
 

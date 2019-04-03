@@ -296,7 +296,7 @@ for t = t_start : param.max_iter
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t)); 
    
     %% Display
-    if ~mod(t,25000)
+    if ~mod(t,100)
        
         xhatm = reshape(xsol,numel(xsol)/c,c);
         [~,S0,~] = svd(xhatm,'econ');

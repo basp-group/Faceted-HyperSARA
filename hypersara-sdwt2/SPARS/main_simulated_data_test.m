@@ -1,4 +1,4 @@
-function main_simulated_data(flag_algo, tot, chunk_width, overlap)
+function main_simulated_data(flag_algo, tot, num_chunk)
 
 % clear all;
 % close all;
@@ -13,19 +13,39 @@ Qy = 3;
 % step = 3;
 %param_HSI.num_workers = num_workers;
 
-step = chunk_width - overlap;
-chunks = [];
-for  i = 1 :step: tot-chunk_width+1
-    chunks = [chunks; i i+chunk_width-1];
+%tot = 60;
+%num_chunk = 4;
+
+
+tmp = round(linspace(1,tot-num_chunk+1,tot/num_chunk));
+chunks = cell(num_chunk,1);
+chunks{1} = tmp;
+for  i = 1 : num_chunk-1
+    chunks{i+1} = tmp+i;
 end
-diff = tot - chunks(end,2);
-if diff <= 0.4*chunk_width
-    chunks(end,2) = tot;
-else
-    chunks = [chunks; chunks(end,2) tot];
+
+chunks_mat = cell2mat(chunks);
+if numel(chunks_mat) < tot
+    ch_miss = [];
+    for i = 1 : tot
+        if numel(find(chunks_mat == i)) == 0
+            ch_miss = [ch_miss; i];
+        end
+    end
+    cc = round(linspace(1,num_chunk,numel(ch_miss)));
+    for i = 1 : numel(ch_miss)
+        chunks{cc(i)}(end+1) = ch_miss(i);
+    end
+    ch_miss
+    cc
+    chunks{cc}
 end
 
 chunks
+chunks_mat
+
+size(chunks_mat,2)
+
 
 if flag_algo == 0
 param_HSI.num_workers = 34; 
@@ -62,7 +82,7 @@ end
 generate_groundtruth = 1; % Default 60 channels cube with line emissions
 load_groundtruth = 0;
 
-generate_undersampled_cube = 0; % Default 15 channels cube with line emissions
+generate_undersampled_cube = 1; % Default 15 channels cube with line emissions
 
 generate_simple_image = 0; % Default the W28 image
 consider_simple_image = 0; % Consider only one channel of the generated cube
@@ -141,12 +161,15 @@ end
 %%
 if generate_undersampled_cube
     % new desired dimensions
-    Nx=4*1024;
-    Ny=4*1024;
+    Nx=1024;
+    Ny=1024;
     % undersampling factor for the channels
     unds = 1; % take 1/unds images
     [x0,X0,f,c] = Generate_undersampled_cube(x0,f,Ny,Nx,c,unds);
     ch = [1 : c]; % number of channels loaded (note that this can be one).
+    Nx 
+    Ny
+    c
 end
 
 %%

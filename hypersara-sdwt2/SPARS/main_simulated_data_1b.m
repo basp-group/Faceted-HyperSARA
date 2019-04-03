@@ -28,7 +28,7 @@ end
 chunks
 
 if flag_algo == 0
-param_HSI.num_workers = 34; 
+param_HSI.num_workers = 34;
 elseif flag_algo == 1
 param_HSI.num_workers = 1;
 elseif flag_algo == 3
@@ -36,9 +36,7 @@ param_HSI.num_workers = size(chunks,1)*2+1;
 else
 param_HSI.num_workers = size(chunks,1)+1;
 end
-param_HSI.num_workers 
-
-
+param_HSI.num_workers
 
 % clear all;
 % close all;
@@ -91,7 +89,7 @@ load_measurements = 0;
 solve_minimization = 1;
 
 % choose the solver you want to use
-solve_HS = 1; % wide-band solver (rwLRJS) applied on all the channels
+solve_HS = 0; % wide-band solver (rwLRJS) applied on all the channels
 solve_minimization_UQ_HS = 0;
 
 load_xmap = 1;
@@ -100,18 +98,18 @@ save_xmap = 0;
 load_mask = 1;
 save_mask = 0;
 
-compute_Anorm_preconditioned = 1;
+compute_Anorm_preconditioned = 0;
 load_Anorm_preconditioned = 0;
 save_Anorm_preconditioned = 0;
 
-compute_Anorm = 1;
+compute_Anorm = 0;
 load_Anorm = 0;
 save_Anorm = 0;
 
-solve_1B = 0; % single-channel solver (SARA) applied for each channel separately
+solve_1B = 1; % single-channel solver (SARA) applied for each channel separately
 solve_minimization_UQ_1B = 0;
 
-compute_Anorm_ch = 0;
+compute_Anorm_ch = 1;
 save_Anorm_ch = 0;
 load_Anorm_ch = 0;
 

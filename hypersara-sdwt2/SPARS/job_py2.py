@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import csv, subprocess
 
-parameter_file_full_path = "/lustre/home/sc004/aa61/HyperSARA_dist/hypersara-sdwt2/SPARS/job_params.csv"
+parameter_file_full_path = "/lustre/home/sc004/aa61/HyperSARA_dist/hypersara-sdwt2/SPARS/job_params2.csv"
 
 with open(parameter_file_full_path, "rb") as csvfile:
     reader = csv.reader(csvfile)
     for job in reader:
-	qsub_command = """qsub -N {1}_{2}_{3}_{6} -e /home/sc004/aa61/HyperSARA_dist/hypersara-sdwt2/SPARS/{1}_{2}_{3}_{6}.err -o /home/sc004/aa61/HyperSARA_dist/hypersara-sdwt2/SPARS/{1}_{2}_{3}_{6}.out -v num_workers={0},tot={1},chunk_width={2},step={3},Qx={4},Qy={5},flag_algo={6} test.pbs""".format(*job)
+	qsub_command = """qsub -N {0}_{1}_{2} -e /home/sc004/aa61/HyperSARA_dist/hypersara-sdwt2/SPARS/{0}_{1}_{2}.err -o /home/sc004/aa61/HyperSARA_dist/hypersara-sdwt2/SPARS/{0}_{1}_{2}.out -v flag_algo={0},tot={1},num_chunk={2} test2.pbs""".format(*job)
 
         print qsub_command # Uncomment this line when testing to view the qsub command
 

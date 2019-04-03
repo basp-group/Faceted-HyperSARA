@@ -69,8 +69,8 @@ for k = 1 : P
 end
 
 %% Splitting operator
-Sp = @(x) Split_forward_operator(x,chunks);
-Spt = @(x) Split_adjoint_operator(x,chunks,Ny,Nx,length(ch));
+Sp = @(x) Split_forward_operator_new(x,chunks);
+Spt = @(x) Split_adjoint_operator_new(x,chunks,Ny,Nx,length(ch));
 
 Sp_norm = pow_method_op(Sp,Spt,[Ny Nx length(ch)]); % [P.-A.] in theory, Sp_pnorm = Pnorm (no need to compute both)
 % Sp_norm = number of coefficients in the overlap between two spectral facets (if the overlap is constant over the facets) [to be checked further] 
@@ -94,11 +94,11 @@ Pnorm = pow_method_op(Sp_psit, Spt_psi,[Ny Nx length(ch)]);
 param_HSI.verbose = 2; % print log or not
 param_HSI.nu0 = Sp_norm; % bound on the norm of the Identity operator
 param_HSI.nu1 = Pnorm; % bound on the norm of the operator Psi
-param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
+%param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
 param_HSI.gamma0 = 1;
 param_HSI.gamma = 1e-2;  %convergence parameter L1 (soft th parameter)
 param_HSI.rel_obj = 1e-5; % stopping criterion
-param_HSI.max_iter = 10000; % max number of iterations
+param_HSI.max_iter = 3000; % max number of iterations
 
 param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
 param_HSI.adapt_eps_start = 200; % minimum num of iter before stating adjustment
@@ -110,7 +110,7 @@ param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the upd
 
 param_HSI.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
 param_HSI.reweight_alpha_ff = 0.5;
-param_HSI.total_reweights = 10; % -1 if you don't want reweighting
+param_HSI.total_reweights = 5; % -1 if you don't want reweighting
 param_HSI.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
 
 param_HSI.use_reweight_steps = 1; % reweighting by fixed steps
@@ -134,7 +134,7 @@ if parameters_option == 1
     normalisation_type = 'No_normalised_operator';
     
     param_HSI.ll = 1;
-    param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
+    %param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
     
     y_t1 = y_t;
     epsilons_t1 = epsilons_t;
@@ -158,7 +158,8 @@ end
 for q = 1 : length(input_snr) * num_tests %number of tests x number of InSNRs
     
 if solve_HS
-    
+    param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
+   
     %% HyperSARA
 if flag_algo == 1
     disp('-----------------------------------------')
@@ -178,7 +179,7 @@ if flag_algo == 1
    
     Time_iter_average = mean(end_iter) 
     
-    save('./results/result_HyperSARA.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
+    save(['./results/result_HyperSARA_' num2str(num_chunk) '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
     fitswrite(xsol,'./results/xsol_HyperSARA.fits')
     fitswrite(x0,'./results/x0.fits')
 end
@@ -201,9 +202,8 @@ if flag_algo == 2
     SNR_average = mean(psnrh)
     
     
-    save('./results/result_split_NL21_wavelets.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
+    save(['./results/result_split_NL21_wavelets_' num2str(overlap) '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
     fitswrite(xsol,'./results/xsol_split_NL21_wavelets.fits')
-    fitswrite(x0,'./results/x0.fits')
 end    
     
     %% Split L21 + Nuclear
@@ -225,9 +225,8 @@ if flag_algo == 3
     
     Time_iter_average = mean(end_iter)    
 
-    save('./results/result_split_NL21.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
+    save(['./results/result_split_NL21_' num2str(num_chunk) '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
     fitswrite(xsol,'./results/xsol_split_NL21.fits')
-    fitswrite(x0,'./results/x0.fits')
 end
     
     %% Split Nuclear
@@ -249,9 +248,8 @@ if flag_algo == 4
  
      Time_iter_average = mean(end_iter)    
       
-     save('./results/result_split_N.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
+     save(['./results/result_split_N_' num2str(overlap) '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
      fitswrite(xsol,'./results/xsol_split_N.fits')
-     fitswrite(x0,'./results/x0.fits')
 end
     
     %% Split L21
@@ -273,23 +271,40 @@ if flag_algo == 5
      
      Time_iter_average = mean(end_iter)
      
-     save('./results/result_split_L21.mat','-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
+     save(['./results/result_split_L21_' num2str(overlap) '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
      fitswrite(xsol,'./results/xsol_split_L21.fits')
-     fitswrite(x0,'./results/x0.fits')   
 end
 
 end
 
-%% rwL11 Adaptive Blocks
-if solve_1B
-    for i = ch
-        i
-        param_HSI.nu2 = Anorm_ch(i); % bound on the norm of the operator A*G
-        [xsol,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,l11,norm_res,res] = pdfb_L11_Adapt_blocks_rw_par_precond_new({y_t{q}{i}},{epsilons_t{q}{i}}, A, At, {aW{i}}, {G{i}}, {W{i}}, Psi, Psit, param_HSI, i);
-        if save_data
-            save(['./simulated_data/data/result_b' num2str(i) '.mat'],'-v7.3', 'xsol', 'v1', 'v2', 'g', 'weights1', 'proj', 't_block','reweight_alpha', 'epsilon', 'iterh', 'rel_fval', 'l11', 'norm_res', 'res');
+
+    %% rwL11 Adaptive Blocks
+    if solve_1B
+        util_create_pool(param_HSI.num_workers);
+        maxNumCompThreads(param_HSI.num_workers);
+        parfor i = 1 : length(ch)
+            i
+            %param_HSI.nu2 = Anorm_ch(i); % bound on the norm of the operator A*G
+            [xsol(:,:,i),v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,l11,norm_res,res(:,:,i),end_iter{i}] = ...
+             pdfb_L11_Adapt_blocks_rw_precond_new_sim({y_t{q}{i}},{epsilons_t{q}{i}}, A, At, {aW{i}}, {G{i}}, {W{i}}, Psi_full, Psit_full, param_HSI, X0(:,i), Anorm_ch(i));
+            
         end
+        
+        c = size(xsol,3);
+        sol = reshape(xsol(:),numel(xsol(:))/c,c);
+        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)))
+        psnrh = zeros(c,1);
+        for i = ch
+            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+            Time_iter = mean(end_iter{i});
+        end
+        SNR_average = mean(psnrh)
+        
+        Time_iter_average = mean(Time_iter)
+        
+        save(['./results/result_split_L11_' num2str(overlap) '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter', 'Time_iter_average');
+        fitswrite(xsol,'./results/xsol_split_L11.fits')
     end
-end
+
 
 end

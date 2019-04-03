@@ -1,8 +1,8 @@
-function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_Adapt_blocks_rwNL21_precond_new_sim(y, epsilon, A, At, pU, G, W, Psi, Psit, param,X0)
+function [xsol,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,l11,norm_res,res,end_iter] = pdfb_L11_Adapt_blocks_rw_precond_new_sim(y, epsilon, A, At, pU, G, W, Psi, Psit, param, X0, nu2)
 
 % This function solves:
 %
-% min || X ||_* + lambda * ||Psit(X)||_2,1   s.t.  || Y - A(X) ||_2 <= epsilon and x>=0
+%   min lambda * ||Psit(X)||_2,1   s.t.  || Y - A(X) ||_2 <= epsilon and x>=0
 %
 % Author: Abdullah Abdulaziz
 
@@ -19,9 +19,9 @@ No = size(W{1}{1}, 1);
 % number of pixels
 [M, N] = size(At(zeros(No, 1)));
 
-for i = 1 : c
-    x0(:,:,i) = reshape(X0(:,i),M,N);
-end
+x0 = reshape(X0,M,N);
+
+param.nu2 = nu2;
 
 %Initializations.
 if isfield(param,'init_xsol')
@@ -30,24 +30,6 @@ if isfield(param,'init_xsol')
 else
     xsol = zeros(M,N,c);
     fprintf('xsol NOT uploaded \n\n')
-end
-sol = reshape(xsol(:),numel(xsol(:))/c,c);
-
-%Initial dual variables
-if isfield(param,'init_v0')
-    v0 = param.init_v0;
-    fprintf('v0 uploaded \n\n')
-else
-    v0 = zeros(size(sol));
-    fprintf('v0 NOT uploaded \n\n')
-end
-
-if isfield(param,'init_weights0')
-    weights0 = param.init_weights0;
-    fprintf('weights0 uploaded \n\n')
-else
-    weights0 = ones(c,1);
-    fprintf('weights0 NOT uploaded \n\n')
 end
 
 %Initial dual variables
@@ -66,6 +48,7 @@ else
     weights1 = ones(size(v1,1),1);
     fprintf('weights1 NOT uploaded \n\n')
 end
+
 
 if isfield(param,'init_v2')
     v2 = param.init_v2;
@@ -100,8 +83,6 @@ else
     fprintf('g NOT uploaded \n\n')
 end
 
-g0 = zeros(size(xsol));
-Fx = zeros(No,c);
 Ftx = zeros(size(xsol));
 
 
@@ -127,7 +108,6 @@ if isfield(param,'init_t_block')
     t_start = param.init_t+1;
     reweight_last_step_iter = param.init_t;
     reweight_step_count = param.reweight_step_count+1;
-    % rw_counts is an index for the reweight steps vector
     rw_counts = 1;
     fprintf('t t_block uploaded \n\n')
 else
@@ -151,26 +131,22 @@ reweight_alpha = param.reweight_alpha;
 reweight_alpha_ff = param.reweight_alpha_ff;
 reweight_steps = param.reweight_steps;
 
+
 %Step sizes computation
 
 %Step size for the dual variables
-sigma0 = 1.0/param.nu0;
 sigma1 = 1.0/param.nu1;
 sigma2 = 1.0/param.nu2;
 
 %Step size primal
-tau = 0.99/(sigma0*param.nu0 + sigma1*param.nu1 + sigma2*param.nu2);
+tau = 0.99/(sigma1*param.nu1 + sigma2*param.nu2);
 
-sigma00 = tau*sigma0;
 sigma11 = tau*sigma1;
 sigma22 = tau*sigma2;
 
-
 flag = 0;
 
-beta0 = param.gamma0/sigma0;
 beta1 = param.gamma/sigma1;
-
 
 Gt = cell(size(G));
 for i = 1 : c
@@ -180,16 +156,16 @@ for i = 1 : c
     end
 end
 
+
 A = afclean(A);
 At = afclean(At);
 Psi = afclean(Psi);
 Psit = afclean(Psit);
 
 
-% Main loop. Sequential.
 
-util_create_pool(param.num_workers);
-maxNumCompThreads(param.num_workers);
+
+% Main loop. Sequential.
 
 start_loop = tic;
 
@@ -209,22 +185,13 @@ for t = t_start : param.max_iter
     %prev_xsol = [];
     
     %% Dual variables update
-    %% Nuclear norm function update
-    xhatm = reshape(xhat,numel(xhat)/c,c);
-    [U0,S0,V0] = svd(v0 + xhatm,'econ');
-    v0 = v0 + xhatm - (U0*diag(max(diag(S0) - beta0 * weights0, 0))*V0');
-    %nuclear(t) = norm(diag(S0),1);
-    % Free memory
-    %U0=[]; S0=[]; V0=[]; xhatm = [];
     
-    %% L-2,1 function update
-    r1 = v1 +  Psit(xhat);
-    l2 = sqrt(sum(abs(r1).^2,2));
-    l2_soft = max(l2 - beta1*weights1, 0)./ (l2+eps);
-    v1 = r1 - (l2_soft .* r1);
-    %l21(t) = norm(l2(:),1);
-    % Free memory
-    %r1=[]; l2=[]; l2_soft=[];
+    %% L-1,1 function update
+    r1 = v1 + Psit(xhat);
+    v1 = r1 - sign(r1).*max(abs(r1) - beta1*weights1,0);
+    
+    % local L11 norm of current solution
+    l11(t) = norm(r1(:),1);
     
     %% L2 ball projection update
     counter = 1;
@@ -233,8 +200,13 @@ for t = t_start : param.max_iter
         g2 = zeros(No,1);
         for j = 1 : length(G{i})
             r2{i}{j} = G{i}{j} * Fx(W{i}{j});
+            
             [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
             v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
+            
+            % projection onto the l2-ball
+            %v2{i}{j} = v2{i}{j} + r2{i}{j} - proj_l2ball(v2{i}{j} + r2{i}{j}, epsilon{i}{j}, y{i}{j});
+            
             
             u2{i}{j} = Gt{i}{j} * v2{i}{j};
             g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
@@ -248,74 +220,69 @@ for t = t_start : param.max_iter
         Ftx(:,:,i) = real(At(g2));
     end
     % Free memory
-    %g2=[]; Fx=[];
+    g2=[]; Fx=[];
     
     %% Update primal gradient
-    g0 = reshape(v0,M,N,c);
-    g = sigma00*g0 + sigma11*Psi(v1) + sigma22*Ftx;
+    
+    g = sigma11*Psi(v1) + sigma22*Ftx;
     % Free memory
-    %g0=[]; Ftx=[];
-   
-    end_iter(t) = toc(start_iter); 
+    %Ftx=[]; g1=[];
+    
+    end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
- 
+    
     %% Display
-    if ~mod(t,100000)
-        
-        xhatm = reshape(xsol,numel(xsol)/c,c);
-        [~,S0,~] = svd(xhatm,'econ');
-        nuclear = norm(diag(S0),1);
-        
-        l2 = sqrt(sum(abs(Psit(xsol)).^2,2));
-        l21 = norm(l2(:),1);
+    if ~mod(t,25000)
         
         %SNR
-        sol = reshape(xsol(:),numel(xsol(:))/c,c);
-        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(c,1);
-        for i = 1:c
-            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-        end
-        SNR_average = mean(psnrh);
+        SNR = 20*log10(norm(X0(:))/norm(X0(:)-xsol(:)));
         
         %Log
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
-            fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear(t), l21(t), rel_fval(t));
-            fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
-            fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+            fprintf('\n l11-norm = %e, rel_fval = %e\n\n', l11(t), rel_fval(t));
+            fprintf(' epsilon = %e, residual = %e\n\n', norm(epsilon_check),norm(residual_check));
+            fprintf(' SNR = %e\n\n', SNR);
+            
+            figure(1),
+            
+            subplot(1,2,1);
+            imagesc(log10(max(flip(x0),0))); hold on;
+            colorbar;
+            axis image;
+            axis off;
+            colormap(cubehelix);
+            caxis([-3.5, 0]);
+            xlabel(['x0 - it = ',num2str(t)])
+            
+            subplot(1,2,2);
+            imagesc(log10(max(flip(xsol),0))); hold on;
+            colorbar;
+            axis image;
+            axis off;
+            colormap(cubehelix);
+            caxis([-3.5, 0]);
+            xlabel(['xsol - it = ',num2str(t)])
+            
+            pause(0.1)
         end
         
-          %diary('WB_new');
-    end
-    
-    %% Save
-    if ~mod(t,200000)
-        
-        % Calculate residual images:
-        for i = 1 : c
-            Fx = A(xsol(:,:,i));
-            g2 = zeros(No,1);
-            for j = 1 : length(G{i})
-                res_f{i}{j} = y{i}{j} - G{i}{j} * Fx(W{i}{j});
-                u2{i}{j} = Gt{i}{j} * res_f{i}{j};
-                g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
-            end
-            res(:,:,i) = real(At(g2));
-        end
-        
-        fitswrite(xsol,['./reweight_res/xsol_5G_',num2str(t),'.fits']);
-        fitswrite(res,['./reweight_res/res_5G_',num2str(t),'.fits']);
-        
+        %diary('erw_a06_L1_5e5_6b');
     end
     
     %% Global stopping criteria
-    %     prod(prod(residual_check < param.adapt_eps_tol_out*epsilon_check)) && prod(prod(residual_check > param.adapt_eps_tol_in*epsilon_check))
-    if t>1 && rel_fval(t) < param.rel_obj && reweight_step_count > param.total_reweights && ...
-            (norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check))
+    %     if (t>1 && rel_fval(t) < param.rel_obj && reweight_step_count >= param.total_reweights && ...
+    %             prod(prod(residual_check < param.adapt_eps_tol_out*epsilon_check)) && prod(prod(residual_check > param.adapt_eps_tol_in*epsilon_check)))
+    %         flag = 1;
+    %         break;
+    %     end
+    
+    if (t>1 && rel_fval(t) < param.rel_obj && reweight_step_count >= param.total_reweights && ...
+            (norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check)))
         flag = 1;
         break;
     end
+    
     
     %% Update epsilons
     if param.use_adapt_eps && t > param.adapt_eps_start
@@ -358,26 +325,22 @@ for t = t_start : param.max_iter
             t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr)
         %(norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check)) && ...
         
-        weights0_old = weights0;
         weights1_old = weights1;
         
+        
         fprintf('Reweighting: %i\n\n', reweight_step_count);
+ 
         
-        sol = reshape(xsol(:),numel(xsol(:))/c,c);
-        [~,S0,~] = svd(sol,'econ');
-        d_val0 = abs(diag(S0));
-        weights0 = reweight_alpha ./ (reweight_alpha + d_val0);
-        weights0(d_val0 > max(d_val0) * param.reweight_abs_of_max) = 0;
-        
-        d_val1 = sqrt(sum(abs(Psit(xsol)).^2,2));
+        d_val1 = abs(Psit(xsol));
         weights1 = reweight_alpha ./ (reweight_alpha + d_val1);
         weights1(d_val1 > max(d_val1) * param.reweight_abs_of_max) = 0;
         reweight_alpha = reweight_alpha_ff .* reweight_alpha;
         
-        if (reweight_step_count >= param.total_reweights) %|| (norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check))
+        
+        
+        if reweight_step_count > param.total_reweights
             param.reweight_max_reweight_itr = t+1;
             fprintf('\n\n No more reweights \n\n');
-            break;
         end
         
         % Calculate residual images:
@@ -392,25 +355,16 @@ for t = t_start : param.max_iter
             res(:,:,i) = real(At(g2));
         end
         
-        %         if (reweight_step_count == 1) || (~mod(reweight_step_count,5))
-        %             save(['./reweight_res/temp_result_',num2str(reweight_step_count),'.mat'],'-v7.3', 'xsol', 'v0', 'v1', 'v2', 'g', 'weights0_old', 'weights1_old', 'weights0', 'weights1', 'proj', 't_block','reweight_alpha', 'epsilon', 't', 'rel_fval', 'nuclear', 'l21', 'norm_res', 'res');
+        %fitswrite(xsol,['./reweight_res/rw_sol_',num2str(reweight_step_count),'.fits']);
+        %fitswrite(res,['./reweight_res/rw_res_',num2str(reweight_step_count),'.fits']);
+        %         if (reweight_step_count == 30) || (reweight_step_count == 35) || (reweight_step_count == 40) || ...
+        %            (reweight_step_count == 45) || (reweight_step_count == 50) %(~mod(reweight_step_count,5))
+        %             save(['./reweight_res_l1/temp_result_' num2str(ch) '_' num2str(reweight_step_count) '.mat'],'-v7.3', 'xsol', 'v1', 'v2', 'g', 'weights1_old', 'weights1', 'proj', 't_block', 'reweight_alpha', 'epsilon', 'rel_fval', 'l11', 'norm_res', 'res');
         %         end
         
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
         rw_counts = rw_counts + 1;
-        
-        %         figure(1),
-        %         subplot(2,2,1);
-        %         imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        %         subplot(2,2,2);
-        %         imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        %         subplot(2,2,3);
-        %         imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        %         subplot(2,2,4);
-        %         imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        %         pause(0.1)
-        
     end
     
 end
@@ -429,37 +383,17 @@ for i = 1 : c
 end
 
 %Final log
-
-xhatm = reshape(xsol,numel(xsol)/c,c);
-[~,S0,~] = svd(xhatm,'econ');
-nuclear = norm(diag(S0),1);
-
-l2 = sqrt(sum(abs(Psit(xsol)).^2,2));
-l21 = norm(l2(:),1);
-        
-%SNR
-sol = reshape(xsol(:),numel(xsol(:))/c,c);
-SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-psnrh = zeros(c,1);
-for i = 1:c
-    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-end
-SNR_average = mean(psnrh);
-
 if (param.verbose > 0)
     if (flag == 1)
         fprintf('Solution found\n');
-        fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
-        fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
-        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+        fprintf(' Relative variation = %e\n', rel_fval(t));
+        fprintf(' Final residual = %e\n', residual_check);
+        fprintf(' epsilon = %e\n', epsilon_check);
     else
         fprintf('Maximum number of iterations reached\n');
-        fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
-        fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
-        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+        fprintf(' Relative variation = %e\n', rel_fval(t));
+        fprintf(' Final residual = %e\n', residual_check);
+        fprintf(' epsilon = %e\n', epsilon_check);
     end
 end
-
 end
