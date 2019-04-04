@@ -71,10 +71,10 @@ if gaussian_UV
     if generate_uv
         [u, v] = util_gen_sampling_pattern(sampling_pattern, sparam);
         if save_uv
-            save(['./simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat'],'-v7.3', 'u', 'v');
+            save(['hypersara-sdwt2/simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat'],'-v7.3', 'u', 'v');
         end
     elseif load_uv
-        load(['./simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat']);
+        load(['hypersara-sdwt2/simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat']);
         disp('coverage loaded successfully ;)')
     end
     
@@ -138,10 +138,10 @@ if realistic_UV
     if generate_uv
         [U,V,~] = generate_uv_cov_antennas(Pos_ant,x00,h,lat,dec, param_data.T) ;
         if save_uv
-            save(['./simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat'],'-v7.3', 'u', 'v');
+            save(['hypersara-sdwt2/simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat'],'-v7.3', 'u', 'v');
         end
     elseif load_uv
-        load(['./simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat']);
+        load(['hypersara-sdwt2/simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat']);
         disp('coverage loaded successfully ;)')
     end
     
@@ -192,7 +192,7 @@ if realistic_UV
     bmax = max(r)
     
     figure, scatter(u1,v1,'r.');
-    save('./results/uv.mat','u1','v1'); 
+    save('hypersara-sdwt2/results/uv.mat','u1','v1'); 
  
     if ~generate_simple_image
         u1 = u1/2;
@@ -225,11 +225,11 @@ end
 figure(5), scatter(uw{i},vw{i},'r.')
 %% Save data
 if save_data
-    save('./simulated_data/data/data.mat','-v7.3', 'G', 'W', 'aW');
+    save('hypersara-sdwt2/simulated_data/data/data.mat','-v7.3', 'G', 'W', 'aW');
 end
 
 if save_full_operator && exist('Gw','var')
-    save('./simulated_data/data/Gw.mat','-v7.3', 'Gw');
+    save('hypersara-sdwt2/simulated_data/data/Gw.mat','-v7.3', 'Gw');
 end
 
 %% Free memory

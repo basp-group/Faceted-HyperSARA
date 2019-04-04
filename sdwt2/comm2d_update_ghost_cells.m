@@ -24,6 +24,8 @@ function x_overlap = comm2d_update_ghost_cells(x_overlap, overlap_q, overlap_g_s
 %%
 % Code: P.-A. Thouvenin.
 % [02/04/2019] final debug, code ok
+% [03/04/2019] add basic support for wideband, see if further modifications 
+% are needed later on (for the spectral splitting)
 %-------------------------------------------------------------------------%
 %%
 
@@ -56,13 +58,13 @@ if qy < Qy
     else
         offset_x = 0;
     end
-    data_vert = x_overlap(end-overlap_g_south(1)+1:end, 1+offset_x:end);
+    data_vert = x_overlap(end-overlap_g_south(1)+1:end, 1+offset_x:end, :);
     %data_vert = labindex*ones(size(data_vert)); % just for testing purposes
     
     if qx < Qx
         % communicate corner to SE (qy+1, qx+1) -> q = qx*Qy + qy+1
         dest_diag = qx*Qy + qy+1;
-        data_diag = x_overlap(end-overlap_g_south_east(1)+1:end, end-overlap_g_south_east(2)+1:end);
+        data_diag = x_overlap(end-overlap_g_south_east(1)+1:end, end-overlap_g_south_east(2)+1:end, :);
         %data_diag = labindex*ones(size(data_diag)); % just for testing purposes
     end
 end
@@ -75,7 +77,7 @@ if qx < Qx
     else
         offset_y = 0;
     end
-    data_horz = x_overlap(1+offset_y:end, end-overlap_g_east(2)+1:end);
+    data_horz = x_overlap(1+offset_y:end, end-overlap_g_east(2)+1:end, :);
     %data_horz = labindex*ones(size(data_horz)); % just for testing purposes
 end
 
@@ -114,7 +116,7 @@ if ~isempty(rcv_vert_data) % from N
         offset = 0;
     end
     % x_overlap(1:size(rcv_vert_data, 1), 1+size(x_overlap,2)-size(rcv_vert_data,2):end) = rcv_vert_data;
-    x_overlap(1:size(rcv_vert_data, 1), 1+offset:end) = rcv_vert_data;
+    x_overlap(1:size(rcv_vert_data, 1), 1+offset:end, :) = rcv_vert_data;
 end
 
 % from W
@@ -126,12 +128,12 @@ if ~isempty(rcv_horz_data)
         offset = 0;
     end
     %x_overlap(1+offset:end, 1:overlap_q(2)) = rcv_horz_data;
-    x_overlap(1+offset:end, 1:size(rcv_horz_data, 2)) = rcv_horz_data;
+    x_overlap(1+offset:end, 1:size(rcv_horz_data, 2), :) = rcv_horz_data;
 end
 
 % from NW
 if ~isempty(rcv_diag_data)
-    x_overlap(1:size(rcv_diag_data, 1), 1:size(rcv_diag_data, 2)) = rcv_diag_data;
+    x_overlap(1:size(rcv_diag_data, 1), 1:size(rcv_diag_data, 2), :) = rcv_diag_data;
 end
 
 end
