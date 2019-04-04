@@ -1,0 +1,19604 @@
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2018 The MathWorks, Inc.
+                   R2018a (9.4.0.813654) 64-bit (glnxa64)
+                             February 23, 2018
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+
+chunks =
+
+     1    20
+    11    30
+    21    40
+    31    50
+    41    60
+
+
+irtdir =
+
+    '/lustre/home/sc004/aa61/HyperSARA_dist/hypersara-sdwt2/lib/irt'
+
+Path setup for irt appears to have succeeded.
+/*----------------------------------------------------------------*/
+ example: Simulation of wide band radio interferometric data
+/*----------------------------------------------------------------*/
+
+n_src =
+
+    11
+
+
+ans =
+
+     7
+
+
+ans =
+
+     0     1
+
+
+bmax =
+
+    3.0511
+
+
+ans =
+
+     0     1
+
+
+bmax =
+
+    3.0511
+
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 3s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+norm it n=2 norm=1
+norm it n=3 norm=283565.104
+norm it n=4 norm=1940300.208
+norm it n=5 norm=2599879.6744
+norm it n=6 norm=3109892.3584
+norm it n=7 norm=3460158.5391
+norm it n=8 norm=3710398.0877
+norm it n=9 norm=3900113.5509
+norm it n=10 norm=4050778.8735
+norm it n=11 norm=4174342.2535
+norm it n=12 norm=4277841.2204
+norm it n=13 norm=4365745.748
+norm it n=14 norm=4441131.9829
+norm it n=15 norm=4506268.0983
+norm it n=16 norm=4562912.2752
+norm it n=17 norm=4612470.5072
+norm it n=18 norm=4656085.6819
+norm it n=19 norm=4694692.7305
+norm it n=20 norm=4729056.8634
+norm it n=21 norm=4759803.0509
+norm it n=22 norm=4787440.4723
+norm it n=23 norm=4812383.4991
+norm it n=24 norm=4834969.8093
+norm it n=25 norm=4855475.8625
+norm it n=26 norm=4874129.8786
+norm it n=27 norm=4891122.4818
+norm it n=28 norm=4906615.2278
+norm it n=29 norm=4920747.2705
+norm it n=30 norm=4933640.4497
+norm it n=31 norm=4945403.0836
+norm it n=32 norm=4956132.7309
+norm it n=33 norm=4965918.1623
+norm it n=34 norm=4974840.7436
+norm it n=35 norm=4982975.3979
+norm it n=36 norm=4990391.277
+norm it n=37 norm=4997152.2425
+norm it n=38 norm=5003317.2271
+norm it n=39 norm=5008940.5269
+norm it n=40 norm=5014072.058
+norm it n=41 norm=5018757.5961
+norm it n=42 norm=5023039.012
+norm it n=43 norm=5026954.5074
+norm it n=44 norm=5030538.8512
+norm it n=45 norm=5033823.6168
+norm it n=46 norm=5036837.4175
+norm it n=47 norm=5039606.1373
+norm it n=48 norm=5042153.154
+norm it n=49 norm=5044499.5549
+norm it n=50 norm=5046664.3396
+norm it n=51 norm=5048664.6128
+norm it n=52 norm=5050515.7627
+norm it n=53 norm=5052231.6274
+norm it n=54 norm=5053824.6476
+norm it n=55 norm=5055306.007
+norm it n=56 norm=5056685.76
+norm it n=57 norm=5057972.9478
+norm it n=58 norm=5059175.7035
+norm it n=59 norm=5060301.3467
+norm it n=60 norm=5061356.4689
+norm it n=61 norm=5062347.0105
+norm it n=62 norm=5063278.3287
+norm it n=63 norm=5064155.2599
+norm it n=64 norm=5064982.1738
+norm it n=65 norm=5065763.0228
+norm it n=66 norm=5066501.386
+norm it n=67 norm=5067200.5077
+norm it n=68 norm=5067863.3327
+norm it n=69 norm=5068492.5371
+norm it n=70 norm=5069090.5557
+norm it n=71 norm=5069659.6068
+norm it n=72 norm=5070201.7142
+norm it n=73 norm=5070718.7266
+norm it n=74 norm=5071212.3352
+norm it n=75 norm=5071684.0888
+norm it n=76 norm=5072135.4084
+norm it n=77 norm=5072567.5987
+norm it n=78 norm=5072981.8599
+norm it n=79 norm=5073379.2973
+norm it n=80 norm=5073760.9301
+norm it n=81 norm=5074127.6994
+norm it n=82 norm=5074480.4754
+norm it n=83 norm=5074820.0637
+norm it n=84 norm=5075147.2108
+norm it n=85 norm=5075462.6098
+norm it n=86 norm=5075766.9044
+norm it n=87 norm=5076060.6938
+norm it n=88 norm=5076344.5357
+norm it n=89 norm=5076618.9503
+norm it n=90 norm=5076884.423
+norm it n=91 norm=5077141.4075
+norm it n=92 norm=5077390.3281
+norm it n=93 norm=5077631.582
+norm it n=94 norm=5077865.5416
+norm it n=95 norm=5078092.5561
+norm it n=96 norm=5078312.9536
+norm it n=97 norm=5078527.0423
+norm it n=98 norm=5078735.1119
+norm it n=99 norm=5078937.4356
+norm it n=100 norm=5079134.2703
+norm it n=101 norm=5079325.8586
+norm it n=102 norm=5079512.4292
+norm it n=103 norm=5079694.1982
+norm it n=104 norm=5079871.3697
+norm it n=105 norm=5080044.1368
+norm it n=106 norm=5080212.6822
+norm it n=107 norm=5080377.1788
+norm it n=108 norm=5080537.7907
+norm it n=109 norm=5080694.6732
+norm it n=110 norm=5080847.9738
+norm it n=111 norm=5080997.8324
+norm it n=112 norm=5081144.382
+norm it n=113 norm=5081287.749
+norm it n=114 norm=5081428.0534
+norm it n=115 norm=5081565.4096
+norm it n=116 norm=5081699.9264
+norm it n=117 norm=5081831.7073
+norm it n=118 norm=5081960.8512
+norm it n=119 norm=5082087.4522
+norm it n=120 norm=5082211.6
+norm it n=121 norm=5082333.3803
+norm it n=122 norm=5082452.8749
+norm it n=123 norm=5082570.162
+norm it n=124 norm=5082685.3162
+norm it n=125 norm=5082798.4089
+norm it n=126 norm=5082909.5083
+norm it n=127 norm=5083018.6799
+norm it n=128 norm=5083125.986
+norm it n=129 norm=5083231.4866
+norm it n=130 norm=5083335.2391
+norm it n=131 norm=5083437.2985
+norm it n=132 norm=5083537.7175
+norm it n=133 norm=5083636.5467
+norm it n=134 norm=5083733.8346
+norm it n=135 norm=5083829.6278
+norm it n=136 norm=5083923.9711
+norm it n=137 norm=5084016.9074
+norm it n=138 norm=5084108.4782
+norm it n=139 norm=5084198.7231
+norm it n=140 norm=5084287.6802
+norm it n=141 norm=5084375.3865
+norm it n=142 norm=5084461.8773
+norm it n=143 norm=5084547.1865
+norm it n=144 norm=5084631.3472
+norm it n=145 norm=5084714.3908
+norm it n=146 norm=5084796.3479
+norm it n=147 norm=5084877.2477
+norm it n=148 norm=5084957.1188
+norm it n=149 norm=5085035.9883
+norm it n=150 norm=5085113.8826
+norm it n=151 norm=5085190.8273
+norm it n=152 norm=5085266.8469
+norm it n=153 norm=5085341.9652
+norm it n=154 norm=5085416.205
+norm it n=155 norm=5085489.5887
+norm it n=156 norm=5085562.1376
+norm it n=157 norm=5085633.8724
+norm it n=158 norm=5085704.8133
+norm it n=159 norm=5085774.9795
+norm it n=160 norm=5085844.39
+norm it n=161 norm=5085913.0628
+norm it n=162 norm=5085981.0157
+norm it n=163 norm=5086048.2655
+norm it n=164 norm=5086114.8289
+norm it n=165 norm=5086180.7218
+norm it n=166 norm=5086245.9597
+norm it n=167 norm=5086310.5577
+norm it n=168 norm=5086374.5304
+norm it n=169 norm=5086437.8918
+norm it n=170 norm=5086500.6558
+norm it n=171 norm=5086562.8355
+norm it n=172 norm=5086624.4439
+norm it n=173 norm=5086685.4936
+norm it n=174 norm=5086745.9966
+norm it n=175 norm=5086805.9649
+norm it n=176 norm=5086865.4098
+norm it n=177 norm=5086924.3425
+norm it n=178 norm=5086982.7738
+norm it n=179 norm=5087040.7142
+norm it n=180 norm=5087098.174
+norm it n=181 norm=5087155.163
+norm it n=182 norm=5087211.6909
+norm it n=183 norm=5087267.767
+norm it n=184 norm=5087323.4005
+norm it n=185 norm=5087378.6002
+norm it n=186 norm=5087433.3748
+norm it n=187 norm=5087487.7325
+norm it n=188 norm=5087541.6817
+norm it n=189 norm=5087595.2301
+norm it n=190 norm=5087648.3855
+norm it n=191 norm=5087701.1554
+norm it n=192 norm=5087753.5471
+norm it n=193 norm=5087805.5677
+norm it n=194 norm=5087857.2241
+norm it n=195 norm=5087908.523
+norm it n=196 norm=5087959.471
+norm it n=197 norm=5088010.0744
+norm it n=198 norm=5088060.3395
+norm it n=199 norm=5088110.2722
+norm it n=200 norm=5088159.8784
+ 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  WARNING: Change DWT Extension Mode  !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                        
+****************************************
+**  DWT Extension Mode: Zero Padding  **
+****************************************
+                                        
+norm it n=2 norm=1
+norm it n=3 norm=1.732
+norm it n=4 norm=1.9148
+norm it n=5 norm=1.9771
+norm it n=6 norm=1.9942
+norm it n=7 norm=1.9985
+norm it n=8 norm=1.9996
+norm it n=9 norm=1.9999
+norm it n=10 norm=2
+norm it n=11 norm=2
+norm it n=12 norm=2
+norm it n=13 norm=2
+norm it n=14 norm=2
+norm it n=15 norm=2
+                                        
+****************************************
+**  DWT Extension Mode: Zero Padding  **
+****************************************
+                                        
+norm it n=2 norm=1
+norm it n=3 norm=1.7321
+norm it n=4 norm=1.9149
+norm it n=5 norm=1.9771
+norm it n=6 norm=1.9942
+norm it n=7 norm=1.9985
+norm it n=8 norm=1.9996
+norm it n=9 norm=1.9999
+norm it n=10 norm=2
+norm it n=11 norm=2
+norm it n=12 norm=2
+norm it n=13 norm=2
+norm it n=14 norm=2
+norm it n=15 norm=2
+-----------------------------------------
+Split L21 + Nuclear
+-----------------------------------------
+xsol NOT uploaded 
+
+v0 NOT uploaded 
+
+weights0 NOT uploaded 
+
+v1 NOT uploaded 
+
+weights1 NOT uploaded 
+
+v2 NOT uploaded 
+
+g NOT uploaded 
+
+proj NOT uploaded 
+
+t t_block NOT uploaded 
+
+Starting parallel pool (parpool) using the 'local' profile ...
+connected to 32 workers.
+Created parallel pool ... 
+Setting DWT mode ... 
+Lab  1: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  2: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  3: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  4: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  5: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  6: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  7: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  8: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab  9: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 10: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 11: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 12: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 13: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 14: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 15: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 16: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 17: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 18: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 19: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 20: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 21: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 22: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 23: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 24: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 25: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 26: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 27: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 28: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 29: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 30: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 31: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Lab 32: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+
+end_iter =
+
+   86.0916
+
+
+end_iter =
+
+   89.8915
+
+
+end_iter =
+
+   90.2167
+
+
+end_iter =
+
+   90.5084
+
+
+end_iter =
+
+   88.1078
+
+
+end_iter =
+
+   87.5531
+
+
+end_iter =
+
+   89.5731
+
+
+end_iter =
+
+   90.6016
+
+
+end_iter =
+
+   91.9865
+
+
+end_iter =
+
+   88.7879
+
+
+end_iter =
+
+   92.0675
+
+
+end_iter =
+
+   91.0162
+
+
+end_iter =
+
+   93.8218
+
+
+end_iter =
+
+   90.8795
+
+
+end_iter =
+
+   91.5666
+
+
+end_iter =
+
+   90.8434
+
+
+end_iter =
+
+   90.6909
+
+
+end_iter =
+
+   91.0390
+
+
+end_iter =
+
+   92.2824
+
+
+end_iter =
+
+   92.9034
+
+
+end_iter =
+
+   92.4861
+
+
+end_iter =
+
+   89.8156
+
+
+end_iter =
+
+   89.3644
+
+
+end_iter =
+
+   90.1735
+
+
+end_iter =
+
+   91.5855
+
+
+end_iter =
+
+   91.2114
+
+
+end_iter =
+
+   91.8347
+
+
+end_iter =
+
+   93.2722
+
+
+end_iter =
+
+   92.1402
+
+
+end_iter =
+
+   89.8316
+
+
+end_iter =
+
+   91.2635
+
+
+end_iter =
+
+   88.9647
+
+
+end_iter =
+
+   90.5141
+
+
+end_iter =
+
+   91.5564
+
+
+end_iter =
+
+   90.5188
+
+
+end_iter =
+
+   90.1590
+
+
+end_iter =
+
+   91.3109
+
+
+end_iter =
+
+   89.0901
+
+
+end_iter =
+
+   89.2881
+
+
+end_iter =
+
+   90.6957
+
+
+end_iter =
+
+   89.4409
+
+
+end_iter =
+
+   88.8265
+
+
+end_iter =
+
+   88.4943
+
+
+end_iter =
+
+   92.8869
+
+
+end_iter =
+
+   90.7027
+
+
+end_iter =
+
+   90.4520
+
+
+end_iter =
+
+   90.3443
+
+
+end_iter =
+
+   91.4826
+
+
+end_iter =
+
+   91.1335
+
+
+end_iter =
+
+   90.3901
+
+
+end_iter =
+
+   90.6501
+
+
+end_iter =
+
+   93.2749
+
+
+end_iter =
+
+   93.8813
+
+
+end_iter =
+
+   93.0268
+
+
+end_iter =
+
+   91.4062
+
+
+end_iter =
+
+   91.7070
+
+
+end_iter =
+
+   93.0830
+
+
+end_iter =
+
+   90.7932
+
+
+end_iter =
+
+   91.5273
+
+
+end_iter =
+
+   92.2567
+
+
+end_iter =
+
+   92.5103
+
+
+end_iter =
+
+   92.8448
+
+
+end_iter =
+
+   90.6178
+
+
+end_iter =
+
+   93.0032
+
+
+end_iter =
+
+   93.0968
+
+
+end_iter =
+
+   90.1734
+
+
+end_iter =
+
+   90.6828
+
+
+end_iter =
+
+   93.8689
+
+
+end_iter =
+
+   90.9406
+
+
+end_iter =
+
+   91.9856
+
+
+end_iter =
+
+   91.0525
+
+
+end_iter =
+
+   91.5433
+
+
+end_iter =
+
+   92.3721
+
+
+end_iter =
+
+   91.8046
+
+
+end_iter =
+
+   92.6365
+
+
+end_iter =
+
+   91.3881
+
+
+end_iter =
+
+   89.3795
+
+
+end_iter =
+
+   89.9874
+
+
+end_iter =
+
+   90.6442
+
+
+end_iter =
+
+   90.1181
+
+
+end_iter =
+
+   90.8975
+
+
+end_iter =
+
+   93.2482
+
+
+end_iter =
+
+   92.5428
+
+
+end_iter =
+
+   90.0349
+
+
+end_iter =
+
+   91.6715
+
+
+end_iter =
+
+   93.9140
+
+
+end_iter =
+
+   87.9568
+
+
+end_iter =
+
+   87.7490
+
+
+end_iter =
+
+   87.1390
+
+
+end_iter =
+
+   92.6739
+
+
+end_iter =
+
+   90.9097
+
+
+end_iter =
+
+   92.7326
+
+
+end_iter =
+
+   92.0424
+
+
+end_iter =
+
+   93.5924
+
+
+end_iter =
+
+   92.1514
+
+
+end_iter =
+
+   91.9204
+
+
+end_iter =
+
+   93.1178
+
+
+end_iter =
+
+   91.7425
+
+
+end_iter =
+
+   94.0807
+
+
+end_iter =
+
+   90.4971
+
+
+end_iter =
+
+   88.7887
+
+
+end_iter =
+
+   88.7405
+
+
+end_iter =
+
+   91.4162
+
+
+end_iter =
+
+   88.7305
+
+
+end_iter =
+
+   90.6191
+
+
+end_iter =
+
+   89.0321
+
+
+end_iter =
+
+   91.2743
+
+
+end_iter =
+
+   91.3883
+
+
+end_iter =
+
+   89.4690
+
+
+end_iter =
+
+   90.4955
+
+
+end_iter =
+
+   89.3689
+
+
+end_iter =
+
+   90.4118
+
+
+end_iter =
+
+   90.4758
+
+
+end_iter =
+
+   92.5764
+
+
+end_iter =
+
+   91.3159
+
+
+end_iter =
+
+   89.7528
+
+
+end_iter =
+
+   90.4749
+
+
+end_iter =
+
+   90.5374
+
+
+end_iter =
+
+   94.5596
+
+
+end_iter =
+
+   91.5284
+
+
+end_iter =
+
+   88.8430
+
+
+end_iter =
+
+   87.1151
+
+
+end_iter =
+
+   89.8846
+
+
+end_iter =
+
+   89.2771
+
+
+end_iter =
+
+   91.9255
+
+
+end_iter =
+
+   93.2124
+
+
+end_iter =
+
+   92.7034
+
+
+end_iter =
+
+   94.5571
+
+
+end_iter =
+
+   92.3601
+
+
+end_iter =
+
+   91.4620
+
+
+end_iter =
+
+   92.3457
+
+
+end_iter =
+
+   92.6424
+
+
+end_iter =
+
+   91.5888
+
+
+end_iter =
+
+   91.8607
+
+
+end_iter =
+
+   92.0392
+
+
+end_iter =
+
+   92.9837
+
+
+end_iter =
+
+   90.7005
+
+
+end_iter =
+
+   95.0837
+
+
+end_iter =
+
+   94.5046
+
+
+end_iter =
+
+   95.8797
+
+
+end_iter =
+
+   93.7951
+
+
+end_iter =
+
+   93.8710
+
+
+end_iter =
+
+   93.6128
+
+
+end_iter =
+
+   94.8165
+
+
+end_iter =
+
+   95.1404
+
+
+end_iter =
+
+   93.6795
+
+
+end_iter =
+
+   91.0025
+
+
+end_iter =
+
+   92.5158
+
+
+end_iter =
+
+   93.9443
+
+
+end_iter =
+
+   93.4090
+
+
+end_iter =
+
+   92.7299
+
+
+end_iter =
+
+   93.9014
+
+
+end_iter =
+
+   92.1524
+
+
+end_iter =
+
+   93.4911
+
+
+end_iter =
+
+   91.7372
+
+
+end_iter =
+
+   88.9739
+
+
+end_iter =
+
+   90.1158
+
+
+end_iter =
+
+   91.7824
+
+
+end_iter =
+
+   89.7514
+
+
+end_iter =
+
+   93.6924
+
+
+end_iter =
+
+   93.9247
+
+
+end_iter =
+
+   95.0121
+
+
+end_iter =
+
+   90.8753
+
+
+end_iter =
+
+   92.0200
+
+
+end_iter =
+
+   91.9971
+
+
+end_iter =
+
+   92.6973
+
+
+end_iter =
+
+   91.7938
+
+
+end_iter =
+
+   91.7009
+
+
+end_iter =
+
+   90.9033
+
+
+end_iter =
+
+   89.6621
+
+
+end_iter =
+
+   91.9050
+
+
+end_iter =
+
+   89.9745
+
+
+end_iter =
+
+   90.6580
+
+
+end_iter =
+
+   91.9883
+
+
+end_iter =
+
+   89.4777
+
+
+end_iter =
+
+   92.2547
+
+
+end_iter =
+
+   90.7228
+
+
+end_iter =
+
+   91.2166
+
+
+end_iter =
+
+   91.8876
+
+
+end_iter =
+
+   90.6894
+
+
+end_iter =
+
+   90.4924
+
+
+end_iter =
+
+   90.2519
+
+
+end_iter =
+
+   93.0139
+
+
+end_iter =
+
+   91.0438
+
+
+end_iter =
+
+   91.6323
+
+
+end_iter =
+
+   92.6330
+
+
+end_iter =
+
+   92.1738
+
+
+end_iter =
+
+   90.5789
+
+
+end_iter =
+
+   93.1823
+
+
+end_iter =
+
+   94.2729
+
+
+end_iter =
+
+   93.7225
+
+
+end_iter =
+
+   91.0063
+
+
+end_iter =
+
+   91.4273
+
+
+end_iter =
+
+   94.6901
+
+
+end_iter =
+
+   92.1534
+
+
+end_iter =
+
+   92.8711
+
+
+end_iter =
+
+   90.4989
+
+
+end_iter =
+
+   92.5820
+
+
+end_iter =
+
+   91.8104
+
+
+end_iter =
+
+   93.3434
+
+
+end_iter =
+
+   91.8327
+
+
+end_iter =
+
+   91.5798
+
+
+end_iter =
+
+   92.1573
+
+
+end_iter =
+
+   91.7055
+
+
+end_iter =
+
+   92.2073
+
+
+end_iter =
+
+   91.7890
+
+
+end_iter =
+
+   92.3924
+
+
+end_iter =
+
+   93.4536
+
+
+end_iter =
+
+   91.8604
+
+
+end_iter =
+
+   91.5020
+
+
+end_iter =
+
+   94.6717
+
+
+end_iter =
+
+   91.5882
+
+
+end_iter =
+
+   91.5417
+
+
+end_iter =
+
+   91.5500
+
+
+end_iter =
+
+   92.2680
+
+
+end_iter =
+
+   90.1757
+
+
+end_iter =
+
+   92.8683
+
+
+end_iter =
+
+   91.4755
+
+
+end_iter =
+
+   93.2460
+
+
+end_iter =
+
+   92.3406
+
+
+end_iter =
+
+   92.0100
+
+
+end_iter =
+
+   93.0549
+
+
+end_iter =
+
+   92.5478
+
+
+end_iter =
+
+   91.3469
+
+
+end_iter =
+
+   92.2245
+
+
+end_iter =
+
+   89.2460
+
+
+end_iter =
+
+   90.4027
+
+
+end_iter =
+
+   89.9882
+
+
+end_iter =
+
+   92.4617
+
+
+end_iter =
+
+   91.1319
+
+
+end_iter =
+
+   89.7226
+
+
+end_iter =
+
+   94.6720
+
+
+end_iter =
+
+   94.2703
+
+
+end_iter =
+
+   93.9181
+
+
+end_iter =
+
+   91.2358
+
+
+end_iter =
+
+   91.8253
+
+
+end_iter =
+
+   92.3238
+
+
+end_iter =
+
+   92.7664
+
+
+end_iter =
+
+   93.0827
+
+
+end_iter =
+
+   91.5383
+
+
+end_iter =
+
+   90.7117
+
+
+end_iter =
+
+   91.0370
+
+
+end_iter =
+
+   92.1615
+
+
+end_iter =
+
+   90.1438
+
+
+end_iter =
+
+   89.9543
+
+
+end_iter =
+
+   91.6004
+
+
+end_iter =
+
+   92.1517
+
+
+end_iter =
+
+   92.9428
+
+
+end_iter =
+
+   93.9824
+
+
+end_iter =
+
+   93.4012
+
+
+end_iter =
+
+   91.7296
+
+
+end_iter =
+
+   92.2680
+
+
+end_iter =
+
+   93.3447
+
+
+end_iter =
+
+   92.3228
+
+
+end_iter =
+
+   95.4282
+
+
+end_iter =
+
+   93.0797
+
+
+end_iter =
+
+   92.0948
+
+
+end_iter =
+
+   91.3566
+
+
+end_iter =
+
+   91.9256
+
+
+end_iter =
+
+   93.5569
+
+
+end_iter =
+
+   91.5472
+
+
+end_iter =
+
+   92.0599
+
+
+end_iter =
+
+   92.8919
+
+
+end_iter =
+
+   92.5127
+
+
+end_iter =
+
+   91.9801
+
+
+end_iter =
+
+   91.7955
+
+
+end_iter =
+
+   94.5742
+
+
+end_iter =
+
+   92.5385
+
+
+end_iter =
+
+   91.3088
+
+
+end_iter =
+
+   92.6595
+
+
+end_iter =
+
+   91.5211
+
+
+end_iter =
+
+   92.2648
+
+
+end_iter =
+
+   90.6150
+
+
+end_iter =
+
+   91.8330
+
+
+end_iter =
+
+   91.0280
+
+
+end_iter =
+
+   92.0380
+
+
+end_iter =
+
+   91.8530
+
+
+end_iter =
+
+   88.2391
+
+
+end_iter =
+
+   88.6467
+
+
+end_iter =
+
+   90.6325
+
+
+end_iter =
+
+   88.6772
+
+
+end_iter =
+
+   90.8889
+
+
+end_iter =
+
+   90.3591
+
+
+end_iter =
+
+   88.9295
+
+
+end_iter =
+
+   90.5940
+
+
+end_iter =
+
+   92.3959
+
+
+end_iter =
+
+   91.5442
+
+
+end_iter =
+
+   93.7123
+
+
+end_iter =
+
+   92.9830
+
+
+end_iter =
+
+   92.0121
+
+
+end_iter =
+
+   92.8686
+
+
+end_iter =
+
+   91.6816
+
+
+end_iter =
+
+   90.3990
+
+
+end_iter =
+
+   90.2855
+
+
+end_iter =
+
+   89.3858
+
+
+end_iter =
+
+   93.0756
+
+
+end_iter =
+
+   89.9628
+
+
+end_iter =
+
+   91.4482
+
+
+end_iter =
+
+   92.7422
+
+
+end_iter =
+
+   91.5314
+
+
+end_iter =
+
+   89.8666
+
+
+end_iter =
+
+   90.5319
+
+
+end_iter =
+
+   92.3661
+
+
+end_iter =
+
+   93.2652
+
+
+end_iter =
+
+   91.4660
+
+
+end_iter =
+
+   89.8806
+
+
+end_iter =
+
+   91.5124
+
+
+end_iter =
+
+   91.6182
+
+
+end_iter =
+
+   90.6916
+
+
+end_iter =
+
+   90.0558
+
+
+end_iter =
+
+   89.8965
+
+
+end_iter =
+
+   91.1278
+
+
+end_iter =
+
+   92.4948
+
+
+end_iter =
+
+   90.4511
+
+
+end_iter =
+
+   90.6025
+
+
+end_iter =
+
+   90.8468
+
+
+end_iter =
+
+   90.5856
+
+
+end_iter =
+
+   90.4609
+
+
+end_iter =
+
+   91.9697
+
+
+end_iter =
+
+   90.8242
+
+
+end_iter =
+
+   91.9040
+
+
+end_iter =
+
+   91.4392
+
+
+end_iter =
+
+   91.0524
+
+
+end_iter =
+
+   91.8505
+
+
+end_iter =
+
+   88.3286
+
+
+end_iter =
+
+   90.8138
+
+
+end_iter =
+
+   89.7470
+
+
+end_iter =
+
+   89.5536
+
+
+end_iter =
+
+   91.3561
+
+
+end_iter =
+
+   93.0459
+
+
+end_iter =
+
+   90.1120
+
+
+end_iter =
+
+   91.5956
+
+
+end_iter =
+
+   93.3920
+
+
+end_iter =
+
+   91.6325
+
+
+end_iter =
+
+   91.7801
+
+
+end_iter =
+
+   89.4485
+
+
+end_iter =
+
+   93.2875
+
+
+end_iter =
+
+   92.9286
+
+
+end_iter =
+
+   90.6906
+
+
+end_iter =
+
+   92.3461
+
+
+end_iter =
+
+   92.6169
+
+
+end_iter =
+
+   92.7066
+
+
+end_iter =
+
+   91.8063
+
+
+end_iter =
+
+   93.3778
+
+
+end_iter =
+
+   89.7862
+
+
+end_iter =
+
+   90.0278
+
+
+end_iter =
+
+   91.5143
+
+
+end_iter =
+
+   91.1719
+
+
+end_iter =
+
+   92.7684
+
+
+end_iter =
+
+   90.8528
+
+
+end_iter =
+
+   91.4472
+
+
+end_iter =
+
+   90.9979
+
+
+end_iter =
+
+   90.4062
+
+
+end_iter =
+
+   89.8332
+
+
+end_iter =
+
+   89.7882
+
+
+end_iter =
+
+   91.3921
+
+
+end_iter =
+
+   91.7909
+
+
+end_iter =
+
+   89.8961
+
+
+end_iter =
+
+   90.6444
+
+
+end_iter =
+
+   93.9047
+
+
+end_iter =
+
+   92.0955
+
+
+end_iter =
+
+   92.6034
+
+
+end_iter =
+
+   94.2957
+
+
+end_iter =
+
+   95.9516
+
+
+end_iter =
+
+   92.2018
+
+
+end_iter =
+
+   94.4201
+
+
+end_iter =
+
+   92.7749
+
+
+end_iter =
+
+   88.4745
+
+
+end_iter =
+
+   89.3672
+
+
+end_iter =
+
+   90.1260
+
+
+end_iter =
+
+   89.5575
+
+
+end_iter =
+
+   91.0440
+
+
+end_iter =
+
+   89.2987
+
+
+end_iter =
+
+   91.5656
+
+
+end_iter =
+
+   91.7655
+
+
+end_iter =
+
+   91.4127
+
+
+end_iter =
+
+   92.6569
+
+
+end_iter =
+
+   95.3970
+
+
+end_iter =
+
+   95.8680
+
+
+end_iter =
+
+   91.5989
+
+
+end_iter =
+
+   88.4295
+
+
+end_iter =
+
+   88.9415
+
+
+end_iter =
+
+   87.9808
+
+
+end_iter =
+
+   89.7352
+
+
+end_iter =
+
+   90.0916
+
+
+end_iter =
+
+   90.6038
+
+
+end_iter =
+
+   89.7235
+
+
+end_iter =
+
+   91.9768
+
+
+end_iter =
+
+   90.9215
+
+
+end_iter =
+
+   89.6768
+
+
+end_iter =
+
+   92.7215
+
+
+end_iter =
+
+   90.9333
+
+
+end_iter =
+
+   91.0841
+
+
+end_iter =
+
+   92.7563
+
+
+end_iter =
+
+   93.8744
+
+
+end_iter =
+
+   93.1895
+
+
+end_iter =
+
+   93.4607
+
+
+end_iter =
+
+   93.1888
+
+
+end_iter =
+
+   92.6653
+
+
+end_iter =
+
+   92.9801
+
+
+end_iter =
+
+   92.4182
+
+
+end_iter =
+
+   92.2399
+
+
+end_iter =
+
+   92.8625
+
+
+end_iter =
+
+   95.5619
+
+
+end_iter =
+
+   94.5735
+
+
+end_iter =
+
+   93.5322
+
+
+end_iter =
+
+   94.3126
+
+
+end_iter =
+
+   95.9560
+
+
+end_iter =
+
+   93.2889
+
+
+end_iter =
+
+   92.8130
+
+
+end_iter =
+
+   94.2323
+
+
+end_iter =
+
+   94.8140
+
+
+end_iter =
+
+   96.2849
+
+
+end_iter =
+
+   92.0949
+
+
+end_iter =
+
+   94.6829
+
+
+end_iter =
+
+   90.8306
+
+
+end_iter =
+
+   90.7228
+
+
+end_iter =
+
+   92.2803
+
+
+end_iter =
+
+   91.2725
+
+
+end_iter =
+
+   90.5666
+
+
+end_iter =
+
+   90.2168
+
+
+end_iter =
+
+   89.9258
+
+
+end_iter =
+
+   88.7567
+
+
+end_iter =
+
+   91.3326
+
+
+end_iter =
+
+   90.7450
+
+
+end_iter =
+
+   90.7908
+
+
+end_iter =
+
+   91.4243
+
+
+end_iter =
+
+   91.6404
+
+
+end_iter =
+
+   91.0368
+
+
+end_iter =
+
+   90.1641
+
+
+end_iter =
+
+   90.7736
+
+
+end_iter =
+
+   89.8627
+
+
+end_iter =
+
+   90.4802
+
+
+end_iter =
+
+   90.4823
+
+
+end_iter =
+
+   88.2943
+
+
+end_iter =
+
+   91.1453
+
+
+end_iter =
+
+   93.1575
+
+
+end_iter =
+
+   92.8150
+
+
+end_iter =
+
+   90.6704
+
+
+end_iter =
+
+   92.9597
+
+
+end_iter =
+
+   92.4204
+
+
+end_iter =
+
+   93.1017
+
+
+end_iter =
+
+   92.7964
+
+
+end_iter =
+
+   92.1542
+
+
+end_iter =
+
+   91.3736
+
+
+end_iter =
+
+   94.0771
+
+
+end_iter =
+
+   92.2908
+
+
+end_iter =
+
+   94.0707
+
+
+end_iter =
+
+   93.0474
+
+
+end_iter =
+
+   92.9105
+
+
+end_iter =
+
+   92.5006
+
+
+end_iter =
+
+   87.9764
+
+
+end_iter =
+
+   89.8051
+
+
+end_iter =
+
+   91.9469
+
+
+end_iter =
+
+   90.7063
+
+
+end_iter =
+
+   89.2928
+
+
+end_iter =
+
+   89.4729
+
+
+end_iter =
+
+   90.5656
+
+
+end_iter =
+
+   93.4525
+
+
+end_iter =
+
+   91.1271
+
+
+end_iter =
+
+   90.1063
+
+
+end_iter =
+
+   88.7680
+
+
+end_iter =
+
+   89.0015
+
+
+end_iter =
+
+   89.5056
+
+
+end_iter =
+
+   92.3717
+
+
+end_iter =
+
+   91.8712
+
+
+end_iter =
+
+   91.7856
+
+
+end_iter =
+
+   91.1606
+
+
+end_iter =
+
+   91.3342
+
+
+end_iter =
+
+   91.7012
+
+
+end_iter =
+
+   90.5508
+
+
+end_iter =
+
+   90.5803
+
+
+end_iter =
+
+   91.1373
+
+
+end_iter =
+
+   92.4254
+
+
+end_iter =
+
+   91.4468
+
+
+end_iter =
+
+   91.3128
+
+
+end_iter =
+
+   91.3021
+
+
+end_iter =
+
+   94.3245
+
+
+end_iter =
+
+   93.9407
+
+
+end_iter =
+
+   92.1810
+
+
+end_iter =
+
+   91.3253
+
+
+end_iter =
+
+   90.4116
+
+
+end_iter =
+
+   88.2768
+
+
+end_iter =
+
+   92.1500
+
+
+end_iter =
+
+   91.3491
+
+
+end_iter =
+
+   91.8109
+
+
+end_iter =
+
+   94.0304
+
+
+end_iter =
+
+   91.5202
+
+
+end_iter =
+
+   92.1500
+
+
+end_iter =
+
+   92.8027
+
+
+end_iter =
+
+   93.7470
+
+
+end_iter =
+
+   93.4960
+
+
+end_iter =
+
+   89.9812
+
+
+end_iter =
+
+   93.0254
+
+
+end_iter =
+
+   91.4198
+
+
+end_iter =
+
+   90.9965
+
+
+end_iter =
+
+   90.8859
+
+
+end_iter =
+
+   91.0298
+
+
+end_iter =
+
+   91.2340
+
+
+end_iter =
+
+   93.4396
+
+
+end_iter =
+
+   89.6407
+
+
+end_iter =
+
+   90.9798
+
+
+end_iter =
+
+   93.5110
+
+
+end_iter =
+
+   93.2439
+
+
+end_iter =
+
+   93.6614
+
+
+end_iter =
+
+   90.3649
+
+
+end_iter =
+
+   91.2444
+
+
+end_iter =
+
+   92.6973
+
+
+end_iter =
+
+   91.8181
+
+
+end_iter =
+
+   90.6222
+
+
+end_iter =
+
+   90.1980
+
+
+end_iter =
+
+   93.2049
+
+
+end_iter =
+
+   91.0025
+
+
+end_iter =
+
+   91.1372
+
+
+end_iter =
+
+   90.7392
+
+
+end_iter =
+
+   92.9468
+
+
+end_iter =
+
+   90.9444
+
+
+end_iter =
+
+   91.0024
+
+
+end_iter =
+
+   92.0333
+
+
+end_iter =
+
+   93.4566
+
+
+end_iter =
+
+   92.2989
+
+
+end_iter =
+
+   93.5551
+
+
+end_iter =
+
+   94.1039
+
+
+end_iter =
+
+   93.2781
+
+
+end_iter =
+
+   95.6115
+
+
+end_iter =
+
+   94.8886
+
+
+end_iter =
+
+   90.9155
+
+
+end_iter =
+
+   93.7743
+
+
+end_iter =
+
+   94.9411
+
+
+end_iter =
+
+   90.8102
+
+
+end_iter =
+
+   90.8135
+
+
+end_iter =
+
+   92.2002
+
+
+end_iter =
+
+   92.8754
+
+
+end_iter =
+
+   95.8594
+
+
+end_iter =
+
+   93.8323
+
+
+end_iter =
+
+   92.7027
+
+
+end_iter =
+
+   92.4884
+
+
+end_iter =
+
+   93.7664
+
+
+end_iter =
+
+   92.9178
+
+
+end_iter =
+
+   91.2397
+
+
+end_iter =
+
+   93.3837
+
+
+end_iter =
+
+   92.8670
+
+
+end_iter =
+
+   93.0559
+
+
+end_iter =
+
+   92.7029
+
+
+end_iter =
+
+   94.7555
+
+
+end_iter =
+
+   92.2340
+
+
+end_iter =
+
+   91.9621
+
+
+end_iter =
+
+   93.3332
+
+
+end_iter =
+
+   92.3826
+
+
+end_iter =
+
+   90.5421
+
+
+end_iter =
+
+   90.9762
+
+
+end_iter =
+
+   92.3928
+
+
+end_iter =
+
+   92.0906
+
+
+end_iter =
+
+   91.8163
+
+
+end_iter =
+
+   93.8312
+
+
+end_iter =
+
+   91.5156
+
+
+end_iter =
+
+   91.3412
+
+
+end_iter =
+
+   92.0807
+
+
+end_iter =
+
+   92.1304
+
+
+end_iter =
+
+   91.6159
+
+
+end_iter =
+
+   91.5519
+
+
+end_iter =
+
+   94.6939
+
+
+end_iter =
+
+   94.4515
+
+
+end_iter =
+
+   93.0355
+
+
+end_iter =
+
+   91.3712
+
+
+end_iter =
+
+   90.2294
+
+
+end_iter =
+
+   91.6857
+
+
+end_iter =
+
+   92.1691
+
+
+end_iter =
+
+   93.0243
+
+
+end_iter =
+
+   91.4881
+
+
+end_iter =
+
+   95.1868
+
+
+end_iter =
+
+   91.4363
+
+
+end_iter =
+
+   88.9693
+
+
+end_iter =
+
+   88.8094
+
+
+end_iter =
+
+   87.8769
+
+
+end_iter =
+
+   90.6199
+
+
+end_iter =
+
+   91.4813
+
+
+end_iter =
+
+   90.7348
+
+
+end_iter =
+
+   90.2713
+
+
+end_iter =
+
+   91.5805
+
+
+end_iter =
+
+   90.6455
+
+
+end_iter =
+
+   90.3813
+
+
+end_iter =
+
+   90.0417
+
+
+end_iter =
+
+   93.0308
+
+
+end_iter =
+
+   91.2497
+
+
+end_iter =
+
+   91.0247
+
+
+end_iter =
+
+   94.3183
+
+
+end_iter =
+
+   91.0151
+
+
+end_iter =
+
+   92.2802
+
+
+end_iter =
+
+   91.7817
+
+
+end_iter =
+
+   91.7820
+
+
+end_iter =
+
+   92.7833
+
+
+end_iter =
+
+   92.6719
+
+
+end_iter =
+
+   93.8088
+
+
+end_iter =
+
+   91.3946
+
+
+end_iter =
+
+   93.1603
+
+
+end_iter =
+
+   93.8487
+
+
+end_iter =
+
+   92.6899
+
+
+end_iter =
+
+   91.1953
+
+
+end_iter =
+
+   91.0269
+
+
+end_iter =
+
+   92.3490
+
+
+end_iter =
+
+   91.9935
+
+
+end_iter =
+
+   89.7271
+
+
+end_iter =
+
+   90.3526
+
+
+end_iter =
+
+   91.5494
+
+
+end_iter =
+
+   91.7904
+
+
+end_iter =
+
+   93.2504
+
+
+end_iter =
+
+   92.1931
+
+
+end_iter =
+
+   92.8722
+
+
+end_iter =
+
+   92.9374
+
+
+end_iter =
+
+   91.2134
+
+
+end_iter =
+
+   90.2933
+
+
+end_iter =
+
+   91.9964
+
+
+end_iter =
+
+   92.2744
+
+
+end_iter =
+
+   91.0007
+
+
+end_iter =
+
+   94.2261
+
+
+end_iter =
+
+   93.8936
+
+
+end_iter =
+
+   92.5811
+
+
+end_iter =
+
+   92.4512
+
+
+end_iter =
+
+   91.0621
+
+
+end_iter =
+
+   90.6681
+
+
+end_iter =
+
+   91.4486
+
+
+end_iter =
+
+   93.3001
+
+
+end_iter =
+
+   92.1592
+
+
+end_iter =
+
+   92.9503
+
+
+end_iter =
+
+   91.7015
+
+
+end_iter =
+
+   90.2077
+
+
+end_iter =
+
+   90.5502
+
+
+end_iter =
+
+   91.3227
+
+
+end_iter =
+
+   91.4686
+
+
+end_iter =
+
+   90.8025
+
+
+end_iter =
+
+   91.5203
+
+
+end_iter =
+
+   92.5456
+
+
+end_iter =
+
+   94.2073
+
+
+end_iter =
+
+   93.5924
+
+
+end_iter =
+
+   93.3488
+
+
+end_iter =
+
+   91.3515
+
+
+end_iter =
+
+   93.0758
+
+
+end_iter =
+
+   92.9183
+
+
+end_iter =
+
+   92.0626
+
+
+end_iter =
+
+   92.5690
+
+
+end_iter =
+
+   91.3853
+
+
+end_iter =
+
+   92.4654
+
+
+end_iter =
+
+   92.9518
+
+
+end_iter =
+
+   91.9471
+
+
+end_iter =
+
+   90.7399
+
+
+end_iter =
+
+   93.6427
+
+
+end_iter =
+
+   93.4620
+
+
+end_iter =
+
+   92.7304
+
+
+end_iter =
+
+   92.2050
+
+
+end_iter =
+
+   92.1651
+
+
+end_iter =
+
+   92.5801
+
+
+end_iter =
+
+   91.9601
+
+
+end_iter =
+
+   91.7913
+
+
+end_iter =
+
+   91.4918
+
+
+end_iter =
+
+   93.8684
+
+
+end_iter =
+
+   89.9043
+
+
+end_iter =
+
+   91.9818
+
+
+end_iter =
+
+   93.5934
+
+
+end_iter =
+
+   93.2988
+
+
+end_iter =
+
+   95.0894
+
+
+end_iter =
+
+   93.7982
+
+
+end_iter =
+
+   92.9447
+
+
+end_iter =
+
+   91.4632
+
+
+end_iter =
+
+   92.7041
+
+
+end_iter =
+
+   90.6358
+
+
+end_iter =
+
+   89.5611
+
+
+end_iter =
+
+   91.2658
+
+
+end_iter =
+
+   91.5062
+
+
+end_iter =
+
+   91.3952
+
+
+end_iter =
+
+   90.7739
+
+
+end_iter =
+
+   91.1138
+
+
+end_iter =
+
+   92.4890
+
+
+end_iter =
+
+   91.6749
+
+
+end_iter =
+
+   90.5378
+
+
+end_iter =
+
+   89.5597
+
+
+end_iter =
+
+   89.3072
+
+
+end_iter =
+
+   89.7028
+
+
+end_iter =
+
+   89.1422
+
+
+end_iter =
+
+   90.7039
+
+
+end_iter =
+
+   91.4361
+
+
+end_iter =
+
+   92.2087
+
+
+end_iter =
+
+   91.9073
+
+
+end_iter =
+
+   91.1609
+
+
+end_iter =
+
+   91.2103
+
+
+end_iter =
+
+   92.9175
+
+
+end_iter =
+
+   90.6930
+
+
+end_iter =
+
+   92.0911
+
+
+end_iter =
+
+   95.0597
+
+
+end_iter =
+
+   93.1481
+
+
+end_iter =
+
+   92.2338
+
+
+end_iter =
+
+   91.9342
+
+
+end_iter =
+
+   92.5533
+
+
+end_iter =
+
+   92.0965
+
+
+end_iter =
+
+   91.4673
+
+
+end_iter =
+
+   90.2766
+
+
+end_iter =
+
+   91.7888
+
+
+end_iter =
+
+   93.5003
+
+
+end_iter =
+
+   92.9051
+
+
+end_iter =
+
+   92.6583
+
+
+end_iter =
+
+   91.8342
+
+
+end_iter =
+
+   94.0416
+
+
+end_iter =
+
+   93.5352
+
+
+end_iter =
+
+   89.3001
+
+
+end_iter =
+
+   92.3093
+
+
+end_iter =
+
+   88.8166
+
+
+end_iter =
+
+   91.9038
+
+
+end_iter =
+
+   89.0598
+
+
+end_iter =
+
+   88.5978
+
+
+end_iter =
+
+   88.7052
+
+
+end_iter =
+
+   92.5165
+
+
+end_iter =
+
+   90.2091
+
+
+end_iter =
+
+   90.2679
+
+
+end_iter =
+
+   89.0137
+
+
+end_iter =
+
+   91.2005
+
+
+end_iter =
+
+   89.1620
+
+
+end_iter =
+
+   91.3384
+
+
+end_iter =
+
+   91.5583
+
+
+end_iter =
+
+   91.6068
+
+
+end_iter =
+
+   90.6680
+
+
+end_iter =
+
+   91.4820
+
+
+end_iter =
+
+   94.5384
+
+
+end_iter =
+
+   91.1833
+
+
+end_iter =
+
+   91.3867
+
+
+end_iter =
+
+   88.4957
+
+
+end_iter =
+
+   90.0949
+
+
+end_iter =
+
+   90.7640
+
+
+end_iter =
+
+   93.1777
+
+Reweighting: 0
+
+
+end_iter =
+
+  177.3756
+
+
+end_iter =
+
+   91.0430
+
+
+end_iter =
+
+   90.8189
+
+
+end_iter =
+
+   92.2758
+
+
+end_iter =
+
+   92.0397
+
+
+end_iter =
+
+   93.8897
+
+
+end_iter =
+
+   92.7028
+
+
+end_iter =
+
+   91.8335
+
+
+end_iter =
+
+   92.2113
+
+
+end_iter =
+
+   91.7308
+
+
+end_iter =
+
+   92.6009
+
+
+end_iter =
+
+   90.9564
+
+
+end_iter =
+
+   92.6329
+
+
+end_iter =
+
+   92.3319
+
+
+end_iter =
+
+   91.1211
+
+
+end_iter =
+
+   92.5239
+
+
+end_iter =
+
+   91.8753
+
+
+end_iter =
+
+   91.6822
+
+
+end_iter =
+
+   91.0181
+
+
+end_iter =
+
+   90.6370
+
+
+end_iter =
+
+   91.7108
+
+
+end_iter =
+
+   93.6706
+
+
+end_iter =
+
+   92.2900
+
+
+end_iter =
+
+   89.1070
+
+
+end_iter =
+
+   90.8673
+
+
+end_iter =
+
+   88.8202
+
+
+end_iter =
+
+   92.2421
+
+
+end_iter =
+
+   93.0586
+
+
+end_iter =
+
+   90.5835
+
+
+end_iter =
+
+   90.7762
+
+
+end_iter =
+
+   91.3375
+
+
+end_iter =
+
+   89.8447
+
+
+end_iter =
+
+   90.6187
+
+
+end_iter =
+
+   90.3566
+
+
+end_iter =
+
+   93.9129
+
+
+end_iter =
+
+   90.6511
+
+
+end_iter =
+
+   90.7398
+
+
+end_iter =
+
+   91.8523
+
+
+end_iter =
+
+   89.0293
+
+
+end_iter =
+
+   90.0257
+
+
+end_iter =
+
+   92.2064
+
+
+end_iter =
+
+   91.6494
+
+
+end_iter =
+
+   91.0757
+
+
+end_iter =
+
+   91.0305
+
+
+end_iter =
+
+   88.5423
+
+
+end_iter =
+
+   89.6672
+
+
+end_iter =
+
+   92.2786
+
+
+end_iter =
+
+   90.6445
+
+
+end_iter =
+
+   91.0124
+
+
+end_iter =
+
+   91.3500
+
+
+end_iter =
+
+   91.7770
+
+
+end_iter =
+
+   91.6259
+
+
+end_iter =
+
+   87.9639
+
+
+end_iter =
+
+   91.6426
+
+
+end_iter =
+
+   91.1460
+
+
+end_iter =
+
+   91.6493
+
+
+end_iter =
+
+   90.4370
+
+
+end_iter =
+
+   90.4385
+
+
+end_iter =
+
+   90.9628
+
+
+end_iter =
+
+   92.8544
+
+
+end_iter =
+
+   91.0479
+
+
+end_iter =
+
+   90.5311
+
+
+end_iter =
+
+   90.8156
+
+
+end_iter =
+
+   92.0022
+
+
+end_iter =
+
+   88.9926
+
+
+end_iter =
+
+   89.9851
+
+
+end_iter =
+
+   90.4624
+
+
+end_iter =
+
+   91.0116
+
+
+end_iter =
+
+   90.5089
+
+
+end_iter =
+
+   93.1822
+
+
+end_iter =
+
+   91.0582
+
+
+end_iter =
+
+   93.5110
+
+
+end_iter =
+
+   90.1501
+
+
+end_iter =
+
+   89.5591
+
+
+end_iter =
+
+   91.2483
+
+
+end_iter =
+
+   93.1484
+
+
+end_iter =
+
+   90.0650
+
+
+end_iter =
+
+   91.2484
+
+
+end_iter =
+
+   92.1740
+
+
+end_iter =
+
+   91.5704
+
+
+end_iter =
+
+   90.6604
+
+
+end_iter =
+
+   92.9528
+
+
+end_iter =
+
+   93.1160
+
+
+end_iter =
+
+   92.0521
+
+
+end_iter =
+
+   92.6195
+
+
+end_iter =
+
+   91.4787
+
+
+end_iter =
+
+   91.0106
+
+
+end_iter =
+
+   94.8575
+
+
+end_iter =
+
+   93.1835
+
+
+end_iter =
+
+   91.5864
+
+
+end_iter =
+
+   92.6639
+
+
+end_iter =
+
+   92.8849
+
+
+end_iter =
+
+   92.0859
+
+
+end_iter =
+
+   91.8051
+
+
+end_iter =
+
+   92.2646
+
+
+end_iter =
+
+   92.6244
+
+
+end_iter =
+
+   92.7169
+
+
+end_iter =
+
+   94.7290
+
+
+end_iter =
+
+   92.1390
+
+
+end_iter =
+
+   91.1553
+
+
+end_iter =
+
+   92.0097
+
+
+end_iter =
+
+   92.7860
+
+
+end_iter =
+
+   90.5948
+
+
+end_iter =
+
+   92.7336
+
+
+end_iter =
+
+   92.3650
+
+
+end_iter =
+
+   92.4728
+
+
+end_iter =
+
+   90.4054
+
+
+end_iter =
+
+   92.4031
+
+
+end_iter =
+
+   92.7365
+
+
+end_iter =
+
+   90.9908
+
+
+end_iter =
+
+   92.2305
+
+
+end_iter =
+
+   93.0763
+
+
+end_iter =
+
+   92.9309
+
+
+end_iter =
+
+   92.0386
+
+
+end_iter =
+
+   91.8037
+
+
+end_iter =
+
+   90.7689
+
+
+end_iter =
+
+   90.3305
+
+
+end_iter =
+
+   91.9452
+
+
+end_iter =
+
+   90.0439
+
+
+end_iter =
+
+   89.1278
+
+
+end_iter =
+
+   89.7459
+
+
+end_iter =
+
+   90.8218
+
+
+end_iter =
+
+   91.2888
+
+
+end_iter =
+
+   92.1652
+
+
+end_iter =
+
+   90.9981
+
+
+end_iter =
+
+   91.5835
+
+
+end_iter =
+
+   89.9955
+
+
+end_iter =
+
+   92.2138
+
+
+end_iter =
+
+   92.3384
+
+
+end_iter =
+
+   91.9024
+
+
+end_iter =
+
+   93.0184
+
+
+end_iter =
+
+   91.9506
+
+
+end_iter =
+
+   93.0604
+
+
+end_iter =
+
+   96.3167
+
+
+end_iter =
+
+   94.1537
+
+
+end_iter =
+
+   91.3607
+
+
+end_iter =
+
+   93.8875
+
+
+end_iter =
+
+   93.9536
+
+
+end_iter =
+
+   93.7512
+
+
+end_iter =
+
+   92.5283
+
+
+end_iter =
+
+   90.8007
+
+
+end_iter =
+
+   91.6218
+
+
+end_iter =
+
+   92.5143
+
+
+end_iter =
+
+   94.2003
+
+
+end_iter =
+
+   91.9298
+
+
+end_iter =
+
+   91.7266
+
+
+end_iter =
+
+   94.3260
+
+
+end_iter =
+
+   90.5053
+
+
+end_iter =
+
+   88.9782
+
+
+end_iter =
+
+   91.7580
+
+
+end_iter =
+
+   90.6643
+
+
+end_iter =
+
+   91.5054
+
+
+end_iter =
+
+   90.7065
+
+
+end_iter =
+
+   92.8588
+
+
+end_iter =
+
+   91.4592
+
+
+end_iter =
+
+   93.5969
+
+
+end_iter =
+
+   90.6790
+
+
+end_iter =
+
+   90.1949
+
+
+end_iter =
+
+   90.8951
+
+
+end_iter =
+
+   92.2037
+
+
+end_iter =
+
+   89.0034
+
+
+end_iter =
+
+   88.3321
+
+
+end_iter =
+
+   90.1203
+
+
+end_iter =
+
+   91.1271
+
+
+end_iter =
+
+   91.7951
+
+
+end_iter =
+
+   90.2464
+
+
+end_iter =
+
+   91.3237
+
+
+end_iter =
+
+   90.5343
+
+
+end_iter =
+
+   88.9841
+
+
+end_iter =
+
+   92.2049
+
+
+end_iter =
+
+   92.2532
+
+
+end_iter =
+
+   92.8680
+
+
+end_iter =
+
+   91.1300
+
+
+end_iter =
+
+   90.4203
+
+
+end_iter =
+
+   92.2287
+
+
+end_iter =
+
+   91.1464
+
+
+end_iter =
+
+   92.2209
+
+
+end_iter =
+
+   89.6166
+
+
+end_iter =
+
+   91.6864
+
+
+end_iter =
+
+   92.4573
+
+
+end_iter =
+
+   92.1637
+
+
+end_iter =
+
+   91.8715
+
+
+end_iter =
+
+   90.5509
+
+
+end_iter =
+
+   91.7014
+
+
+end_iter =
+
+   92.8666
+
+
+end_iter =
+
+   90.3075
+
+
+end_iter =
+
+   91.2709
+
+
+end_iter =
+
+   92.6762
+
+
+end_iter =
+
+   90.2485
+
+
+end_iter =
+
+   89.8718
+
+
+end_iter =
+
+   92.0188
+
+
+end_iter =
+
+   91.2054
+
+
+end_iter =
+
+   91.1365
+
+
+end_iter =
+
+   91.9081
+
+
+end_iter =
+
+   92.3481
+
+
+end_iter =
+
+   91.8439
+
+
+end_iter =
+
+   90.9590
+
+
+end_iter =
+
+   90.4973
+
+
+end_iter =
+
+   89.0858
+
+
+end_iter =
+
+   92.6177
+
+
+end_iter =
+
+   92.3658
+
+
+end_iter =
+
+   92.0988
+
+
+end_iter =
+
+   92.0351
+
+
+end_iter =
+
+   93.6821
+
+
+end_iter =
+
+   91.4814
+
+
+end_iter =
+
+   91.7395
+
+
+end_iter =
+
+   91.8487
+
+
+end_iter =
+
+   93.8342
+
+
+end_iter =
+
+   95.0305
+
+
+end_iter =
+
+   95.1173
+
+
+end_iter =
+
+   94.9284
+
+
+end_iter =
+
+   93.5394
+
+
+end_iter =
+
+   91.0148
+
+
+end_iter =
+
+   90.9314
+
+
+end_iter =
+
+   91.3372
+
+
+end_iter =
+
+   91.4976
+
+
+end_iter =
+
+   90.6942
+
+
+end_iter =
+
+   92.2598
+
+
+end_iter =
+
+   92.6018
+
+
+end_iter =
+
+   91.0999
+
+
+end_iter =
+
+   92.2738
+
+
+end_iter =
+
+   94.1613
+
+
+end_iter =
+
+   92.3142
+
+
+end_iter =
+
+   92.4525
+
+
+end_iter =
+
+   91.2806
+
+
+end_iter =
+
+   91.8811
+
+
+end_iter =
+
+   91.5388
+
+
+end_iter =
+
+   91.7141
+
+
+end_iter =
+
+   90.0976
+
+
+end_iter =
+
+   90.7950
+
+
+end_iter =
+
+   92.0635
+
+
+end_iter =
+
+   90.7223
+
+
+end_iter =
+
+   89.4289
+
+
+end_iter =
+
+   92.2285
+
+
+end_iter =
+
+   93.0297
+
+
+end_iter =
+
+   90.7071
+
+
+end_iter =
+
+   92.0053
+
+
+end_iter =
+
+   91.5580
+
+
+end_iter =
+
+   92.0664
+
+
+end_iter =
+
+   91.7194
+
+
+end_iter =
+
+   92.7786
+
+
+end_iter =
+
+   91.9462
+
+
+end_iter =
+
+   90.2737
+
+
+end_iter =
+
+   90.0689
+
+
+end_iter =
+
+   92.7462
+
+
+end_iter =
+
+   91.8655
+
+
+end_iter =
+
+   91.4375
+
+
+end_iter =
+
+   91.1677
+
+
+end_iter =
+
+   90.1501
+
+
+end_iter =
+
+   91.6713
+
+
+end_iter =
+
+   92.4652
+
+
+end_iter =
+
+   92.7304
+
+
+end_iter =
+
+   92.0516
+
+
+end_iter =
+
+   94.2139
+
+
+end_iter =
+
+   93.6420
+
+
+end_iter =
+
+   94.7800
+
+
+end_iter =
+
+   94.3602
+
+
+end_iter =
+
+   92.9704
+
+
+end_iter =
+
+   92.7875
+
+
+end_iter =
+
+   94.7590
+
+
+end_iter =
+
+   94.5011
+
+
+end_iter =
+
+   92.4632
+
+
+end_iter =
+
+   94.5946
+
+
+end_iter =
+
+   94.2926
+
+
+end_iter =
+
+   92.4191
+
+
+end_iter =
+
+   89.4280
+
+
+end_iter =
+
+   89.1919
+
+
+end_iter =
+
+   91.8817
+
+
+end_iter =
+
+   92.1688
+
+
+end_iter =
+
+   89.5482
+
+
+end_iter =
+
+   90.6231
+
+
+end_iter =
+
+   91.2540
+
+
+end_iter =
+
+   90.9796
+
+
+end_iter =
+
+   93.0383
+
+
+end_iter =
+
+   92.9546
+
+
+end_iter =
+
+   92.2274
+
+
+end_iter =
+
+   91.2941
+
+
+end_iter =
+
+   92.4918
+
+
+end_iter =
+
+   92.6731
+
+
+end_iter =
+
+   92.9398
+
+
+end_iter =
+
+   92.0109
+
+
+end_iter =
+
+   92.4685
+
+
+end_iter =
+
+   93.0823
+
+
+end_iter =
+
+   91.8427
+
+
+end_iter =
+
+   92.3833
+
+
+end_iter =
+
+   92.8393
+
+
+end_iter =
+
+   91.6713
+
+
+end_iter =
+
+   92.1823
+
+
+end_iter =
+
+   93.5989
+
+
+end_iter =
+
+   95.1887
+
+
+end_iter =
+
+   91.6947
+
+
+end_iter =
+
+   92.8009
+
+
+end_iter =
+
+   92.9496
+
+
+end_iter =
+
+   93.0239
+
+
+end_iter =
+
+   91.1602
+
+
+end_iter =
+
+   91.9973
+
+
+end_iter =
+
+   91.9877
+
+
+end_iter =
+
+   92.2888
+
+
+end_iter =
+
+   92.0490
+
+
+end_iter =
+
+   91.7218
+
+Reweighting: 1
+
+
+end_iter =
+
+  182.3142
+
+
+end_iter =
+
+   92.0691
+
+
+end_iter =
+
+   91.8176
+
+
+end_iter =
+
+   91.5412
+
+
+end_iter =
+
+   92.0887
+
+
+end_iter =
+
+   92.9640
+
+
+end_iter =
+
+   91.6800
+
+
+end_iter =
+
+   92.5302
+
+
+end_iter =
+
+   92.3037
+
+
+end_iter =
+
+   93.5166
+
+
+end_iter =
+
+   91.3523
+
+
+end_iter =
+
+   93.4070
+
+
+end_iter =
+
+   93.7090
+
+
+end_iter =
+
+   92.9968
+
+
+end_iter =
+
+   92.6583
+
+
+end_iter =
+
+   94.2904
+
+
+end_iter =
+
+   87.9172
+
+
+end_iter =
+
+   92.6428
+
+
+end_iter =
+
+   93.0217
+
+
+end_iter =
+
+   90.0570
+
+
+end_iter =
+
+   90.2009
+
+
+end_iter =
+
+   91.8664
+
+
+end_iter =
+
+   92.6995
+
+
+end_iter =
+
+   90.3414
+
+
+end_iter =
+
+   91.4689
+
+
+end_iter =
+
+   92.5579
+
+
+end_iter =
+
+   92.2982
+
+
+end_iter =
+
+   92.8023
+
+
+end_iter =
+
+   93.0516
+
+
+end_iter =
+
+   90.8953
+
+
+end_iter =
+
+   94.1504
+
+
+end_iter =
+
+   92.5576
+
+
+end_iter =
+
+   92.5730
+
+
+end_iter =
+
+   91.1906
+
+
+end_iter =
+
+   93.1237
+
+
+end_iter =
+
+   92.5924
+
+
+end_iter =
+
+   91.3063
+
+
+end_iter =
+
+   93.8812
+
+
+end_iter =
+
+   92.7759
+
+
+end_iter =
+
+   93.2416
+
+
+end_iter =
+
+   92.1938
+
+
+end_iter =
+
+   92.7849
+
+
+end_iter =
+
+   91.2146
+
+
+end_iter =
+
+   91.2927
+
+
+end_iter =
+
+   92.1184
+
+
+end_iter =
+
+   92.1914
+
+
+end_iter =
+
+   94.5142
+
+
+end_iter =
+
+   92.0612
+
+
+end_iter =
+
+   94.4807
+
+
+end_iter =
+
+   92.2687
+
+
+end_iter =
+
+   91.2240
+
+
+end_iter =
+
+   92.9641
+
+
+end_iter =
+
+   93.3740
+
+
+end_iter =
+
+   93.6908
+
+
+end_iter =
+
+   92.7034
+
+
+end_iter =
+
+   95.3336
+
+
+end_iter =
+
+   94.7527
+
+
+end_iter =
+
+   89.6211
+
+
+end_iter =
+
+   91.9151
+
+
+end_iter =
+
+   91.7712
+
+
+end_iter =
+
+   95.3895
+
+
+end_iter =
+
+   92.8603
+
+
+end_iter =
+
+   92.7670
+
+
+end_iter =
+
+   90.7567
+
+
+end_iter =
+
+   92.6812
+
+
+end_iter =
+
+   92.4016
+
+
+end_iter =
+
+   91.8273
+
+
+end_iter =
+
+   95.3486
+
+
+end_iter =
+
+   93.9006
+
+
+end_iter =
+
+   94.4033
+
+
+end_iter =
+
+   91.9158
+
+
+end_iter =
+
+   91.5048
+
+
+end_iter =
+
+   93.6938
+
+
+end_iter =
+
+   93.1850
+
+
+end_iter =
+
+   95.3761
+
+
+end_iter =
+
+   92.5120
+
+
+end_iter =
+
+   92.6317
+
+
+end_iter =
+
+   91.2372
+
+
+end_iter =
+
+   89.2608
+
+
+end_iter =
+
+   91.3221
+
+
+end_iter =
+
+   91.7463
+
+
+end_iter =
+
+   93.3380
+
+
+end_iter =
+
+   90.7799
+
+
+end_iter =
+
+   90.4454
+
+
+end_iter =
+
+   94.6323
+
+
+end_iter =
+
+   91.6622
+
+
+end_iter =
+
+   92.6489
+
+
+end_iter =
+
+   93.3775
+
+
+end_iter =
+
+   90.2684
+
+
+end_iter =
+
+   91.9353
+
+
+end_iter =
+
+   93.6456
+
+
+end_iter =
+
+   94.0647
+
+
+end_iter =
+
+   93.5258
+
+
+end_iter =
+
+   92.3844
+
+
+end_iter =
+
+   91.5498
+
+
+end_iter =
+
+   90.5869
+
+
+end_iter =
+
+   89.7922
+
+
+end_iter =
+
+   93.0283
+
+
+end_iter =
+
+   91.1197
+
+
+end_iter =
+
+   92.3810
+
+
+end_iter =
+
+   92.9676
+
+
+end_iter =
+
+   92.9672
+
+
+end_iter =
+
+   96.7533
+
+
+end_iter =
+
+   93.2761
+
+
+end_iter =
+
+   92.7582
+
+
+end_iter =
+
+   92.0394
+
+
+end_iter =
+
+   91.8706
+
+
+end_iter =
+
+   92.1766
+
+
+end_iter =
+
+   92.9737
+
+
+end_iter =
+
+   92.7824
+
+
+end_iter =
+
+   91.6596
+
+
+end_iter =
+
+   90.7225
+
+
+end_iter =
+
+   93.3620
+
+
+end_iter =
+
+   90.8908
+
+
+end_iter =
+
+   94.4259
+
+
+end_iter =
+
+   95.5002
+
+
+end_iter =
+
+   92.3250
+
+
+end_iter =
+
+   92.5021
+
+
+end_iter =
+
+   92.7127
+
+
+end_iter =
+
+   93.7852
+
+
+end_iter =
+
+   93.9676
+
+
+end_iter =
+
+   93.1371
+
+
+end_iter =
+
+   93.0734
+
+
+end_iter =
+
+   92.9630
+
+
+end_iter =
+
+   92.2633
+
+
+end_iter =
+
+   92.7373
+
+
+end_iter =
+
+   91.9498
+
+
+end_iter =
+
+   95.4348
+
+
+end_iter =
+
+   93.1361
+
+
+end_iter =
+
+   89.8958
+
+
+end_iter =
+
+   92.4620
+
+
+end_iter =
+
+   90.7781
+
+
+end_iter =
+
+   89.8119
+
+
+end_iter =
+
+   91.6843
+
+
+end_iter =
+
+   88.9890
+
+
+end_iter =
+
+   89.2924
+
+
+end_iter =
+
+   92.4566
+
+
+end_iter =
+
+   92.6818
+
+
+end_iter =
+
+   91.3546
+
+
+end_iter =
+
+   92.3945
+
+
+end_iter =
+
+   93.2487
+
+
+end_iter =
+
+   93.4040
+
+
+end_iter =
+
+   93.4807
+
+
+end_iter =
+
+   92.7808
+
+
+end_iter =
+
+   93.0321
+
+
+end_iter =
+
+   93.1503
+
+
+end_iter =
+
+   94.2031
+
+
+end_iter =
+
+   93.4107
+
+
+end_iter =
+
+   91.5136
+
+
+end_iter =
+
+   92.5943
+
+
+end_iter =
+
+   94.0784
+
+
+end_iter =
+
+   94.8671
+
+
+end_iter =
+
+   92.3087
+
+
+end_iter =
+
+   94.9455
+
+
+end_iter =
+
+   93.2176
+
+
+end_iter =
+
+   93.6787
+
+
+end_iter =
+
+   94.5498
+
+
+end_iter =
+
+   94.1337
+
+
+end_iter =
+
+   94.1913
+
+
+end_iter =
+
+   92.4235
+
+
+end_iter =
+
+   94.4480
+
+
+end_iter =
+
+   94.0737
+
+
+end_iter =
+
+   91.5749
+
+
+end_iter =
+
+   91.4770
+
+
+end_iter =
+
+   92.7030
+
+
+end_iter =
+
+   91.8814
+
+
+end_iter =
+
+   89.7655
+
+
+end_iter =
+
+   92.1759
+
+
+end_iter =
+
+   94.2375
+
+
+end_iter =
+
+   93.5515
+
+
+end_iter =
+
+   94.3371
+
+
+end_iter =
+
+   94.7856
+
+
+end_iter =
+
+   95.1560
+
+
+end_iter =
+
+   94.0115
+
+
+end_iter =
+
+   93.5815
+
+
+end_iter =
+
+   94.0464
+
+
+end_iter =
+
+   93.5149
+
+
+end_iter =
+
+   92.8998
+
+
+end_iter =
+
+   92.9273
+
+
+end_iter =
+
+   93.4821
+
+
+end_iter =
+
+   93.2804
+
+
+end_iter =
+
+   95.4774
+
+
+end_iter =
+
+   91.9293
+
+
+end_iter =
+
+   94.4773
+
+
+end_iter =
+
+   93.1197
+
+
+end_iter =
+
+   93.9526
+
+
+end_iter =
+
+   93.2594
+
+
+end_iter =
+
+   89.0256
+
+
+end_iter =
+
+   88.9308
+
+
+end_iter =
+
+   91.2521
+
+
+end_iter =
+
+   92.5040
+
+
+end_iter =
+
+   91.8455
+
+
+end_iter =
+
+   90.2540
+
+
+end_iter =
+
+   90.9582
+
+
+end_iter =
+
+   91.0523
+
+
+end_iter =
+
+   91.3136
+
+
+end_iter =
+
+   90.5389
+
+
+end_iter =
+
+   90.6430
+
+
+end_iter =
+
+   91.1364
+
+
+end_iter =
+
+   91.5007
+
+
+end_iter =
+
+   89.8824
+
+
+end_iter =
+
+   91.6456
+
+
+end_iter =
+
+   90.7296
+
+
+end_iter =
+
+   90.9761
+
+
+end_iter =
+
+   91.8925
+
+
+end_iter =
+
+   89.7398
+
+
+end_iter =
+
+   95.7298
+
+
+end_iter =
+
+   93.5940
+
+
+end_iter =
+
+   88.5090
+
+
+end_iter =
+
+   93.2359
+
+
+end_iter =
+
+   89.5627
+
+
+end_iter =
+
+   91.2641
+
+
+end_iter =
+
+   89.3114
+
+
+end_iter =
+
+   91.6787
+
+
+end_iter =
+
+   90.5302
+
+
+end_iter =
+
+   94.0981
+
+
+end_iter =
+
+   92.6646
+
+
+end_iter =
+
+   94.3666
+
+
+end_iter =
+
+   94.7086
+
+
+end_iter =
+
+   93.2607
+
+
+end_iter =
+
+   93.5227
+
+
+end_iter =
+
+   93.4211
+
+
+end_iter =
+
+   95.2522
+
+
+end_iter =
+
+   94.4392
+
+
+end_iter =
+
+   93.7564
+
+
+end_iter =
+
+   90.3821
+
+
+end_iter =
+
+   92.2775
+
+
+end_iter =
+
+   89.6896
+
+
+end_iter =
+
+   90.2439
+
+
+end_iter =
+
+   89.5822
+
+
+end_iter =
+
+   90.4865
+
+
+end_iter =
+
+   91.1435
+
+
+end_iter =
+
+   90.7623
+
+
+end_iter =
+
+   89.6414
+
+
+end_iter =
+
+   91.2027
+
+
+end_iter =
+
+   90.1540
+
+
+end_iter =
+
+   89.8793
+
+
+end_iter =
+
+   89.1987
+
+
+end_iter =
+
+   89.2431
+
+
+end_iter =
+
+   90.9342
+
+
+end_iter =
+
+   90.9460
+
+
+end_iter =
+
+   92.1308
+
+
+end_iter =
+
+   92.9920
+
+
+end_iter =
+
+   91.7880
+
+
+end_iter =
+
+   94.0779
+
+
+end_iter =
+
+   93.8678
+
+
+end_iter =
+
+   93.6966
+
+
+end_iter =
+
+   94.9188
+
+
+end_iter =
+
+   93.8401
+
+
+end_iter =
+
+   93.6547
+
+
+end_iter =
+
+   92.4904
+
+
+end_iter =
+
+   90.9273
+
+
+end_iter =
+
+   92.7006
+
+
+end_iter =
+
+   92.8526
+
+
+end_iter =
+
+   94.6012
+
+
+end_iter =
+
+   92.3969
+
+
+end_iter =
+
+   94.6785
+
+
+end_iter =
+
+   93.1196
+
+
+end_iter =
+
+   93.0575
+
+
+end_iter =
+
+   93.0013
+
+
+end_iter =
+
+   92.3875
+
+
+end_iter =
+
+   92.1744
+
+
+end_iter =
+
+   88.4730
+
+
+end_iter =
+
+   88.2449
+
+
+end_iter =
+
+   89.3431
+
+
+end_iter =
+
+   92.1298
+
+
+end_iter =
+
+   91.9173
+
+
+end_iter =
+
+   91.6486
+
+
+end_iter =
+
+   90.9913
+
+
+end_iter =
+
+   92.5013
+
+
+end_iter =
+
+   91.2152
+
+
+end_iter =
+
+   91.0375
+
+
+end_iter =
+
+   90.3709
+
+
+end_iter =
+
+   87.9156
+
+
+end_iter =
+
+   90.9714
+
+
+end_iter =
+
+   89.0403
+
+
+end_iter =
+
+   91.9336
+
+
+end_iter =
+
+   91.9729
+
+
+end_iter =
+
+   91.7731
+
+
+end_iter =
+
+   92.0584
+
+
+end_iter =
+
+   93.2830
+
+
+end_iter =
+
+   91.6193
+
+
+end_iter =
+
+   91.6058
+
+
+end_iter =
+
+   93.0407
+
+
+end_iter =
+
+   93.2844
+
+
+end_iter =
+
+   93.6279
+
+
+end_iter =
+
+   92.0593
+
+
+end_iter =
+
+   91.1136
+
+
+end_iter =
+
+   89.4784
+
+
+end_iter =
+
+   91.6213
+
+
+end_iter =
+
+   89.8568
+
+
+end_iter =
+
+   88.2543
+
+
+end_iter =
+
+   89.3263
+
+
+end_iter =
+
+   88.6603
+
+
+end_iter =
+
+   93.3614
+
+
+end_iter =
+
+   92.9871
+
+
+end_iter =
+
+   86.9737
+
+
+end_iter =
+
+   90.0979
+
+
+end_iter =
+
+   93.8317
+
+
+end_iter =
+
+   94.9086
+
+Reweighting: 2
+
+
+end_iter =
+
+  179.4767
+
+
+end_iter =
+
+   92.7490
+
+
+end_iter =
+
+   92.5364
+
+
+end_iter =
+
+   92.2355
+
+
+end_iter =
+
+   92.7689
+
+
+end_iter =
+
+   91.7034
+
+
+end_iter =
+
+   93.0699
+
+
+end_iter =
+
+   91.3038
+
+
+end_iter =
+
+   93.9319
+
+
+end_iter =
+
+   92.1227
+
+
+end_iter =
+
+   93.7651
+
+
+end_iter =
+
+   93.6236
+
+
+end_iter =
+
+   94.2252
+
+
+end_iter =
+
+   95.0206
+
+
+end_iter =
+
+   95.4167
+
+
+end_iter =
+
+   94.5814
+
+
+end_iter =
+
+   94.1192
+
+
+end_iter =
+
+   94.0526
+
+
+end_iter =
+
+   93.5583
+
+
+end_iter =
+
+   93.7991
+
+
+end_iter =
+
+   93.8318
+
+
+end_iter =
+
+   91.7497
+
+
+end_iter =
+
+   92.5288
+
+
+end_iter =
+
+   94.5872
+
+
+end_iter =
+
+   92.4505
+
+
+end_iter =
+
+   91.3395
+
+
+end_iter =
+
+   92.9157
+
+
+end_iter =
+
+   93.7323
+
+
+end_iter =
+
+   94.3428
+
+
+end_iter =
+
+   94.6588
+
+
+end_iter =
+
+   90.9709
+
+
+end_iter =
+
+   90.9301
+
+
+end_iter =
+
+   93.3414
+
+
+end_iter =
+
+   92.8048
+
+
+end_iter =
+
+   88.8847
+
+
+end_iter =
+
+   88.5309
+
+
+end_iter =
+
+   88.3303
+
+
+end_iter =
+
+   90.9440
+
+
+end_iter =
+
+   92.2554
+
+
+end_iter =
+
+   91.1049
+
+
+end_iter =
+
+   92.8073
+
+
+end_iter =
+
+   94.6358
+
+
+end_iter =
+
+   89.1492
+
+
+end_iter =
+
+   89.7192
+
+
+end_iter =
+
+   92.1932
+
+
+end_iter =
+
+   91.8746
+
+
+end_iter =
+
+   91.4990
+
+
+end_iter =
+
+   92.9154
+
+
+end_iter =
+
+   93.5482
+
+
+end_iter =
+
+   93.2119
+
+
+end_iter =
+
+   94.1568
+
+
+end_iter =
+
+   94.7859
+
+
+end_iter =
+
+   95.7258
+
+
+end_iter =
+
+   94.0395
+
+
+end_iter =
+
+   89.1033
+
+
+end_iter =
+
+   88.2431
+
+
+end_iter =
+
+   88.9042
+
+
+end_iter =
+
+   91.3974
+
+
+end_iter =
+
+   92.1991
+
+
+end_iter =
+
+   90.9497
+
+
+end_iter =
+
+   90.8874
+
+
+end_iter =
+
+   93.1907
+
+
+end_iter =
+
+   92.2955
+
+
+end_iter =
+
+   92.0257
+
+
+end_iter =
+
+   92.7368
+
+
+end_iter =
+
+   91.5109
+
+
+end_iter =
+
+   90.2432
+
+
+end_iter =
+
+   91.4479
+
+
+end_iter =
+
+   91.8934
+
+
+end_iter =
+
+   94.3069
+
+
+end_iter =
+
+   94.2266
+
+
+end_iter =
+
+   93.8372
+
+
+end_iter =
+
+   92.2470
+
+
+end_iter =
+
+   90.3007
+
+
+end_iter =
+
+   89.1912
+
+
+end_iter =
+
+   89.1225
+
+
+end_iter =
+
+   88.2817
+
+
+end_iter =
+
+   90.3901
+
+
+end_iter =
+
+   89.1762
+
+
+end_iter =
+
+   90.2514
+
+
+end_iter =
+
+   94.1615
+
+
+end_iter =
+
+   92.2893
+
+
+end_iter =
+
+   92.0543
+
+
+end_iter =
+
+   91.5985
+
+
+end_iter =
+
+   92.9355
+
+
+end_iter =
+
+   93.7620
+
+
+end_iter =
+
+   92.1462
+
+
+end_iter =
+
+   92.8942
+
+
+end_iter =
+
+   89.6048
+
+
+end_iter =
+
+   88.5154
+
+
+end_iter =
+
+   90.3139
+
+
+end_iter =
+
+   90.2858
+
+
+end_iter =
+
+   91.4784
+
+
+end_iter =
+
+   92.5778
+
+
+end_iter =
+
+   94.4799
+
+
+end_iter =
+
+   89.7949
+
+
+end_iter =
+
+   88.7063
+
+
+end_iter =
+
+   87.5438
+
+
+end_iter =
+
+   91.0929
+
+
+end_iter =
+
+   91.3915
+
+
+end_iter =
+
+   90.6840
+
+
+end_iter =
+
+   88.9203
+
+
+end_iter =
+
+   89.0693
+
+
+end_iter =
+
+   92.5866
+
+
+end_iter =
+
+   91.3949
+
+
+end_iter =
+
+   91.3185
+
+
+end_iter =
+
+   89.7715
+
+
+end_iter =
+
+   89.1587
+
+
+end_iter =
+
+   87.9506
+
+
+end_iter =
+
+   91.0230
+
+
+end_iter =
+
+   92.7118
+
+
+end_iter =
+
+   93.1959
+
+
+end_iter =
+
+   91.7742
+
+
+end_iter =
+
+   93.2545
+
+
+end_iter =
+
+   92.8428
+
+
+end_iter =
+
+   92.3968
+
+
+end_iter =
+
+   90.8852
+
+
+end_iter =
+
+   93.8876
+
+
+end_iter =
+
+   93.1687
+
+
+end_iter =
+
+   88.1871
+
+
+end_iter =
+
+   89.0348
+
+
+end_iter =
+
+   90.6231
+
+
+end_iter =
+
+   92.8393
+
+
+end_iter =
+
+   94.2570
+
+
+end_iter =
+
+   94.4696
+
+
+end_iter =
+
+   92.9087
+
+
+end_iter =
+
+   92.9620
+
+
+end_iter =
+
+   95.1024
+
+
+end_iter =
+
+   92.8437
+
+
+end_iter =
+
+   88.9247
+
+
+end_iter =
+
+   90.5845
+
+
+end_iter =
+
+   91.1452
+
+
+end_iter =
+
+   92.1517
+
+
+end_iter =
+
+   91.8548
+
+
+end_iter =
+
+   92.5937
+
+
+end_iter =
+
+   93.2151
+
+
+end_iter =
+
+   93.9747
+
+
+end_iter =
+
+   92.8301
+
+
+end_iter =
+
+   91.8865
+
+
+end_iter =
+
+   93.1214
+
+
+end_iter =
+
+   94.2817
+
+
+end_iter =
+
+   94.1750
+
+
+end_iter =
+
+   93.4117
+
+
+end_iter =
+
+   94.8277
+
+
+end_iter =
+
+   94.4893
+
+
+end_iter =
+
+   95.0724
+
+
+end_iter =
+
+   93.7784
+
+
+end_iter =
+
+   94.1488
+
+
+end_iter =
+
+   93.5006
+
+
+end_iter =
+
+   92.7522
+
+
+end_iter =
+
+   93.0703
+
+
+end_iter =
+
+   90.2252
+
+
+end_iter =
+
+   92.9222
+
+
+end_iter =
+
+   94.9178
+
+
+end_iter =
+
+   93.4492
+
+
+end_iter =
+
+   92.3820
+
+
+end_iter =
+
+   92.1358
+
+
+end_iter =
+
+   91.7357
+
+
+end_iter =
+
+   92.3376
+
+
+end_iter =
+
+   92.8371
+
+
+end_iter =
+
+   92.6296
+
+
+end_iter =
+
+   90.5426
+
+
+end_iter =
+
+   91.7160
+
+
+end_iter =
+
+   92.4756
+
+
+end_iter =
+
+   91.4140
+
+
+end_iter =
+
+   91.5396
+
+
+end_iter =
+
+   91.9715
+
+
+end_iter =
+
+   91.9731
+
+
+end_iter =
+
+   92.4793
+
+
+end_iter =
+
+   94.8687
+
+
+end_iter =
+
+   90.7119
+
+
+end_iter =
+
+   90.7292
+
+
+end_iter =
+
+   91.9955
+
+
+end_iter =
+
+   89.9294
+
+
+end_iter =
+
+   91.4225
+
+
+end_iter =
+
+   93.7267
+
+
+end_iter =
+
+   92.0636
+
+
+end_iter =
+
+   92.2046
+
+
+end_iter =
+
+   93.0800
+
+
+end_iter =
+
+   93.4793
+
+
+end_iter =
+
+   93.3440
+
+
+end_iter =
+
+   92.5483
+
+
+end_iter =
+
+   93.9006
+
+
+end_iter =
+
+   95.5876
+
+
+end_iter =
+
+   96.2078
+
+
+end_iter =
+
+   94.1050
+
+
+end_iter =
+
+   93.4799
+
+
+end_iter =
+
+   94.6074
+
+
+end_iter =
+
+   94.7630
+
+
+end_iter =
+
+   90.8980
+
+
+end_iter =
+
+   92.5198
+
+
+end_iter =
+
+   92.7632
+
+
+end_iter =
+
+   92.6256
+
+
+end_iter =
+
+   90.6068
+
+
+end_iter =
+
+   91.3171
+
+
+end_iter =
+
+   92.2059
+
+
+end_iter =
+
+   93.2914
+
+
+end_iter =
+
+   91.1167
+
+
+end_iter =
+
+   89.8563
+
+
+end_iter =
+
+   90.6491
+
+
+end_iter =
+
+   91.2202
+
+
+end_iter =
+
+   90.6259
+
+
+end_iter =
+
+   90.9824
+
+
+end_iter =
+
+   91.5568
+
+
+end_iter =
+
+   92.7291
+
+
+end_iter =
+
+   95.2081
+
+
+end_iter =
+
+   92.0360
+
+
+end_iter =
+
+   94.0401
+
+
+end_iter =
+
+   91.8998
+
+
+end_iter =
+
+   91.4212
+
+
+end_iter =
+
+   90.7878
+
+
+end_iter =
+
+   91.7740
+
+
+end_iter =
+
+   90.2795
+
+
+end_iter =
+
+   90.9052
+
+
+end_iter =
+
+   91.5289
+
+
+end_iter =
+
+   92.7488
+
+
+end_iter =
+
+   92.9739
+
+
+end_iter =
+
+   91.4181
+
+
+end_iter =
+
+   90.2751
+
+
+end_iter =
+
+   89.2429
+
+
+end_iter =
+
+   91.7203
+
+
+end_iter =
+
+   88.9712
+
+
+end_iter =
+
+   91.1501
+
+
+end_iter =
+
+   89.1946
+
+
+end_iter =
+
+   91.8250
+
+
+end_iter =
+
+   93.0084
+
+
+end_iter =
+
+   93.0215
+
+
+end_iter =
+
+   89.4248
+
+
+end_iter =
+
+   90.6141
+
+
+end_iter =
+
+   90.5017
+
+
+end_iter =
+
+   90.3952
+
+
+end_iter =
+
+   89.8437
+
+
+end_iter =
+
+   93.7440
+
+
+end_iter =
+
+   92.5176
+
+
+end_iter =
+
+   91.3145
+
+
+end_iter =
+
+   92.3166
+
+
+end_iter =
+
+   91.5240
+
+
+end_iter =
+
+   92.6374
+
+
+end_iter =
+
+   90.7020
+
+
+end_iter =
+
+   92.0064
+
+
+end_iter =
+
+   92.1848
+
+
+end_iter =
+
+   93.1650
+
+
+end_iter =
+
+   91.4448
+
+
+end_iter =
+
+   91.8262
+
+
+end_iter =
+
+   90.8624
+
+
+end_iter =
+
+   89.2138
+
+
+end_iter =
+
+   91.3835
+
+
+end_iter =
+
+   91.3055
+
+
+end_iter =
+
+   90.8901
+
+
+end_iter =
+
+   91.9732
+
+
+end_iter =
+
+   91.3300
+
+
+end_iter =
+
+   89.5189
+
+
+end_iter =
+
+   91.0699
+
+
+end_iter =
+
+   92.8211
+
+
+end_iter =
+
+   92.1676
+
+
+end_iter =
+
+   89.5255
+
+
+end_iter =
+
+   89.9033
+
+
+end_iter =
+
+   92.4315
+
+
+end_iter =
+
+   93.3413
+
+
+end_iter =
+
+   92.8957
+
+
+end_iter =
+
+   92.8290
+
+
+end_iter =
+
+   91.1966
+
+
+end_iter =
+
+   92.5620
+
+
+end_iter =
+
+   92.3830
+
+
+end_iter =
+
+   93.9538
+
+
+end_iter =
+
+   90.0396
+
+
+end_iter =
+
+   91.6211
+
+
+end_iter =
+
+   91.4619
+
+
+end_iter =
+
+   91.1149
+
+
+end_iter =
+
+   91.0204
+
+
+end_iter =
+
+   89.3876
+
+
+end_iter =
+
+   91.8067
+
+
+end_iter =
+
+   90.9753
+
+
+end_iter =
+
+   89.8195
+
+
+end_iter =
+
+   91.7942
+
+
+end_iter =
+
+   91.3061
+
+
+end_iter =
+
+   91.0615
+
+
+end_iter =
+
+   90.8643
+
+
+end_iter =
+
+   93.3603
+
+
+end_iter =
+
+   90.3550
+
+
+end_iter =
+
+   89.8029
+
+
+end_iter =
+
+   89.1888
+
+
+end_iter =
+
+   89.8219
+
+
+end_iter =
+
+   91.1553
+
+
+end_iter =
+
+   90.1571
+
+
+end_iter =
+
+   91.8538
+
+
+end_iter =
+
+   91.1317
+
+
+end_iter =
+
+   90.7878
+
+
+end_iter =
+
+   90.4065
+
+
+end_iter =
+
+   93.7285
+
+
+end_iter =
+
+   91.0911
+
+
+end_iter =
+
+   91.7229
+
+
+end_iter =
+
+   93.9396
+
+
+end_iter =
+
+   93.3224
+
+
+end_iter =
+
+   92.1070
+
+
+end_iter =
+
+   92.6937
+
+
+end_iter =
+
+   93.9737
+
+
+end_iter =
+
+   91.1495
+
+
+end_iter =
+
+   91.7341
+
+
+end_iter =
+
+   90.3888
+
+Reweighting: 3
+
+
+end_iter =
+
+  184.0152
+
+
+end_iter =
+
+   89.5352
+
+
+end_iter =
+
+   90.0919
+
+
+end_iter =
+
+   91.2951
+
+
+end_iter =
+
+   91.6657
+
+
+end_iter =
+
+   92.5779
+
+
+end_iter =
+
+   90.4225
+
+
+end_iter =
+
+   90.5657
+
+
+end_iter =
+
+   90.0781
+
+
+end_iter =
+
+   91.1386
+
+
+end_iter =
+
+   91.4796
+
+
+end_iter =
+
+   91.1668
+
+
+end_iter =
+
+   91.2329
+
+
+end_iter =
+
+   89.0874
+
+
+end_iter =
+
+   92.2660
+
+
+end_iter =
+
+   91.1288
+
+
+end_iter =
+
+   91.2150
+
+
+end_iter =
+
+   90.5598
+
+
+end_iter =
+
+   90.0695
+
+
+end_iter =
+
+   92.3163
+
+
+end_iter =
+
+   92.9289
+
+
+end_iter =
+
+   90.1265
+
+
+end_iter =
+
+   92.2773
+
+
+end_iter =
+
+   89.3821
+
+
+end_iter =
+
+   91.7115
+
+
+end_iter =
+
+   92.3072
+
+
+end_iter =
+
+   93.3512
+
+
+end_iter =
+
+   91.1285
+
+
+end_iter =
+
+   89.5838
+
+
+end_iter =
+
+   93.5856
+
+
+end_iter =
+
+   89.7589
+
+
+end_iter =
+
+   93.3151
+
+
+end_iter =
+
+   92.3644
+
+
+end_iter =
+
+   91.2374
+
+
+end_iter =
+
+   92.6711
+
+
+end_iter =
+
+   93.7246
+
+
+end_iter =
+
+   91.5204
+
+
+end_iter =
+
+   91.5660
+
+
+end_iter =
+
+   91.3831
+
+
+end_iter =
+
+   91.9936
+
+
+end_iter =
+
+   91.6838
+
+
+end_iter =
+
+   93.7407
+
+
+end_iter =
+
+   91.1672
+
+
+end_iter =
+
+   92.1490
+
+
+end_iter =
+
+   91.6235
+
+
+end_iter =
+
+   93.1395
+
+
+end_iter =
+
+   91.4902
+
+
+end_iter =
+
+   91.9973
+
+
+end_iter =
+
+   90.7456
+
+
+end_iter =
+
+   93.3529
+
+
+end_iter =
+
+   92.2458
+
+
+end_iter =
+
+   93.7376
+
+
+end_iter =
+
+   93.0396
+
+
+end_iter =
+
+   93.0212
+
+
+end_iter =
+
+   92.0264
+
+
+end_iter =
+
+   90.8854
+
+
+end_iter =
+
+   90.7631
+
+
+end_iter =
+
+   93.3266
+
+
+end_iter =
+
+   90.3600
+
+
+end_iter =
+
+   90.3485
+
+
+end_iter =
+
+   91.4439
+
+
+end_iter =
+
+   90.6604
+
+
+end_iter =
+
+   90.2834
+
+
+end_iter =
+
+   90.6786
+
+
+end_iter =
+
+   90.3304
+
+
+end_iter =
+
+   92.4865
+
+
+end_iter =
+
+   90.4723
+
+
+end_iter =
+
+   91.1776
+
+
+end_iter =
+
+   93.2540
+
+
+end_iter =
+
+   94.9994
+
+
+end_iter =
+
+   89.7199
+
+
+end_iter =
+
+   89.9939
+
+
+end_iter =
+
+   90.2814
+
+
+end_iter =
+
+   91.8010
+
+
+end_iter =
+
+   89.7009
+
+
+end_iter =
+
+   91.7678
+
+
+end_iter =
+
+   94.3531
+
+
+end_iter =
+
+   92.2091
+
+
+end_iter =
+
+   92.7780
+
+
+end_iter =
+
+   92.7696
+
+
+end_iter =
+
+   90.6383
+
+
+end_iter =
+
+   92.2045
+
+
+end_iter =
+
+   94.1930
+
+
+end_iter =
+
+   92.8677
+
+
+end_iter =
+
+   91.8203
+
+
+end_iter =
+
+   95.1059
+
+
+end_iter =
+
+   93.9409
+
+
+end_iter =
+
+   95.4234
+
+
+end_iter =
+
+   93.9556
+
+
+end_iter =
+
+   93.1818
+
+
+end_iter =
+
+   92.2082
+
+
+end_iter =
+
+   92.4217
+
+
+end_iter =
+
+   92.6888
+
+
+end_iter =
+
+   90.9458
+
+
+end_iter =
+
+   91.5914
+
+
+end_iter =
+
+   93.1473
+
+
+end_iter =
+
+   92.8360
+
+
+end_iter =
+
+   91.6299
+
+
+end_iter =
+
+   92.6944
+
+
+end_iter =
+
+   93.6459
+
+
+end_iter =
+
+   92.1448
+
+
+end_iter =
+
+   91.3076
+
+
+end_iter =
+
+   91.4472
+
+
+end_iter =
+
+   93.8672
+
+
+end_iter =
+
+   91.5405
+
+
+end_iter =
+
+   92.1131
+
+
+end_iter =
+
+   90.0090
+
+
+end_iter =
+
+   91.7875
+
+
+end_iter =
+
+   92.3048
+
+
+end_iter =
+
+   92.6361
+
+
+end_iter =
+
+   90.3453
+
+
+end_iter =
+
+   93.3057
+
+
+end_iter =
+
+   92.0082
+
+
+end_iter =
+
+   90.8081
+
+
+end_iter =
+
+   90.2986
+
+
+end_iter =
+
+   89.4920
+
+
+end_iter =
+
+   94.1107
+
+
+end_iter =
+
+   92.1497
+
+
+end_iter =
+
+   90.3809
+
+
+end_iter =
+
+   92.7584
+
+
+end_iter =
+
+   92.9883
+
+
+end_iter =
+
+   91.6219
+
+
+end_iter =
+
+   93.0631
+
+
+end_iter =
+
+   92.1034
+
+
+end_iter =
+
+   91.7822
+
+
+end_iter =
+
+   91.2844
+
+
+end_iter =
+
+   89.4681
+
+
+end_iter =
+
+   91.7992
+
+
+end_iter =
+
+   92.3063
+
+
+end_iter =
+
+   93.6155
+
+
+end_iter =
+
+   91.5041
+
+
+end_iter =
+
+   91.7370
+
+
+end_iter =
+
+   90.8871
+
+
+end_iter =
+
+   92.9881
+
+
+end_iter =
+
+   91.2786
+
+
+end_iter =
+
+   89.1059
+
+
+end_iter =
+
+   91.2942
+
+
+end_iter =
+
+   92.9660
+
+
+end_iter =
+
+   95.2347
+
+
+end_iter =
+
+   90.5914
+
+
+end_iter =
+
+   91.7225
+
+
+end_iter =
+
+   92.4189
+
+
+end_iter =
+
+   93.0913
+
+
+end_iter =
+
+   90.5131
+
+
+end_iter =
+
+   92.9775
+
+
+end_iter =
+
+   93.7514
+
+
+end_iter =
+
+   92.2142
+
+
+end_iter =
+
+   91.5666
+
+
+end_iter =
+
+   90.7729
+
+
+end_iter =
+
+   92.9782
+
+
+end_iter =
+
+   92.1069
+
+
+end_iter =
+
+   89.4217
+
+
+end_iter =
+
+   89.9080
+
+
+end_iter =
+
+   90.2132
+
+
+end_iter =
+
+   93.3169
+
+
+end_iter =
+
+   91.9444
+
+
+end_iter =
+
+   93.1246
+
+
+end_iter =
+
+   93.6258
+
+
+end_iter =
+
+   95.5597
+
+
+end_iter =
+
+   89.7904
+
+
+end_iter =
+
+   89.7681
+
+
+end_iter =
+
+   88.9650
+
+
+end_iter =
+
+   92.9439
+
+
+end_iter =
+
+   91.5441
+
+
+end_iter =
+
+   91.4868
+
+
+end_iter =
+
+   93.5346
+
+
+end_iter =
+
+   93.0260
+
+
+end_iter =
+
+   92.5927
+
+
+end_iter =
+
+   92.1212
+
+
+end_iter =
+
+   92.5212
+
+
+end_iter =
+
+   90.6781
+
+
+end_iter =
+
+   91.3293
+
+
+end_iter =
+
+   93.3298
+
+
+end_iter =
+
+   92.0200
+
+
+end_iter =
+
+   91.9160
+
+
+end_iter =
+
+   91.8914
+
+
+end_iter =
+
+   93.0619
+
+
+end_iter =
+
+   92.3374
+
+
+end_iter =
+
+   94.0403
+
+
+end_iter =
+
+   93.5064
+
+
+end_iter =
+
+   92.2135
+
+
+end_iter =
+
+   92.8102
+
+
+end_iter =
+
+   89.1579
+
+
+end_iter =
+
+   92.8109
+
+
+end_iter =
+
+   93.6531
+
+
+end_iter =
+
+   90.0054
+
+
+end_iter =
+
+   92.1116
+
+
+end_iter =
+
+   93.6487
+
+
+end_iter =
+
+   92.1020
+
+
+end_iter =
+
+   90.9147
+
+
+end_iter =
+
+   92.7626
+
+
+end_iter =
+
+   91.0989
+
+
+end_iter =
+
+   91.9063
+
+
+end_iter =
+
+   91.1884
+
+
+end_iter =
+
+   89.8848
+
+
+end_iter =
+
+   89.0780
+
+
+end_iter =
+
+   91.0448
+
+
+end_iter =
+
+   91.2645
+
+
+end_iter =
+
+   94.1915
+
+
+end_iter =
+
+   91.4347
+
+
+end_iter =
+
+   92.3771
+
+
+end_iter =
+
+   91.0194
+
+
+end_iter =
+
+   91.4861
+
+
+end_iter =
+
+   90.4388
+
+
+end_iter =
+
+   91.0282
+
+
+end_iter =
+
+   92.0217
+
+
+end_iter =
+
+   91.3539
+
+
+end_iter =
+
+   91.5504
+
+
+end_iter =
+
+   91.6040
+
+
+end_iter =
+
+   94.3763
+
+
+end_iter =
+
+   94.4070
+
+
+end_iter =
+
+   94.2444
+
+
+end_iter =
+
+   93.0146
+
+
+end_iter =
+
+   94.7533
+
+
+end_iter =
+
+   94.6269
+
+
+end_iter =
+
+   92.6554
+
+
+end_iter =
+
+   93.4638
+
+
+end_iter =
+
+   94.2480
+
+
+end_iter =
+
+   91.4600
+
+
+end_iter =
+
+   89.8994
+
+
+end_iter =
+
+   92.1730
+
+
+end_iter =
+
+   91.6232
+
+
+end_iter =
+
+   92.7849
+
+
+end_iter =
+
+   93.7763
+
+
+end_iter =
+
+   92.9255
+
+
+end_iter =
+
+   91.3148
+
+
+end_iter =
+
+   92.9309
+
+
+end_iter =
+
+   93.3478
+
+
+end_iter =
+
+   92.1136
+
+
+end_iter =
+
+   93.3121
+
+
+end_iter =
+
+   94.5841
+
+
+end_iter =
+
+   91.6288
+
+
+end_iter =
+
+   91.6339
+
+
+end_iter =
+
+   92.3066
+
+
+end_iter =
+
+   91.7553
+
+
+end_iter =
+
+   91.7174
+
+
+end_iter =
+
+   90.9142
+
+
+end_iter =
+
+   92.3826
+
+
+end_iter =
+
+   94.0894
+
+
+end_iter =
+
+   92.8361
+
+
+end_iter =
+
+   92.0312
+
+
+end_iter =
+
+   94.2806
+
+
+end_iter =
+
+   90.3418
+
+
+end_iter =
+
+   91.3780
+
+
+end_iter =
+
+   93.5910
+
+
+end_iter =
+
+   92.5952
+
+
+end_iter =
+
+   91.4275
+
+
+end_iter =
+
+   92.5109
+
+
+end_iter =
+
+   91.8170
+
+
+end_iter =
+
+   90.3564
+
+
+end_iter =
+
+   92.1772
+
+
+end_iter =
+
+   93.5826
+
+
+end_iter =
+
+   92.4211
+
+
+end_iter =
+
+   91.4411
+
+
+end_iter =
+
+   93.7407
+
+
+end_iter =
+
+   90.2362
+
+
+end_iter =
+
+   91.9727
+
+
+end_iter =
+
+   94.0533
+
+
+end_iter =
+
+   92.8453
+
+
+end_iter =
+
+   92.6042
+
+
+end_iter =
+
+   92.8290
+
+
+end_iter =
+
+   92.2198
+
+
+end_iter =
+
+   92.5141
+
+
+end_iter =
+
+   91.3152
+
+
+end_iter =
+
+   93.6568
+
+
+end_iter =
+
+   90.8991
+
+
+end_iter =
+
+   89.6881
+
+
+end_iter =
+
+   91.9680
+
+
+end_iter =
+
+   91.7104
+
+
+end_iter =
+
+   92.8491
+
+
+end_iter =
+
+   90.5626
+
+
+end_iter =
+
+   90.1740
+
+
+end_iter =
+
+   91.0119
+
+
+end_iter =
+
+   93.3937
+
+
+end_iter =
+
+   91.9068
+
+
+end_iter =
+
+   92.7044
+
+
+end_iter =
+
+   94.8105
+
+
+end_iter =
+
+   94.7852
+
+
+end_iter =
+
+   93.7216
+
+
+end_iter =
+
+   94.0802
+
+
+end_iter =
+
+   92.4122
+
+
+end_iter =
+
+   92.4037
+
+
+end_iter =
+
+   95.7510
+
+
+end_iter =
+
+   92.6317
+
+
+end_iter =
+
+   92.1875
+
+
+end_iter =
+
+   91.9561
+
+
+end_iter =
+
+   92.3019
+
+
+end_iter =
+
+   93.6250
+
+
+end_iter =
+
+   93.2920
+
+
+end_iter =
+
+   92.4256
+
+
+end_iter =
+
+   90.1434
+
+
+end_iter =
+
+   89.8645
+
+
+end_iter =
+
+   91.0134
+
+
+end_iter =
+
+   89.7220
+
+
+end_iter =
+
+   92.2105
+
+
+end_iter =
+
+   93.8030
+
+
+end_iter =
+
+   91.7548
+
+
+end_iter =
+
+   95.1404
+
+
+end_iter =
+
+   93.5826
+
+
+end_iter =
+
+   93.8461
+
+Reweighting: 4
+
+
+end_iter =
+
+  180.5562
+
+
+end_iter =
+
+   92.7703
+
+
+end_iter =
+
+   91.1734
+
+
+end_iter =
+
+   93.4115
+
+
+end_iter =
+
+   90.2870
+
+
+end_iter =
+
+   92.3574
+
+
+end_iter =
+
+   93.3682
+
+
+end_iter =
+
+   91.5740
+
+
+end_iter =
+
+   91.2092
+
+
+end_iter =
+
+   91.2749
+
+
+end_iter =
+
+   90.6910
+
+
+end_iter =
+
+   91.2809
+
+
+end_iter =
+
+   92.0735
+
+
+end_iter =
+
+   94.8104
+
+
+end_iter =
+
+   94.6844
+
+
+end_iter =
+
+   93.7866
+
+
+end_iter =
+
+   92.8313
+
+
+end_iter =
+
+   94.9114
+
+
+end_iter =
+
+   90.6484
+
+
+end_iter =
+
+   91.4375
+
+
+end_iter =
+
+   92.1368
+
+
+end_iter =
+
+   91.3523
+
+
+end_iter =
+
+   94.3111
+
+
+end_iter =
+
+   91.5569
+
+
+end_iter =
+
+   91.1339
+
+
+end_iter =
+
+   91.7301
+
+
+end_iter =
+
+   91.2878
+
+
+end_iter =
+
+   90.4535
+
+
+end_iter =
+
+   92.0542
+
+
+end_iter =
+
+   91.7680
+
+
+end_iter =
+
+   90.9335
+
+
+end_iter =
+
+   92.1939
+
+
+end_iter =
+
+   91.6217
+
+
+end_iter =
+
+   90.8626
+
+
+end_iter =
+
+   91.0326
+
+
+end_iter =
+
+   92.6177
+
+
+end_iter =
+
+   91.3611
+
+
+end_iter =
+
+   90.5813
+
+
+end_iter =
+
+   91.9464
+
+
+end_iter =
+
+   93.1421
+
+
+end_iter =
+
+   94.0070
+
+
+end_iter =
+
+   92.9469
+
+
+end_iter =
+
+   93.8202
+
+
+end_iter =
+
+   88.0155
+
+
+end_iter =
+
+   90.2542
+
+
+end_iter =
+
+   90.2745
+
+
+end_iter =
+
+   93.1281
+
+
+end_iter =
+
+   93.1680
+
+
+end_iter =
+
+   90.9909
+
+
+end_iter =
+
+   90.8612
+
+
+end_iter =
+
+   89.8338
+
+
+end_iter =
+
+   90.3709
+
+
+end_iter =
+
+   93.9666
+
+
+end_iter =
+
+   91.6317
+
+
+end_iter =
+
+   89.3273
+
+
+end_iter =
+
+   89.3430
+
+
+end_iter =
+
+   92.1341
+
+
+end_iter =
+
+   89.4775
+
+
+end_iter =
+
+   90.3257
+
+
+end_iter =
+
+   92.2552
+
+
+end_iter =
+
+   93.6245
+
+
+end_iter =
+
+   92.9152
+
+
+end_iter =
+
+   92.5448
+
+
+end_iter =
+
+   92.3880
+
+
+end_iter =
+
+   94.1115
+
+
+end_iter =
+
+   94.8828
+
+
+end_iter =
+
+   92.4098
+
+
+end_iter =
+
+   90.3853
+
+
+end_iter =
+
+   90.3445
+
+
+end_iter =
+
+   92.2098
+
+
+end_iter =
+
+   90.1743
+
+
+end_iter =
+
+   91.4636
+
+
+end_iter =
+
+   92.4686
+
+
+end_iter =
+
+   92.4659
+
+
+end_iter =
+
+   91.9530
+
+
+end_iter =
+
+   89.6624
+
+
+end_iter =
+
+   90.4762
+
+
+end_iter =
+
+   90.6523
+
+
+end_iter =
+
+   90.3721
+
+
+end_iter =
+
+   92.8669
+
+
+end_iter =
+
+   90.8287
+
+
+end_iter =
+
+   93.1336
+
+
+end_iter =
+
+   92.1486
+
+
+end_iter =
+
+   92.1977
+
+
+end_iter =
+
+   93.1856
+
+
+end_iter =
+
+   90.3738
+
+
+end_iter =
+
+   91.8066
+
+
+end_iter =
+
+   90.1990
+
+
+end_iter =
+
+   91.2760
+
+
+end_iter =
+
+   92.1613
+
+
+end_iter =
+
+   92.4011
+
+
+end_iter =
+
+   92.3236
+
+
+end_iter =
+
+   92.0749
+
+
+end_iter =
+
+   92.4661
+
+
+end_iter =
+
+   93.1542
+
+
+end_iter =
+
+   91.8306
+
+
+end_iter =
+
+   91.3632
+
+
+end_iter =
+
+   92.6858
+
+
+end_iter =
+
+   93.7300
+
+
+end_iter =
+
+   90.6534
+
+
+end_iter =
+
+   90.3214
+
+
+end_iter =
+
+   91.3388
+
+
+end_iter =
+
+   90.6513
+
+
+end_iter =
+
+   91.1755
+
+
+end_iter =
+
+   92.2954
+
+
+end_iter =
+
+   93.1772
+
+
+end_iter =
+
+   91.0898
+
+
+end_iter =
+
+   90.4610
+
+
+end_iter =
+
+   90.1942
+
+
+end_iter =
+
+   92.3071
+
+
+end_iter =
+
+   93.0565
+
+
+end_iter =
+
+   92.0387
+
+
+end_iter =
+
+   91.8610
+
+
+end_iter =
+
+   92.5899
+
+
+end_iter =
+
+   93.6496
+
+
+end_iter =
+
+   92.7679
+
+
+end_iter =
+
+   91.9433
+
+
+end_iter =
+
+   91.8741
+
+
+end_iter =
+
+   92.8534
+
+
+end_iter =
+
+   93.9904
+
+
+end_iter =
+
+   89.7561
+
+
+end_iter =
+
+   92.1746
+
+
+end_iter =
+
+   91.5162
+
+
+end_iter =
+
+   90.6607
+
+
+end_iter =
+
+   93.5626
+
+
+end_iter =
+
+   91.7510
+
+
+end_iter =
+
+   91.1306
+
+
+end_iter =
+
+   91.7326
+
+
+end_iter =
+
+   92.9850
+
+
+end_iter =
+
+   91.6119
+
+
+end_iter =
+
+   92.0771
+
+
+end_iter =
+
+   92.2864
+
+
+end_iter =
+
+   93.3013
+
+
+end_iter =
+
+   91.6837
+
+
+end_iter =
+
+   89.8299
+
+
+end_iter =
+
+   89.4061
+
+
+end_iter =
+
+   90.1295
+
+
+end_iter =
+
+   90.2304
+
+
+end_iter =
+
+   91.4234
+
+
+end_iter =
+
+   92.7846
+
+
+end_iter =
+
+   92.9806
+
+
+end_iter =
+
+   92.2879
+
+
+end_iter =
+
+   91.8978
+
+
+end_iter =
+
+   92.8307
+
+
+end_iter =
+
+   94.3269
+
+
+end_iter =
+
+   95.0714
+
+
+end_iter =
+
+   90.3258
+
+
+end_iter =
+
+   90.8058
+
+
+end_iter =
+
+   93.0628
+
+
+end_iter =
+
+   93.1365
+
+
+end_iter =
+
+   88.8885
+
+
+end_iter =
+
+   90.0873
+
+
+end_iter =
+
+   93.0315
+
+
+end_iter =
+
+   92.3805
+
+
+end_iter =
+
+   91.4244
+
+
+end_iter =
+
+   90.9564
+
+
+end_iter =
+
+   90.1672
+
+
+end_iter =
+
+   92.0126
+
+
+end_iter =
+
+   90.2215
+
+
+end_iter =
+
+   91.5136
+
+
+end_iter =
+
+   91.3408
+
+
+end_iter =
+
+   92.8159
+
+
+end_iter =
+
+   92.7232
+
+
+end_iter =
+
+   94.1136
+
+
+end_iter =
+
+   92.7031
+
+
+end_iter =
+
+   89.8472
+
+
+end_iter =
+
+   90.9158
+
+
+end_iter =
+
+   90.4855
+
+
+end_iter =
+
+   91.6657
+
+
+end_iter =
+
+   91.8291
+
+
+end_iter =
+
+   90.3472
+
+
+end_iter =
+
+   90.8389
+
+
+end_iter =
+
+   90.9528
+
+
+end_iter =
+
+   91.6898
+
+
+end_iter =
+
+   92.0459
+
+
+end_iter =
+
+   91.4033
+
+
+end_iter =
+
+   93.8094
+
+
+end_iter =
+
+   94.4802
+
+
+end_iter =
+
+   93.9622
+
+
+end_iter =
+
+   92.8323
+
+
+end_iter =
+
+   91.2445
+
+
+end_iter =
+
+   92.6922
+
+
+end_iter =
+
+   92.0634
+
+
+end_iter =
+
+   91.8137
+
+
+end_iter =
+
+   92.0016
+
+
+end_iter =
+
+   91.1449
+
+
+end_iter =
+
+   91.1332
+
+
+end_iter =
+
+   91.7391
+
+
+end_iter =
+
+   91.1035
+
+
+end_iter =
+
+   91.7495
+
+
+end_iter =
+
+   93.7624
+
+
+end_iter =
+
+   92.7065
+
+
+end_iter =
+
+   88.5080
+
+
+end_iter =
+
+   89.3287
+
+
+end_iter =
+
+   89.3950
+
+
+end_iter =
+
+   89.9506
+
+
+end_iter =
+
+   90.3653
+
+
+end_iter =
+
+   89.3403
+
+
+end_iter =
+
+   90.3074
+
+
+end_iter =
+
+   90.7927
+
+
+end_iter =
+
+   91.7987
+
+
+end_iter =
+
+   90.9901
+
+
+end_iter =
+
+   91.5954
+
+
+end_iter =
+
+   93.4564
+
+
+end_iter =
+
+   91.0939
+
+
+end_iter =
+
+   89.5423
+
+
+end_iter =
+
+   90.8875
+
+
+end_iter =
+
+   92.6894
+
+
+end_iter =
+
+   91.5403
+
+
+end_iter =
+
+   92.3075
+
+
+end_iter =
+
+   91.7396
+
+
+end_iter =
+
+   93.0900
+
+
+end_iter =
+
+   91.7676
+
+
+end_iter =
+
+   92.6050
+
+
+end_iter =
+
+   92.2606
+
+
+end_iter =
+
+   92.8786
+
+
+end_iter =
+
+   94.7939
+
+
+end_iter =
+
+   94.1663
+
+
+end_iter =
+
+   96.3112
+
+
+end_iter =
+
+   95.1428
+
+
+end_iter =
+
+   94.2677
+
+
+end_iter =
+
+   93.3389
+
+
+end_iter =
+
+   93.4487
+
+
+end_iter =
+
+   94.9018
+
+
+end_iter =
+
+   94.7010
+
+
+end_iter =
+
+   91.2409
+
+
+end_iter =
+
+   90.8691
+
+
+end_iter =
+
+   92.5290
+
+
+end_iter =
+
+   93.0936
+
+
+end_iter =
+
+   91.8811
+
+
+end_iter =
+
+   93.1295
+
+
+end_iter =
+
+   91.4288
+
+
+end_iter =
+
+   91.6981
+
+
+end_iter =
+
+   92.9695
+
+
+end_iter =
+
+   89.7300
+
+
+end_iter =
+
+   91.3346
+
+
+end_iter =
+
+   89.5814
+
+
+end_iter =
+
+   93.5943
+
+
+end_iter =
+
+   91.8195
+
+
+end_iter =
+
+   89.1154
+
+
+end_iter =
+
+   90.5467
+
+
+end_iter =
+
+   91.7813
+
+
+end_iter =
+
+   90.2776
+
+
+end_iter =
+
+   91.1515
+
+
+end_iter =
+
+   91.7853
+
+
+end_iter =
+
+   91.3900
+
+
+end_iter =
+
+   89.2551
+
+
+end_iter =
+
+   90.9117
+
+
+end_iter =
+
+   94.0204
+
+
+end_iter =
+
+   92.9951
+
+
+end_iter =
+
+   92.3671
+
+
+end_iter =
+
+   92.0661
+
+
+end_iter =
+
+   93.8421
+
+
+end_iter =
+
+   92.4616
+
+
+end_iter =
+
+   91.5057
+
+
+end_iter =
+
+   92.7508
+
+
+end_iter =
+
+   92.1186
+
+
+end_iter =
+
+   91.0312
+
+
+end_iter =
+
+   92.0389
+
+
+end_iter =
+
+   92.6043
+
+
+end_iter =
+
+   92.8151
+
+
+end_iter =
+
+   95.2661
+
+
+end_iter =
+
+   94.9387
+
+
+end_iter =
+
+   94.0342
+
+
+end_iter =
+
+   95.0795
+
+
+end_iter =
+
+   93.5053
+
+
+end_iter =
+
+   91.4455
+
+
+end_iter =
+
+   90.9263
+
+
+end_iter =
+
+   91.8223
+
+
+end_iter =
+
+   92.5098
+
+
+end_iter =
+
+   90.6555
+
+
+end_iter =
+
+   88.9795
+
+
+end_iter =
+
+   88.4469
+
+
+end_iter =
+
+   92.8942
+
+
+end_iter =
+
+   90.8958
+
+
+end_iter =
+
+   89.9337
+
+
+end_iter =
+
+   91.7852
+
+
+end_iter =
+
+   89.8316
+
+
+end_iter =
+
+   88.4007
+
+
+end_iter =
+
+   88.9144
+
+
+end_iter =
+
+   90.1381
+
+
+end_iter =
+
+   90.9351
+
+
+end_iter =
+
+   89.7481
+
+
+end_iter =
+
+   90.9715
+
+
+end_iter =
+
+   93.0122
+
+
+end_iter =
+
+   93.0573
+
+
+end_iter =
+
+   95.3859
+
+
+end_iter =
+
+   94.0168
+
+
+end_iter =
+
+   93.2865
+
+
+end_iter =
+
+   93.2226
+
+
+end_iter =
+
+   95.3069
+
+
+end_iter =
+
+   93.0555
+
+
+end_iter =
+
+   93.2780
+
+
+end_iter =
+
+   93.8432
+
+
+end_iter =
+
+   94.3272
+
+
+end_iter =
+
+   95.1374
+
+
+end_iter =
+
+   94.4467
+
+
+end_iter =
+
+   93.1821
+
+
+end_iter =
+
+   93.5210
+
+
+end_iter =
+
+   91.8140
+
+Reweighting: 5
+
+
+end_iter =
+
+  179.6375
+
+
+end_iter =
+
+   95.0827
+
+
+end_iter =
+
+   91.1193
+
+
+end_iter =
+
+   93.2180
+
+
+end_iter =
+
+   92.6854
+
+
+end_iter =
+
+   91.3840
+
+
+end_iter =
+
+   92.3830
+
+
+end_iter =
+
+   95.0325
+
+
+end_iter =
+
+   92.4123
+
+
+end_iter =
+
+   93.9553
+
+
+end_iter =
+
+   93.1734
+
+
+end_iter =
+
+   93.0134
+
+
+end_iter =
+
+   92.0436
+
+
+end_iter =
+
+   90.8474
+
+
+end_iter =
+
+   92.5739
+
+
+end_iter =
+
+   94.8762
+
+
+end_iter =
+
+   94.6326
+
+
+end_iter =
+
+   94.8866
+
+
+end_iter =
+
+   93.6149
+
+
+end_iter =
+
+   91.4341
+
+
+end_iter =
+
+   94.3136
+
+
+end_iter =
+
+   92.6571
+
+
+end_iter =
+
+   91.1688
+
+
+end_iter =
+
+   91.5359
+
+
+end_iter =
+
+   94.3248
+
+
+end_iter =
+
+   94.2543
+
+
+end_iter =
+
+   92.2235
+
+
+end_iter =
+
+   93.4795
+
+
+end_iter =
+
+   90.1905
+
+
+end_iter =
+
+   92.7149
+
+
+end_iter =
+
+   91.3857
+
+
+end_iter =
+
+   91.1809
+
+
+end_iter =
+
+   89.9201
+
+
+end_iter =
+
+   90.4170
+
+
+end_iter =
+
+   91.0648
+
+
+end_iter =
+
+   90.3723
+
+
+end_iter =
+
+   91.2712
+
+
+end_iter =
+
+   90.9702
+
+
+end_iter =
+
+   89.0257
+
+
+end_iter =
+
+   93.4557
+
+
+end_iter =
+
+   90.6834
+
+
+end_iter =
+
+   92.3572
+
+
+end_iter =
+
+   93.3515
+
+
+end_iter =
+
+   91.4351
+
+
+end_iter =
+
+   92.1083
+
+
+end_iter =
+
+   93.2527
+
+
+end_iter =
+
+   91.4700
+
+
+end_iter =
+
+   89.7851
+
+
+end_iter =
+
+   90.0820
+
+
+end_iter =
+
+   93.2049
+
+
+end_iter =
+
+   91.3905
+
+
+end_iter =
+
+   91.6620
+
+
+end_iter =
+
+   87.8913
+
+
+end_iter =
+
+   89.4975
+
+
+end_iter =
+
+   90.5429
+
+
+end_iter =
+
+   92.9382
+
+
+end_iter =
+
+   92.6936
+
+
+end_iter =
+
+   90.5650
+
+
+end_iter =
+
+   88.8388
+
+
+end_iter =
+
+   89.8492
+
+
+end_iter =
+
+   93.7752
+
+
+end_iter =
+
+   93.5196
+
+
+end_iter =
+
+   92.3169
+
+
+end_iter =
+
+   92.6103
+
+
+end_iter =
+
+   95.8279
+
+
+end_iter =
+
+   93.5046
+
+
+end_iter =
+
+   92.1126
+
+
+end_iter =
+
+   91.2256
+
+
+end_iter =
+
+   91.4793
+
+
+end_iter =
+
+   92.5801
+
+
+end_iter =
+
+   92.2175
+
+
+end_iter =
+
+   93.2461
+
+
+end_iter =
+
+   89.2052
+
+
+end_iter =
+
+   92.4430
+
+
+end_iter =
+
+   92.6803
+
+
+end_iter =
+
+   89.2867
+
+
+end_iter =
+
+   88.6749
+
+
+end_iter =
+
+   88.8157
+
+
+end_iter =
+
+   93.6408
+
+
+end_iter =
+
+   92.9630
+
+
+end_iter =
+
+   93.6705
+
+
+end_iter =
+
+   94.4510
+
+
+end_iter =
+
+   94.7850
+
+
+end_iter =
+
+   92.9228
+
+
+end_iter =
+
+   92.0978
+
+
+end_iter =
+
+   91.8762
+
+
+end_iter =
+
+   92.1621
+
+
+end_iter =
+
+   92.3120
+
+
+end_iter =
+
+   92.2078
+
+
+end_iter =
+
+   90.9375
+
+
+end_iter =
+
+   88.8104
+
+
+end_iter =
+
+   90.9932
+
+
+end_iter =
+
+   92.5719
+
+
+end_iter =
+
+   91.0202
+
+
+end_iter =
+
+   93.7093
+
+
+end_iter =
+
+   94.2583
+
+
+end_iter =
+
+   93.9932
+
+
+end_iter =
+
+   93.5612
+
+
+end_iter =
+
+   95.1083
+
+
+end_iter =
+
+   94.8431
+
+
+end_iter =
+
+   95.9835
+
+
+end_iter =
+
+   95.6572
+
+
+end_iter =
+
+   93.3255
+
+
+end_iter =
+
+   93.9938
+
+
+end_iter =
+
+   92.8342
+
+
+end_iter =
+
+   95.2049
+
+
+end_iter =
+
+   94.0671
+
+
+end_iter =
+
+   87.3117
+
+
+end_iter =
+
+   93.3447
+
+
+end_iter =
+
+   92.1671
+
+
+end_iter =
+
+   89.0669
+
+
+end_iter =
+
+   89.3770
+
+
+end_iter =
+
+   88.8508
+
+
+end_iter =
+
+   90.2645
+
+
+end_iter =
+
+   95.2672
+
+
+end_iter =
+
+   92.2163
+
+
+end_iter =
+
+   92.7300
+
+
+end_iter =
+
+   92.9703
+
+
+end_iter =
+
+   90.6507
+
+
+end_iter =
+
+   87.7827
+
+
+end_iter =
+
+   90.3416
+
+
+end_iter =
+
+   89.6250
+
+
+end_iter =
+
+   90.5564
+
+
+end_iter =
+
+   93.5194
+
+
+end_iter =
+
+   92.6281
+
+
+end_iter =
+
+   91.2368
+
+
+end_iter =
+
+   88.8404
+
+
+end_iter =
+
+   87.6790
+
+
+end_iter =
+
+   94.1316
+
+
+end_iter =
+
+   92.5331
+
+
+end_iter =
+
+   92.4168
+
+
+end_iter =
+
+   91.8030
+
+
+end_iter =
+
+   93.7026
+
+
+end_iter =
+
+   93.5415
+
+
+end_iter =
+
+   92.0816
+
+
+end_iter =
+
+   92.9153
+
+
+end_iter =
+
+   93.2590
+
+
+end_iter =
+
+   95.3256
+
+
+end_iter =
+
+   91.9348
+
+
+end_iter =
+
+   88.7916
+
+
+end_iter =
+
+   90.0520
+
+
+end_iter =
+
+   90.8508
+
+
+end_iter =
+
+   92.2085
+
+
+end_iter =
+
+   93.4194
+
+
+end_iter =
+
+   92.1500
+
+
+end_iter =
+
+   94.5100
+
+
+end_iter =
+
+   92.5763
+
+
+end_iter =
+
+   89.9052
+
+
+end_iter =
+
+   89.0562
+
+
+end_iter =
+
+   91.3786
+
+
+end_iter =
+
+   91.9901
+
+
+end_iter =
+
+   90.4250
+
+
+end_iter =
+
+   91.8028
+
+
+end_iter =
+
+   92.1751
+
+
+end_iter =
+
+   91.2044
+
+
+end_iter =
+
+   90.1074
+
+
+end_iter =
+
+   90.0413
+
+
+end_iter =
+
+   93.2422
+
+
+end_iter =
+
+   92.5931
+
+
+end_iter =
+
+   92.9261
+
+
+end_iter =
+
+   89.1216
+
+
+end_iter =
+
+   88.8110
+
+
+end_iter =
+
+   88.9107
+
+
+end_iter =
+
+   90.0222
+
+
+end_iter =
+
+   90.1868
+
+
+end_iter =
+
+   90.8084
+
+
+end_iter =
+
+   92.5875
+
+
+end_iter =
+
+   90.4527
+
+
+end_iter =
+
+   89.9767
+
+
+end_iter =
+
+   90.8667
+
+
+end_iter =
+
+   92.7109
+
+
+end_iter =
+
+   92.8599
+
+
+end_iter =
+
+   92.8157
+
+
+end_iter =
+
+   91.7348
+
+
+end_iter =
+
+   93.9027
+
+
+end_iter =
+
+   90.4450
+
+
+end_iter =
+
+   90.0885
+
+
+end_iter =
+
+   90.3279
+
+
+end_iter =
+
+   88.9473
+
+
+end_iter =
+
+   91.3311
+
+
+end_iter =
+
+   91.3738
+
+
+end_iter =
+
+   90.8280
+
+
+end_iter =
+
+   90.8195
+
+
+end_iter =
+
+   91.0190
+
+
+end_iter =
+
+   91.1229
+
+
+end_iter =
+
+   91.7915
+
+
+end_iter =
+
+   89.9714
+
+
+end_iter =
+
+   89.8325
+
+
+end_iter =
+
+   92.0761
+
+
+end_iter =
+
+   91.5534
+
+
+end_iter =
+
+   91.6055
+
+
+end_iter =
+
+   89.8273
+
+
+end_iter =
+
+   90.6926
+
+
+end_iter =
+
+   89.6885
+
+
+end_iter =
+
+   89.4619
+
+
+end_iter =
+
+   89.2800
+
+
+end_iter =
+
+   89.5860
+
+
+end_iter =
+
+   90.0774
+
+
+end_iter =
+
+   91.7422
+
+
+end_iter =
+
+   90.5338
+
+
+end_iter =
+
+   90.8929
+
+
+end_iter =
+
+   90.7269
+
+
+end_iter =
+
+   91.1424
+
+
+end_iter =
+
+   91.8989
+
+
+end_iter =
+
+   92.5155
+
+
+end_iter =
+
+   89.0709
+
+
+end_iter =
+
+   91.7035
+
+
+end_iter =
+
+   91.9255
+
+
+end_iter =
+
+   92.2204
+
+
+end_iter =
+
+   89.2767
+
+
+end_iter =
+
+   93.3456
+
+
+end_iter =
+
+   91.8113
+
+
+end_iter =
+
+   91.5142
+
+
+end_iter =
+
+   90.7340
+
+
+end_iter =
+
+   91.2459
+
+
+end_iter =
+
+   89.4303
+
+
+end_iter =
+
+   91.2474
+
+
+end_iter =
+
+   90.2124
+
+
+end_iter =
+
+   91.1450
+
+
+end_iter =
+
+   92.1567
+
+
+end_iter =
+
+   91.3181
+
+
+end_iter =
+
+   90.2337
+
+
+end_iter =
+
+   90.7477
+
+
+end_iter =
+
+   90.2739
+
+
+end_iter =
+
+   90.8208
+
+
+end_iter =
+
+   89.9835
+
+
+end_iter =
+
+   91.3043
+
+
+end_iter =
+
+   94.6661
+
+
+end_iter =
+
+   92.6552
+
+
+end_iter =
+
+   92.6028
+
+
+end_iter =
+
+   92.2073
+
+
+end_iter =
+
+   92.3701
+
+
+end_iter =
+
+   92.7755
+
+
+end_iter =
+
+   92.7893
+
+
+end_iter =
+
+   90.9931
+
+
+end_iter =
+
+   94.1045
+
+
+end_iter =
+
+   95.2308
+
+
+end_iter =
+
+   95.2725
+
+
+end_iter =
+
+   93.7688
+
+
+end_iter =
+
+   93.6393
+
+
+end_iter =
+
+   93.5792
+
+
+end_iter =
+
+   93.9375
+
+
+end_iter =
+
+   93.5410
+
+
+end_iter =
+
+   92.8899
+
+
+end_iter =
+
+   93.1773
+
+
+end_iter =
+
+   95.1039
+
+
+end_iter =
+
+   92.6559
+
+
+end_iter =
+
+   91.3942
+
+
+end_iter =
+
+   93.0075
+
+
+end_iter =
+
+   93.0567
+
+
+end_iter =
+
+   89.9235
+
+
+end_iter =
+
+   87.6646
+
+
+end_iter =
+
+   90.6918
+
+
+end_iter =
+
+   90.0600
+
+
+end_iter =
+
+   90.8329
+
+
+end_iter =
+
+   88.9435
+
+
+end_iter =
+
+   92.3864
+
+
+end_iter =
+
+   91.3711
+
+
+end_iter =
+
+   91.6032
+
+
+end_iter =
+
+   90.8881
+
+
+end_iter =
+
+   92.5989
+
+
+end_iter =
+
+   94.2189
+
+
+end_iter =
+
+   93.8767
+
+
+end_iter =
+
+   91.0838
+
+
+end_iter =
+
+   90.8090
+
+
+end_iter =
+
+   90.5285
+
+
+end_iter =
+
+   92.6298
+
+
+end_iter =
+
+   92.0517
+
+
+end_iter =
+
+   92.2961
+
+
+end_iter =
+
+   92.7508
+
+
+end_iter =
+
+   92.4071
+
+
+end_iter =
+
+   93.5655
+
+
+end_iter =
+
+   91.3267
+
+
+end_iter =
+
+   92.3751
+
+
+end_iter =
+
+   90.2405
+
+
+end_iter =
+
+   90.9096
+
+
+end_iter =
+
+   89.9217
+
+
+end_iter =
+
+   91.2393
+
+
+end_iter =
+
+   92.2312
+
+
+end_iter =
+
+   92.5222
+
+
+end_iter =
+
+   93.3598
+
+
+end_iter =
+
+   94.6313
+
+
+end_iter =
+
+   93.3741
+
+
+end_iter =
+
+   91.6025
+
+
+end_iter =
+
+   93.1346
+
+
+end_iter =
+
+   92.3313
+
+
+end_iter =
+
+   92.4039
+
+
+end_iter =
+
+   92.3907
+
+
+end_iter =
+
+   91.8696
+
+
+end_iter =
+
+   90.3320
+
+
+end_iter =
+
+   91.3550
+
+
+end_iter =
+
+   92.6285
+
+
+end_iter =
+
+   93.8549
+
+
+end_iter =
+
+   89.4777
+
+
+end_iter =
+
+   89.3308
+
+
+end_iter =
+
+   89.4765
+
+
+end_iter =
+
+   89.7776
+
+
+end_iter =
+
+   89.8447
+
+
+end_iter =
+
+   89.4261
+
+
+end_iter =
+
+   89.7976
+
+Reweighting: 6
+
+
+end_iter =
+
+  183.3669
+
+
+end_iter =
+
+   94.1590
+
+
+end_iter =
+
+   91.3554
+
+
+end_iter =
+
+   93.3577
+
+
+end_iter =
+
+   91.6104
+
+
+end_iter =
+
+   94.6188
+
+
+end_iter =
+
+   93.4653
+
+
+end_iter =
+
+   96.2015
+
+
+end_iter =
+
+   92.0465
+
+
+end_iter =
+
+   94.2549
+
+
+end_iter =
+
+   94.2778
+
+
+end_iter =
+
+   91.2363
+
+
+end_iter =
+
+   89.2417
+
+
+end_iter =
+
+   88.0940
+
+
+end_iter =
+
+   90.2113
+
+
+end_iter =
+
+   90.4095
+
+
+end_iter =
+
+   91.3643
+
+
+end_iter =
+
+   91.6861
+
+
+end_iter =
+
+   91.2045
+
+
+end_iter =
+
+   92.8381
+
+
+end_iter =
+
+   91.9373
+
+
+end_iter =
+
+   91.4021
+
+
+end_iter =
+
+   90.2311
+
+
+end_iter =
+
+   90.2003
+
+
+end_iter =
+
+   90.2383
+
+
+end_iter =
+
+   91.8365
+
+
+end_iter =
+
+   92.3486
+
+
+end_iter =
+
+   92.3254
+
+
+end_iter =
+
+   93.9055
+
+
+end_iter =
+
+   94.4015
+
+
+end_iter =
+
+   88.5796
+
+
+end_iter =
+
+   89.3158
+
+
+end_iter =
+
+   88.8909
+
+
+end_iter =
+
+   91.4226
+
+
+end_iter =
+
+   92.3038
+
+
+end_iter =
+
+   92.8442
+
+
+end_iter =
+
+   91.7130
+
+
+end_iter =
+
+   88.8007
+
+
+end_iter =
+
+   88.5645
+
+
+end_iter =
+
+   90.4363
+
+
+end_iter =
+
+   88.7941
+
+
+end_iter =
+
+   89.1318
+
+
+end_iter =
+
+   89.0181
+
+
+end_iter =
+
+   90.2193
+
+
+end_iter =
+
+   91.1835
+
+
+end_iter =
+
+   91.3168
+
+
+end_iter =
+
+   91.2162
+
+
+end_iter =
+
+   91.9420
+
+
+end_iter =
+
+   93.1194
+
+
+end_iter =
+
+   91.9915
+
+
+end_iter =
+
+   92.7280
+
+
+end_iter =
+
+   93.8653
+
+
+end_iter =
+
+   92.6277
+
+
+end_iter =
+
+   94.1786
+
+
+end_iter =
+
+   91.8698
+
+
+end_iter =
+
+   93.3607
+
+
+end_iter =
+
+   93.4343
+
+
+end_iter =
+
+   92.2543
+
+
+end_iter =
+
+   88.4092
+
+
+end_iter =
+
+   87.6909
+
+
+end_iter =
+
+   89.4836
+
+
+end_iter =
+
+   90.6733
+
+
+end_iter =
+
+   89.4703
+
+
+end_iter =
+
+   90.3867
+
+
+end_iter =
+
+   91.8938
+
+
+end_iter =
+
+   91.7481
+
+
+end_iter =
+
+   88.9625
+
+
+end_iter =
+
+   91.1580
+
+
+end_iter =
+
+   92.3818
+
+
+end_iter =
+
+   92.4861
+
+
+end_iter =
+
+   91.1265
+
+
+end_iter =
+
+   88.9063
+
+
+end_iter =
+
+   89.8363
+
+
+end_iter =
+
+   90.6656
+
+
+end_iter =
+
+   90.6677
+
+
+end_iter =
+
+   91.1482
+
+
+end_iter =
+
+   90.6443
+
+
+end_iter =
+
+   90.9393
+
+
+end_iter =
+
+   91.5051
+
+
+end_iter =
+
+   89.7199
+
+
+end_iter =
+
+   91.3477
+
+
+end_iter =
+
+   91.5155
+
+
+end_iter =
+
+   91.3781
+
+
+end_iter =
+
+   91.2008
+
+
+end_iter =
+
+   93.9690
+
+
+end_iter =
+
+   95.2470
+
+
+end_iter =
+
+   93.2373
+
+
+end_iter =
+
+   92.2504
+
+
+end_iter =
+
+   92.7873
+
+
+end_iter =
+
+   92.8355
+
+
+end_iter =
+
+   94.7041
+
+
+end_iter =
+
+   91.7748
+
+
+end_iter =
+
+   93.3361
+
+
+end_iter =
+
+   92.6690
+
+
+end_iter =
+
+   94.7233
+
+
+end_iter =
+
+   92.3165
+
+
+end_iter =
+
+   92.6276
+
+
+end_iter =
+
+   92.3956
+
+
+end_iter =
+
+   94.9267
+
+
+end_iter =
+
+   93.3857
+
+
+end_iter =
+
+   91.8656
+
+
+end_iter =
+
+   91.7180
+
+
+end_iter =
+
+   92.7562
+
+
+end_iter =
+
+   92.7895
+
+
+end_iter =
+
+   93.7139
+
+
+end_iter =
+
+   91.0160
+
+
+end_iter =
+
+   91.6665
+
+
+end_iter =
+
+   91.6783
+
+
+end_iter =
+
+   94.1277
+
+
+end_iter =
+
+   93.2636
+
+
+end_iter =
+
+   91.2551
+
+
+end_iter =
+
+   91.7017
+
+
+end_iter =
+
+   91.1843
+
+
+end_iter =
+
+   90.9069
+
+
+end_iter =
+
+   90.9742
+
+
+end_iter =
+
+   91.6831
+
+
+end_iter =
+
+   90.7586
+
+
+end_iter =
+
+   90.4175
+
+
+end_iter =
+
+   90.2986
+
+
+end_iter =
+
+   93.3190
+
+
+end_iter =
+
+   91.5957
+
+
+end_iter =
+
+   90.1108
+
+
+end_iter =
+
+   91.4910
+
+
+end_iter =
+
+   90.1347
+
+
+end_iter =
+
+   90.6747
+
+
+end_iter =
+
+   88.9899
+
+
+end_iter =
+
+   91.2521
+
+
+end_iter =
+
+   91.5541
+
+
+end_iter =
+
+   91.0187
+
+
+end_iter =
+
+   92.2468
+
+
+end_iter =
+
+   93.1688
+
+
+end_iter =
+
+   92.2290
+
+
+end_iter =
+
+   93.3645
+
+
+end_iter =
+
+   91.3004
+
+
+end_iter =
+
+   91.5786
+
+
+end_iter =
+
+   90.7342
+
+
+end_iter =
+
+   91.5940
+
+
+end_iter =
+
+   92.6838
+
+
+end_iter =
+
+   90.6077
+
+
+end_iter =
+
+   91.3009
+
+
+end_iter =
+
+   90.6234
+
+
+end_iter =
+
+   89.4718
+
+
+end_iter =
+
+   92.6042
+
+
+end_iter =
+
+   93.2514
+
+
+end_iter =
+
+   91.4756
+
+
+end_iter =
+
+   92.5796
+
+
+end_iter =
+
+   89.5314
+
+
+end_iter =
+
+   90.6611
+
+
+end_iter =
+
+   90.3876
+
+
+end_iter =
+
+   90.2688
+
+
+end_iter =
+
+   91.9623
+
+
+end_iter =
+
+   91.2134
+
+
+end_iter =
+
+   91.7539
+
+
+end_iter =
+
+   90.3454
+
+
+end_iter =
+
+   89.7709
+
+
+end_iter =
+
+   91.6980
+
+
+end_iter =
+
+   91.6487
+
+
+end_iter =
+
+   91.4896
+
+
+end_iter =
+
+   91.7525
+
+
+end_iter =
+
+   91.9620
+
+
+end_iter =
+
+   93.6493
+
+
+end_iter =
+
+   93.1996
+
+
+end_iter =
+
+   94.3357
+
+
+end_iter =
+
+   92.2555
+
+
+end_iter =
+
+   92.4332
+
+
+end_iter =
+
+   92.2931
+
+
+end_iter =
+
+   92.9387
+
+
+end_iter =
+
+   92.5234
+
+
+end_iter =
+
+   93.9996
+
+
+end_iter =
+
+   93.1201
+
+
+end_iter =
+
+   91.4519
+
+
+end_iter =
+
+   92.0435
+
+
+end_iter =
+
+   90.7551
+
+
+end_iter =
+
+   90.9577
+
+
+end_iter =
+
+   92.4346
+
+
+end_iter =
+
+   92.2585
+
+
+end_iter =
+
+   92.0796
+
+
+end_iter =
+
+   92.0646
+
+
+end_iter =
+
+   92.2091
+
+
+end_iter =
+
+   92.4241
+
+
+end_iter =
+
+   90.8116
+
+
+end_iter =
+
+   90.7945
+
+
+end_iter =
+
+   94.2894
+
+
+end_iter =
+
+   92.8638
+
+
+end_iter =
+
+   90.4589
+
+
+end_iter =
+
+   92.7196
+
+
+end_iter =
+
+   92.1808
+
+
+end_iter =
+
+   90.2037
+
+
+end_iter =
+
+   89.3162
+
+
+end_iter =
+
+   90.7953
+
+
+end_iter =
+
+   92.1705
+
+
+end_iter =
+
+   91.2256
+
+
+end_iter =
+
+   90.8161
+
+
+end_iter =
+
+   91.6051
+
+
+end_iter =
+
+   91.9478
+
+
+end_iter =
+
+   93.3984
+
+
+end_iter =
+
+   92.1676
+
+
+end_iter =
+
+   92.8054
+
+
+end_iter =
+
+   93.0630
+
+
+end_iter =
+
+   92.7032
+
+
+end_iter =
+
+   90.7944
+
+
+end_iter =
+
+   91.6663
+
+
+end_iter =
+
+   92.3486
+
+
+end_iter =
+
+   94.4850
+
+
+end_iter =
+
+   90.8731
+
+
+end_iter =
+
+   89.9974
+
+
+end_iter =
+
+   94.0098
+
+
+end_iter =
+
+   89.6931
+
+
+end_iter =
+
+   90.8853
+
+
+end_iter =
+
+   91.8254
+
+
+end_iter =
+
+   90.1876
+
+
+end_iter =
+
+   91.2707
+
+
+end_iter =
+
+   91.4864
+
+
+end_iter =
+
+   91.2953
+
+
+end_iter =
+
+   92.7934
+
+
+end_iter =
+
+   91.7441
+
+
+end_iter =
+
+   93.5877
+
+
+end_iter =
+
+   92.0873
+
+
+end_iter =
+
+   94.0143
+
+
+end_iter =
+
+   92.1862
+
+
+end_iter =
+
+   92.8682
+
+
+end_iter =
+
+   92.7219
+
+
+end_iter =
+
+   93.6964
+
+
+end_iter =
+
+   90.7430
+
+
+end_iter =
+
+   93.8371
+
+
+end_iter =
+
+   93.5903
+
+
+end_iter =
+
+   91.9256
+
+
+end_iter =
+
+   90.9444
+
+
+end_iter =
+
+   93.6149
+
+
+end_iter =
+
+   93.1890
+
+
+end_iter =
+
+   92.3323
+
+
+end_iter =
+
+   93.8877
+
+
+end_iter =
+
+   93.3701
+
+
+end_iter =
+
+   94.2149
+
+
+end_iter =
+
+   92.3776
+
+
+end_iter =
+
+   92.9557
+
+
+end_iter =
+
+   94.5099
+
+
+end_iter =
+
+   95.6826
+
+
+end_iter =
+
+   94.3410
+
+
+end_iter =
+
+   92.0312
+
+
+end_iter =
+
+   91.5879
+
+
+end_iter =
+
+   92.8189
+
+
+end_iter =
+
+   91.0000
+
+
+end_iter =
+
+   93.3913
+
+
+end_iter =
+
+   92.1211
+
+
+end_iter =
+
+   90.1822
+
+
+end_iter =
+
+   90.2061
+
+
+end_iter =
+
+   91.0971
+
+
+end_iter =
+
+   90.7221
+
+
+end_iter =
+
+   93.7624
+
+
+end_iter =
+
+   91.8969
+
+
+end_iter =
+
+   89.7459
+
+
+end_iter =
+
+   90.2696
+
+
+end_iter =
+
+   92.3286
+
+
+end_iter =
+
+   92.2578
+
+
+end_iter =
+
+   93.3231
+
+
+end_iter =
+
+   94.8129
+
+
+end_iter =
+
+   93.8822
+
+
+end_iter =
+
+   94.7574
+
+
+end_iter =
+
+   93.7631
+
+
+end_iter =
+
+   92.4492
+
+
+end_iter =
+
+   93.2693
+
+
+end_iter =
+
+   92.6235
+
+
+end_iter =
+
+   95.0486
+
+
+end_iter =
+
+   92.2104
+
+
+end_iter =
+
+   91.8267
+
+
+end_iter =
+
+   93.4506
+
+
+end_iter =
+
+   93.3358
+
+
+end_iter =
+
+   92.8976
+
+
+end_iter =
+
+   89.3129
+
+
+end_iter =
+
+   90.2730
+
+
+end_iter =
+
+   91.7978
+
+
+end_iter =
+
+   91.2358
+
+
+end_iter =
+
+   92.1124
+
+
+end_iter =
+
+   90.9909
+
+
+end_iter =
+
+   92.5883
+
+
+end_iter =
+
+   92.4100
+
+
+end_iter =
+
+   92.4483
+
+
+end_iter =
+
+   94.6323
+
+
+end_iter =
+
+   92.7469
+
+
+end_iter =
+
+   93.4915
+
+
+end_iter =
+
+   92.4176
+
+
+end_iter =
+
+   92.8214
+
+
+end_iter =
+
+   91.7225
+
+
+end_iter =
+
+   92.1447
+
+
+end_iter =
+
+   91.8937
+
+
+end_iter =
+
+   93.2515
+
+
+end_iter =
+
+   93.3850
+
+
+end_iter =
+
+   92.2488
+
+
+end_iter =
+
+   94.4815
+
+
+end_iter =
+
+   92.9978
+
+
+end_iter =
+
+   93.5800
+
+
+end_iter =
+
+   92.2488
+
+
+end_iter =
+
+   93.6428
+
+
+end_iter =
+
+   91.5594
+
+
+end_iter =
+
+   92.9416
+
+
+end_iter =
+
+   92.2322
+
+
+end_iter =
+
+   91.7282
+
+
+end_iter =
+
+   90.7375
+
+
+end_iter =
+
+   91.2555
+
+Reweighting: 7
+
+
+end_iter =
+
+  178.1360
+
+
+end_iter =
+
+   92.1981
+
+
+end_iter =
+
+   90.7070
+
+
+end_iter =
+
+   91.7591
+
+
+end_iter =
+
+   90.7176
+
+
+end_iter =
+
+   89.2378
+
+
+end_iter =
+
+   89.9960
+
+
+end_iter =
+
+   91.6562
+
+
+end_iter =
+
+   93.8465
+
+
+end_iter =
+
+   93.1367
+
+
+end_iter =
+
+   91.8969
+
+
+end_iter =
+
+   93.6152
+
+
+end_iter =
+
+   91.5693
+
+
+end_iter =
+
+   93.7412
+
+
+end_iter =
+
+   91.5964
+
+
+end_iter =
+
+   92.6484
+
+
+end_iter =
+
+   91.3752
+
+
+end_iter =
+
+   93.2579
+
+
+end_iter =
+
+   92.4879
+
+
+end_iter =
+
+   92.5465
+
+
+end_iter =
+
+   92.0124
+
+
+end_iter =
+
+   93.6111
+
+
+end_iter =
+
+   92.6208
+
+
+end_iter =
+
+   92.4897
+
+
+end_iter =
+
+   92.5489
+
+
+end_iter =
+
+   92.5248
+
+
+end_iter =
+
+   92.1301
+
+
+end_iter =
+
+   90.5554
+
+
+end_iter =
+
+   89.8684
+
+
+end_iter =
+
+   90.9211
+
+
+end_iter =
+
+   91.9764
+
+
+end_iter =
+
+   90.2303
+
+
+end_iter =
+
+   90.6736
+
+
+end_iter =
+
+   93.5419
+
+
+end_iter =
+
+   93.2961
+
+
+end_iter =
+
+   93.5404
+
+
+end_iter =
+
+   92.7899
+
+
+end_iter =
+
+   93.6645
+
+
+end_iter =
+
+   92.5141
+
+
+end_iter =
+
+   93.2008
+
+
+end_iter =
+
+   93.6844
+
+
+end_iter =
+
+   93.9118
+
+
+end_iter =
+
+   93.3145
+
+
+end_iter =
+
+   93.4142
+
+
+end_iter =
+
+   92.8363
+
+
+end_iter =
+
+   93.5605
+
+
+end_iter =
+
+   95.4930
+
+
+end_iter =
+
+   92.9315
+
+
+end_iter =
+
+   94.7160
+
+
+end_iter =
+
+   92.1412
+
+
+end_iter =
+
+   94.4993
+
+
+end_iter =
+
+   94.2720
+
+
+end_iter =
+
+   94.2245
+
+
+end_iter =
+
+   92.8447
+
+
+end_iter =
+
+   94.9461
+
+
+end_iter =
+
+   90.8709
+
+
+end_iter =
+
+   94.6317
+
+
+end_iter =
+
+   93.0751
+
+
+end_iter =
+
+   91.6740
+
+
+end_iter =
+
+   93.3449
+
+
+end_iter =
+
+   93.5664
+
+
+end_iter =
+
+   93.5007
+
+
+end_iter =
+
+   92.2857
+
+
+end_iter =
+
+   92.8670
+
+
+end_iter =
+
+   91.8831
+
+
+end_iter =
+
+   93.5421
+
+
+end_iter =
+
+   91.5694
+
+
+end_iter =
+
+   89.9720
+
+
+end_iter =
+
+   91.9440
+
+
+end_iter =
+
+   91.9022
+
+
+end_iter =
+
+   92.4194
+
+
+end_iter =
+
+   89.8874
+
+
+end_iter =
+
+   91.9304
+
+
+end_iter =
+
+   91.2412
+
+
+end_iter =
+
+   92.0451
+
+
+end_iter =
+
+   92.2991
+
+
+end_iter =
+
+   92.3720
+
+
+end_iter =
+
+   92.6147
+
+
+end_iter =
+
+   90.6324
+
+
+end_iter =
+
+   91.8008
+
+
+end_iter =
+
+   92.2314
+
+
+end_iter =
+
+   92.7849
+
+
+end_iter =
+
+   93.8543
+
+
+end_iter =
+
+   92.0087
+
+
+end_iter =
+
+   93.1204
+
+
+end_iter =
+
+   94.3579
+
+
+end_iter =
+
+   94.3542
+
+
+end_iter =
+
+   93.3279
+
+
+end_iter =
+
+   94.1601
+
+
+end_iter =
+
+   91.3733
+
+
+end_iter =
+
+   93.9311
+
+
+end_iter =
+
+   95.1484
+
+
+end_iter =
+
+   93.1188
+
+
+end_iter =
+
+   95.2189
+
+
+end_iter =
+
+   94.7361
+
+
+end_iter =
+
+   94.4829
+
+
+end_iter =
+
+   93.6576
+
+
+end_iter =
+
+   93.6730
+
+
+end_iter =
+
+   94.4256
+
+
+end_iter =
+
+   93.5626
+
+
+end_iter =
+
+   93.4427
+
+
+end_iter =
+
+   92.0657
+
+
+end_iter =
+
+   94.8390
+
+
+end_iter =
+
+   93.7494
+
+
+end_iter =
+
+   93.4162
+
+
+end_iter =
+
+   93.4562
+
+
+end_iter =
+
+   92.8300
+
+
+end_iter =
+
+   92.1858
+
+
+end_iter =
+
+   93.4638
+
+
+end_iter =
+
+   92.9869
+
+
+end_iter =
+
+   91.2934
+
+
+end_iter =
+
+   93.3754
+
+
+end_iter =
+
+   90.1231
+
+
+end_iter =
+
+   91.0342
+
+
+end_iter =
+
+   91.8094
+
+
+end_iter =
+
+   92.8277
+
+
+end_iter =
+
+   92.8286
+
+
+end_iter =
+
+   93.3480
+
+
+end_iter =
+
+   92.8572
+
+
+end_iter =
+
+   92.1012
+
+
+end_iter =
+
+   91.1764
+
+
+end_iter =
+
+   91.5140
+
+
+end_iter =
+
+   91.2160
+
+
+end_iter =
+
+   89.3073
+
+
+end_iter =
+
+   89.1223
+
+
+end_iter =
+
+   93.2586
+
+
+end_iter =
+
+   92.1548
+
+
+end_iter =
+
+   89.4031
+
+
+end_iter =
+
+   90.2116
+
+
+end_iter =
+
+   91.1517
+
+
+end_iter =
+
+   91.6746
+
+
+end_iter =
+
+   90.6516
+
+
+end_iter =
+
+   93.5279
+
+
+end_iter =
+
+   93.4965
+
+
+end_iter =
+
+   91.6381
+
+
+end_iter =
+
+   90.9592
+
+
+end_iter =
+
+   91.7048
+
+
+end_iter =
+
+   91.3943
+
+
+end_iter =
+
+   91.8538
+
+
+end_iter =
+
+   92.5603
+
+
+end_iter =
+
+   89.8573
+
+
+end_iter =
+
+   91.8154
+
+
+end_iter =
+
+   92.1257
+
+
+end_iter =
+
+   91.2104
+
+
+end_iter =
+
+   91.1138
+
+
+end_iter =
+
+   92.4662
+
+
+end_iter =
+
+   92.2875
+
+
+end_iter =
+
+   90.4515
+
+
+end_iter =
+
+   90.5517
+
+
+end_iter =
+
+   91.2927
+
+
+end_iter =
+
+   93.3663
+
+
+end_iter =
+
+   91.3117
+
+
+end_iter =
+
+   91.5415
+
+
+end_iter =
+
+   91.4546
+
+
+end_iter =
+
+   91.5708
+
+
+end_iter =
+
+   91.3975
+
+
+end_iter =
+
+   90.2002
+
+
+end_iter =
+
+   89.7655
+
+
+end_iter =
+
+   91.4076
+
+
+end_iter =
+
+   93.5181
+
+
+end_iter =
+
+   94.1507
+
+
+end_iter =
+
+   93.7217
+
+
+end_iter =
+
+   91.9207
+
+
+end_iter =
+
+   93.7301
+
+
+end_iter =
+
+   93.5824
+
+
+end_iter =
+
+   91.7210
+
+
+end_iter =
+
+   90.5396
+
+
+end_iter =
+
+   90.4314
+
+
+end_iter =
+
+   91.7543
+
+
+end_iter =
+
+   90.9715
+
+
+end_iter =
+
+   91.3311
+
+
+end_iter =
+
+   93.2044
+
+
+end_iter =
+
+   91.8175
+
+
+end_iter =
+
+   91.3832
+
+
+end_iter =
+
+   93.3586
+
+
+end_iter =
+
+   93.2769
+
+
+end_iter =
+
+   92.1027
+
+
+end_iter =
+
+   90.2055
+
+
+end_iter =
+
+   91.0222
+
+
+end_iter =
+
+   92.3464
+
+
+end_iter =
+
+   92.7464
+
+
+end_iter =
+
+   92.4402
+
+
+end_iter =
+
+   92.5922
+
+
+end_iter =
+
+   93.2983
+
+
+end_iter =
+
+   93.9691
+
+
+end_iter =
+
+   91.9352
+
+
+end_iter =
+
+   91.3078
+
+
+end_iter =
+
+   92.0585
+
+
+end_iter =
+
+   93.0069
+
+
+end_iter =
+
+   94.1816
+
+
+end_iter =
+
+   91.7705
+
+
+end_iter =
+
+   90.7576
+
+
+end_iter =
+
+   92.2688
+
+
+end_iter =
+
+   91.3103
+
+
+end_iter =
+
+   91.1346
+
+
+end_iter =
+
+   92.7629
+
+
+end_iter =
+
+   92.4583
+
+
+end_iter =
+
+   91.8078
+
+
+end_iter =
+
+   92.4459
+
+
+end_iter =
+
+   89.7373
+
+
+end_iter =
+
+   89.6009
+
+
+end_iter =
+
+   91.4305
+
+
+end_iter =
+
+   91.0344
+
+
+end_iter =
+
+   91.5190
+
+
+end_iter =
+
+   90.9352
+
+
+end_iter =
+
+   90.6101
+
+
+end_iter =
+
+   90.1188
+
+
+end_iter =
+
+   92.2896
+
+
+end_iter =
+
+   90.7932
+
+
+end_iter =
+
+   94.2859
+
+
+end_iter =
+
+   92.8439
+
+
+end_iter =
+
+   91.9362
+
+
+end_iter =
+
+   92.2621
+
+
+end_iter =
+
+   92.9404
+
+
+end_iter =
+
+   92.8585
+
+
+end_iter =
+
+   93.5000
+
+
+end_iter =
+
+   92.8473
+
+
+end_iter =
+
+   90.7502
+
+
+end_iter =
+
+   92.0790
+
+
+end_iter =
+
+   91.0679
+
+
+end_iter =
+
+   91.6179
+
+
+end_iter =
+
+   92.9226
+
+
+end_iter =
+
+   92.3893
+
+
+end_iter =
+
+   90.2255
+
+
+end_iter =
+
+   91.4919
+
+
+end_iter =
+
+   91.2795
+
+
+end_iter =
+
+   92.6976
+
+
+end_iter =
+
+   93.6682
+
+
+end_iter =
+
+   91.8039
+
+
+end_iter =
+
+   92.0539
+
+
+end_iter =
+
+   89.9712
+
+
+end_iter =
+
+   92.3435
+
+
+end_iter =
+
+   89.8269
+
+
+end_iter =
+
+   90.7528
+
+
+end_iter =
+
+   92.4044
+
+
+end_iter =
+
+   92.5135
+
+
+end_iter =
+
+   89.8333
+
+
+end_iter =
+
+   91.8121
+
+
+end_iter =
+
+   92.3791
+
+
+end_iter =
+
+   92.4170
+
+
+end_iter =
+
+   91.8537
+
+
+end_iter =
+
+   93.0700
+
+
+end_iter =
+
+   92.3099
+
+
+end_iter =
+
+   94.1079
+
+
+end_iter =
+
+   93.8994
+
+
+end_iter =
+
+   93.4595
+
+
+end_iter =
+
+   95.0153
+
+
+end_iter =
+
+   92.8637
+
+
+end_iter =
+
+   92.4995
+
+
+end_iter =
+
+   90.8799
+
+
+end_iter =
+
+   91.9968
+
+
+end_iter =
+
+   92.4797
+
+
+end_iter =
+
+   94.6012
+
+
+end_iter =
+
+   92.6723
+
+
+end_iter =
+
+   91.6578
+
+
+end_iter =
+
+   91.3292
+
+
+end_iter =
+
+   91.5377
+
+
+end_iter =
+
+   89.7867
+
+
+end_iter =
+
+   90.6583
+
+
+end_iter =
+
+   91.3241
+
+
+end_iter =
+
+   92.0120
+
+
+end_iter =
+
+   91.9376
+
+
+end_iter =
+
+   92.3257
+
+
+end_iter =
+
+   94.7568
+
+
+end_iter =
+
+   92.8711
+
+
+end_iter =
+
+   93.6856
+
+
+end_iter =
+
+   91.2260
+
+
+end_iter =
+
+   91.5114
+
+
+end_iter =
+
+   91.6119
+
+
+end_iter =
+
+   90.3032
+
+
+end_iter =
+
+   91.1576
+
+
+end_iter =
+
+   92.0060
+
+
+end_iter =
+
+   92.9879
+
+
+end_iter =
+
+   91.9564
+
+
+end_iter =
+
+   91.2206
+
+
+end_iter =
+
+   91.7632
+
+
+end_iter =
+
+   93.2920
+
+
+end_iter =
+
+   93.9218
+
+
+end_iter =
+
+   90.8371
+
+
+end_iter =
+
+   92.4605
+
+
+end_iter =
+
+   92.9562
+
+
+end_iter =
+
+   93.3187
+
+
+end_iter =
+
+   91.1849
+
+
+end_iter =
+
+   92.3533
+
+
+end_iter =
+
+   90.6623
+
+
+end_iter =
+
+   94.2748
+
+
+end_iter =
+
+   94.7322
+
+
+end_iter =
+
+   92.7923
+
+
+end_iter =
+
+   93.0745
+
+
+end_iter =
+
+   93.1338
+
+
+end_iter =
+
+   91.9205
+
+
+end_iter =
+
+   89.9594
+
+
+end_iter =
+
+   92.3068
+
+
+end_iter =
+
+   91.8363
+
+
+end_iter =
+
+   91.6688
+
+
+end_iter =
+
+   87.7932
+
+
+end_iter =
+
+   90.2905
+
+
+end_iter =
+
+   93.1693
+
+
+end_iter =
+
+   90.3705
+
+
+end_iter =
+
+   90.0472
+
+Reweighting: 8
+
+
+end_iter =
+
+  175.6626
+
+
+end_iter =
+
+   92.1714
+
+
+end_iter =
+
+   90.0701
+
+
+end_iter =
+
+   90.7739
+
+
+end_iter =
+
+   92.4676
+
+
+end_iter =
+
+   91.8494
+
+
+end_iter =
+
+   88.1199
+
+
+end_iter =
+
+   89.8599
+
+
+end_iter =
+
+   90.3294
+
+
+end_iter =
+
+   93.2754
+
+
+end_iter =
+
+   91.3802
+
+
+end_iter =
+
+   94.0346
+
+
+end_iter =
+
+   93.8523
+
+
+end_iter =
+
+   92.9812
+
+
+end_iter =
+
+   91.9812
+
+
+end_iter =
+
+   90.4115
+
+
+end_iter =
+
+   91.7261
+
+
+end_iter =
+
+   91.9879
+
+
+end_iter =
+
+   93.6059
+
+
+end_iter =
+
+   91.0848
+
+
+end_iter =
+
+   91.2238
+
+
+end_iter =
+
+   91.5405
+
+
+end_iter =
+
+   92.0810
+
+
+end_iter =
+
+   91.3288
+
+
+end_iter =
+
+   92.5067
+
+
+end_iter =
+
+   91.3292
+
+
+end_iter =
+
+   91.8828
+
+
+end_iter =
+
+   92.0747
+
+
+end_iter =
+
+   90.9214
+
+
+end_iter =
+
+   91.3569
+
+
+end_iter =
+
+   90.8751
+
+
+end_iter =
+
+   91.0024
+
+
+end_iter =
+
+   93.1886
+
+
+end_iter =
+
+   91.1053
+
+
+end_iter =
+
+   92.3828
+
+
+end_iter =
+
+   91.7153
+
+
+end_iter =
+
+   92.1967
+
+
+end_iter =
+
+   91.7634
+
+
+end_iter =
+
+   92.1441
+
+
+end_iter =
+
+   94.0009
+
+
+end_iter =
+
+   90.9080
+
+
+end_iter =
+
+   92.0929
+
+
+end_iter =
+
+   92.8564
+
+
+end_iter =
+
+   91.4417
+
+
+end_iter =
+
+   89.6021
+
+
+end_iter =
+
+   91.8596
+
+
+end_iter =
+
+   92.4212
+
+
+end_iter =
+
+   94.8058
+
+
+end_iter =
+
+   95.2412
+
+
+end_iter =
+
+   90.1794
+
+
+end_iter =
+
+   91.1499
+
+
+end_iter =
+
+   92.3663
+
+
+end_iter =
+
+   91.2251
+
+
+end_iter =
+
+   91.8774
+
+
+end_iter =
+
+   92.3855
+
+
+end_iter =
+
+   92.0906
+
+
+end_iter =
+
+   90.3961
+
+
+end_iter =
+
+   91.9870
+
+
+end_iter =
+
+   93.1837
+
+
+end_iter =
+
+   90.6911
+
+
+end_iter =
+
+   92.6004
+
+
+end_iter =
+
+   90.8178
+
+
+end_iter =
+
+   90.3901
+
+
+end_iter =
+
+   93.0026
+
+
+end_iter =
+
+   91.1147
+
+
+end_iter =
+
+   91.6355
+
+
+end_iter =
+
+   92.7236
+
+
+end_iter =
+
+   93.3904
+
+
+end_iter =
+
+   91.8991
+
+
+end_iter =
+
+   93.5589
+
+
+end_iter =
+
+   91.4040
+
+
+end_iter =
+
+   91.2518
+
+
+end_iter =
+
+   91.5560
+
+
+end_iter =
+
+   92.5801
+
+
+end_iter =
+
+   89.8707
+
+
+end_iter =
+
+   91.1015
+
+
+end_iter =
+
+   91.5760
+
+
+end_iter =
+
+   91.8020
+
+
+end_iter =
+
+   90.2650
+
+
+end_iter =
+
+   91.9163
+
+
+end_iter =
+
+   90.7018
+
+
+end_iter =
+
+   91.4064
+
+
+end_iter =
+
+   91.0432
+
+
+end_iter =
+
+   92.4073
+
+
+end_iter =
+
+   92.5468
+
+
+end_iter =
+
+   92.3860
+
+
+end_iter =
+
+   92.2812
+
+
+end_iter =
+
+   92.9282
+
+
+end_iter =
+
+   92.6721
+
+
+end_iter =
+
+   92.4160
+
+
+end_iter =
+
+   92.4397
+
+
+end_iter =
+
+   90.5225
+
+
+end_iter =
+
+   92.4620
+
+
+end_iter =
+
+   91.8507
+
+
+end_iter =
+
+   90.8610
+
+
+end_iter =
+
+   93.1881
+
+
+end_iter =
+
+   92.4502
+
+
+end_iter =
+
+   94.9232
+
+
+end_iter =
+
+   91.8711
+
+
+end_iter =
+
+   91.5264
+
+
+end_iter =
+
+   91.7890
+
+
+end_iter =
+
+   93.1247
+
+
+end_iter =
+
+   93.1367
+
+
+end_iter =
+
+   91.9154
+
+
+end_iter =
+
+   90.8810
+
+
+end_iter =
+
+   91.4050
+
+
+end_iter =
+
+   93.4389
+
+
+end_iter =
+
+   90.4393
+
+
+end_iter =
+
+   91.8366
+
+
+end_iter =
+
+   91.7043
+
+
+end_iter =
+
+   90.9749
+
+
+end_iter =
+
+   92.0089
+
+
+end_iter =
+
+   91.4424
+
+
+end_iter =
+
+   92.4153
+
+
+end_iter =
+
+   90.7749
+
+
+end_iter =
+
+   90.7134
+
+
+end_iter =
+
+   91.0893
+
+
+end_iter =
+
+   92.3511
+
+
+end_iter =
+
+   92.8993
+
+
+end_iter =
+
+   92.4355
+
+
+end_iter =
+
+   93.0033
+
+
+end_iter =
+
+   91.3746
+
+
+end_iter =
+
+   91.6377
+
+
+end_iter =
+
+   92.1072
+
+
+end_iter =
+
+   93.9187
+
+
+end_iter =
+
+   91.3791
+
+
+end_iter =
+
+   92.1771
+
+
+end_iter =
+
+   92.0272
+
+
+end_iter =
+
+   92.0679
+
+
+end_iter =
+
+   92.3169
+
+
+end_iter =
+
+   93.1255
+
+
+end_iter =
+
+   94.2325
+
+
+end_iter =
+
+   93.6104
+
+
+end_iter =
+
+   93.2263
+
+
+end_iter =
+
+   93.1900
+
+
+end_iter =
+
+   93.1668
+
+
+end_iter =
+
+   95.8874
+
+
+end_iter =
+
+   92.2824
+
+
+end_iter =
+
+   91.9847
+
+
+end_iter =
+
+   93.8605
+
+
+end_iter =
+
+   93.7047
+
+
+end_iter =
+
+   92.7138
+
+
+end_iter =
+
+   90.4855
+
+
+end_iter =
+
+   92.5574
+
+
+end_iter =
+
+   92.8195
+
+
+end_iter =
+
+   94.2307
+
+
+end_iter =
+
+   92.0727
+
+
+end_iter =
+
+   93.9130
+
+
+end_iter =
+
+   93.4959
+
+
+end_iter =
+
+   96.2900
+
+
+end_iter =
+
+   96.1949
+
+
+end_iter =
+
+   95.1829
+
+
+end_iter =
+
+   95.2060
+
+
+end_iter =
+
+   95.4154
+
+
+end_iter =
+
+   94.3529
+
+
+end_iter =
+
+   94.1994
+
+
+end_iter =
+
+   92.5235
+
+
+end_iter =
+
+   93.7485
+
+
+end_iter =
+
+   92.3303
+
+
+end_iter =
+
+   93.9181
+
+
+end_iter =
+
+   91.1817
+
+
+end_iter =
+
+   92.9781
+
+
+end_iter =
+
+   92.7055
+
+
+end_iter =
+
+   93.3362
+
+
+end_iter =
+
+   91.1286
+
+
+end_iter =
+
+   92.5677
+
+
+end_iter =
+
+   93.1900
+
+
+end_iter =
+
+   91.7597
+
+
+end_iter =
+
+   89.5140
+
+
+end_iter =
+
+   91.1131
+
+
+end_iter =
+
+   91.5637
+
+
+end_iter =
+
+   93.3090
+
+
+end_iter =
+
+   90.2404
+
+
+end_iter =
+
+   89.3891
+
+
+end_iter =
+
+   92.9991
+
+
+end_iter =
+
+   92.9706
+
+
+end_iter =
+
+   92.8338
+
+
+end_iter =
+
+   90.8168
+
+
+end_iter =
+
+   91.1840
+
+
+end_iter =
+
+   95.5561
+
+
+end_iter =
+
+   94.4445
+
+
+end_iter =
+
+   92.8294
+
+
+end_iter =
+
+   91.9081
+
+
+end_iter =
+
+   93.4400
+
+
+end_iter =
+
+   93.7236
+
+
+end_iter =
+
+   92.5387
+
+
+end_iter =
+
+   90.2331
+
+
+end_iter =
+
+   90.2669
+
+
+end_iter =
+
+   91.1692
+
+
+end_iter =
+
+   88.8062
+
+
+end_iter =
+
+   91.2227
+
+
+end_iter =
+
+   91.8705
+
+
+end_iter =
+
+   91.6727
+
+
+end_iter =
+
+   91.1746
+
+
+end_iter =
+
+   91.3538
+
+
+end_iter =
+
+   92.1189
+
+
+end_iter =
+
+   93.9104
+
+
+end_iter =
+
+   92.0440
+
+
+end_iter =
+
+   91.4727
+
+
+end_iter =
+
+   91.5662
+
+
+end_iter =
+
+   93.4814
+
+
+end_iter =
+
+   92.7221
+
+
+end_iter =
+
+   92.1778
+
+
+end_iter =
+
+   93.0000
+
+
+end_iter =
+
+   90.7109
+
+
+end_iter =
+
+   93.0359
+
+
+end_iter =
+
+   91.9591
+
+
+end_iter =
+
+   92.5313
+
+
+end_iter =
+
+   92.1367
+
+
+end_iter =
+
+   94.6571
+
+
+end_iter =
+
+   91.8320
+
+
+end_iter =
+
+   90.9777
+
+
+end_iter =
+
+   90.8038
+
+
+end_iter =
+
+   91.6318
+
+
+end_iter =
+
+   92.3544
+
+
+end_iter =
+
+   91.3611
+
+
+end_iter =
+
+   91.2058
+
+
+end_iter =
+
+   94.6244
+
+
+end_iter =
+
+   90.2691
+
+
+end_iter =
+
+   91.7537
+
+
+end_iter =
+
+   90.1834
+
+
+end_iter =
+
+   91.7944
+
+
+end_iter =
+
+   92.5408
+
+
+end_iter =
+
+   92.3360
+
+
+end_iter =
+
+   92.1720
+
+
+end_iter =
+
+   92.1690
+
+
+end_iter =
+
+   91.6386
+
+
+end_iter =
+
+   90.9417
+
+
+end_iter =
+
+   91.1793
+
+
+end_iter =
+
+   93.7478
+
+
+end_iter =
+
+   93.9467
+
+
+end_iter =
+
+   92.4713
+
+
+end_iter =
+
+   90.2191
+
+
+end_iter =
+
+   93.9099
+
+
+end_iter =
+
+   92.1636
+
+
+end_iter =
+
+   91.5471
+
+
+end_iter =
+
+   91.9917
+
+
+end_iter =
+
+   92.1195
+
+
+end_iter =
+
+   91.4819
+
+
+end_iter =
+
+   90.5913
+
+
+end_iter =
+
+   89.4467
+
+
+end_iter =
+
+   91.9437
+
+
+end_iter =
+
+   90.9344
+
+
+end_iter =
+
+   90.5726
+
+
+end_iter =
+
+   91.5530
+
+
+end_iter =
+
+   90.5313
+
+
+end_iter =
+
+   91.9590
+
+
+end_iter =
+
+   93.8235
+
+
+end_iter =
+
+   92.1854
+
+
+end_iter =
+
+   91.1174
+
+
+end_iter =
+
+   93.7976
+
+
+end_iter =
+
+   92.7222
+
+
+end_iter =
+
+   92.3432
+
+
+end_iter =
+
+   94.6608
+
+
+end_iter =
+
+   93.1006
+
+
+end_iter =
+
+   92.7803
+
+
+end_iter =
+
+   93.5668
+
+
+end_iter =
+
+   90.1554
+
+
+end_iter =
+
+   92.6709
+
+
+end_iter =
+
+   92.5615
+
+
+end_iter =
+
+   91.9019
+
+
+end_iter =
+
+   90.6724
+
+
+end_iter =
+
+   92.1959
+
+
+end_iter =
+
+   92.4743
+
+
+end_iter =
+
+   93.3293
+
+
+end_iter =
+
+   92.4115
+
+
+end_iter =
+
+   92.6353
+
+
+end_iter =
+
+   91.9301
+
+
+end_iter =
+
+   92.3449
+
+
+end_iter =
+
+   90.5842
+
+
+end_iter =
+
+   92.3716
+
+
+end_iter =
+
+   90.4511
+
+
+end_iter =
+
+   93.7347
+
+
+end_iter =
+
+   93.1362
+
+
+end_iter =
+
+   90.8776
+
+
+end_iter =
+
+   91.6537
+
+
+end_iter =
+
+   92.1591
+
+
+end_iter =
+
+   92.3350
+
+
+end_iter =
+
+   89.8943
+
+
+end_iter =
+
+   92.1101
+
+
+end_iter =
+
+   92.1463
+
+
+end_iter =
+
+   91.2872
+
+
+end_iter =
+
+   91.9962
+
+
+end_iter =
+
+   94.3861
+
+
+end_iter =
+
+   94.8324
+
+
+end_iter =
+
+   95.6035
+
+
+end_iter =
+
+   95.2451
+
+
+end_iter =
+
+   92.1028
+
+
+end_iter =
+
+   91.9712
+
+
+end_iter =
+
+   94.2081
+
+
+end_iter =
+
+   92.8090
+
+
+end_iter =
+
+   92.8239
+
+
+end_iter =
+
+   92.7596
+
+
+end_iter =
+
+   93.7337
+
+
+end_iter =
+
+   94.2782
+
+
+end_iter =
+
+   95.9483
+
+
+end_iter =
+
+   94.7533
+
+
+end_iter =
+
+   93.0369
+
+
+end_iter =
+
+   93.4363
+
+
+end_iter =
+
+   92.4580
+
+Reweighting: 9
+
+
+end_iter =
+
+  179.0173
+
+
+end_iter =
+
+   92.4330
+
+
+end_iter =
+
+   92.7826
+
+
+end_iter =
+
+   90.5807
+
+
+end_iter =
+
+   92.9873
+
+
+end_iter =
+
+   92.4386
+
+
+end_iter =
+
+   93.4105
+
+
+end_iter =
+
+   90.9528
+
+
+end_iter =
+
+   92.7196
+
+
+end_iter =
+
+   93.7125
+
+
+end_iter =
+
+   92.5569
+
+
+end_iter =
+
+   91.1947
+
+
+end_iter =
+
+   89.4750
+
+
+end_iter =
+
+   91.6877
+
+
+end_iter =
+
+   92.6527
+
+
+end_iter =
+
+   92.1844
+
+
+end_iter =
+
+   91.7765
+
+
+end_iter =
+
+   93.0783
+
+
+end_iter =
+
+   94.4754
+
+
+end_iter =
+
+   91.0008
+
+
+end_iter =
+
+   91.1263
+
+
+end_iter =
+
+   89.4099
+
+
+end_iter =
+
+   91.4020
+
+
+end_iter =
+
+   91.5530
+
+
+end_iter =
+
+   92.3739
+
+
+end_iter =
+
+   93.9223
+
+
+end_iter =
+
+   93.7933
+
+
+end_iter =
+
+   94.1004
+
+
+end_iter =
+
+   92.2997
+
+
+end_iter =
+
+   93.2894
+
+
+end_iter =
+
+   95.5911
+
+
+end_iter =
+
+   93.9910
+
+
+end_iter =
+
+   92.3367
+
+
+end_iter =
+
+   91.4636
+
+
+end_iter =
+
+   93.3185
+
+
+end_iter =
+
+   93.3613
+
+
+end_iter =
+
+   93.3983
+
+
+end_iter =
+
+   93.3297
+
+
+end_iter =
+
+   92.0903
+
+
+end_iter =
+
+   91.8709
+
+
+end_iter =
+
+   93.4935
+
+
+end_iter =
+
+   93.3954
+
+
+end_iter =
+
+   91.6807
+
+
+end_iter =
+
+   93.7132
+
+
+end_iter =
+
+   93.5246
+
+
+end_iter =
+
+   91.8847
+
+
+end_iter =
+
+   91.1715
+
+
+end_iter =
+
+   92.2539
+
+
+end_iter =
+
+   91.6178
+
+
+end_iter =
+
+   92.1552
+
+
+end_iter =
+
+   91.2357
+
+
+end_iter =
+
+   90.8154
+
+
+end_iter =
+
+   89.9613
+
+
+end_iter =
+
+   90.9507
+
+
+end_iter =
+
+   89.6480
+
+
+end_iter =
+
+   90.3436
+
+
+end_iter =
+
+   93.6516
+
+
+end_iter =
+
+   93.7502
+
+
+end_iter =
+
+   93.8328
+
+
+end_iter =
+
+   93.8943
+
+
+end_iter =
+
+   94.1460
+
+
+end_iter =
+
+   93.1677
+
+
+end_iter =
+
+   92.8142
+
+
+end_iter =
+
+   91.0805
+
+
+end_iter =
+
+   94.7931
+
+
+end_iter =
+
+   93.9618
+
+
+end_iter =
+
+   93.0424
+
+
+end_iter =
+
+   91.2123
+
+
+end_iter =
+
+   92.4210
+
+
+end_iter =
+
+   91.9675
+
+
+end_iter =
+
+   92.0502
+
+
+end_iter =
+
+   89.8148
+
+
+end_iter =
+
+   91.5717
+
+
+end_iter =
+
+   92.3825
+
+
+end_iter =
+
+   91.3552
+
+
+end_iter =
+
+   92.7228
+
+
+end_iter =
+
+   91.9393
+
+
+end_iter =
+
+   90.6382
+
+
+end_iter =
+
+   91.6600
+
+
+end_iter =
+
+   91.1814
+
+
+end_iter =
+
+   93.5638
+
+
+end_iter =
+
+   91.5968
+
+
+end_iter =
+
+   90.6244
+
+
+end_iter =
+
+   90.9801
+
+
+end_iter =
+
+   90.7820
+
+
+end_iter =
+
+   90.0270
+
+
+end_iter =
+
+   91.3345
+
+
+end_iter =
+
+   92.4921
+
+
+end_iter =
+
+   89.6003
+
+
+end_iter =
+
+   92.9386
+
+
+end_iter =
+
+   92.2139
+
+
+end_iter =
+
+   91.5825
+
+
+end_iter =
+
+   91.3470
+
+
+end_iter =
+
+   91.8757
+
+
+end_iter =
+
+   92.3129
+
+
+end_iter =
+
+   92.4658
+
+
+end_iter =
+
+   89.1062
+
+
+end_iter =
+
+   92.8211
+
+
+end_iter =
+
+   90.8833
+
+
+end_iter =
+
+   92.8482
+
+
+end_iter =
+
+   90.5789
+
+
+end_iter =
+
+   91.4719
+
+
+end_iter =
+
+   91.0069
+
+
+end_iter =
+
+   94.0965
+
+
+end_iter =
+
+   92.4561
+
+
+end_iter =
+
+   92.8173
+
+
+end_iter =
+
+   89.2470
+
+
+end_iter =
+
+   89.7646
+
+
+end_iter =
+
+   89.8441
+
+
+end_iter =
+
+   90.9200
+
+
+end_iter =
+
+   91.6508
+
+
+end_iter =
+
+   91.4689
+
+
+end_iter =
+
+   92.1216
+
+
+end_iter =
+
+   91.2661
+
+
+end_iter =
+
+   88.6127
+
+
+end_iter =
+
+   88.2728
+
+
+end_iter =
+
+   89.8132
+
+
+end_iter =
+
+   92.5329
+
+
+end_iter =
+
+   92.0643
+
+
+end_iter =
+
+   92.0011
+
+
+end_iter =
+
+   92.3305
+
+
+end_iter =
+
+   90.7862
+
+
+end_iter =
+
+   90.3693
+
+
+end_iter =
+
+   90.0669
+
+
+end_iter =
+
+   89.8886
+
+
+end_iter =
+
+   90.5851
+
+
+end_iter =
+
+   92.0963
+
+
+end_iter =
+
+   91.0956
+
+
+end_iter =
+
+   90.6824
+
+
+end_iter =
+
+   92.0743
+
+
+end_iter =
+
+   90.4921
+
+
+end_iter =
+
+   90.8949
+
+
+end_iter =
+
+   90.2368
+
+
+end_iter =
+
+   90.7599
+
+
+end_iter =
+
+   93.5579
+
+
+end_iter =
+
+   94.5213
+
+
+end_iter =
+
+   95.4615
+
+
+end_iter =
+
+   96.1084
+
+
+end_iter =
+
+   94.8389
+
+
+end_iter =
+
+   94.4267
+
+
+end_iter =
+
+   92.4298
+
+
+end_iter =
+
+   91.4049
+
+
+end_iter =
+
+   91.4857
+
+
+end_iter =
+
+   91.9682
+
+
+end_iter =
+
+   94.8521
+
+
+end_iter =
+
+   93.4590
+
+
+end_iter =
+
+   93.5563
+
+
+end_iter =
+
+   92.0722
+
+
+end_iter =
+
+   93.6987
+
+
+end_iter =
+
+   93.1406
+
+
+end_iter =
+
+   94.4155
+
+
+end_iter =
+
+   92.0761
+
+
+end_iter =
+
+   93.8641
+
+
+end_iter =
+
+   93.5235
+
+
+end_iter =
+
+   94.1883
+
+
+end_iter =
+
+   91.9488
+
+
+end_iter =
+
+   92.4353
+
+
+end_iter =
+
+   89.9070
+
+
+end_iter =
+
+   93.1621
+
+
+end_iter =
+
+   92.6563
+
+
+end_iter =
+
+   92.2699
+
+
+end_iter =
+
+   91.0018
+
+
+end_iter =
+
+   92.1094
+
+
+end_iter =
+
+   92.2794
+
+
+end_iter =
+
+   90.3514
+
+
+end_iter =
+
+   91.6430
+
+
+end_iter =
+
+   92.1374
+
+
+end_iter =
+
+   92.9230
+
+
+end_iter =
+
+   92.7433
+
+
+end_iter =
+
+   90.9660
+
+
+end_iter =
+
+   90.2804
+
+
+end_iter =
+
+   94.1730
+
+
+end_iter =
+
+   91.8924
+
+
+end_iter =
+
+   94.0414
+
+
+end_iter =
+
+   93.1186
+
+
+end_iter =
+
+   94.0056
+
+
+end_iter =
+
+   91.9951
+
+
+end_iter =
+
+   93.2933
+
+
+end_iter =
+
+   92.2100
+
+
+end_iter =
+
+   92.9107
+
+
+end_iter =
+
+   92.2795
+
+
+end_iter =
+
+   94.1180
+
+
+end_iter =
+
+   94.6241
+
+
+end_iter =
+
+   93.6672
+
+
+end_iter =
+
+   93.8811
+
+
+end_iter =
+
+   91.7317
+
+
+end_iter =
+
+   93.2222
+
+
+end_iter =
+
+   93.4434
+
+
+end_iter =
+
+   93.1213
+
+
+end_iter =
+
+   93.5425
+
+
+end_iter =
+
+   91.7358
+
+
+end_iter =
+
+   94.9829
+
+
+end_iter =
+
+   90.9238
+
+
+end_iter =
+
+   90.3285
+
+
+end_iter =
+
+   90.7266
+
+
+end_iter =
+
+   91.8223
+
+
+end_iter =
+
+   91.7848
+
+
+end_iter =
+
+   94.0524
+
+
+end_iter =
+
+   91.8636
+
+
+end_iter =
+
+   92.9337
+
+
+end_iter =
+
+   92.5647
+
+
+end_iter =
+
+   94.5374
+
+
+end_iter =
+
+   91.2749
+
+
+end_iter =
+
+   90.6784
+
+
+end_iter =
+
+   91.0976
+
+
+end_iter =
+
+   91.8829
+
+
+end_iter =
+
+   92.5567
+
+
+end_iter =
+
+   89.8095
+
+
+end_iter =
+
+   91.8247
+
+
+end_iter =
+
+   89.7805
+
+
+end_iter =
+
+   91.6590
+
+
+end_iter =
+
+   91.9242
+
+
+end_iter =
+
+   91.9515
+
+
+end_iter =
+
+   94.3163
+
+
+end_iter =
+
+   92.0529
+
+
+end_iter =
+
+   90.7510
+
+
+end_iter =
+
+   91.3026
+
+
+end_iter =
+
+   94.0983
+
+
+end_iter =
+
+   93.0693
+
+
+end_iter =
+
+   90.8829
+
+
+end_iter =
+
+   91.5704
+
+
+end_iter =
+
+   92.8085
+
+
+end_iter =
+
+   91.7929
+
+
+end_iter =
+
+   92.7621
+
+
+end_iter =
+
+   92.6883
+
+
+end_iter =
+
+   92.7107
+
+
+end_iter =
+
+   92.4217
+
+
+end_iter =
+
+   91.1559
+
+
+end_iter =
+
+   92.5555
+
+
+end_iter =
+
+   94.0104
+
+
+end_iter =
+
+   92.7816
+
+
+end_iter =
+
+   95.4806
+
+
+end_iter =
+
+   92.0524
+
+
+end_iter =
+
+   92.4657
+
+
+end_iter =
+
+   92.6487
+
+
+end_iter =
+
+   92.3999
+
+
+end_iter =
+
+   91.0986
+
+
+end_iter =
+
+   91.0177
+
+
+end_iter =
+
+   93.0733
+
+
+end_iter =
+
+   92.2872
+
+
+end_iter =
+
+   94.0768
+
+
+end_iter =
+
+   91.3251
+
+
+end_iter =
+
+   89.8501
+
+
+end_iter =
+
+   91.9045
+
+
+end_iter =
+
+   93.7325
+
+
+end_iter =
+
+   90.5757
+
+
+end_iter =
+
+   91.1043
+
+
+end_iter =
+
+   92.7530
+
+
+end_iter =
+
+   92.1726
+
+
+end_iter =
+
+   90.8862
+
+
+end_iter =
+
+   91.5291
+
+
+end_iter =
+
+   92.0334
+

@@ -1,6 +1,7 @@
-
 *.m~
 *.DS_Store
 *.mat
 ._*
 main_fouRed/WB_new
+*.fits
+result*
