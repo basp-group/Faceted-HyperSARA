@@ -6,7 +6,7 @@ clc;
 
 flag_algo = 2;
 tot = 30;
-num_chunk = 2;
+num_chunk = 1;
 
 Qx = 2; % additional parameters for the faceting
 Qy = 2;
