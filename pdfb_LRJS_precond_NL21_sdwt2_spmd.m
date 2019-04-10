@@ -187,7 +187,7 @@ for q = 1:Q
     
     for i = 1:K
         qi = (q-1)*K + i;
-        v0{qi} = zeros(prod(dims_overlap_ref(q,:)), c_chunks(i));
+        v0{qi} = zeros(prod(dims(q,:)), c_chunks(i));
         weights0{qi} = zeros(min(prod(dims_overlap_ref(q, :)), c_chunks(i)), 1);
         v1{qi} = zeros(sz, c_chunks(i));
         weights1{qi} = zeros(sz, c_chunks(i));
@@ -229,9 +229,6 @@ else
     fprintf('g NOT uploaded \n\n')
 end
 
-g0 = cell(K, 1);
-g1 = cell(K, 1);
-Fx = zeros(No,c);
 Ftx = zeros(size(xsol));
 
 
@@ -378,17 +375,15 @@ for t = t_start : param.max_iter
     %% L-2,1 function update
     
     spmd
-        [v0, g0] = run_par_nuclear_spmd(v0, x_overlap, weights0, beta0.Value);
+        overlap_q = max(dims_overlap_q) - dims_q;
+        [v0, g0] = run_par_nuclear_spmd(v0, x_overlap(overlap_q(1)+1:end, overlap_q(2)+1:end, :), weights0, beta0.Value);
         
         [v1, g1, l21_] = run_par_l21_spmd(v1, x_overlap, weights1, beta1.Value, Iq, ...
             dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
             nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
         % reduction with optimized communications (check amount of overlap along x and y directions)
-        overlap_q = max(dims_overlap_q) - dims_q;
         g1 = comm2d_reduce_wideband(g1, overlap_q, Qyp, Qxp, Kp); % see how to update g1 from here...
-        
-        
-        g_ = sigma00.Value*g0(overlap_q(1)+1:end, overlap_q(2)+1:end, :) + ...
+        g_ = sigma00.Value*g0 + ...
             sigma11.Value*g1(overlap_q(1)+1:end, overlap_q(2)+1:end, :); % reduce to facet without overlap
         % l21 = gop(@plus, l21_, 1);                  % reduce l21_ on the worker 1
     end
