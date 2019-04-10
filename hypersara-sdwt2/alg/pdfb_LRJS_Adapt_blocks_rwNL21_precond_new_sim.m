@@ -188,7 +188,7 @@ Psit = afclean(Psit);
 
 % Main loop. Sequential.
 
-util_create_pool(param.num_workers);
+%util_create_pool(param.num_workers);
 maxNumCompThreads(param.num_workers);
 
 start_loop = tic;

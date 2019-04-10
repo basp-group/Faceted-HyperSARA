@@ -107,7 +107,7 @@ for q = 1:Q
     dims_overlap_ref_q{q} = dims_overlap_ref(q,:);
     offsetLq{q} = offsetL(q,:);
     offsetRq{q} = offsetR(q,:);
-    overlap{q} = dims_overlap_ref(q, :); %max(dims_overlap{q}) - dims(q,:); % amount of overlap necessary for each facet
+    overlap{q} = max(dims_overlap{q}) - dims(q,:); % amount of overlap necessary for each facet
 end
 
 % amount of overlap of the neighbour (necessary to define the ghost cells properly)
@@ -320,10 +320,10 @@ for t = t_start : param.max_iter
         [xsol_q, xhat_q, rel_x_q, norm_x_q] = run_par_primal(xsol_q, g_q); % to be finalized, not so easy...
         
         % update ghost cells (versions of xhat with overlap...)
-        overlap_q = dims_overlap_ref_q - dims_q;
+        % overlap_q = dims_overlap_ref_q - dims_q;
         x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-        x_overlap(overlap_q(1)+1:end, overlap_q(2)+1:end, :) = xhat_q;
-        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap_q, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further) 
+        x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
+        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further) 
         
         % update dual variables (nuclear, l21)
         [v0_, g0] = run_par_nuclear_spmd(v0_, x_overlap, weights0_, beta0.Value);
@@ -332,11 +332,11 @@ for t = t_start : param.max_iter
             nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
         % reduction with optimized communications (check amount of overlap
         % along x and y directions)q]
-        g1 = comm2d_reduce_wideband(g1, overlap_q, Qyp, Qxp, Kp); % see how to update g1 from here...
+        g1 = comm2d_reduce_wideband(g1, overlap, Qyp, Qxp, Kp); % see how to update g1 from here...
         
         % compute g_ for the final update term
-        g_ = sigma00.Value*g0(overlap_q(1)+1:end, overlap_q(2)+1:end, :) + ...
-            sigma11.Value*g1(overlap_q(1)+1:end, overlap_q(2)+1:end, :);
+        g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
+            sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
         rel_x = gop(@plus, rel_x_q, 1);
         norm_x = gop(@plus, norm_x_q, 1);
     end
@@ -348,6 +348,8 @@ for t = t_start : param.max_iter
         go(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_{q};
         xhat(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xhat_q{q};
     end
+    
+    toc(start_iter)
     
     %% L2 ball projection update
     counter = 1;
@@ -376,7 +378,7 @@ for t = t_start : param.max_iter
     
     %% Relative change of objective function
     % rel_fval(t) = norm(xsol(:) - prev_xsol(:))/norm(xsol(:));
-    rel_fval(t) = sqrt(rel_x/norm_x);
+    rel_fval(t) = sqrt(rel_x{1}/norm_x{1});
     
     end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
@@ -385,6 +387,12 @@ for t = t_start : param.max_iter
     if ~mod(t,100)
         
         % [P.-A.] to be modified (facets are missing...)
+        % get xsol back from the workers
+        for q = 1:Q
+            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        end
+        
+        % compute prior (full... to be changed)
         xhatm = reshape(xsol,numel(xsol)/c,c);
         [~,S0,~] = svd(xhatm,'econ');
         nuclear = norm(diag(S0),1); % doesn't make sense to compute this here
@@ -393,7 +401,7 @@ for t = t_start : param.max_iter
         l2 = sqrt(sum(abs(Psit(xsol)).^2,2));
         l21 = norm(l2(:),1);
         
-        %SNR
+        %SNR (to be changed, only for debug at the moment)
         sol = reshape(xsol(:),numel(xsol(:))/c,c);
         SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
         psnrh = zeros(c,1);
@@ -495,8 +503,8 @@ for t = t_start : param.max_iter
         % [P.-A.]        
         spmd
             x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-            x_overlap(overlap_q(1)+1:end, overlap_q(2)+1:end) = xsol_q;
-            x_overlap = comm2d_update_ghost_cells(x_overlap, overlap_q, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
+            x_overlap(overlap(1)+1:end, overlap(2)+1:end) = xsol_q;
+            x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
             
             % nuclear norm
             sol = reshape(xsol_q, [size(xsol_q, 1)*size(xsol_q, 2), size(xsol_q, 3)]);
@@ -556,6 +564,7 @@ for q = 1:Q
     v1{q} = v1_{q};
     weights0{q} = weights0_{q};
     weights1{q} = weights1_{q};
+    xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
 end
 
 % Calculate residual images:
