@@ -422,7 +422,7 @@ for t = t_start : param.max_iter
         overlap_q = max(dims_overlap_q) - dims_q;
         u1 = comm2d_reduce_new(u1, overlap_q, Qyp, Qxp, Kp);     % see how to update g1 from here... 
         u1 = u1(overlap_q(1)+1:end, overlap_q(2)+1:end, :); % reduce to facet without overlap
-        l21 = gop(@plus, l21_, 1);                  % reduce l21_ on the worker 1
+        l21 = gop(@plus, l21_, 1);                          % reduce l21_ on the worker 1
     end
     
     % reconstruct the full image on the master node... absolutely sub-optimal

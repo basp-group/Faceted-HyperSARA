@@ -165,8 +165,13 @@ if flag_algo == 1
     disp('-----------------------------------------')
     disp('HyperSARA')
     disp('-----------------------------------------')
-    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-        pdfb_LRJS_Adapt_blocks_rwNL21_precond_new_sim(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Psi_full, Psit_full, param_HSI, X0);
+%     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+%         pdfb_LRJS_Adapt_blocks_rwNL21_precond_new_sim(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Psi_full, Psit_full, param_HSI, X0);
+    
+    % distribution in terms of the wavelet dictionaries
+    param_HSI.numworkers = 9;
+    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+        pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Psi, Psit, param_HSI, X0);
     
     c = size(xsol,3);
     sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -201,6 +206,9 @@ if flag_algo == 2
     pdfb_LRJS_precond_NL21_sdwt2_parfeval(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
 
     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+    pdfb_LRJS_precond_NL21_sdwt2_parfeval2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
+
+    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
     pdfb_LRJS_precond_NL21_sdwt2_spmd(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
 
     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
@@ -208,6 +216,10 @@ if flag_algo == 2
 
     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
     pdfb_LRJS_precond_NL21_sdwt2_spmd3(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
+
+    [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+    pdfb_LRJS_precond_NL21_sdwt2_spmd4({y_t{q}}, {epsilons_t{q}}, A, At, {aW}, {G}, {W}, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, {1:c_chunks}, c_chunks);
+
 
 
     c = size(xsol,3);
@@ -229,6 +241,10 @@ if flag_algo == 3
     disp('-----------------------------------------')
     disp('Split L21 + Nuclear')
     disp('-----------------------------------------')
+    
+    % not extremely useful, unless there are overlaps between the spectral 
+    % facets
+    param_HSI.numworkers = 2*length(c_chunks); % (spectrally faceted nuclear norms and l21 norms)
     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
     pdfb_LRJS_Adapt_blocks_rwNL21_precond_new_sim_NL21_split_par(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, Psi_full, Psit_full, param_HSI, X0);  
 

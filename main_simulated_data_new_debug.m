@@ -150,9 +150,9 @@ load_temp_result = 0;
 
 %% Generate or Load ground-truth
 if generate_groundtruth
-    file_name = 'hypersara-sdwt2/simulated_data/data/W28_256.fits';
-    Nx=256;
-    Ny=256;
+    file_name = 'hypersara-sdwt2/simulated_data/data/W28_1024.fits';
+    Nx=1024;
+    Ny=1024;
     c = tot;
     f = linspace(1,2,c); % frequency bandwidth from 1 to 2 GHz with 15 channels
     emission_lines = 0; % insert emission lines on top of the continuous spectra
@@ -184,12 +184,12 @@ end
 
 %%
 if generate_simple_image
-    x0 = fitsread('W28_256.fits');
+    x0 = fitsread('W28_1024.fits');
     X0 = x0(:);
     ch = 1;
     f = 1.4;
-    Nx=256;
-    Ny=256;
+    Nx=1024;
+    Ny=1024;
 end
 
 %%

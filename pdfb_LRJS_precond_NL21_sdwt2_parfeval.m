@@ -457,7 +457,7 @@ for t = t_start : param.max_iter
         
         xsol_split = Sp(xsol);
         
-        for qi = 1:numworkers
+        for qi = 1:numworkers % ti be done in a parfeval / parfor or spmd
             [i, q] = ind2sub([K, Q], qi);
             x_sol_overlap = xsol_split{i}(I_overlap_ref(q, 1)+1:I_overlap_ref(q, 1)+dims_overlap_ref(q, 1), ...
                 I_overlap_ref(q, 2)+1:I_overlap_ref(q, 2)+dims_overlap_ref(q, 2), :);
@@ -634,8 +634,3 @@ end
 g = sigma00*reshape(v0,M,N,c) + sigma11*g1;
 
 end
-
-
-
-
-
