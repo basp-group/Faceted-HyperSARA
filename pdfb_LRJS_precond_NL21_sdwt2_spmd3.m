@@ -12,9 +12,6 @@ function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,
 
 c = size(y,2);
 
-% [P.-A.] number of wavelet dictionaries
-P = length(wavelet);
-
 % oversampling vectorized data length
 No = size(W{1}{1}, 1);
 
@@ -164,6 +161,7 @@ clear sz
 
 if isfield(param,'init_v2')
     v2 = param.init_v2;
+    u2 = cell(c, 1);
     for i = 1 : c
         u2{i} = cell(length(G{i}),1);
         for j = 1 : length(G{i})
@@ -173,6 +171,8 @@ if isfield(param,'init_v2')
     r2 = v2;
     fprintf('v2 uploaded \n\n')
 else
+    v2 = cell(c, 1);
+    u2 = cell(c, 1);
     for i = 1 : c
         v2{i} = cell(length(G{i}),1);
         u2{i} = cell(length(G{i}),1);
@@ -247,7 +247,7 @@ reweight_alphap = Composite();
 for q = 1:Q
     reweight_alphap{q} = reweight_alpha;
 end
-reweight_alpha_ff = parallel.pool.Constant(param.reweight_alpha_ff);
+reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
 g_q = Composite();
 xsol_q = Composite();
@@ -379,12 +379,12 @@ for t = t_start : param.max_iter
         % [P.-A.]
         %% compute value of the priors in parallel (include weights*?)
         spmd
-            x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+            %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
             
             [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
-                dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                 offsetLq, offsetRq);
             l21_norm = gop(@plus, l21_norm, 1);
             nuclear_norm = gop(@plus, nuclear_norm, 1);
@@ -416,21 +416,8 @@ for t = t_start : param.max_iter
             fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
         
-        %diary('WB_new');
-        
-        figure(1),
-        subplot(2,2,1);
-        imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,2);
-        imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,3);
-        imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,4);
-        imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        pause(0.1)
-        
-        fitswrite(x0,'./x0.fits');
-        fitswrite(xsol,'./xsol.fits');
+%         fitswrite(x0,'./x0.fits');
+%         fitswrite(xsol,'./xsol.fits');
     end
     
     %% Save
@@ -501,14 +488,14 @@ for t = t_start : param.max_iter
         % [P.-A.]
         spmd
             x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-            x_overlap(overlap(1)+1:end, overlap(2)+1:end) = xsol_q;
+            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
             
             % nuclear norm
             sol = reshape(xsol_q, [size(xsol_q, 1)*size(xsol_q, 2), size(xsol_q, 3)]);
             [~,S00,~] = svd(sol,'econ');
             d_val0 = abs(diag(S00));
-            weights0_ = reweight_alpha ./ (reweight_alpha + d_val0);
+            weights0_ = reweight_alphap ./ (reweight_alphap + d_val0);
             
             % l21 norm
             zerosNum = dims_overlap_ref_q + offsetLq + offsetRq; % offset for the zero-padding
@@ -520,27 +507,15 @@ for t = t_start : param.max_iter
             end
             d_val1 = sqrt(sum(abs((w)).^2,2));
             weights1_ = reweight_alphap ./ (reweight_alphap + d_val1);
-            reweight_alphap = reweight_alpha_ff .* reweight_alphap;
+            reweight_alphap = reweight_alpha_ffp.Value .* reweight_alphap;
         end
-        reweight_alpha = reweight_alpha_ff .* reweight_alpha; % on the master node
+        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
         %-- end modifications
         
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;
             fprintf('\n\n No more reweights \n\n');
             break;
-        end
-        
-        % Calculate residual images:
-        for i = 1 : c
-            Fx = A(xsol(:,:,i));
-            g2 = zeros(No,1);
-            for j = 1 : length(G{i})
-                res_f{i}{j} = y{i}{j} - G{i}{j} * Fx(W{i}{j});
-                u2{i}{j} = Gt{i}{j} * res_f{i}{j};
-                g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
-            end
-            res(:,:,i) = real(At(g2));
         end
         
         reweight_step_count = reweight_step_count + 1;
@@ -584,7 +559,7 @@ spmd
     x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
     
     [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
-        dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+        dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
         offsetLq, offsetRq);
     l21_norm = gop(@plus, l21_norm, 1);
     nuclear_norm = gop(@plus, nuclear_norm, 1);
