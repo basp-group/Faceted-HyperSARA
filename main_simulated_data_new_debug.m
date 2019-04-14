@@ -1,4 +1,4 @@
-% function main_simulated_data(flag_algo, tot, num_chunk)
+% function main_simulated_data(flag_algo, parallel_version, Qx, Qy, Qc, tot, num_chunk)
 
 clear all;
 close all;

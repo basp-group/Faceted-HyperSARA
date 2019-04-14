@@ -1,0 +1,24 @@
+#!/bin/bash -l
+
+#### select resources
+#PBS -l walltime=72:00:00
+# #PBS -l place=scatter:excl
+#### Replace [budget code] below with your project code (e.g. t01)
+#PBS -A sc004
+#### redirect error & output files
+
+#### load matlab module (setup environment)
+module load matlab/R2018a
+
+# Change to the directory that the job was submitted from
+cd $PBS_O_WORKDIR
+
+mkdir pref_$PBS_JOBID
+
+export MATLAB_PREFDIR=/lustre/home/sc004/pthouven/Dimensionality-reduced-hyper-SARA-sdwt/pref_$PBS_JOBID
+
+#### execute program
+matlab_wrapper -nosplash -nodisplay -nodesktop -r  "main_simulated_data_cirrus("$flag_algo",'"$parallel_version"',"$Qx","$Qy","$Qc","$tot","$num_chunk")" \
+                > ./logs/hyperSARA_${parallel_version}_Qx=${Qx}_Qy=${Qx}_Qc=${Qc}.log
+
+rm -r pref_$PBS_JOBID
