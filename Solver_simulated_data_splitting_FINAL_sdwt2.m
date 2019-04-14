@@ -206,7 +206,7 @@ if flag_algo == 2
     pdfb_LRJS_precond_NL21_sdwt2_parfeval(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
 
     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-    pdfb_LRJS_precond_NL21_sdwt2_parfeval2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
+    pdfb_LRJS_precond_NL2110ac_sdwt2_parfeval2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
 
     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
     pdfb_LRJS_precond_NL21_sdwt2_spmd(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
@@ -217,8 +217,18 @@ if flag_algo == 2
     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
     pdfb_LRJS_precond_NL21_sdwt2_spmd3(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
 
+    % try to increase the number of spectral groups for the data fidelity
+    % terms
     [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
     pdfb_LRJS_precond_NL21_sdwt2_spmd4({y_t{q}}, {epsilons_t{q}}, A, At, {aW}, {G}, {W}, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, {1:c_chunks}, c_chunks);
+
+
+    cell_c_chunks = cell(2, 1);
+    cell_c_chunks{1} = 1:15;
+    cell_c_chunks{2} = 16:30;
+    [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+        pdfb_LRJS_precond_NL21_sdwt2_spmd4({{y_t{q}{1:15}},{y_t{q}{16:30}}}, {{epsilons_t{q}{1:15}},{epsilons_t{q}{16:30}}}, ...
+        A, At, {{aW{1:15}},{aW{16:30}}}, {{G{1:15}},{G{16:30}}}, {{W{1:15}},{W{16:30}}}, param_HSI, X0, Qx, Qy, 2, wlt_basis, L, nlevel, cell_c_chunks, c_chunks);
 
 
 

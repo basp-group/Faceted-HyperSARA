@@ -177,6 +177,7 @@ elipse_proj_max_iter = parallel.pool.Constant(param.elipse_proj_max_iter);
 elipse_proj_min_iter = parallel.pool.Constant(param.elipse_proj_min_iter);
 elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
 adapt_eps_tol_in = parallel.pool.Constant(param.adapt_eps_tol_in);
+adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
 adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
 adapt_eps_rel_obj = parallel.pool.Constant(param.adapt_eps_rel_obj);
 adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
@@ -223,6 +224,7 @@ for k = 1:K
     epsilonp{Q+k} = epsilon{k};
     norm_res{Q+k} = norm_res_tmp;
     proj{Q+k} = proj_tmp;
+    t_block{Q+k} = t_block_;
 end
 
 clear proj_tmp v2_tmp norm_res_tmp t_block_
@@ -243,7 +245,7 @@ reweight_alphap = Composite();
 for q = 1:Q
     reweight_alphap{q} = reweight_alpha;
 end
-reweight_alpha_ff = parallel.pool.Constant(param.reweight_alpha_ff);
+reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
 g_q = Composite();
 xsol_q = Composite();
@@ -304,7 +306,7 @@ for t = t_start : param.max_iter
             [v1_, g1] = run_par_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
-            g1 = comm2d_reduce_wideband(g1, overlap, Qyp, Qxp, Kp);
+            g1 = comm2d_reduce(g1, overlap, Qyp, Qxp);
             
             % compute g_ for the final update term
             g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
@@ -321,8 +323,8 @@ for t = t_start : param.max_iter
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
-            [v2_, g2, norm_residual_check_i, norm_epsilon_check_i] = run_par_data_fidelity(v2_, yp, xhat_i, proj, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
-                elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value); % error somewhere inside the code
+            [v2_, g2, proj, norm_residual_check_i, norm_epsilon_check_i] = run_par_data_fidelity(v2_, yp, xhat_i, proj, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+                elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             
             % send portions of g2 to the prior/primal nodes
             for q = 1:Qp.Value
@@ -375,7 +377,7 @@ for t = t_start : param.max_iter
         norm_residual_check = 0;
         for i = Q+1:Q+K
             norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-            norm_residual_check = norm_residual_check + norm_residual_check_i{i};
+            norm_residual_check = norm_residual_check + norm_residual_check_i{i}; % problem structure norm_residual_check_i
         end
         norm_epsilon_check = sqrt(norm_epsilon_check);
         norm_residual_check = sqrt(norm_residual_check);
@@ -402,43 +404,30 @@ for t = t_start : param.max_iter
             fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
         
-%         figure(1),
-%         subplot(2,2,1);
-%         imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-%         subplot(2,2,2);
-%         imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-%         subplot(2,2,3);
-%         imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-%         subplot(2,2,4);
-%         imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-%         pause(0.1)
-        
-        fitswrite(x0, './x0.fits');
-        fitswrite(xsol, './xsol.fits');
+%         fitswrite(x0, './x0.fits');
+%         fitswrite(xsol, './xsol.fits');
     end
     
     %% Global stopping criteria
-    %     prod(prod(residual_check < param.adapt_eps_tol_out*epsilon_check)) && prod(prod(residual_check > param.adapt_eps_tol_in*epsilon_check))
     if t>1 && rel_fval(t) < param.rel_obj && reweight_step_count > param.total_reweights && ...
             (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
         flag = 1;
         break;
     end
     
-    %% Update epsilons (to be completely modified) (to be done inside an spmd, in parallel of the reweighting procedure)
-    % write function update_epsilon
+    %% Update epsilons (in parallel)
     if param.use_adapt_eps && t > param.adapt_eps_start
         spmd
             if labindex > Q
-                epsilonp = update_epsilon(epsilonp, t, t_block, rel_fval(t), norm_res, ...
-                    adapt_eps_tol_in.Value, adapt_eps_steps.Value, adapt_eps_rel_obj.Value, ...
-                    adapt_eps_change_percentage.Value); % use some variable sonly defined on the master node... see if the communication works as intendd in this case...
+                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_fval(t), norm_res, ...
+                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_obj.Value, ...
+                    adapt_eps_change_percentage.Value);
             end
         end
     end
     
-    %% Reweighting (to be partly modified)
-    if (param.step_flag && rel_fval(t) < param.reweight_rel_obj) % && (norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check))
+    %% Reweighting (in parallel)
+    if (param.step_flag && rel_fval(t) < param.reweight_rel_obj)
         reweight_steps = [t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size)];
         param.step_flag = 0;
     end
@@ -448,19 +437,18 @@ for t = t_start : param.max_iter
             t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr)
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
-        
-        % [P.-A.]
+
         spmd
             if labindex <= Qp.Value
                 x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-                x_overlap(overlap(1)+1:end, overlap(2)+1:end) = xsol_q;
+                x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
 
                 % nuclear norm
                 sol = reshape(xsol_q, [size(xsol_q, 1)*size(xsol_q, 2), size(xsol_q, 3)]);
                 [~,S00,~] = svd(sol,'econ');
                 d_val0 = abs(diag(S00));
-                weights0_ = reweight_alpha ./ (reweight_alpha + d_val0);
+                weights0_ = reweight_alphap ./ (reweight_alphap + d_val0);
 
                 % l21 norm
                 zerosNum = dims_overlap_ref_q + offsetLq + offsetRq; % offset for the zero-padding
@@ -472,7 +460,7 @@ for t = t_start : param.max_iter
                 end
                 d_val1 = sqrt(sum(abs((w)).^2,2));
                 weights1_ = reweight_alphap ./ (reweight_alphap + d_val1);
-                reweight_alphap = reweight_alpha_ff .* reweight_alphap;
+                reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
 %             else
 %                 % compute residual image on the data nodes
 %                 res_ = compute_residual_images(x, y, G, A, At); % to be possibly removed (not) used here...
@@ -495,7 +483,6 @@ end
 end_loop = toc(start_loop)
 
 % [P.-A.] collect distributed values (reweight_alpha,weights0, weights1)
-% do sth for the weights... (to be done later on)
 v0 = cell(Q, 1);
 v1 = cell(Q, 1);
 weights0 = cell(Q, 1);
@@ -533,13 +520,15 @@ end
 %Final log (merge this step with the computation of the residual image for
 % each frequency of interest)
 spmd
-    x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-    x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-    x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
-    
-    [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
-        dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-        offsetLq, offsetRq);
+    if labindex <= Q
+        x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+        x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
+        
+        [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
+            dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+            offsetLq, offsetRq);
+    end
 end
 
 l21 = 0;
@@ -549,7 +538,7 @@ for q = 1:Q
     nuclear = nuclear + nuclear_norm{q};
 end
 
-% SNR (only on the master node this time? to be seen)
+% SNR (only on the master node this time)
 sol = reshape(xsol(:),numel(xsol(:))/c,c);
 SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
 psnrh = zeros(c,1);
@@ -563,13 +552,13 @@ if (param.verbose > 0)
         fprintf('Solution found\n');
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
-        fprintf('epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
+        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
         fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     else
         fprintf('Maximum number of iterations reached\n');
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
-        fprintf('epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
+        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
         fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
 end

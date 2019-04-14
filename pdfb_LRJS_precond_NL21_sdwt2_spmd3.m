@@ -322,7 +322,7 @@ for t = t_start : param.max_iter
             nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
         % reduction with optimized communications (check amount of overlap
         % along x and y directions)q]
-        g1 = comm2d_reduce_wideband(g1, overlap, Qyp, Qxp, Kp); % see how to update g1 from here...
+        g1 = comm2d_reduce(g1, overlap, Qyp, Qxp);
         
         % compute g_ for the final update term
         g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
