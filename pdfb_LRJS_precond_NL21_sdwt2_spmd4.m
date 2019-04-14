@@ -24,7 +24,6 @@ No = size(W{1}{1}{1}, 1);
 
 % number of pixels
 [M, N] = size(At(zeros(No, 1)));
-x0 = reshape(X0, [M, N, c]);
 
 % [P.-A.]
 % define spatial facets (no overlap)

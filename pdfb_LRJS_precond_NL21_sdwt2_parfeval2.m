@@ -22,7 +22,6 @@ No = size(W{1}{1}, 1);
 
 % number of pixels
 [M, N] = size(At(zeros(No, 1)));
-x0 = reshape(X0, [M, N, c]);
 
 % [P.-A.]
 % define spatial facets (no overlap)
@@ -73,7 +72,6 @@ overlap = cell(Q, 1);
 % initialize composite variables and constants
 % amount of overlap of the neighbour (necessary to define the ghost cells properly)
 for q = 1:Q
-    % additional composite variables (for the zero padding, see if fewer elements can be used)
     overlap{q} = max(dims_overlap{q}) - dims(q,:); % amount of overlap necessary for each facet
     [qy, qx] = ind2sub([Qy, Qx], q);
     if qy < Qy
@@ -356,20 +354,9 @@ for t = t_start : param.max_iter
             fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check),norm(residual_check));
             fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
-        
-        figure(1),
-        subplot(2,2,1);
-        imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,2);
-        imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,3);
-        imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,4);
-        imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        pause(0.1)
-        
-        fitswrite(x0,'./x0.fits');
-        fitswrite(xsol,'./xsol.fits');
+
+%         fitswrite(x0,'./x0.fits');
+%         fitswrite(xsol,'./xsol.fits');
     end
     
     %% Save

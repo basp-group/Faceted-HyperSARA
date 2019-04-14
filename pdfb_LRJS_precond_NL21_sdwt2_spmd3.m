@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd3(y, epsilon, A, At, pU, G, W, Sp, Spt, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, Psit)
+function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd3(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, wavelet, L, nlevel)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
@@ -17,7 +17,6 @@ No = size(W{1}{1}, 1);
 
 % number of pixels
 [M, N] = size(At(zeros(No, 1)));
-x0 = reshape(X0, [M, N, c]);
 
 % [P.-A.]
 % define spatial facets (no overlap)
@@ -60,7 +59,6 @@ parpool(cirrus_cluster, numworkers); % override default preference
 % define parallel constants(known by each worker)
 Qyp = parallel.pool.Constant(Qy);
 Qxp = parallel.pool.Constant(Qx);
-Kp = parallel.pool.Constant(K);
 waveletp = parallel.pool.Constant(wavelet);
 nlevelp = parallel.pool.Constant(nlevel);
 offsetp = parallel.pool.Constant(offset);
@@ -441,7 +439,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    %     prod(prod(residual_check < param.adapt_eps_tol_out*epsilon_check)) && prod(prod(residual_check > param.adapt_eps_tol_in*epsilon_check))
+
     if t>1 && rel_fval(t) < param.rel_obj && reweight_step_count > param.total_reweights && ...
             (norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check))
         flag = 1;

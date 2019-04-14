@@ -10,6 +10,8 @@ num_chunk = 1;
 
 Qx = 2; % additional parameters for the faceting
 Qy = 2;
+Qc = 2;
+parallel_version = 'parfeval2'; % parfeval, parfeval2, spmd3, spmd4
 
 %         
 % num_workers = 12;

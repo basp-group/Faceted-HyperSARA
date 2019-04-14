@@ -184,9 +184,9 @@ if flag_algo == 1
    
     Time_iter_average = mean(end_iter) 
     
-    save(['hypersara-sdwt2/results/result_HyperSARA_' num2str(num_chunk) '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
-    fitswrite(xsol,'hypersara-sdwt2/results/xsol_HyperSARA.fits')
-    fitswrite(x0,'hypersara-sdwt2/results/x0.fits')
+    mkdir('results/')
+    save(['results/result_HyperSARA_' num2str(num_chunk) '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res','end_iter');
+    fitswrite(xsol,'results/x_HyperSARA.fits')
 end
     
     %% Split L21 + Nuclear + wavelets 
@@ -202,36 +202,47 @@ if flag_algo == 2
 %     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
 %     pdfb_LRJS_precond_NL21_sdwt2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, chunks, Psit_full);
 
-    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-    pdfb_LRJS_precond_NL21_sdwt2_parfeval(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
+    switch parallel_version
+        case 'parfeval'
+            [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+            pdfb_LRJS_precond_NL21_sdwt2_parfeval(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
+        case 'parfeval2'
+            [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+            pdfb_LRJS_precond_NL2110ac_sdwt2_parfeval2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
+        case 'spmd3'
+            [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+            pdfb_LRJS_precond_NL21_sdwt2_spmd3(y_t{q}, epsilons_t{q}, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel);
+        case 'spmd4'
+            % spectral tesselation (non-overlapping)
+            rg_c = domain_decomposition(Qc, c_chunks);
+            cell_c_chunks = cell(Qc, 1);
+            y_spmd = cell(Qc, 1);
+            epsilon_spmd = cell(Qc, 1);
+            aW_spmd = cell(Qc, 1);
+            W_spmd = cell(Qc, 1);
+            G_spmd = cell(Qc, 1);
+            
+            for i = 1:Qc
+                cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+                y_spmd{i} = y_t{q}(cell_c_chunks{i});
+                epsilon_spmd{i} = epsilons_t{q}(cell_c_chunks{i});
+                aW_spmd{i} = aW(cell_c_chunks{i});
+                W_spmd{i} = W(cell_c_chunks{i});
+                G_spmd{i} = G(cell_c_chunks{i});
+            end
 
-    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-    pdfb_LRJS_precond_NL2110ac_sdwt2_parfeval2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
-
-    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-    pdfb_LRJS_precond_NL21_sdwt2_spmd(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
-
-    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-    pdfb_LRJS_precond_NL21_sdwt2_spmd2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
-
-    [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-    pdfb_LRJS_precond_NL21_sdwt2_spmd3(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
-
-    % try to increase the number of spectral groups for the data fidelity
-    % terms
-    [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-    pdfb_LRJS_precond_NL21_sdwt2_spmd4({y_t{q}}, {epsilons_t{q}}, A, At, {aW}, {G}, {W}, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, {1:c_chunks}, c_chunks);
-
-
-    cell_c_chunks = cell(2, 1);
-    cell_c_chunks{1} = 1:15;
-    cell_c_chunks{2} = 16:30;
-    [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-        pdfb_LRJS_precond_NL21_sdwt2_spmd4({{y_t{q}{1:15}},{y_t{q}{16:30}}}, {{epsilons_t{q}{1:15}},{epsilons_t{q}{16:30}}}, ...
-        A, At, {{aW{1:15}},{aW{16:30}}}, {{G{1:15}},{G{16:30}}}, {{W{1:15}},{W{16:30}}}, param_HSI, X0, Qx, Qy, 2, wlt_basis, L, nlevel, cell_c_chunks, c_chunks);
-
-
-
+            y_t{q} = [];
+            epsilons_t{q} = [];
+            clear G W aW
+            
+            [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+                pdfb_LRJS_precond_NL21_sdwt2_spmd4(y_spmd, epsilon_spmd, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, Qc, ...
+                wlt_basis, L, nlevel, cell_c_chunks, tot);
+        otherwise
+            error('Unknown parallelisation option.')
+    end
+    
     c = size(xsol,3);
     sol = reshape(xsol(:),numel(xsol(:))/c,c);
     SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)))
@@ -240,10 +251,11 @@ if flag_algo == 2
         psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
     end
     SNR_average = mean(psnrh)
+    Time_iter_average = mean(end_iter)
     
-    
-    save(['hypersara-sdwt2/results/result_split_NL21_wavelets_' num2str(overlap) '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
-    fitswrite(xsol,'hypersara-sdwt2/results/xsol_split_NL21_wavelets.fits')
+    mkdir('results/')
+    save(['results/results_hyperSARA_', alg_version, '_', parallel_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
+    fitswrite(xsol,['results/x_hyperSARA_', alg_version, '_', parallel_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), '.fits'])
 end    
     
     %% Split L21 + Nuclear
