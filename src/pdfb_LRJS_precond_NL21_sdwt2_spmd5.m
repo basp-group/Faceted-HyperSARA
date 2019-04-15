@@ -18,6 +18,8 @@ function [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_f
 % and depending on the computational complexity of the task to be driven by
 % each worker -> see if there is any acceleration here...
 %%
+%% TO BE FINALIZED, BUT DOES NOT MAKE SENSE FOR THE REWEIGTHING + COMPUTATION OF THE PRIORS IN PARALLEL...
+% (EXTRA COMMUNICATIONS NEEDED)
 
 % oversampling vectorized data length
 No = size(W{1}{1}{1}, 1);
@@ -90,6 +92,7 @@ overlap_g_south = Composite();
 overlap_g_east = Composite();
 overlap_g_south_east = Composite();
 overlap = Composite();
+xhat_q = Compostie();
 % initialize composite variables and constants
 for q = 1:Q
     Iq{q} = I(q, :);
@@ -106,6 +109,7 @@ for q = 1:Q
     offsetLq{q} = offsetL(q,:);
     offsetRq{q} = offsetR(q,:);
     overlap{q} = max(dims_overlap{q}) - dims(q,:); % amount of overlap necessary for each facet
+    xhat_q{q} = zeros([dims(q, :), c]);
 end
 
 % amount of overlap of the neighbour (necessary to define the ghost cells properly)
@@ -246,11 +250,12 @@ for q = 1:Q
 end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
-g_q = Composite();
-xhat_q = Composite();
-for q = 1:Q
-    xhat_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-    g_q{q} = zeros([dims(q, :), c]);
+
+g_i = Composite();
+xhat_i = Composite();
+for i = 1:K
+    xhat_i{Q+i} = xsol(:, :, c_chunks{i});
+    g_i{Q+i} = zeros([M, N, numel(c_chunks{i})]);
 end
 
 %Step sizes computation
@@ -310,9 +315,9 @@ for t = t_start : param.max_iter
             %    sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
             g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
             
-            % retrieve portions of g2 from the data nodes
+            % send portions of g_q to the data nodes
             for i = 1:Kp.Value
-                g_q(:,:,c_chunksp.Value{i}) = g_q(:,:,c_chunksp.Value{i}) + labReceive(Qp.Value+i);
+                labSend(g_q(:,:,c_chunksp.Value{i}), Qp.Value+i); % to be done inside the function?
             end
         else
             % update primal variable
@@ -320,16 +325,17 @@ for t = t_start : param.max_iter
             
             % send xhat_i (communication towards the data nodes)
             for q = 1:Qp.Value
-                labSend(xsol_i(:,:,c_chunksp.Value{i}), Q+i); % to be changed
+                labSend(xsol_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2),:,:), q); % to be changed
             end
             
             % data nodes (Q+1:Q+K) (no data blocking, just frequency for the moment
-            [v2_, g2, proj, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            [v2_, g_i, proj, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             
-            % send portions of g2 to the prior/primal nodes
+            % retrieve portions of g2 to the prior/primal nodes
             for q = 1:Qp.Value
-                labSend(g2(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q); % to be done inside the function?
+                g_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
+                g_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) + labReceive(q); % to be done inside the function?
             end
         end
     end
@@ -356,12 +362,23 @@ for t = t_start : param.max_iter
                 % compute values for the prior terms
                 %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
                 %see if this is necessary or not (to be further investigated)
-                x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-                x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
+                for i = 1:Kp.Value
+                    xhat_q(:, :, c_chunksp.Value{i}) = labReceive(Qp.Value+i);
+                end
+            
+                % update ghost cells (versions of xhat with overlap)
+                % overlap_q = dims_overlap_ref_q - dims_q;
+                x_overlap = zeros([dims_overlap_ref_q, size(xhat_q, 3)]);
+                x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
+                x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further)
 
                 [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
                     dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                     offsetLq, offsetRq);
+            else
+                for q = 1:Qp.Value
+                    labSend(xsol_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2),:,:), q); % to be changed
+                end
             end
         end
         
@@ -522,13 +539,26 @@ end
 % each frequency of interest)
 spmd
     if labindex <= Q
-        x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-        x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
+        % compute values for the prior terms
+        %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+        %see if this is necessary or not (to be further investigated)
+        for i = 1:Kp.Value
+            xhat_q(:, :, c_chunksp.Value{i}) = labReceive(Qp.Value+i);
+        end
+        
+        % update ghost cells (versions of xhat with overlap)
+        % overlap_q = dims_overlap_ref_q - dims_q;
+        x_overlap = zeros([dims_overlap_ref_q, size(xhat_q, 3)]);
+        x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
+        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further)
         
         [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
-            dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+            dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq);
+    else
+        for q = 1:Qp.Value
+            labSend(xsol_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2),:,:), q); % to be changed
+        end
     end
 end
 

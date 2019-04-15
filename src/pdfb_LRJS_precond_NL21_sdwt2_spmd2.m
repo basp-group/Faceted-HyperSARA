@@ -509,7 +509,7 @@ for t = t_start : param.max_iter
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
             
             % nuclear norm
-            sol = reshape(xsol_q, [size(xsol_q, 1)*size(xsol_q, 2), size(xsol_q, 3)]);
+            sol = reshape(x_overlap, [prod(dims_overlap_ref_q), size(xsol_q, 3)]);
             [~,S00,~] = svd(sol,'econ');
             d_val0 = abs(diag(S00));
             weights0_ = reweight_alpha ./ (reweight_alpha + d_val0);

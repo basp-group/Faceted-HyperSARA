@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd4(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
+function [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd6(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
@@ -157,8 +157,8 @@ for q = 1:Q
         sz = 3*sum(p) - 2*sum(p(nlevel+1:nlevel+1:end));
     end
     
-    v0_{q} = zeros(prod(dims_overlap_ref(q,:)), c);
-    weights0_{q} = zeros(min(prod(dims_overlap_ref(q, :)), c), 1);
+    v0_{q} = zeros(prod(dims(q,:)), c);
+    weights0_{q} = zeros(min(prod(dims(q, :)), c), 1);
     v1_{q} = zeros(sz, c);
     weights1_{q} = zeros(sz, c);
 end
@@ -301,17 +301,15 @@ for t = t_start : param.max_iter
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further)
             
             % update dual variables (nuclear, l21)
-            [v0_, g0] = update_nuclear_spmd(v0_, x_overlap, weights0_, beta0.Value); % to be checked again...
+            [v0_, g0] = update_nuclear_spmd(v0_, xhat_q, weights0_, beta0.Value); % to be checked again...
             [v1_, g1] = update_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
-            g = sigma00.Value*g0 + sigma11.Value*g1;
-            g = comm2d_reduce(g, overlap, Qyp, Qxp);
+            g1 = comm2d_reduce(g1, overlap, Qyp, Qxp);
             
             % compute g_ for the final update term
-            %g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
-            %    sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
-            g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
+            g_q = sigma00.Value*g0 + ...
+                sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
             
             % retrieve portions of g2 from the data nodes
             for i = 1:Kp.Value
@@ -359,7 +357,7 @@ for t = t_start : param.max_iter
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
 
-                [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
+                [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
                     dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                     offsetLq, offsetRq); % to be possibly changed
             end
@@ -446,7 +444,7 @@ for t = t_start : param.max_iter
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
 
                 % nuclear norm
-                sol = reshape(x_overlap, [prod(dims_overlap_ref_q), size(xsol_q, 3)]);
+                sol = reshape(xsol_q, [size(xsol_q, 1)*size(xsol_q, 2), size(xsol_q, 3)]);
                 [~,S00,~] = svd(sol,'econ');
                 d_val0 = abs(diag(S00));
                 weights0_ = reweight_alphap ./ (reweight_alphap + d_val0);
@@ -526,7 +524,7 @@ spmd
         x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
         x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
         
-        [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
+        [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
             dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq);
     end
