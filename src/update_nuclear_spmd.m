@@ -1,4 +1,4 @@
-function [v0, g0] = run_par_nuclear_spmd(v0, xhat, weights0, beta0)
+function [v0, g0] = update_nuclear_spmd(v0, xhat, weights0, beta0)
 
     [M,N,c] = size(xhat);
     xhatm = reshape(xhat,numel(xhat)/c,c);

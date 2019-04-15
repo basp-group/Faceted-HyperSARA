@@ -1,4 +1,4 @@
-function [u, y] = run_par_l21_spmd(u, x_overlap, weights, beta1, Iq, dims_q, I_overlap_q, dims_overlap_q, offset, status_q, nlevel, wavelet, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q)
+function [u, y] = update_l21_spmd(u, x_overlap, weights, beta1, Iq, dims_q, I_overlap_q, dims_overlap_q, offset, status_q, nlevel, wavelet, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q)
 
 zerosNum = dims_overlap_ref_q + offsetLq + offsetRq; % offset for the zero-padding (to be checked again...)
 x_ = zeros([zerosNum, size(x_overlap, 3)]);

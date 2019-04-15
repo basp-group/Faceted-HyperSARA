@@ -83,6 +83,7 @@ addpath hypersara-sdwt2/lib/
 addpath hypersara-sdwt2/lib/CubeHelix/
 addpath ../irt/
 addpath sdwt2/
+addpath src
 addpath hypersara-sdwt2/lib/Proximity_operators/code/matlab/indicator/
 addpath hypersara-sdwt2/lib/Proximity_operators/code/matlab/multi/
 addpath hypersara-sdwt2/alg

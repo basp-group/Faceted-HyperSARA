@@ -287,7 +287,7 @@ for t = t_start : param.max_iter
         if labindex <= Q
             % primal/prior nodes (1:Q)
             % update primal variable
-            [xsol_q, xhat_q, rel_x_q, norm_x_q] = run_par_primal(xsol_q, g_q);
+            [xsol_q, xhat_q, rel_x_q, norm_x_q] = update_primal(xsol_q, g_q);
             
             % send xhat_q (communication towards the data nodes)
             for i = 1:K
@@ -301,8 +301,8 @@ for t = t_start : param.max_iter
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further)
             
             % update dual variables (nuclear, l21)
-            [v0_, g0] = run_par_nuclear_spmd(v0_, x_overlap, weights0_, beta0.Value); % to be checked again...
-            [v1_, g1] = run_par_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
+            [v0_, g0] = update_nuclear_spmd(v0_, x_overlap, weights0_, beta0.Value); % to be checked again...
+            [v1_, g1] = update_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
             g = sigma00.Value*g0 + sigma11.Value*g1;
@@ -324,7 +324,7 @@ for t = t_start : param.max_iter
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
-            [v2_, g2, proj, norm_residual_check_i, norm_epsilon_check_i] = run_par_data_fidelity(v2_, yp, xhat_i, proj, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            [v2_, g2, proj, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             
             % send portions of g2 to the prior/primal nodes
@@ -359,7 +359,7 @@ for t = t_start : param.max_iter
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
 
-                [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
+                [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
                     dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                     offsetLq, offsetRq); % to be possibly changed
             end
@@ -526,7 +526,7 @@ spmd
         x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
         x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
         
-        [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
+        [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
             dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq);
     end

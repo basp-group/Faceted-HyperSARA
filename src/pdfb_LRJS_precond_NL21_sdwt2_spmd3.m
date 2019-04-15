@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd2(y, epsilon, A, At, pU, G, W, Sp, Spt, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, Psit)
+function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd3(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, wavelet, L, nlevel)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
@@ -12,19 +12,11 @@ function [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,
 
 c = size(y,2);
 
-% [P.-A.] number of wavelet dictionaries
-P = length(wavelet);
-
 % oversampling vectorized data length
 No = size(W{1}{1}, 1);
 
 % number of pixels
 [M, N] = size(At(zeros(No, 1)));
-
-% for i = 1 : c
-%     x0(:,:,i) = reshape(X0(:,i),M,N);
-% end
-x0 = reshape(X0, [M, N, c]);
 
 % [P.-A.]
 % define spatial facets (no overlap)
@@ -33,7 +25,7 @@ rg_y = domain_decomposition(Qy, M);
 rg_x = domain_decomposition(Qx, N);
 I = zeros(Q, 2);
 dims = zeros(Q, 2);
-for qx = 1:Qx % can be created in parallel if needed
+for qx = 1:Qx
     for qy = 1:Qy
         q = (qx-1)*Qy+qy;
         I(q, :) = [rg_y(qy, 1)-1, rg_x(qx, 1)-1];
@@ -44,7 +36,7 @@ clear rg_y rg_x;
 
 %%- begin initialization sdwt2
 % [P.-A.] instantiate auxiliary variables for sdwt2
-[~, ~, I_overlap_ref, dims_overlap_ref, I_overlap, dims_overlap, ...
+[~, ~, ~, dims_overlap_ref, I_overlap, dims_overlap, ...
     ~, ~, status, offset, offsetL, offsetR, Ncoefs, temLIdxs, temRIdxs] = generate_segdwt_indices([M, N], I, dims, nlevel, wavelet, L);
 id_dirac = find(ismember(wavelet, 'self'), 1);
 dirac_present = ~isempty(id_dirac);
@@ -61,37 +53,34 @@ if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
     exit(1);
 end
 
-% [P.-A.] /!\ only simple indexing allowed into Composite objects from the
-% master
-% instantiate l21 dual variables
+% [P.-A.] /!\ only simple indexing allowed into Composite objects from the master
 parpool(cirrus_cluster, numworkers); % override default preference
 
 % define parallel constants(known by each worker)
 Qyp = parallel.pool.Constant(Qy);
 Qxp = parallel.pool.Constant(Qx);
-Kp = parallel.pool.Constant(K);
 waveletp = parallel.pool.Constant(wavelet);
 nlevelp = parallel.pool.Constant(nlevel);
 offsetp = parallel.pool.Constant(offset);
 
 % define composite variables (local to a given worker)
 % wavelet auxiliary variables
-Iq = Composite(numworkers);
-dims_q = Composite(numworkers);
-temLIdxs_q = Composite(numworkers);
-temRIdxs_q = Composite(numworkers);
-I_overlap_q = Composite(numworkers);
-dims_overlap_q = Composite(numworkers);
-dims_overlap_ref_q = Composite(numworkers);
-status_q = Composite(numworkers);
-Ncoefs_q = Composite(numworkers);
-offsetLq = Composite(numworkers);
-offsetRq = Composite(numworkers);
+Iq = Composite();
+dims_q = Composite();
+temLIdxs_q = Composite();
+temRIdxs_q = Composite();
+I_overlap_q = Composite();
+dims_overlap_q = Composite();
+dims_overlap_ref_q = Composite();
+status_q = Composite();
+Ncoefs_q = Composite();
+offsetLq = Composite();
+offsetRq = Composite();
 % dimension of the ghost cells
-overlap_g_south = Composite(numworkers);
-overlap_g_east = Composite(numworkers);
-overlap_g_south_east = Composite(numworkers);
-overlap = Composite(numworkers);
+overlap_g_south = Composite();
+overlap_g_east = Composite();
+overlap_g_south_east = Composite();
+overlap = Composite();
 % initialize composite variables and constants
 for q = 1:Q
     Iq{q} = I(q, :);
@@ -121,10 +110,7 @@ for q = 1:Q
             % SE (qy+1, qx+1)
             overlap_g_south_east{q} = overlap{qx*Qy + qy+1};
         else
-            for i = 1:K
-                q = (q-1)*K + i;
-                overlap_g_south_east{q} = [0, 0];
-            end
+            overlap_g_south_east{q} = [0, 0];
         end
     else
         overlap_g_south{q} = [0, 0];
@@ -151,10 +137,10 @@ end
 %Initial dual variables
 %% to be completely updated (add options for warm-restart later on)
 % [P.-A.] l21 / nuclear norm dual variables
-v0_ = Composite(Q);
-weights0_ = Composite(Q);
-v1_ = Composite(Q);
-weights1_ = Composite(Q); % idem, can be created in parallel with spmd
+v0_ = Composite();
+weights0_ = Composite();
+v1_ = Composite();
+weights1_ = Composite(); % idem, can be created in parallel with spmd
 for q = 1:Q
     p = prod(Ncoefs{q}, 2);
     if dirac_present
@@ -173,6 +159,7 @@ clear sz
 
 if isfield(param,'init_v2')
     v2 = param.init_v2;
+    u2 = cell(c, 1);
     for i = 1 : c
         u2{i} = cell(length(G{i}),1);
         for j = 1 : length(G{i})
@@ -182,6 +169,8 @@ if isfield(param,'init_v2')
     r2 = v2;
     fprintf('v2 uploaded \n\n')
 else
+    v2 = cell(c, 1);
+    u2 = cell(c, 1);
     for i = 1 : c
         v2{i} = cell(length(G{i}),1);
         u2{i} = cell(length(G{i}),1);
@@ -205,7 +194,6 @@ else
 end
 
 Ftx = zeros(size(xsol));
-
 
 % Initialise projection
 if isfield(param,'init_proj')
@@ -253,14 +241,14 @@ count_eps_update_up = 0;
 
 reweight_alpha = param.reweight_alpha;
 % [P.-A.]
-reweight_alphap = Composite(numworkers);
-for q = 1:numworkers
+reweight_alphap = Composite();
+for q = 1:Q
     reweight_alphap{q} = reweight_alpha;
 end
-reweight_alpha_ff = parallel.pool.Constant(param.reweight_alpha_ff);
+reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
-g_q = Composite(numworkers);
-xsol_q = Composite(numworkers);
+g_q = Composite();
+xsol_q = Composite();
 for q = 1:Q
     xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
 end
@@ -311,34 +299,33 @@ for t = t_start : param.max_iter
     %% L-2,1 function update
     
     % communicate g_overlap (full communications)
-    for q = 1:numworkers
+    for q = 1:Q
         g_q{q} = g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
     end
     
     spmd
         % update primal variable
-        [xsol_q, xhat_q, rel_x_q, norm_x_q] = run_par_primal(xsol_q, g_q);
+        [xsol_q, xhat_q, rel_x_q, norm_x_q] = update_primal(xsol_q, g_q); % to be finalized, not so easy...
         
         % update ghost cells (versions of xhat with overlap...)
         % overlap_q = dims_overlap_ref_q - dims_q;
         x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
         x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
-        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further) 
+        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further)
         
         % update dual variables (nuclear, l21)
-        [v0_, g0] = run_par_nuclear_spmd(v0_, x_overlap, weights0_, beta0.Value);
-        [v1_, g1] = run_par_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
+        [v0_, g0] = update_nuclear_spmd(v0_, x_overlap, weights0_, beta0.Value);
+        [v1_, g1] = update_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
             dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
             nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
-        % reduction with optimized communications (check amount of overlap
-        % along x and y directions)q]
-        g = sigma00.Value*g0 + sigma11.Value*g1;
+        g = sigma00.Value*g0 + sigma11.Value*g1; % overlap with the nuclear and l21 norm priors...
         g = comm2d_reduce(g, overlap, Qyp, Qxp);
 
         % compute g_ for the final update term
         %g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
         %    sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
         g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
+            
         rel_x = gop(@plus, rel_x_q, 1);
         norm_x = gop(@plus, norm_x_q, 1);
     end
@@ -388,22 +375,29 @@ for t = t_start : param.max_iter
     %% Display
     if ~mod(t,100)
         
-        % [P.-A.] to be modified (facets are missing...)
+        % [P.-A.]
+        %% compute value of the priors in parallel (include weights*?)
+        spmd
+            %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+            x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
+            
+            [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
+                dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                offsetLq, offsetRq);
+            l21_norm = gop(@plus, l21_norm, 1);
+            nuclear_norm = gop(@plus, nuclear_norm, 1);
+        end
+        
+        % compute prior terms
+        l21 = l21_norm{1};
+        nuclear = nuclear_norm{1};
+        
+        % SNR
         % get xsol back from the workers
         for q = 1:Q
             xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
-        
-        % compute prior (full... to be changed)
-        xhatm = reshape(xsol,numel(xsol)/c,c);
-        [~,S0,~] = svd(xhatm,'econ');
-        nuclear = norm(diag(S0),1); % doesn't make sense to compute this here
-        
-        % [P.-A.] to be modified (idem, facets are missing)
-        l2 = sqrt(sum(abs(Psit(xsol)).^2,2));
-        l21 = norm(l2(:),1);
-        
-        %SNR (to be changed, only for debug at the moment)
         sol = reshape(xsol(:),numel(xsol(:))/c,c);
         SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
         psnrh = zeros(c,1);
@@ -411,6 +405,7 @@ for t = t_start : param.max_iter
             psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
         end
         SNR_average = mean(psnrh);
+        %% --
         
         %Log
         if (param.verbose >= 1)
@@ -420,21 +415,8 @@ for t = t_start : param.max_iter
             fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
         
-        %diary('WB_new');
-        
-        figure(1),
-        subplot(2,2,1);
-        imagesc(log10(max(flip(x0(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,2);
-        imagesc(log10(max(flip(xsol(:,:,1)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,3);
-        imagesc(log10(max(flip(x0(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        subplot(2,2,4);
-        imagesc(log10(max(flip(xsol(:,:,end)),0))); hold on; colorbar; axis image; axis off; colormap(cubehelix); caxis([-3.5, 0]);
-        pause(0.1)
-        
-        fitswrite(x0,'./x0.fits');
-        fitswrite(xsol,'./xsol.fits');
+%         fitswrite(x0,'./x0.fits');
+%         fitswrite(xsol,'./xsol.fits');
     end
     
     %% Save
@@ -458,7 +440,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    %     prod(prod(residual_check < param.adapt_eps_tol_out*epsilon_check)) && prod(prod(residual_check > param.adapt_eps_tol_in*epsilon_check))
+
     if t>1 && rel_fval(t) < param.rel_obj && reweight_step_count > param.total_reweights && ...
             (norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check))
         flag = 1;
@@ -502,17 +484,17 @@ for t = t_start : param.max_iter
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
         
-        % [P.-A.]        
+        % [P.-A.]
         spmd
             x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-            x_overlap(overlap(1)+1:end, overlap(2)+1:end) = xsol_q;
+            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
             
             % nuclear norm
             sol = reshape(xsol_q, [size(xsol_q, 1)*size(xsol_q, 2), size(xsol_q, 3)]);
             [~,S00,~] = svd(sol,'econ');
             d_val0 = abs(diag(S00));
-            weights0_ = reweight_alpha ./ (reweight_alpha + d_val0);
+            weights0_ = reweight_alphap ./ (reweight_alphap + d_val0);
             
             % l21 norm
             zerosNum = dims_overlap_ref_q + offsetLq + offsetRq; % offset for the zero-padding
@@ -524,9 +506,9 @@ for t = t_start : param.max_iter
             end
             d_val1 = sqrt(sum(abs((w)).^2,2));
             weights1_ = reweight_alphap ./ (reweight_alphap + d_val1);
-            reweight_alphap = reweight_alpha_ff .* reweight_alphap;
+            reweight_alphap = reweight_alpha_ffp.Value .* reweight_alphap;
         end
-        reweight_alpha = reweight_alpha_ff .* reweight_alpha; % on the master node
+        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
         %-- end modifications
         
         if (reweight_step_count >= param.total_reweights)
@@ -535,23 +517,11 @@ for t = t_start : param.max_iter
             break;
         end
         
-        % Calculate residual images:
-        for i = 1 : c
-            Fx = A(xsol(:,:,i));
-            g2 = zeros(No,1);
-            for j = 1 : length(G{i})
-                res_f{i}{j} = y{i}{j} - G{i}{j} * Fx(W{i}{j});
-                u2{i}{j} = Gt{i}{j} * res_f{i}{j};
-                g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
-            end
-            res(:,:,i) = real(At(g2));
-        end
-        
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
         rw_counts = rw_counts + 1;
         
-    end  
+    end
 end
 end_loop = toc(start_loop)
 
@@ -582,13 +552,19 @@ for i = 1 : c
 end
 
 %Final log
-
-xhatm = reshape(xsol,numel(xsol)/c,c);
-[~,S0,~] = svd(xhatm,'econ');
-nuclear = norm(diag(S0),1);
-
-l2 = sqrt(sum(abs(Psit(xsol)).^2,2));
-l21 = norm(l2(:),1);
+spmd
+    x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+    x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+    x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
+    
+    [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
+        dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+        offsetLq, offsetRq);
+    l21_norm = gop(@plus, l21_norm, 1);
+    nuclear_norm = gop(@plus, nuclear_norm, 1);
+end
+l21 = l21_norm{1};
+nuclear = nuclear_norm{1};
 
 %SNR
 sol = reshape(xsol(:),numel(xsol(:))/c,c);
