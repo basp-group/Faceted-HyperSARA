@@ -208,7 +208,7 @@ if flag_algo == 2
             pdfb_LRJS_precond_NL21_sdwt2_parfeval(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
         case 'parfeval2'
             [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-            pdfb_LRJS_precond_NL2110ac_sdwt2_parfeval2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
+            pdfb_LRJS_precond_NL21_sdwt2_parfeval2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
         case 'spmd3'
             [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
             pdfb_LRJS_precond_NL21_sdwt2_spmd3(y_t{q}, epsilons_t{q}, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel);
@@ -231,9 +231,9 @@ if flag_algo == 2
                 G_spmd{i} = G(cell_c_chunks{i});
             end
 
-            y_t{q} = [];
-            epsilons_t{q} = [];
-            clear G W aW
+%             y_t{q} = [];
+%             epsilons_t{q} = [];
+%             clear G W aW
             
             [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd4(y_spmd, epsilon_spmd, ...

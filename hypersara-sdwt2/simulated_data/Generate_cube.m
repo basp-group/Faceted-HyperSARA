@@ -79,34 +79,34 @@ if emission_lines
     end
 end
 
-police={'-*b','-*b','-*b'}; %, '-or', '-dg', '-sc','.-m', '-+c', '-hb', '-dr','*g', 'sk', ' -.-y' , '-*b'};
+% police={'-*b','-*b','-*b'}; %, '-or', '-dg', '-sc','.-m', '-+c', '-hb', '-dr','*g', 'sk', ' -.-y' , '-*b'};
 
 %%
 
-figure(2), hold on;
-% xlim([1 c]);
-% ylim([1 20]);
-for i=[11 1 2 3 5 6 7 8 10 12]
-    
-    H(:,i) = (f./f(1)).^(- alpha(i) + (beta(i).*log(f./f(1))));
-    if emission_lines
-        H(:,i) = H(:,i) .* HI(:,i);
-    end
-    plot(H(:,i),police{2});
-    %     if i == 11
-    %         plot(H(:,i),police{2}); ylim([1 25]);
-    %     elseif i == 12
-    %         plot(H(:,i),police{3}); ylim([1 10]);
-    %     elseif i == 1 || i == 2 || i == 3
-    %         plot(H(:,i),police{1}); ylim([1 25]);
-    %     else
-    %         plot(H(:,i),police{1}); ylim([1 10]);
-    %     end
-    %waitforbuttonpress;
-    
-    
-end
-hold off;
+% figure(2), hold on;
+% % xlim([1 c]);
+% % ylim([1 20]);
+% for i=[11 1 2 3 5 6 7 8 10 12]
+%     
+%     H(:,i) = (f./f(1)).^(- alpha(i) + (beta(i).*log(f./f(1))));
+%     if emission_lines
+%         H(:,i) = H(:,i) .* HI(:,i);
+%     end
+%     plot(H(:,i),police{2});
+%     %     if i == 11
+%     %         plot(H(:,i),police{2}); ylim([1 25]);
+%     %     elseif i == 12
+%     %         plot(H(:,i),police{3}); ylim([1 10]);
+%     %     elseif i == 1 || i == 2 || i == 3
+%     %         plot(H(:,i),police{1}); ylim([1 25]);
+%     %     else
+%     %         plot(H(:,i),police{1}); ylim([1 10]);
+%     %     end
+%     %waitforbuttonpress;
+%     
+%     
+% end
+% hold off;
 
 %H(:,1) = H(:,1) - 1;
 
@@ -127,10 +127,10 @@ rank(X0)
 % caxis([-3, 0]);
 
 %%
-figure(4),hold on
-for i = 1 : 10 : size(X0,1)
-    if X0(i,end) > 0
-        plot (X0(i,:))
-    end
-end
-xlim([1 c]);
+% figure(4),hold on
+% for i = 1 : 10 : size(X0,1)
+%     if X0(i,end) > 0
+%         plot (X0(i,:))
+%     end
+% end
+% xlim([1 c]);

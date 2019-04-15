@@ -101,7 +101,7 @@ if gaussian_UV
         v1 = v1/2;
     end
     
-    scatter(u1,v1,'r.')
+    %scatter(u1,v1,'r.')
 end
 
 if realistic_UV
@@ -138,7 +138,7 @@ if realistic_UV
     if generate_uv
         [U,V,~] = generate_uv_cov_antennas(Pos_ant,x00,h,lat,dec, param_data.T) ;
         if save_uv
-            save(['hypersara-sdwt2/simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat'],'-v7.3', 'u', 'v');
+            save(['hypersara-sdwt2/simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat'],'-v7.3', 'U', 'V');
         end
     elseif load_uv
         load(['hypersara-sdwt2/simulated_data/data/uv_60_HI_final_' num2str(percentage(k)) '.mat']);
@@ -191,7 +191,7 @@ if realistic_UV
     size(r(r>pi))
     bmax = max(r)
     
-    figure, scatter(u1,v1,'r.');
+    %figure, scatter(u1,v1,'r.');
     save('hypersara-sdwt2/results/uv.mat','u1','v1'); 
  
     if ~generate_simple_image
@@ -222,7 +222,7 @@ for i = ch
     
     [A, At, G{i}, W{i}, Gw{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
 end
-figure(5), scatter(uw{i},vw{i},'r.')
+%figure(5), scatter(uw{i},vw{i},'r.')
 %% Save data
 if save_data
     save('hypersara-sdwt2/simulated_data/data/data.mat','-v7.3', 'G', 'W', 'aW');

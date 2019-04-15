@@ -105,13 +105,13 @@ gaussian_UV = 0;
 realistic_UV = 1;
 
 generate_uv = 1;
-save_uv = 0;
+save_uv = 1;
 load_uv = 0;
 
-save_data = 0;
+save_data = 1;
 load_data = 0;
 
-save_full_operator = 0;
+save_full_operator = 1;
 load_full_operator = 0;
 
 free_memory = 0;
@@ -134,11 +134,11 @@ save_mask = 0;
 
 compute_Anorm_preconditioned = 1;
 load_Anorm_preconditioned = 0;
-save_Anorm_preconditioned = 0;
+save_Anorm_preconditioned = 1;
 
 compute_Anorm = 1;
 load_Anorm = 0;
-save_Anorm = 0;
+save_Anorm = 1;
 
 solve_1B = 0; % single-channel solver (SARA) applied for each channel separately
 solve_minimization_UQ_1B = 0;
@@ -222,10 +222,10 @@ for k = 1 : length(percentage)
     if generate_measurements
         Generate_Measurements
         if save_data
-            save(['hypersara-sdwt2/simulated_data/data/y_60_HI_finalNEW_' num2str(percentage(k)) '.mat'],'-v7.3', 'y0_t', 'y_t', 'y0b_t', 'yb_t', 'epsilonT', 'epsilonT1', 'sigma_noise');
+            save(['hypersara-sdwt2/simulated_data/data/y_60_HI_finalNEW_' num2str(percentage(k)) '.mat'],'-v7.3', 'y0_t', 'y_t', 'epsilon_t', 'epsilons_t', 'sigma_noise');
         end
     elseif load_measurements
-        load(['hypersara-sdwt2/simulated_data/data/y_60_HI_finalNEW_' num2str(percentage(k)) '.mat'],'y0b_t','yb_t');
+        load(['hypersara-sdwt2/simulated_data/data/y_60_HI_finalNEW_' num2str(percentage(k)) '.mat'],'y0_t','y_t');
         disp('data loaded successfully ;)')
         
     end
