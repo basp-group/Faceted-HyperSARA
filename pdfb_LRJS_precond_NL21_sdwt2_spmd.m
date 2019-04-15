@@ -383,7 +383,7 @@ for t = t_start : param.max_iter
             nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
         % reduction with optimized communications (check amount of overlap along x and y directions)
         g1 = comm2d_reduce_wideband(g1, overlap_q, Qyp, Qxp, Kp); % see how to update g1 from here...
-        g_ = sigma00.Value*g0 + ...
+        g_q = sigma00.Value*g0 + ...
             sigma11.Value*g1(overlap_q(1)+1:end, overlap_q(2)+1:end, :); % reduce to facet without overlap
         % l21 = gop(@plus, l21_, 1);                  % reduce l21_ on the worker 1
     end
@@ -394,7 +394,7 @@ for t = t_start : param.max_iter
         go{i} = zeros(M, N, c_chunks(i));
         for q = 1 : Q
             qi = (q-1)*K + i;
-            go{i}(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_{qi};
+            go{i}(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{qi};
         end
     end
 

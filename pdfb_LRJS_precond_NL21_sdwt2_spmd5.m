@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd4(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
+function [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd5(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
@@ -185,7 +185,7 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 
 Ap = Composite();
 Atp = Composite();
-x_hat_i = Composite();
+xsol_i = Composite();
 v2_ = Composite();
 t_block = Composite();
 Gp = Composite();
@@ -214,7 +214,7 @@ for k = 1:K
     end
     v2_{Q+k} = v2_tmp;
     yp{Q+k} = y{k};
-    x_hat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
+    xsol_i{Q+k} = zeros(M, N, length(c_chunks{k}));
     Ap{Q+k} = A;
     Atp{Q+k} = At;
     Gp{Q+k} = G{k};
@@ -247,9 +247,9 @@ end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
 g_q = Composite();
-xsol_q = Composite();
+xhat_q = Composite();
 for q = 1:Q
-    xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+    xhat_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
     g_q{q} = zeros([dims(q, :), c]);
 end
 
@@ -286,22 +286,19 @@ for t = t_start : param.max_iter
     spmd
         if labindex <= Q
             % primal/prior nodes (1:Q)
-            % update primal variable
-            [xsol_q, xhat_q, rel_x_q, norm_x_q] = run_par_primal(xsol_q, g_q);
-            
-            % send xhat_q (communication towards the data nodes)
-            for i = 1:K
-                labSend(xhat_q(:,:,c_chunksp.Value{i}), Q+i); % problem indexing here!
+            % retrieve xhat_q from the primal nodes
+            for i = 1:Kp.Value
+                xhat_q(:, :, c_chunksp.Value{i}) = labReceive(Qp.Value+i);
             end
             
             % update ghost cells (versions of xhat with overlap)
             % overlap_q = dims_overlap_ref_q - dims_q;
-            x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+            x_overlap = zeros([dims_overlap_ref_q, size(xhat_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further)
             
             % update dual variables (nuclear, l21)
-            [v0_, g0] = run_par_nuclear_spmd(v0_, x_overlap, weights0_, beta0.Value); % to be checked again...
+            [v0_, g0] = run_par_nuclear_spmd(v0_, x_overlap, weights0_, beta0.Value);
             [v1_, g1] = run_par_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
@@ -318,12 +315,15 @@ for t = t_start : param.max_iter
                 g_q(:,:,c_chunksp.Value{i}) = g_q(:,:,c_chunksp.Value{i}) + labReceive(Qp.Value+i);
             end
         else
-            % data nodes (Q+1:Q+K) (no data blocking, just frequency for the moment
-            % retrieve xhat_i from the prior/primal nodes
+            % update primal variable
+            [xsol_i, xhat_i, rel_x_i, norm_x_i] = run_par_primal(xsol_i, g_i);
+            
+            % send xhat_i (communication towards the data nodes)
             for q = 1:Qp.Value
-                xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
-                    labReceive(q);
+                labSend(xsol_i(:,:,c_chunksp.Value{i}), Q+i); % to be changed
             end
+            
+            % data nodes (Q+1:Q+K) (no data blocking, just frequency for the moment
             [v2_, g2, proj, norm_residual_check_i, norm_epsilon_check_i] = run_par_data_fidelity(v2_, yp, xhat_i, proj, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             
@@ -361,7 +361,7 @@ for t = t_start : param.max_iter
 
                 [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
                     dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq); % to be possibly changed
+                    offsetLq, offsetRq);
             end
         end
         

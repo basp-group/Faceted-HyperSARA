@@ -317,7 +317,7 @@ for t = t_start : param.max_iter
     
     spmd
         % update primal variable
-        [xsol_q, xhat_q, rel_x_q, norm_x_q] = run_par_primal(xsol_q, g_q); % to be finalized, not so easy...
+        [xsol_q, xhat_q, rel_x_q, norm_x_q] = run_par_primal(xsol_q, g_q);
         
         % update ghost cells (versions of xhat with overlap...)
         % overlap_q = dims_overlap_ref_q - dims_q;
@@ -332,11 +332,13 @@ for t = t_start : param.max_iter
             nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
         % reduction with optimized communications (check amount of overlap
         % along x and y directions)q]
-        g1 = comm2d_reduce_wideband(g1, overlap, Qyp, Qxp, Kp); % see how to update g1 from here...
-        
+        g = sigma00.Value*g0 + sigma11.Value*g1;
+        g = comm2d_reduce(g, overlap, Qyp, Qxp);
+
         % compute g_ for the final update term
-        g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
-            sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
+        %g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
+        %    sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
+        g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
         rel_x = gop(@plus, rel_x_q, 1);
         norm_x = gop(@plus, norm_x_q, 1);
     end
@@ -345,7 +347,7 @@ for t = t_start : param.max_iter
     go = zeros(M, N, c);
     xhat = zeros(M, N, c);
     for q = 1 : Q
-        go(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_{q};
+        go(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
         xhat(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xhat_q{q};
     end
     

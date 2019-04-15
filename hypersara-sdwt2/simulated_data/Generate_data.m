@@ -106,7 +106,7 @@ end
 
 if realistic_UV
     param_data.cov_type = 'random'; 'vlaa';
-    param_data.T = 200;
+    param_data.T = 100; % 200
     param_data.na = 25;
     
     uv(1,:) = rand(1,2) ;                                   %
@@ -127,7 +127,7 @@ if realistic_UV
     param_data.ant_pair = param_data.na*(param_data.na-1)/2 ;
     
     % -------------------------------------------------------------------------
-    h = linspace(-4, 4, param_data.T)*pi/12;% hour angle range of +/-  hours
+    h = linspace(-10, 10, param_data.T)*pi/12;% hour angle range of +/-  hours -4, 4
     % % % h = linspace(-3, 3, param_data.T)*pi/12;% hour angle range of +/-  hours
     dec = (pi/180)*(40);  % Cas A is 56.4
     lat = (pi/180)*(38. + 59./60. + 48./3600.);  % College Park

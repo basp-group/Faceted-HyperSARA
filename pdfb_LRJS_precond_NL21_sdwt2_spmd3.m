@@ -318,13 +318,14 @@ for t = t_start : param.max_iter
         [v1_, g1] = run_par_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
             dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
             nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
-        % reduction with optimized communications (check amount of overlap
-        % along x and y directions)q]
-        g1 = comm2d_reduce(g1, overlap, Qyp, Qxp);
-        
+        g = sigma00.Value*g0 + sigma11.Value*g1; % overlap with the nuclear and l21 norm priors...
+        g = comm2d_reduce(g, overlap, Qyp, Qxp);
+
         % compute g_ for the final update term
-        g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
-            sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
+        %g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
+        %    sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
+        g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
+            
         rel_x = gop(@plus, rel_x_q, 1);
         norm_x = gop(@plus, norm_x_q, 1);
     end
@@ -333,7 +334,7 @@ for t = t_start : param.max_iter
     go = zeros(M, N, c);
     xhat = zeros(M, N, c);
     for q = 1 : Q
-        go(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_{q};
+        go(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
         xhat(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xhat_q{q};
     end
     
