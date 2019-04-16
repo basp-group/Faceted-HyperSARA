@@ -164,9 +164,9 @@ for q = 1:Q
     end
     
     v0_{q} = zeros(prod(dims_overlap_ref(q,:)), c);
-    weights0_{q} = zeros(min(prod(dims_overlap_ref(q, :)), c), 1);
+    weights0_{q} = ones(min(prod(dims_overlap_ref(q, :)), c), 1);
     v1_{q} = zeros(sz, c);
-    weights1_{q} = zeros(sz, c);
+    weights1_{q} = ones(sz, c);
 end
 clear sz
 %%

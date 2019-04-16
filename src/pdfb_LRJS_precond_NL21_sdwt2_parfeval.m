@@ -129,10 +129,10 @@ for q = 1:Q
         qi = (q-1)*K + i;
         % nuclear-norm prior
         v0{qi} = zeros(prod(dims_overlap_ref(q,:)), c_chunks(i));
-        weights0{qi} = zeros(min(prod(dims_overlap_ref(q, :)), c_chunks(i)), 1);
+        weights0{qi} = ones(min(prod(dims_overlap_ref(q, :)), c_chunks(i)), 1);
         % joint-sparsity prior
         v1{qi} = zeros(sz, c_chunks(i));
-        weights1{qi} = zeros(sz, c_chunks(i));
+        weights1{qi} = ones(sz, c_chunks(i));
     end
 end
 clear sz

@@ -208,7 +208,7 @@ for q = 1:Q
     for i = 1:Qc
         qi = (q-1)*Qc + i;
         v1{qi} = zeros(s, c_chunks(i)); % multi-band case
-        weights1{qi} = zeros(s, c_chunks(i));
+        weights1{qi} = ones(s, c_chunks(i));
     end
 end
 

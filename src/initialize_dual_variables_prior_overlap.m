@@ -9,8 +9,8 @@ else
 end
 
 v0 = zeros(prod(dims_overlap_ref), c);
-weights0 = zeros(min(prod(dims_overlap_ref), c), 1);
+weights0 = ones(min(prod(dims_overlap_ref), c), 1);
 v1 = zeros(sz, c);
-weights1 = zeros(sz, 1);
+weights1 = ones(sz, 1);
 
 end

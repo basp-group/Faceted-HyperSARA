@@ -122,10 +122,10 @@ for q = 1:Q
     
     % nuclear-norm prior
     v0{q} = zeros(prod(dims(q,:)), c);
-    weights0{q} = zeros(min(prod(dims(q, :)), c), 1);
+    weights0{q} = ones(min(prod(dims(q, :)), c), 1);
     % joint-sparsity prior
     v1{q} = zeros(sz, c);
-    weights1{q} = zeros(sz, c);
+    weights1{q} = ones(sz, c);
 end
 clear sz
 %%

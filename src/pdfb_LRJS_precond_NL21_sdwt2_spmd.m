@@ -188,9 +188,9 @@ for q = 1:Q
     for i = 1:K
         qi = (q-1)*K + i;
         v0{qi} = zeros(prod(dims(q, :)), c_chunks(i));
-        weights0{qi} = zeros(min(prod(dims(q, :)), c_chunks(i)), 1);
+        weights0{qi} = ones(min(prod(dims(q, :)), c_chunks(i)), 1);
         v1{qi} = zeros(sz, c_chunks(i));
-        weights1{qi} = zeros(sz, 1);
+        weights1{qi} = ones(sz, 1);
     end
 end
 clear sz
