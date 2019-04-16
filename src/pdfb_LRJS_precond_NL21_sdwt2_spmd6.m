@@ -17,7 +17,7 @@ function [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_f
 % the problem at hand (assuming the data size is not the main bottleneck),
 % and depending on the computational complexity of the task to be driven by
 % each worker -> see if there is any acceleration here...
-%%
+%%q
 
 % oversampling vectorized data length
 No = size(W{1}{1}{1}, 1);

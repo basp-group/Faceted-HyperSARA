@@ -26,7 +26,7 @@ parallel_version = 'parfeval2'; % parfeval, parfeval2, spmd3, spmd4
 %num_chunk = 4;
 
 
-% bricolage... write a slightly cleaner version of possible
+% see if this is still useful
 tmp = round(linspace(1,tot-num_chunk+1,tot/num_chunk));
 chunks = cell(num_chunk,1);
 chunks{1} = tmp;
@@ -71,12 +71,6 @@ else
 param_HSI.num_workers = size(chunks,1)+1;
 end
 param_HSI.num_workers 
-
-
-
-% clear all;
-% close all;
-% clc;
 
 addpath hypersara-sdwt2/simulated_data/Audrey/
 addpath hypersara-sdwt2/simulated_data/data/
@@ -240,12 +234,7 @@ for k = 1 : length(percentage)
     end
     
     %% Compute uncertainty quantification
-    
     if solve_minimization_UQ_HS
-        
         Solver_UQ_simulated_data_HS_crop
-        
     end
 end
-
-%
