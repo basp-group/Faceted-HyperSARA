@@ -4,6 +4,8 @@ clear all;
 close all;
 clc;
 
+rng(0)
+
 flag_algo = 2;
 tot = 30;
 num_chunk = 1;

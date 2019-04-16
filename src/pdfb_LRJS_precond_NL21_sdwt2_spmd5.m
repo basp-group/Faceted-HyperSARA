@@ -92,7 +92,7 @@ overlap_g_south = Composite();
 overlap_g_east = Composite();
 overlap_g_south_east = Composite();
 overlap = Composite();
-xhat_q = Compostie();
+xhat_q = Composite();
 % initialize composite variables and constants
 for q = 1:Q
     Iq{q} = I(q, :);
@@ -160,7 +160,6 @@ for q = 1:Q
     else
         sz = 3*sum(p) - 2*sum(p(nlevel+1:nlevel+1:end));
     end
-    
     v0_{q} = zeros(prod(dims_overlap_ref(q,:)), c);
     weights0_{q} = zeros(min(prod(dims_overlap_ref(q, :)), c), 1);
     v1_{q} = zeros(sz, c);
@@ -169,8 +168,6 @@ end
 clear sz
 
 %% Data node parameters: to be completely modified
-% data nodes
-% to be done properly with an spmd
 
 A = afclean(A);
 At = afclean(At);
@@ -184,8 +181,6 @@ adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
 adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
 adapt_eps_rel_obj = parallel.pool.Constant(param.adapt_eps_rel_obj);
 adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
-
-% count_eps_update_down, count_eps_update_up
 
 Ap = Composite();
 Atp = Composite();
@@ -236,9 +231,6 @@ t_start = 1;
 reweight_last_step_iter = 0;
 reweight_step_count = 0;
 rw_counts = 1;
-
-% To be defined
-% t, t_block, rel_fval, norm_res
 
 %% Reweighting parameters
 
@@ -300,7 +292,7 @@ for t = t_start : param.max_iter
             % overlap_q = dims_overlap_ref_q - dims_q;
             x_overlap = zeros([dims_overlap_ref_q, size(xhat_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
-            x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further)
+            x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
             
             % update dual variables (nuclear, l21)
             [v0_, g0] = update_nuclear_spmd(v0_, x_overlap, weights0_, beta0.Value);
@@ -311,13 +303,11 @@ for t = t_start : param.max_iter
             g = comm2d_reduce(g, overlap, Qyp, Qxp);
             
             % compute g_ for the final update term
-            %g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
-            %    sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
             g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
             
             % send portions of g_q to the data nodes
             for i = 1:Kp.Value
-                labSend(g_q(:,:,c_chunksp.Value{i}), Qp.Value+i); % to be done inside the function?
+                labSend(g_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
             end
         else
             % update primal variable
@@ -344,9 +334,9 @@ for t = t_start : param.max_iter
     % retrieve rel_x_q, norm_x_q for the workers
     rel_x = 0;
     norm_x = 0;
-    for q = 1:Q
-        rel_x = rel_x + rel_x_q{q};
-        norm_x = norm_x + norm_x_q{q};
+    for i = 1:K
+        rel_x = rel_x + rel_x_i{Q+i};
+        norm_x = norm_x + norm_x_i{Q+i};
     end
     rel_fval(t) = sqrt(rel_x/norm_x);
     end_iter(t) = toc(start_iter);
@@ -377,7 +367,7 @@ for t = t_start : param.max_iter
                     offsetLq, offsetRq);
             else
                 for q = 1:Qp.Value
-                    labSend(xsol_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2),:,:), q); % to be changed
+                    labSend(xsol_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2),:), q); % I, dims need to be known on each data node
                 end
             end
         end
@@ -402,8 +392,8 @@ for t = t_start : param.max_iter
         
         % SNR
         % get xsol back from the workers
-        for q = 1:Q
-            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        for i = 1:K
+            xsol(:, :, c_chunks{i}) = xsol_i{Q+i};
         end
         sol = reshape(xsol(:),numel(xsol(:))/c,c);
         SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
@@ -458,12 +448,17 @@ for t = t_start : param.max_iter
 
         spmd
             if labindex <= Qp.Value
-                x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-                x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+                
+                for i = 1:Kp.Value
+                    xhat_q(:, :, c_chunksp.Value{i}) = labReceive(Qp.Value+i); % contains xsol here
+                end
+                
+                x_overlap = zeros([dims_overlap_ref_q, size(xhat_q, 3)]);
+                x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
 
                 % nuclear norm
-                sol = reshape(xsol_q, [size(xsol_q, 1)*size(xsol_q, 2), size(xsol_q, 3)]);
+                sol = reshape(xhat_q, [size(xhat_q, 1)*size(xhat_q, 2), size(xhat_q, 3)]);
                 [~,S00,~] = svd(sol,'econ');
                 d_val0 = abs(diag(S00));
                 weights0_ = reweight_alphap ./ (reweight_alphap + d_val0);
@@ -479,9 +474,12 @@ for t = t_start : param.max_iter
                 d_val1 = sqrt(sum(abs((w)).^2,2));
                 weights1_ = reweight_alphap ./ (reweight_alphap + d_val1);
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
-%             else
-%                 % compute residual image on the data nodes
-%                 res_ = compute_residual_images(x, y, G, A, At); % to be possibly removed (not) used here...
+            else
+                % compute residual image on the data nodes
+                %res_ = compute_residual_images(x, y, G, A, At); % to be possibly removed (not) used here...
+                for q = 1:Qp.Value
+                    labSend(xsol_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2),:), q); % I, dims need to be known on each data node
+                end
             end
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
@@ -510,7 +508,6 @@ for q = 1:Q
     v1{q} = v1_{q};
     weights0{q} = weights0_{q};
     weights1{q} = weights1_{q};
-    xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
 end
 
 % to be completely modified (within spmd function?)
@@ -527,6 +524,7 @@ for k = 1 : K
         end
         res(:,:,c_chunks{k}(i)) = real(At(g2)); % residual images
     end
+    xsol(:, :, c_chunks{k}) = xsol_i{k};
 end
 
 norm_res = norm(res(:));
@@ -543,21 +541,21 @@ spmd
         %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
         %see if this is necessary or not (to be further investigated)
         for i = 1:Kp.Value
-            xhat_q(:, :, c_chunksp.Value{i}) = labReceive(Qp.Value+i);
+            xhat_q(:, :, c_chunksp.Value{i}) = labReceive(Qp.Value+i); % contains xsol
         end
         
         % update ghost cells (versions of xhat with overlap)
         % overlap_q = dims_overlap_ref_q - dims_q;
         x_overlap = zeros([dims_overlap_ref_q, size(xhat_q, 3)]);
         x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
-        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp); % problem index in l. 80 (position 2...) on worker 2 (to be investigated further)
+        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
         
         [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
             dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq);
     else
         for q = 1:Qp.Value
-            labSend(xsol_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2),:,:), q); % to be changed
+            labSend(xsol_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2),:), q);
         end
     end
 end

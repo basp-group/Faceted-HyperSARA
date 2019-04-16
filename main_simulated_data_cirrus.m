@@ -23,6 +23,7 @@ function main_simulated_data_cirrus(flag_algo, parallel_version, Qx, Qy, Qc, tot
 %tot = 60;
 %num_chunk = 4;
 
+rng(0);
 
 % bricolage... write a slightly cleaner version of possible
 tmp = round(linspace(1,tot-num_chunk+1,tot/num_chunk));
