@@ -1,4 +1,4 @@
-function [v0, v1, weights0, weights1] = initialize_dual_variables_priors(Ncoefs, dims, dims_overlap_ref, dirac_present, c, nlevel)
+function [v0, v1, weights0, weights1] = initialize_dual_variables_prior_overlap(Ncoefs, dims, dims_overlap_ref, dirac_present, c, nlevel)
 
 % compute size of the dual variables and the weigths
 p = prod(Ncoefs, 2);

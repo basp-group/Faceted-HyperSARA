@@ -156,7 +156,7 @@ v1_ = Composite();
 weights1_ = Composite();
 spmd
     if labindex <= Qp.Value
-        [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_priors(Ncoefs_q, dims_q, dims_overlap_ref_q, dirac_present, c, nlevelp.Value);
+        [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_overlap(Ncoefs_q, dims_q, dims_overlap_ref_q, dirac_present, c, nlevelp.Value);
     end
 end
 
@@ -431,29 +431,15 @@ for t = t_start : param.max_iter
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
-        % encapsulate steps in a function
         spmd
             if labindex <= Qp.Value
                 x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
 
-                % nuclear norm
-                sol = reshape(x_overlap, [prod(dims_overlap_ref_q), size(xsol_q, 3)]);
-                [~,S00,~] = svd(sol,'econ');
-                d_val0 = abs(diag(S00));
-                weights0_ = reweight_alphap ./ (reweight_alphap + d_val0);
-
-                % l21 norm
-                zerosNum = dims_overlap_ref_q + offsetLq + offsetRq; % offset for the zero-padding
-                x_ = zeros([zerosNum, size(x_overlap, 3)]);
-                x_(offsetLq(1)+1:end-offsetRq(1), offsetLq(2)+1:end-offsetRq(2), :) = x_overlap;
-                w = zeros(size(v1_));
-                for l = 1 : size(x_, 3) % to be done inside a function (for loops are slow in spmd if not encapsulated in a function)
-                    w(:, l) = sdwt2_sara(x_(:, :, l), Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q);
-                end
-                d_val1 = sqrt(sum(abs((w)).^2,2));
-                weights1_ = reweight_alphap ./ (reweight_alphap + d_val1);
+                [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
+                    Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
+                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap);
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
 %             else
 %                 % compute residual image on the data nodes
@@ -476,7 +462,7 @@ for t = t_start : param.max_iter
 end
 toc(start_loop)
 
-% [P.-A.] collect distributed values (reweight_alpha,weights0, weights1)
+% Collect distributed values (reweight_alpha, weights0_, weights1_, v0_, v1_)
 v0 = cell(Q, 1);
 v1 = cell(Q, 1);
 weights0 = cell(Q, 1);
