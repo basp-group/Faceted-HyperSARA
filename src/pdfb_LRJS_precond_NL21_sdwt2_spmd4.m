@@ -467,7 +467,7 @@ for t = t_start : param.max_iter
 %                 res_ = compute_residual_images(x, y, G, A, At); % to be possibly removed (not) used here...
             end
         end
-        reweight_alpha = reweight_alpha_ff .* reweight_alpha; % on the master node
+        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
         %-- end modifications
         
         if (reweight_step_count >= param.total_reweights)

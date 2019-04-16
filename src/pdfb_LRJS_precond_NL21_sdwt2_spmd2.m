@@ -526,7 +526,7 @@ for t = t_start : param.max_iter
             weights1_ = reweight_alphap ./ (reweight_alphap + d_val1);
             reweight_alphap = reweight_alpha_ff .* reweight_alphap;
         end
-        reweight_alpha = reweight_alpha_ff .* reweight_alpha; % on the master node
+        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
         %-- end modifications
         
         if (reweight_step_count >= param.total_reweights)
