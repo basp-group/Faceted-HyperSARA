@@ -1,4 +1,4 @@
-function x_overlap = comm2d_reduce_wideband(x_overlap, overlap_q, Qyp, Qxp, Qcp)
+function x_overlap = comm2d_reduce_wideband(x_overlap, overlap_q, Qy, Qx, Qc)
 % comm2d_update_reduce: perform additive reduction of the duplicated area 
 % (overlap regions, referred to as ghost cells) in a 2D image tessellation
 % (2D communication grid).
@@ -9,9 +9,9 @@ function x_overlap = comm2d_reduce_wideband(x_overlap, overlap_q, Qyp, Qxp, Qcp)
 % > x_overlap             spatial facet considered (with ghost cells)
 % > overlap_q             size of the left and top facet extensions 
 %                         (ghost cells) [2 ,1] 
-% > Qyp                   number of spatial facets along the y axis [1]
-% > Qxp                   number of spatial facets along the x axis [1]
-% > Qcp                   number of spectral facets, along the z axis [1]
+% > Qy                    number of spatial facets along the y axis [1]
+% > Qx                    number of spatial facets along the x axis [1]
+% > Qc                    number of spectral facets, along the z axis [1]
 %
 % Output:
 %
@@ -26,10 +26,6 @@ function x_overlap = comm2d_reduce_wideband(x_overlap, overlap_q, Qyp, Qxp, Qcp)
 %%
 
 % communications to aggregate information
-Qy = Qyp.Value;
-Qx = Qxp.Value;
-Qc = Qcp.Value;
-
 [i, q] = ind2sub([Qc, Qy*Qx], labindex);
 [qy, qx] = ind2sub([Qy, Qx], q);
 
@@ -70,16 +66,16 @@ if qx > 1
 end
 
 % define receptions (from S, E, SE)
-if qy < Qyp.Value
+if qy < Qy
     % S reception (qy+1, qx) -> q = (qx-1)*Qy + qy+1
     src_vert = get_index(i, (qx-1)*Qy + qy+1);
-    if qx < Qxp.Value
+    if qx < Qx
         % SE reception (qy+1, qx+1) -> q = qx*Qy + qy+1
         src_diag = get_index(i, qx*Qy + qy+1);
     end
 end
 
-if qx < Qxp.Value
+if qx < Qx
     % E reception (qy, qx+1) -> q = qx*Qy + qy
     src_horz = get_index(i, qx*Qy + qy);
 end

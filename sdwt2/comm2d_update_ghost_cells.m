@@ -1,4 +1,4 @@
-function x_overlap = comm2d_update_ghost_cells(x_overlap, overlap_q, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp)
+function x_overlap = comm2d_update_ghost_cells(x_overlap, overlap_q, overlap_g_south_east, overlap_g_south, overlap_g_east, Qy, Qx)
 % comm2d_update_ghost_cells: update the ghost cells (overlap regions) in a 
 % 2D image tessellation (2D communication grid).
 %-------------------------------------------------------------------------%
@@ -14,8 +14,8 @@ function x_overlap = comm2d_update_ghost_cells(x_overlap, overlap_q, overlap_g_s
 %                         neighbour [2, 1]
 % > overlap_g_east        size of the ghost cells for the eastern
 %                         neighbour [2, 1]
-% > Qyp                   number of spatial facets along the y axis [1]
-% > Qxp                   number of spatial facets along the x axis [1]
+% > Qy                    number of spatial facets along the y axis [1]
+% > Qx                    number of spatial facets along the x axis [1]
 %
 % Output:
 %
@@ -28,9 +28,6 @@ function x_overlap = comm2d_update_ghost_cells(x_overlap, overlap_q, overlap_g_s
 % are needed later on (for the spectral splitting)
 %-------------------------------------------------------------------------%
 %%
-
-Qy = Qyp.Value;
-Qx = Qxp.Value;
 
 [qy, qx] = ind2sub([Qy, Qx], labindex);
 

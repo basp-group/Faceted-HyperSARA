@@ -289,14 +289,14 @@ for t = t_start : param.max_iter
             % overlap_q = dims_overlap_ref_q - dims_q;
             x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
-            x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
+            x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             
             % update dual variables (nuclear, l21)
             [v0_, g0] = update_nuclear_spmd(v0_, xhat_q, weights0_, beta0.Value);
             [v1_, g1] = update_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
-            g1 = comm2d_reduce(g1, overlap, Qyp, Qxp);
+            g1 = comm2d_reduce(g1, overlap, Qyp.Value, Qxp.Value);
             
             % compute g_ for the final update term
             g_q = sigma00.Value*g0 + ...
@@ -341,12 +341,12 @@ for t = t_start : param.max_iter
         % [P.-A.]
         %% compute value of the priors in parallel (include weights*?)
         spmd
-            if labindex <= Q
+            if labindex <= Qp.Value
                 % compute values for the prior terms
                 %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
                 %see if this is necessary or not (to be further investigated)
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-                x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
+                x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
                 [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
                     dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
@@ -408,7 +408,7 @@ for t = t_start : param.max_iter
     %% Update epsilons (in parallel)
     if param.use_adapt_eps && t > param.adapt_eps_start
         spmd
-            if labindex > Q
+            if labindex > Qp.Value
                 [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_fval(t), norm_res, ...
                     adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_obj.Value, ...
                     adapt_eps_change_percentage.Value);
@@ -432,7 +432,7 @@ for t = t_start : param.max_iter
             if labindex <= Qp.Value
                 x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-                x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
+                x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
                 [weights1_, weights0_] = update_weights(x_overlap, size(v1_), overlap, ...
                     Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
@@ -500,7 +500,7 @@ spmd
     if labindex <= Q
         x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
         x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp, Qxp);
+        x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
         
         [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
             dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
