@@ -17,11 +17,8 @@ function [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_f
 % the problem at hand (assuming the data size is not the main bottleneck),
 % and depending on the computational complexity of the task to be driven by
 % each worker -> see if there is any acceleration here...
-% 3. Modify a few functions, remove a few loops for the tests to be
-% conducted on CIRRUS
 % 4. Backup options have been removed for the moment, see initialization
-% from a set of known variables (warm-restart) [really useful in practice?
-% 5. 
+% from a set of known variables (warm-restart) [really useful in practice? 
 %%
 
 % maxNumCompThreads(param.num_workers);
@@ -229,7 +226,6 @@ rw_counts = 1;
 
 %% Reweighting parameters
 
-% [P.-A.]
 reweight_alpha = param.reweight_alpha;
 reweight_alphap = Composite();
 for q = 1:Q
@@ -266,7 +262,6 @@ rel_fval = zeros(param.max_iter, 1);
 end_iter = zeros(param.max_iter, 1);
 t_start = 1; % use of t_start?
 
-
 start_loop = tic;
 
 for t = t_start : param.max_iter
@@ -283,7 +278,7 @@ for t = t_start : param.max_iter
             
             % send xhat_q (communication towards the data nodes)
             for i = 1:K
-                labSend(xhat_q(:,:,c_chunksp.Value{i}), Q+i);
+                labSend(xhat_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
             end
             
             % update ghost cells (versions of xhat with overlap)
@@ -345,7 +340,7 @@ for t = t_start : param.max_iter
         % [P.-A.]
         %% compute value of the priors in parallel (include weights*?)
         spmd
-            if labindex <= Q
+            if labindex <= Qp.Value
                 % compute values for the prior terms
                 %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
@@ -421,7 +416,7 @@ for t = t_start : param.max_iter
     
     %% Reweighting (in parallel)
     if (param.step_flag && rel_fval(t) < param.reweight_rel_obj)
-        reweight_steps = [t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size)];
+        reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
     
