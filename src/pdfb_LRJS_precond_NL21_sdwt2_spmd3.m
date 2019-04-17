@@ -59,6 +59,7 @@ parpool(cirrus_cluster, numworkers); % override default preference
 % define parallel constants(known by each worker)
 Qyp = parallel.pool.Constant(Qy);
 Qxp = parallel.pool.Constant(Qx);
+Qp = parallel.pool.Constant(Q);
 waveletp = parallel.pool.Constant(wavelet);
 nlevelp = parallel.pool.Constant(nlevel);
 offsetp = parallel.pool.Constant(offset);
