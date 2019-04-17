@@ -154,9 +154,18 @@ v0_ = Composite();
 weights0_ = Composite();
 v1_ = Composite();
 weights1_ = Composite(); % idem, can be created in parallel with spmd
-spmd
-    if labindex <= Qp.Value
-        [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior(Ncoefs_q, dims_q, dirac_present, c, nlevelp.Value);
+if isfield(param,'init_v0') || isfield(param,'init_v1')
+    for q = 1:Q
+        v0_{q} = param.init_v0{q};
+        v1_{q} = param.init_v0{q};
+        weights0_{q} = param.init_weights0{q};
+        weights1_{q} = param.init_weights1{q};
+    end
+else
+    spmd
+        if labindex <= Qp.Value
+            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior(Ncoefs_q, dims_q, dirac_present, c, nlevelp.Value);
+        end
     end
 end
 
@@ -181,33 +190,20 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 Ap = Composite();
 Atp = Composite();
 x_hat_i = Composite();
-v2_ = Composite();
-t_block = Composite();
 Gp = Composite();
 yp = Composite();
 pUp = Composite();
 Wp = Composite();
 epsilonp = Composite();
 norm_res = Composite();
-proj = Composite();
 for k = 1:K
-    v2_tmp = cell(length(c_chunks{k}), 1);
-    t_block_ = cell(length(c_chunks{k}), 1);
     norm_res_tmp = cell(length(c_chunks{k}), 1);
-    proj_tmp = cell(length(c_chunks{k}), 1);
     for i = 1:length(c_chunks{k})
-        v2_tmp{i} = cell(length(G{k}{i}),1);
-        t_block_{i} = cell(length(G{k}{i}),1);
         norm_res_tmp{i} = cell(length(G{k}{i}),1);
-        proj_tmp{i} = cell(length(G{k}{i}),1);
         for j = 1 : length(G{k}{i})
-            v2_tmp{i}{j} = zeros(length(y{k}{i}{j}) ,1);
-            t_block_{i}{j} = 0;
             norm_res_tmp{i}{j} = norm(y{k}{i}{j});
-            proj_tmp{i}{j} = zeros(size(y{k}{i}{j}));
         end
     end
-    v2_{Q+k} = v2_tmp;
     yp{Q+k} = y{k};
     x_hat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
     Ap{Q+k} = A;
@@ -217,8 +213,36 @@ for k = 1:K
     pUp{Q+k} = pU{k};
     epsilonp{Q+k} = epsilon{k};
     norm_res{Q+k} = norm_res_tmp;
-    proj{Q+k} = proj_tmp;
-    t_block{Q+k} = t_block_;
+end
+
+v2_ = Composite();
+t_block = Composite();
+proj = Composite();
+if isfield(param,'init_v2') % assume all the other related elements are also available in this case
+    for k = 1:K
+        v2_{Q+k} = param.init_v2{k};
+        proj{Q+k} = param.init_proj{k};
+        t_block{Q+k} = param.init_t_block{k};
+    end
+else
+    for k = 1:K
+        v2_tmp = cell(length(c_chunks{k}), 1);
+        t_block_ = cell(length(c_chunks{k}), 1);
+        proj_tmp = cell(length(c_chunks{k}), 1);
+        for i = 1:length(c_chunks{k})
+            v2_tmp{i} = cell(length(G{k}{i}),1);
+            t_block_{i} = cell(length(G{k}{i}),1);
+            proj_tmp{i} = cell(length(G{k}{i}),1);
+            for j = 1 : length(G{k}{i})
+                v2_tmp{i}{j} = zeros(length(y{k}{i}{j}) ,1);
+                t_block_{i}{j} = 0;
+                proj_tmp{i}{j} = zeros(size(y{k}{i}{j}));
+            end
+        end
+        v2_{Q+k} = v2_tmp;
+        proj{Q+k} = proj_tmp;
+        t_block{Q+k} = t_block_;
+    end
 end
 
 clear proj_tmp v2_tmp norm_res_tmp t_block_

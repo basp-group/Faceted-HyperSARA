@@ -17,7 +17,7 @@ function [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_f
 % the problem at hand (assuming the data size is not the main bottleneck),
 % and depending on the computational complexity of the task to be driven by
 % each worker -> see if there is any acceleration here...
-% 4. Backup options have been removed for the moment, see initialization
+% 4. Backup options have been removed four the moment, see initialization
 % from a set of known variables (warm-restart) [really useful in practice? 
 %%
 
@@ -308,6 +308,7 @@ for t = t_start : param.max_iter
             
             % update ghost cells (versions of xhat with overlap)
             % overlap_q = dims_overlap_ref_q - dims_q;
+            tw = tic;
             x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
@@ -324,6 +325,7 @@ for t = t_start : param.max_iter
             %g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
             %    sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
             g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
+            t_op = toc(tw);
             
             % retrieve portions of g2 from the data nodes
             for i = 1:Kp.Value
@@ -337,9 +339,10 @@ for t = t_start : param.max_iter
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
+            tw = tic;
             [v2_, g2, proj, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
-            
+            t_op = toc(tw);
             % send portions of g2 to the prior/primal nodes
             for q = 1:Qp.Value
                 labSend(g2(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
@@ -350,7 +353,7 @@ for t = t_start : param.max_iter
     %% Relative change of objective function
     % retrieve rel_x_q, norm_x_q for the workers
     rel_x = 0;
-    norm_x = 0;
+    norm_x = 0;    
     for q = 1:Q
         rel_x = rel_x + rel_x_q{q};
         norm_x = norm_x + norm_x_q{q};
@@ -358,6 +361,16 @@ for t = t_start : param.max_iter
     rel_fval(t) = sqrt(rel_x/norm_x);
     end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
+    
+    t_op_prior = 0;
+    for q = 1:Q
+       t_op_prior = max(t_op_prior, t_op{q}); 
+    end
+    
+    t_op_data = 0;
+    for k = 1:K
+       t_op_data = max(t_op_data, t_op{Q+k}); 
+    end
     
     %% Display
     if ~mod(t,100)

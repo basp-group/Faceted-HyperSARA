@@ -140,21 +140,21 @@ end
 v0_ = Composite();
 weights0_ = Composite();
 v1_ = Composite();
-weights1_ = Composite(); % idem, can be created in parallel with spmd
-for q = 1:Q
-    p = prod(Ncoefs{q}, 2);
-    if dirac_present
-        sz = 3*sum(p(1:end)) - 2*sum(p(nlevel+1:nlevel+1:end)) + prod(dims(q,:));
-    else
-        sz = 3*sum(p) - 2*sum(p(nlevel+1:nlevel+1:end));
+weights1_ = Composite();
+if isfield(param,'init_v0') || isfield(param,'init_v1')
+    for q = 1:Q
+        v0_{q} = param.init_v0{q};
+        v1_{q} = param.init_v0{q};
+        weights0_{q} = param.init_weights0{q};
+        weights1_{q} = param.init_weights1{q};
     end
-    
-    v0_{q} = zeros(prod(dims_overlap_ref(q,:)), c);
-    weights0_{q} = ones(min(prod(dims_overlap_ref(q, :)), c), 1);
-    v1_{q} = zeros(sz, c);
-    weights1_{q} = ones(sz, 1);
+else
+    spmd
+        if labindex <= Qp.Value
+            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_overlap(Ncoefs_q, dims_q, dims_overlap_ref_q, dirac_present, c, nlevelp.Value);
+        end
+    end
 end
-clear sz
 %%
 
 if isfield(param,'init_v2')
