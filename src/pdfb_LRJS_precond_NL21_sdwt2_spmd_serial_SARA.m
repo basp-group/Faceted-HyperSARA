@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd_serial_SARA(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c)
+function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd_serial_SARA(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
@@ -127,11 +127,11 @@ end
 
 v2_ = Composite();
 t_block = Composite();
-proj = Composite();
+proj_ = Composite();
 if isfield(param,'init_v2') % assume all the other related elements are also available in this case
     for k = 1:K
         v2_{2+k} = param.init_v2{k};
-        proj{2+k} = param.init_proj{k};
+        proj_{2+k} = param.init_proj{k};
         t_block{2+k} = param.init_t_block{k};
     end
 else
@@ -150,7 +150,7 @@ else
             end
         end
         v2_{2+k} = v2_tmp;
-        proj{2+k} = proj_tmp;
+        proj_{2+k} = proj_tmp;
         t_block{2+k} = t_block_;
     end
 end
@@ -216,7 +216,7 @@ for t = t_start : param.max_iter
             tw = toc;
         else % data nodes, 2:K+1 (labindex > 2)
             tic
-            [v2_, g2_, proj, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            [v2_, g2_, proj_, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             tw = toc;
         end
@@ -359,8 +359,10 @@ end
 
 norm_res = norm(res(:));
 v2 = cell(K, 1);
+proj = cell(K, 1);
 for i = 1:K
     v2{i} = v2_{2+i};
+    proj{i} = proj_{2+i};
 end
 
 %Final log (merge this step with the computation of the residual image for
