@@ -217,6 +217,7 @@ for k = 1 : length(percentage)
     if generate_measurements
         Generate_Measurements
         if save_data
+            mkdir('hypersara-sdwt2/simulated_data/data')
             save(['hypersara-sdwt2/simulated_data/data/y_60_HI_finalNEW_' num2str(percentage(k)) '.mat'],'-v7.3', 'y0_t', 'y_t', 'epsilon_t', 'epsilons_t', 'sigma_noise');
         end
     elseif load_measurements

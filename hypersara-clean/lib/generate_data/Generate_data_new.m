@@ -68,7 +68,8 @@ bmax = max(r)
 
 %figure(2), scatter(u1,-v1,'b.');
 
-save('./results/uv.mat','u1','v1');
+% mkdir('results')
+% save('./results/uv.mat','u1','v1');
 
 if ~generate_simple_image
     u1 = u1/2;
@@ -98,15 +99,17 @@ for i = ch
     
     [A, At, G{i}, W{i}, Gw{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
 end
-figure, scatter(uw{i},vw{i},'r.');
+%figure, scatter(uw{i},vw{i},'r.');
 
 %% Save data
 if save_data
-    save('./simulated_data/data/data.mat','-v7.3', 'G', 'W', 'aW');
+    mkdir('/simulated_data/data')
+    save('/simulated_data/data/data.mat','-v7.3', 'G', 'W', 'aW');
 end
 
 if save_full_operator && exist('Gw','var')
-    save('./simulated_data/data/Gw.mat','-v7.3', 'Gw');
+    mkdir('/simulated_data/data')
+    save('/simulated_data/data/Gw.mat','-v7.3', 'Gw');
 end
 
 %% Free memory
