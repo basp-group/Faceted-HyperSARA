@@ -36,9 +36,9 @@ id_Ncoefs = 0;
 
 % Compute total number of wavelet coefficients
 p = prod(Ncoefs, 2);
-dirac_present = any(ismember(wavelet, 'self'));
-if dirac_present
-    s = 3*sum(p(1:end)) - 2*sum(p(J+1:J+1:end)) + prod(dims);
+id_dirac = find(ismember(wavelet, 'self'), 1);
+if ~isempty(id_dirac)
+    s = 3*sum(p(1:end)) - 2*sum(p(J+1:J+1:end)) - 2*p((id_dirac-1)*(J+1)+1);
 else
     s = 3*sum(p) - 2*sum(p(J+1:J+1:end));
 end
