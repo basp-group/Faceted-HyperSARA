@@ -152,7 +152,7 @@ if flag_algo == 1
         W_spmd{i} = W(cell_c_chunks{i});
         G_spmd{i} = G(cell_c_chunks{i});
     end
-    [xsol,v0,v1,v2,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+    [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
         pdfb_LRJS_precond_NL21_sdwt2_spmd_serial_SARA(y_spmd, epsilon_spmd, A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qc, wlt_basis, nlevel, cell_c_chunks, ch(end));
     % - end test
     

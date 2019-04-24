@@ -251,7 +251,8 @@ for t = t_start : param.max_iter
         nuclear = nuclear_norm(xsol);
         
         % l21 norm
-        l21 = l21_norm_sara(xsol, Psit, s);
+        l21 = sum(l21_norm_sara(xsol, Psit, s));
+        
         
         % retrieve value of the monitoring variables (residual norms)
         norm_epsilon_check = 0;
@@ -336,10 +337,10 @@ end
 toc(start_loop)
 
 % Collect distributed values (reweight_alpha, weights0_, weights1_, v0_, v1_)
-v0 = v0_{2};
+v0 = v0_{1};
 v1 = v1_{2};
-weights0 = weights0_{2};
-weights1 = weights1_{1};
+weights0 = weights0_{1};
+weights1 = weights1_{2};
 
 % to be completely modified (within spmd function?)
 % Calculate residual images
@@ -370,7 +371,7 @@ end
 % nuclear norm
 nuclear = nuclear_norm(xsol);
 % l21 norm
-l21 = l21_norm_sara(xsol, Psit, s);
+l21 = sum(l21_norm_sara(xsol, Psit, s));
 
 % SNR (only on the master node this time)
 sol = reshape(xsol(:),numel(xsol(:))/c,c);
