@@ -592,6 +592,8 @@ if (param.verbose > 0)
     end
 end
 
+end_iter = end_iter(end_iter > 0);
+rel_fval = rel_fval(1:numel(end_iter));
 
 end
 
