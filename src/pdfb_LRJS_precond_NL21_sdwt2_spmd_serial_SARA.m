@@ -251,7 +251,7 @@ for t = t_start : param.max_iter
         nuclear = nuclear_norm(xsol);
         
         % l21 norm
-        l21 = sum(l21_norm_sara(xsol, Psit, s));
+        l21 = sum(l21_norm_sara(xsol, Psit, s{2}));
         
         
         % retrieve value of the monitoring variables (residual norms)
@@ -371,7 +371,7 @@ end
 % nuclear norm
 nuclear = nuclear_norm(xsol);
 % l21 norm
-l21 = sum(l21_norm_sara(xsol, Psit, s));
+l21 = sum(l21_norm_sara(xsol, Psit, s{2}));
 
 % SNR (only on the master node this time)
 sol = reshape(xsol(:),numel(xsol(:))/c,c);
