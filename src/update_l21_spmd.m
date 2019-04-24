@@ -7,7 +7,9 @@ y = zeros(size(x_overlap));
 
 for l = 1 : size(x_, 3)
     u_old = u(:, l);
-    w = sdwt2_sara(x_(:, :, l), Iq, dims_q, offset, status_q, nlevel, wavelet, Ncoefs_q);
+    %w = sdwt2_sara(x_(:, :, l), Iq, dims_q, offset, status_q, nlevel, wavelet, Ncoefs_q);
+    w = sdwt2_sara(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
+    
     w = u(:, l) +  w;
     l2 = sqrt(sum(abs(w).^2,2));
     l2_soft = max(l2 - beta1*weights, 0)./(l2+eps);

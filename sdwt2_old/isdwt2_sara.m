@@ -1,4 +1,4 @@
-function PsiSty = isdwt2_sara(SPsitLx, I, dims, I_overlap, dims_overlap, Ncoefs, J, wavelet, left_offset, right_offset)
+function PsiSty = isdwt2_sara_new(SPsitLx, I, dims, I_overlap, dims_overlap, Ncoefs, J, wavelet, left_offset, right_offset)
 % Inverse operator to compute the contribution of the SARA prior to a 
 % single facet.
 %-------------------------------------------------------------------------%
@@ -41,38 +41,28 @@ start_coefs = 1; % current posisiton in the Ncoefs matrix (get number of ceoffic
 start_facet = I_overlap-min(I_overlap)+1; % [M, 2]
 end_facet = start_facet+dims_overlap-1; % [M, 2]
 
-% Ncoefs = reshape(Ncoefs(1:end-1, :), [J+1, M-1, 2]);
 PsiSty = zeros(max(dims_overlap));
 
-% precompute s
-% Ncoefs_tmp = reshape(Ncoefs(1:end-1, :), [J+1, M-1, 2]);
-% s = squeeze(3*sum(prod(Ncoefs_tmp(1:end-1, :, :), 3), 1) + sum(prod(Ncoefs_tmp(end, :, :), 3), 1)); 
-% 
-% Ncoefs   = reshape(Ncoefs,J+1,M,2);
-% NcoefsRE = reshape((prod(Ncoefs,3)),[J+1,M]);  
-% sE = col(3*sum(NcoefsRE(1:J,:),1)) + col(NcoefsRE(J+1,:)) ;
-
-%% inverse transform
-
-for m = 1:M-1
+for m = 1:M
     % inverse transform
-    %[lo_r, hi_r] = wfilters(wavelet{m}, 'r'); % reconstruction filters
-    Ncoefs_m = Ncoefs(start_coefs:start_coefs+(J+1)-1,:);
-    s = 3*sum(prod(Ncoefs_m(1:end-1, :), 2)) + prod(Ncoefs_m(end,:));
-             
+    if ~strcmp(wavelet{m}, 'self')
+        [lo_r, hi_r] = wfilters(wavelet{m}, 'r'); % reconstruction filters
+        Ncoefs_m = Ncoefs(start_coefs:start_coefs+(J+1)-1,:);
+        s = 3*sum(prod(Ncoefs_m(1:end-1, :), 2)) + prod(Ncoefs_m(end,:));
+        PsiSty_m = isdwt2(SPsitLx(start:start+s-1), I, ...
+            dims, Ncoefs_m, lo_r, hi_r, J, left_offset(m,:), right_offset(m,:));
+        start = start + s;
+        start_coefs = start_coefs + (J+1);
+    else
+        s = prod(Ncoefs(start_coefs,:)); % = prod(dims) for the Dirac basis (no boundary extension)
+        PsiSty_m = reshape(SPsitLx(start:start+s-1), Ncoefs(start_coefs,:));      
+        start = start + s;
+        start_coefs = start_coefs + 1;
+    end
     % position of the dictionary facet in the larger redundant image facet
     PsiSty(start_facet(m,1):end_facet(m,1), start_facet(m,2):end_facet(m,2)) = ...
-        PsiSty(start_facet(m,1):end_facet(m,1), start_facet(m,2):end_facet(m,2)) + ...
-        isdwt2(SPsitLx(start:start+s-1),I,dims,Ncoefs_m,wavelet{m},J,left_offset(m,:)+1,right_offset(m,:));
-    
-    start = start + s;
-    start_coefs = start_coefs + (J+1);
+    PsiSty(start_facet(m,1):end_facet(m,1), start_facet(m,2):end_facet(m,2)) + PsiSty_m;
 end
-
-% last coeffs = Dirac basis
-s = prod(Ncoefs(end,:)); % = prod(dims) for the Dirac basis (no boundary extension)
-PsiSty(start_facet(M,1):end_facet(M,1), start_facet(M,2):end_facet(M,2)) = ...
-    PsiSty(start_facet(M,1):end_facet(M,1), start_facet(M,2):end_facet(M,2)) + reshape(SPsitLx(start:start+s-1), Ncoefs(end,:));
 
 % Renormalize reconstructed facet (use of several dictionaries)
 PsiSty = PsiSty/sqrt(M);

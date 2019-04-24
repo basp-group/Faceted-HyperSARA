@@ -3,10 +3,6 @@ function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
 
-%% NOTE:
-% this version relies on a specialised version of sdwt2, slightly less
-% general but faster (based on Arwa's work).
-
 % This function solves:
 %
 % min || X ||_* + lambda * ||Psit(X)||_2,1   s.t.  || Y - A(X) ||_2 <= epsilon and x>=0
