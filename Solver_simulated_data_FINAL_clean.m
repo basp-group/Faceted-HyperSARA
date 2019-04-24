@@ -241,16 +241,18 @@ if flag_algo==2
             [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
             pdfb_LRJS_precond_NL21_sdwt2_spmd3(y, epsilons, A, At, aW, G, W, param_HSI2, X0, Qx, Qy, wlt_basis, L, nlevel);
         case 'spmd4'
-            % spectral tesselation (non-overlapping)
-            rg_c = domain_decomposition(Qc, ch(end));
-            cell_c_chunks = cell(Qc, 1);
-            y_spmd = cell(Qc, 1);
-            epsilon_spmd = cell(Qc, 1);
-            aW_spmd = cell(Qc, 1);
-            W_spmd = cell(Qc, 1);
-            G_spmd = cell(Qc, 1);
+            Qc2 = 2; % number of spectral groups (distribution of the data blocks)
             
-            for i = 1:Qc
+            % spectral tesselation (non-overlapping)
+            rg_c = domain_decomposition(Qc2, ch(end));
+            cell_c_chunks = cell(Qc2, 1);
+            y_spmd = cell(Qc2, 1);
+            epsilon_spmd = cell(Qc2, 1);
+            aW_spmd = cell(Qc2, 1);
+            W_spmd = cell(Qc2, 1);
+            G_spmd = cell(Qc2, 1);
+            
+            for i = 1:Qc2
                 cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
                 y_spmd{i} = y(cell_c_chunks{i});
                 epsilon_spmd{i} = epsilons(cell_c_chunks{i});
@@ -258,8 +260,7 @@ if flag_algo==2
                 W_spmd{i} = W(cell_c_chunks{i});
                 G_spmd{i} = G(cell_c_chunks{i});
             end
-
-            Qc2 = 2; % number of spectral groups (distribution of the data blocks)
+            
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd4(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
