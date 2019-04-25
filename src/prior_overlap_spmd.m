@@ -18,7 +18,7 @@ x_(offsetLq(1)+1:end-offsetRq(1), offsetLq(2)+1:end-offsetRq(2), :) = x_overlap;
 % compute local l21-norm
 l21_norm = 0;
 for l = 1 : c
-    w = sdwt2_sara(x_(:, :, l), Iq, dims_q, offset, status_q, nlevel, wavelet, Ncoefs_q);
+    w = sdwt2_sara(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
     l2 = sqrt(sum(abs(w).^2,2));
     l21_norm = l21_norm + norm(l2(:),1);
 end
