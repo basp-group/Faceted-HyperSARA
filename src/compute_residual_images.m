@@ -5,7 +5,7 @@ res = zeros(size(x));
 
 for i = 1 : ci
     Fx = A(x(:,:,i));
-    g2 = zeros(No,1);
+    g2 = zeros(numel(Fx),1);
     for j = 1 : length(G{i})
         res_f = y{i}{j} - G{i}{j} * Fx(W{i}{j});
         u2 = G{i}{j}' * res_f;

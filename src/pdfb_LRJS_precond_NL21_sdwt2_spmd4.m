@@ -217,6 +217,8 @@ for k = 1:K
     norm_res{Q+k} = norm_res_tmp;
 end
 
+clear norm_res_tmp epsilon pU W % W, G, y needed to compute the residual image 
+
 v2_ = Composite();
 t_block = Composite();
 proj_ = Composite();
@@ -247,7 +249,7 @@ else
     end
 end
 
-clear proj_tmp v2_tmp norm_res_tmp t_block_
+clear proj_tmp v2_tmp norm_res_tmp t_block_ G y
 
 reweight_last_step_iter = 0;
 reweight_step_count = 0;
@@ -515,18 +517,28 @@ end
 % to be completely modified (within spmd function?)
 % Calculate residual images
 res = zeros(size(xsol));
-for k = 1 : K
-    for i = 1 : length(c_chunks{k})
-        Fx = A(xsol(:,:,c_chunks{k}(i)));
-        g2 = zeros(No,1);
-        for j = 1 : length(G{k}{i})
-            res_f = y{k}{i}{j} - G{k}{i}{j} * Fx(W{k}{i}{j});
-            u2 = G{k}{i}{j}' * res_f;
-            g2(W{k}{i}{j}) = g2(W{k}{i}{j}) + u2; % no overlap between different groups? (content of W...)
-        end
-        res(:,:,c_chunks{k}(i)) = real(At(g2)); % residual images
+% for k = 1 : K
+%     for i = 1 : length(c_chunks{k})
+%         Fx = A(xsol(:,:,c_chunks{k}(i)));
+%         g2 = zeros(No,1);
+%         for j = 1 : length(G{k}{i})
+%             res_f = y{k}{i}{j} - G{k}{i}{j} * Fx(W{k}{i}{j});
+%             u2 = G{k}{i}{j}' * res_f;
+%             g2(W{k}{i}{j}) = g2(W{k}{i}{j}) + u2; % no overlap between different groups? (content of W...)
+%         end
+%         res(:,:,c_chunks{k}(i)) = real(At(g2)); % residual images
+%     end
+% end
+
+spmd
+    if labindex > Qp.Value
+        res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
     end
 end
+for k = 1 : K
+    res(:,:,c_chunks{k}) = res_{Q+k};
+end
+
 
 norm_res = norm(res(:));
 v2 = cell(K, 1);
