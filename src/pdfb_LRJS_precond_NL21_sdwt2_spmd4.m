@@ -379,7 +379,7 @@ for t = t_start : param.max_iter
     end
     
     %% Display
-    if ~mod(t,100)
+    if ~mod(t,10)
         
         % [P.-A.]
         %% compute value of the priors in parallel (include weights*?)

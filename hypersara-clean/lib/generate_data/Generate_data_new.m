@@ -41,8 +41,8 @@ param_block_structure.use_manual_partitioning = 0;
 %%
 param_data.cov_type = 'vlaa';
 
-T = 100;
-hrs = 6;
+%T = 200;
+%hrs = 6;
 
 [u1, v1, na, antennas] = generate_uv_coverage2(T, hrs, param_data.cov_type);
 u1 = u1(:);
@@ -96,8 +96,9 @@ for i = ch
     % measurement operator initialization
     fprintf('Initializing the NUFFT operator\n\n');
     %tstart = tic;
-    
-    [A, At, G{i}, W{i}, Gw{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
+   
+    [A, At, G{i}, W{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW); 
+    %[A, At, G{i}, W{i}, Gw{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
 end
 %figure, scatter(uw{i},vw{i},'r.');
 

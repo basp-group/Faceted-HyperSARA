@@ -1,28 +1,31 @@
-if flag_algo == 0 % solve L11 problem
+if flag_algo == 0
     
     % Compute measurement operator spectral norm for each channel individually
     for i = ch
-        Anorm_ch(i) = pow_method_op(@(x) sqrt(cell2mat(aW{i})) .* (Gw{i}*A(x)), @(x) At(Gw{i}' * (sqrt(cell2mat(aW{i})) .* x)), [Ny Nx 1]);
+        %Anorm_ch(i) = pow_method_op(@(x) sqrt(cell2mat(aW{i})) .* (Gw{i}*A(x)), @(x) real(At(Gw{i}' * (sqrt(cell2mat(aW{i})) .* x))), [Ny Nx 1]);
+        
+        F = afclean( @(x) HS_forward_operator_precond_G(x, {G{i}}, {W{i}}, A, {aW{i}}));
+        Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, {G{i}}, {W{i}}, At, {aW{i}}, Ny, Nx));
+        Anorm_ch(i) = pow_method_op(F, Ft, [Ny Nx 1]);
     end
     
 else
-    if compute_Anorm_preconditioned
-        % Compute full measurement operator spectral norm
-        F = afclean( @(x) HS_forward_operator_precond(x, Gw, A, aW));
-        Ft = afclean( @(y) HS_adjoint_operator_precond(y, Gw, At, aW, Ny, Nx));
-        Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]);
-        if save_data
-            mkdir('simulated_data/data/')
-            save('simulated_data/data/Anorm.mat','-v7.3', 'Anorm');
-        end
-    else
-        load('simulated_data/data/Anorm.mat','-v7.3', 'Anorm');
-    end
+  
+    %     % Compute full measurement operator spectral norm
+    %     F = afclean( @(x) HS_forward_operator_precond(x, Gw, A, aW));
+    %     Ft = afclean( @(y) HS_adjoint_operator_precond(y, Gw, At, aW, Ny, Nx));
+    %     Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]);
+    
+    % Compute full measurement operator spectral norm
+    F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
+    Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
+    Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]);
+    
 end
 
-if exist('Gw','var')
-    clear Gw;
-end
+% if exist('Gw','var')
+%     clear Gw;
+% end
 
 %% Generate initial epsilons by performing imaging with NNLS on each data block separately
 if generate_eps_nnls

@@ -1,0 +1,26 @@
+#!/bin/bash -l
+
+#### select resources
+
+#PBS -l place=excl
+
+#PBS -l select=1:ncpus=36
+
+#PBS -l walltime=10:00:00
+
+#### Replace [budget code] below with your project code (e.g. t01)      
+#PBS -A sc004
+
+#### change to current working directory
+cd /lustre/home/sc004/aa61/HyperSARA_dist_Full/test1/
+
+#### load matlab module (setup environment) 
+module load matlab/R2018a
+
+rm -rf /tmp/dot_matlab_${PBS_JOBID}*
+mkdir /tmp/dot_matlab_${PBS_JOBID}_1
+cp -pr ~/.matlab /tmp/dot_matlab_${PBS_JOBID}_1
+export MATLAB_PREFDIR=/tmp/dot_matlab_${PBS_JOBID}_1/.matlab/R2018a
+matlab -nodisplay -nodisplay -nodesktop -r "main_simulated_data_FINAL_clean("$flag_algo")" > ${flag_algo}.txt
+
+rm -rf /tmp/dot_matlab_${PBS_JOBID}*

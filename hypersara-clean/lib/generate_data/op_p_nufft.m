@@ -1,4 +1,4 @@
-function [A, At, G, W, Gw] = op_p_nufft(p, N, Nn, No, Ns, ww, param)
+function [A, At, G, W] = op_p_nufft(p, N, Nn, No, Ns, ww, param)
 
 % Create the nonuniform gridding matrix and fft operators to be used for
 % parallel processing
@@ -84,7 +84,7 @@ else
 
         %% compute small gridding matrices associated with each parallel block
         
-        Gw = spalloc(length(cell2mat(p)), No(1)*No(2), 16 * length(cell2mat(p)));
+        %Gw = spalloc(length(cell2mat(p)), No(1)*No(2), 16 * length(cell2mat(p)));
         G = cell(R, 1);
         W = cell(R, 1);
 
@@ -117,7 +117,7 @@ else
             G{q} = Gb(:, W{q});
 
             %% fill the whole Gw
-            Gw(b_st:b_st+b_l-1, :) = Gb;
+            %Gw(b_st:b_st+b_l-1, :) = Gb;
 
             b_st = b_st+b_l;
             tend = toc(tstart);

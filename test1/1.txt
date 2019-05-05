@@ -1,0 +1,2447 @@
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2018 The MathWorks, Inc.
+                   R2018a (9.4.0.813654) 64-bit (glnxa64)
+                             February 23, 2018
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+
+irtdir =
+
+    '/lustre/home/sc004/aa61/HyperSARA_dist_Full/irt'
+
+Path setup for irt appears to have succeeded.
+/*----------------------------------------------------------------*/
+ example: Simulation of wide band radio interferometric data
+/*----------------------------------------------------------------*/
+
+n_src =
+
+    11
+
+
+ans =
+
+     9
+
+
+param_HSI = 
+
+  struct with fields:
+
+    num_workers: 1
+
+
+T =
+
+   100
+
+
+hrs =
+
+     6
+
+
+ans =
+
+     0     1
+
+
+bmax =
+
+    3.1416
+
+
+ans =
+
+     0     1
+
+
+bmax =
+
+    3.1416
+
+
+ans =
+
+       35100           1
+
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 2s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Block matrix 1: 1s 
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+Warn: kaiser_bessel_params 137: could not open file "private/kaiser,m=0" so using default alpha = 2.34 J which should be fine.
+norm it n=2 norm=55231.1356
+norm it n=3 norm=224419.4607
+norm it n=4 norm=259236.0951
+norm it n=5 norm=277689.5441
+norm it n=6 norm=289803.0908
+norm it n=7 norm=298829.5135
+norm it n=8 norm=306056.6454
+norm it n=9 norm=312102.9056
+norm it n=10 norm=317312.0017
+norm it n=11 norm=321897.5122
+norm it n=12 norm=326003.5138
+norm it n=13 norm=329732.7839
+norm it n=14 norm=333161.1805
+norm it n=15 norm=336345.6597
+norm it n=16 norm=339329.1632
+norm it n=17 norm=342143.8638
+norm it n=18 norm=344813.4945
+norm it n=19 norm=347355.1297
+norm it n=20 norm=349780.6185
+norm it n=21 norm=352097.7777
+norm it n=22 norm=354311.404
+norm it n=23 norm=356424.1385
+norm it n=24 norm=358437.1982
+norm it n=25 norm=360350.9841
+norm it n=26 norm=362165.5694
+norm it n=27 norm=363881.075
+norm it n=28 norm=365497.9389
+norm it n=29 norm=367017.0911
+norm it n=30 norm=368440.0463
+norm it n=31 norm=369768.9306
+norm it n=32 norm=371006.4564
+norm it n=33 norm=372155.8614
+norm it n=34 norm=373220.8245
+norm it n=35 norm=374205.3697
+norm it n=36 norm=375113.7677
+norm it n=37 norm=375950.4412
+norm it n=38 norm=376719.8784
+norm it n=39 norm=377426.5575
+norm it n=40 norm=378074.8836
+norm it n=41 norm=378669.1377
+norm it n=42 norm=379213.4372
+norm it n=43 norm=379711.7074
+norm it n=44 norm=380167.6622
+norm it n=45 norm=380584.7923
+norm it n=46 norm=380966.3606
+norm it n=47 norm=381315.4016
+norm it n=48 norm=381634.7265
+norm it n=49 norm=381926.9295
+norm it n=50 norm=382194.3978
+norm it n=51 norm=382439.3219
+norm it n=52 norm=382663.7075
+norm it n=53 norm=382869.3877
+norm it n=54 norm=383058.035
+norm it n=55 norm=383231.1734
+norm it n=56 norm=383390.1903
+norm it n=57 norm=383536.3472
+norm it n=58 norm=383670.7906
+norm it n=59 norm=383794.5621
+norm it n=60 norm=383908.6072
+norm it n=61 norm=384013.7842
+norm it n=62 norm=384110.8722
+norm it n=63 norm=384200.5782
+norm it n=64 norm=384283.544
+norm it n=65 norm=384360.352
+norm it n=66 norm=384431.5311
+norm it n=67 norm=384497.5617
+norm it n=68 norm=384558.88
+norm it n=69 norm=384615.8827
+norm it n=70 norm=384668.9302
+norm it n=71 norm=384718.3504
+norm it n=72 norm=384764.4419
+norm it n=73 norm=384807.4764
+norm it n=74 norm=384847.7013
+norm it n=75 norm=384885.3424
+norm it n=76 norm=384920.6054
+norm it n=77 norm=384953.6782
+norm it n=78 norm=384984.7322
+norm it n=79 norm=385013.9242
+norm it n=80 norm=385041.3974
+norm it n=81 norm=385067.2829
+norm it n=82 norm=385091.7008
+norm it n=83 norm=385114.7609
+norm it n=84 norm=385136.564
+norm it n=85 norm=385157.2026
+norm it n=86 norm=385176.7615
+norm it n=87 norm=385195.3186
+norm it n=88 norm=385212.9454
+norm it n=89 norm=385229.708
+norm it n=90 norm=385245.6668
+norm it n=91 norm=385260.8777
+norm it n=92 norm=385275.392
+norm it n=93 norm=385289.2572
+norm it n=94 norm=385302.5169
+norm it n=95 norm=385315.2115
+norm it n=96 norm=385327.3783
+norm it n=97 norm=385339.0517
+norm it n=98 norm=385350.2636
+norm it n=99 norm=385361.0434
+norm it n=100 norm=385371.4183
+norm it n=101 norm=385381.4137
+norm it n=102 norm=385391.053
+norm it n=103 norm=385400.3577
+norm it n=104 norm=385409.3482
+norm it n=105 norm=385418.0431
+norm it n=106 norm=385426.4596
+norm it n=107 norm=385434.6141
+norm it n=108 norm=385442.5214
+norm it n=109 norm=385450.1954
+norm it n=110 norm=385457.6493
+norm it n=111 norm=385464.895
+norm it n=112 norm=385471.9439
+norm it n=113 norm=385478.8063
+norm it n=114 norm=385485.4921
+norm it n=115 norm=385492.0105
+norm it n=116 norm=385498.3698
+norm it n=117 norm=385504.5782
+norm it n=118 norm=385510.643
+norm it n=119 norm=385516.5711
+norm it n=120 norm=385522.369
+norm it n=121 norm=385528.0429
+norm it n=122 norm=385533.5984
+norm it n=123 norm=385539.0408
+norm it n=124 norm=385544.3751
+norm it n=125 norm=385549.606
+norm it n=126 norm=385554.7379
+norm it n=127 norm=385559.7749
+norm it n=128 norm=385564.7209
+norm it n=129 norm=385569.5794
+norm it n=130 norm=385574.3539
+norm it n=131 norm=385579.0476
+norm it n=132 norm=385583.6635
+norm it n=133 norm=385588.2045
+norm it n=134 norm=385592.6732
+norm it n=135 norm=385597.072
+norm it n=136 norm=385601.4035
+norm it n=137 norm=385605.6698
+norm it n=138 norm=385609.8731
+norm it n=139 norm=385614.0153
+norm it n=140 norm=385618.0983
+norm it n=141 norm=385622.1239
+norm it n=142 norm=385626.0938
+norm it n=143 norm=385630.0095
+norm it n=144 norm=385633.8726
+norm it n=145 norm=385637.6845
+norm it n=146 norm=385641.4466
+norm it n=147 norm=385645.1602
+norm it n=148 norm=385648.8263
+norm it n=149 norm=385652.4464
+norm it n=150 norm=385656.0213
+norm it n=151 norm=385659.5522
+norm it n=152 norm=385663.0401
+norm it n=153 norm=385666.4859
+norm it n=154 norm=385669.8905
+norm it n=155 norm=385673.2548
+norm it n=156 norm=385676.5797
+norm it n=157 norm=385679.8658
+norm it n=158 norm=385683.1141
+norm it n=159 norm=385686.3251
+norm it n=160 norm=385689.4995
+norm it n=161 norm=385692.6381
+norm it n=162 norm=385695.7415
+norm it n=163 norm=385698.8103
+norm it n=164 norm=385701.8451
+norm it n=165 norm=385704.8464
+norm it n=166 norm=385707.8147
+norm it n=167 norm=385710.7507
+norm it n=168 norm=385713.6548
+norm it n=169 norm=385716.5274
+norm it n=170 norm=385719.3692
+norm it n=171 norm=385722.1804
+norm it n=172 norm=385724.9616
+norm it n=173 norm=385727.7132
+norm it n=174 norm=385730.4356
+norm it n=175 norm=385733.1291
+norm it n=176 norm=385735.7942
+norm it n=177 norm=385738.4313
+norm it n=178 norm=385741.0407
+norm it n=179 norm=385743.6228
+norm it n=180 norm=385746.1779
+norm it n=181 norm=385748.7063
+norm it n=182 norm=385751.2084
+norm it n=183 norm=385753.6845
+norm it n=184 norm=385756.1349
+norm it n=185 norm=385758.5599
+norm it n=186 norm=385760.9598
+norm it n=187 norm=385763.3349
+norm it n=188 norm=385765.6855
+norm it n=189 norm=385768.0118
+norm it n=190 norm=385770.3142
+norm it n=191 norm=385772.5929
+norm it n=192 norm=385774.8481
+norm it n=193 norm=385777.0801
+norm it n=194 norm=385779.2892
+norm it n=195 norm=385781.4756
+norm it n=196 norm=385783.6396
+norm it n=197 norm=385785.7814
+norm it n=198 norm=385787.9011
+norm it n=199 norm=385789.9992
+norm it n=200 norm=385792.0757
+ 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  WARNING: Change DWT Extension Mode  !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                        
+****************************************
+**  DWT Extension Mode: Zero Padding  **
+****************************************
+                                        
+                                        
+****************************************
+**  DWT Extension Mode: Zero Padding  **
+****************************************
+                                        
+norm it n=2 norm=1
+norm it n=3 norm=1
+-----------------------------------------
+HyperSARA - serial
+-----------------------------------------
+xsol NOT uploaded 
+
+v0 NOT uploaded 
+
+weights0 NOT uploaded 
+
+v1 NOT uploaded 
+
+weights1 NOT uploaded 
+
+v2 NOT uploaded 
+
+g NOT uploaded 
+
+proj NOT uploaded 
+
+t t_block NOT uploaded 
+
+Starting parallel pool (parpool) using the 'local' profile ...
+connected to 1 workers.
+Created parallel pool ... 
+Setting DWT mode ... 
+Lab 1: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+Iter = 1, Time = 1.077293e+01
+Iter = 2, Time = 1.170047e+01
+Iter = 3, Time = 1.143765e+01
+Iter = 4, Time = 1.133241e+01
+Iter = 5, Time = 1.125579e+01
+Iter = 6, Time = 1.115994e+01
+Iter = 7, Time = 1.104887e+01
+Iter = 8, Time = 1.096736e+01
+Iter = 9, Time = 1.089820e+01
+Iter = 10, Time = 1.091778e+01
+Iter = 11, Time = 1.086353e+01
+Iter = 12, Time = 1.088560e+01
+Iter = 13, Time = 1.091475e+01
+Iter = 14, Time = 1.093487e+01
+Iter = 15, Time = 1.092628e+01
+Iter = 16, Time = 1.093086e+01
+Iter = 17, Time = 1.097439e+01
+Iter = 18, Time = 1.109615e+01
+Iter = 19, Time = 1.112151e+01
+Iter = 20, Time = 1.121467e+01
+Iter = 21, Time = 1.130110e+01
+Iter = 22, Time = 1.146884e+01
+Iter = 23, Time = 1.144369e+01
+Iter = 24, Time = 1.147948e+01
+Iter = 25, Time = 1.148867e+01
+Iter = 26, Time = 1.149940e+01
+Iter = 27, Time = 1.149422e+01
+Iter = 28, Time = 1.146877e+01
+Iter = 29, Time = 1.148787e+01
+Iter = 30, Time = 1.160783e+01
+Iter = 31, Time = 1.159116e+01
+Iter = 32, Time = 1.169722e+01
+Iter = 33, Time = 1.170629e+01
+Iter = 34, Time = 1.178261e+01
+Iter = 35, Time = 1.183210e+01
+Iter = 36, Time = 1.180793e+01
+Iter = 37, Time = 1.176815e+01
+Iter = 38, Time = 1.174464e+01
+Iter = 39, Time = 1.169115e+01
+Iter = 40, Time = 1.174097e+01
+Iter = 41, Time = 1.172914e+01
+Iter = 42, Time = 1.173046e+01
+Iter = 43, Time = 1.175408e+01
+Iter = 44, Time = 1.171297e+01
+Iter = 45, Time = 1.174916e+01
+Iter = 46, Time = 1.167861e+01
+Iter = 47, Time = 1.169001e+01
+Iter = 48, Time = 1.188818e+01
+Iter = 49, Time = 1.172014e+01
+Iter = 50, Time = 1.180730e+01
+Iter = 51, Time = 1.169173e+01
+Iter = 52, Time = 1.191061e+01
+Iter = 53, Time = 1.167049e+01
+Iter = 54, Time = 1.172686e+01
+Iter = 55, Time = 1.164456e+01
+Iter = 56, Time = 1.174112e+01
+Iter = 57, Time = 1.161316e+01
+Iter = 58, Time = 1.170977e+01
+Iter = 59, Time = 1.170121e+01
+Iter = 60, Time = 1.162356e+01
+Iter = 61, Time = 1.161721e+01
+Iter = 62, Time = 1.177772e+01
+Iter = 63, Time = 1.169603e+01
+Iter = 64, Time = 1.160216e+01
+Iter = 65, Time = 1.162443e+01
+Iter = 66, Time = 1.158269e+01
+Iter = 67, Time = 1.171030e+01
+Iter = 68, Time = 1.159377e+01
+Iter = 69, Time = 1.158570e+01
+Iter = 70, Time = 1.150534e+01
+Iter = 71, Time = 1.162768e+01
+Iter = 72, Time = 1.185199e+01
+Iter = 73, Time = 1.155585e+01
+Iter = 74, Time = 1.153129e+01
+Iter = 75, Time = 1.152829e+01
+Iter = 76, Time = 1.180840e+01
+Iter = 77, Time = 1.152468e+01
+Iter = 78, Time = 1.161104e+01
+Iter = 79, Time = 1.163048e+01
+Iter = 80, Time = 1.153917e+01
+Iter = 81, Time = 1.156490e+01
+Iter = 82, Time = 1.147381e+01
+Iter = 83, Time = 1.158733e+01
+Iter = 84, Time = 1.149353e+01
+Iter = 85, Time = 1.148661e+01
+Iter = 86, Time = 1.165014e+01
+Iter = 87, Time = 1.144596e+01
+Iter = 88, Time = 1.140619e+01
+Iter = 89, Time = 1.142894e+01
+Iter = 90, Time = 1.134232e+01
+Iter = 91, Time = 1.135998e+01
+Iter = 92, Time = 1.144379e+01
+Iter = 93, Time = 1.132892e+01
+Iter = 94, Time = 1.143813e+01
+Iter = 95, Time = 1.134521e+01
+Iter = 96, Time = 1.135855e+01
+Iter = 97, Time = 1.132811e+01
+Iter = 98, Time = 1.129340e+01
+Iter = 99, Time = 1.137768e+01
+Iter = 100, Time = 1.161340e+01
+Iter = 101, Time = 1.148023e+01
+Iter = 102, Time = 1.139810e+01
+Iter = 103, Time = 1.133484e+01
+Iter = 104, Time = 1.127504e+01
+Iter = 105, Time = 1.125035e+01
+Iter = 106, Time = 1.124282e+01
+Iter = 107, Time = 1.144750e+01
+Iter = 108, Time = 1.150323e+01
+Iter = 109, Time = 1.129107e+01
+Iter = 110, Time = 1.124668e+01
+Iter = 111, Time = 1.130745e+01
+Iter = 112, Time = 1.144023e+01
+Iter = 113, Time = 1.124573e+01
+Iter = 114, Time = 1.123864e+01
+Iter = 115, Time = 1.124958e+01
+Iter = 116, Time = 1.125641e+01
+Iter = 117, Time = 1.133603e+01
+Iter = 118, Time = 1.126944e+01
+Iter = 119, Time = 1.137242e+01
+Iter = 120, Time = 1.125458e+01
+Iter = 121, Time = 1.125890e+01
+Iter = 122, Time = 1.126599e+01
+Iter = 123, Time = 1.126811e+01
+Iter = 124, Time = 1.125816e+01
+Iter = 125, Time = 1.125648e+01
+Iter = 126, Time = 1.133981e+01
+Iter = 127, Time = 1.125801e+01
+Iter = 128, Time = 1.128569e+01
+Iter = 129, Time = 1.127356e+01
+Iter = 130, Time = 1.124768e+01
+Iter = 131, Time = 1.139550e+01
+Iter = 132, Time = 1.128529e+01
+Iter = 133, Time = 1.127308e+01
+Iter = 134, Time = 1.126577e+01
+Iter = 135, Time = 1.127521e+01
+Iter = 136, Time = 1.129651e+01
+Iter = 137, Time = 1.139316e+01
+Iter = 138, Time = 1.129128e+01
+Iter = 139, Time = 1.124912e+01
+Iter = 140, Time = 1.129614e+01
+Iter = 141, Time = 1.128475e+01
+Iter = 142, Time = 1.129264e+01
+Iter = 143, Time = 1.129301e+01
+Iter = 144, Time = 1.143388e+01
+Iter = 145, Time = 1.131350e+01
+Iter = 146, Time = 1.140086e+01
+Iter = 147, Time = 1.128543e+01
+Iter = 148, Time = 1.129412e+01
+Iter = 149, Time = 1.147579e+01
+Iter = 150, Time = 1.146419e+01
+Iter = 151, Time = 1.131904e+01
+Iter = 152, Time = 1.148071e+01
+Iter = 153, Time = 1.133862e+01
+Iter = 154, Time = 1.142290e+01
+Iter = 155, Time = 1.143628e+01
+Iter = 156, Time = 1.132661e+01
+Iter = 157, Time = 1.134952e+01
+Iter = 158, Time = 1.134149e+01
+Iter = 159, Time = 1.137846e+01
+Iter = 160, Time = 1.130358e+01
+Iter = 161, Time = 1.157080e+01
+Iter = 162, Time = 1.135661e+01
+Iter = 163, Time = 1.147536e+01
+Iter = 164, Time = 1.145240e+01
+Iter = 165, Time = 1.137126e+01
+Iter = 166, Time = 1.158902e+01
+Iter = 167, Time = 1.131086e+01
+Iter = 168, Time = 1.154322e+01
+Iter = 169, Time = 1.133449e+01
+Iter = 170, Time = 1.135732e+01
+Iter = 171, Time = 1.148135e+01
+Iter = 172, Time = 1.136085e+01
+Iter = 173, Time = 1.139264e+01
+Iter = 174, Time = 1.139112e+01
+Iter = 175, Time = 1.134894e+01
+Iter = 176, Time = 1.135660e+01
+Iter = 177, Time = 1.137002e+01
+Iter = 178, Time = 1.137002e+01
+Iter = 179, Time = 1.140845e+01
+Iter = 180, Time = 1.143793e+01
+Iter = 181, Time = 1.167637e+01
+Iter = 182, Time = 1.138741e+01
+Iter = 183, Time = 1.158592e+01
+Iter = 184, Time = 1.143450e+01
+Iter = 185, Time = 1.136698e+01
+Iter = 186, Time = 1.142793e+01
+Iter = 187, Time = 1.146489e+01
+Iter = 188, Time = 1.169530e+01
+Iter = 189, Time = 1.134311e+01
+Iter = 190, Time = 1.161163e+01
+Iter = 191, Time = 1.133163e+01
+Reweighting: 0
+
+Iter = 192, Time = 1.151551e+01
+Iter = 193, Time = 1.148260e+01
+Iter = 194, Time = 1.141268e+01
+Iter = 195, Time = 1.138956e+01
+Iter = 196, Time = 1.141043e+01
+Iter = 197, Time = 1.166171e+01
+Iter = 198, Time = 1.144071e+01
+Iter = 199, Time = 1.142199e+01
+Iter = 200, Time = 1.139642e+01
+Iter = 201, Time = 1.151311e+01
+Iter = 202, Time = 1.148912e+01
+Iter = 203, Time = 1.167570e+01
+Iter = 204, Time = 1.144687e+01
+Iter = 205, Time = 1.166653e+01
+Iter = 206, Time = 1.158485e+01
+Iter = 207, Time = 1.160976e+01
+Iter = 208, Time = 1.147582e+01
+Iter = 209, Time = 1.169944e+01
+Iter = 210, Time = 1.150005e+01
+Iter = 211, Time = 1.150622e+01
+Iter = 212, Time = 1.154638e+01
+Iter = 213, Time = 1.157900e+01
+Iter = 214, Time = 1.153522e+01
+Iter = 215, Time = 1.150991e+01
+Iter = 216, Time = 1.162959e+01
+Iter = 217, Time = 1.149005e+01
+Iter = 218, Time = 1.157071e+01
+Iter = 219, Time = 1.155696e+01
+Iter = 220, Time = 1.161088e+01
+Iter = 221, Time = 1.172061e+01
+Iter = 222, Time = 1.150964e+01
+Iter = 223, Time = 1.159887e+01
+Iter = 224, Time = 1.147279e+01
+Iter = 225, Time = 1.151968e+01
+Iter = 226, Time = 1.161427e+01
+Iter = 227, Time = 1.178976e+01
+Iter = 228, Time = 1.150658e+01
+Iter = 229, Time = 1.153578e+01
+Iter = 230, Time = 1.151009e+01
+Iter = 231, Time = 1.150762e+01
+Iter = 232, Time = 1.149589e+01
+Iter = 233, Time = 1.152559e+01
+Iter = 234, Time = 1.157177e+01
+Iter = 235, Time = 1.152407e+01
+Iter = 236, Time = 1.172984e+01
+Iter = 237, Time = 1.159794e+01
+Iter = 238, Time = 1.149607e+01
+Iter = 239, Time = 1.160770e+01
+Iter = 240, Time = 1.150218e+01
+Iter = 241, Time = 1.151039e+01
+Iter = 242, Time = 1.150247e+01
+Iter = 243, Time = 1.154149e+01
+Iter = 244, Time = 1.164348e+01
+Iter = 245, Time = 1.155428e+01
+Iter = 246, Time = 1.152181e+01
+Iter = 247, Time = 1.176975e+01
+Iter = 248, Time = 1.155256e+01
+Iter = 249, Time = 1.152616e+01
+Iter = 250, Time = 1.154503e+01
+Iter = 251, Time = 1.155234e+01
+Iter = 252, Time = 1.155165e+01
+Iter = 253, Time = 1.186445e+01
+Iter = 254, Time = 1.155548e+01
+Iter = 255, Time = 1.155974e+01
+Iter = 256, Time = 1.149261e+01
+Iter = 257, Time = 1.154549e+01
+Iter = 258, Time = 1.157884e+01
+Iter = 259, Time = 1.178037e+01
+Iter = 260, Time = 1.155376e+01
+Iter = 261, Time = 1.168776e+01
+Iter = 262, Time = 1.156138e+01
+Iter = 263, Time = 1.164780e+01
+Iter = 264, Time = 1.153264e+01
+Iter = 265, Time = 1.158158e+01
+Iter = 266, Time = 1.154430e+01
+Iter = 267, Time = 1.154747e+01
+Iter = 268, Time = 1.158513e+01
+Iter = 269, Time = 1.167283e+01
+Iter = 270, Time = 1.191102e+01
+Iter = 271, Time = 1.158574e+01
+Iter = 272, Time = 1.166484e+01
+Iter = 273, Time = 1.152740e+01
+Iter = 274, Time = 1.181091e+01
+Iter = 275, Time = 1.158021e+01
+Iter = 276, Time = 1.155754e+01
+Iter = 277, Time = 1.152173e+01
+Iter = 278, Time = 1.157543e+01
+Iter = 279, Time = 1.152385e+01
+Iter = 280, Time = 1.162010e+01
+Iter = 281, Time = 1.152235e+01
+Iter = 282, Time = 1.158596e+01
+Iter = 283, Time = 1.158056e+01
+Iter = 284, Time = 1.157193e+01
+Iter = 285, Time = 1.157865e+01
+Iter = 286, Time = 1.167486e+01
+Iter = 287, Time = 1.159559e+01
+Iter = 288, Time = 1.156335e+01
+Iter = 289, Time = 1.158129e+01
+Iter = 290, Time = 1.155452e+01
+Iter = 291, Time = 1.157439e+01
+Iter = 292, Time = 1.157008e+01
+Iter = 293, Time = 1.157192e+01
+Iter = 294, Time = 1.153736e+01
+Iter = 295, Time = 1.155139e+01
+Iter = 296, Time = 1.160056e+01
+Iter = 297, Time = 1.158895e+01
+Iter = 298, Time = 1.158255e+01
+Iter = 299, Time = 1.180190e+01
+Iter = 300, Time = 1.159488e+01
+Iter = 301, Time = 1.181279e+01
+Iter = 302, Time = 1.154945e+01
+Iter = 303, Time = 1.167817e+01
+Iter = 304, Time = 1.159352e+01
+Iter = 305, Time = 1.164183e+01
+Iter = 306, Time = 1.181113e+01
+Iter = 307, Time = 1.157156e+01
+Iter = 308, Time = 1.159418e+01
+Iter = 309, Time = 1.174620e+01
+Iter = 310, Time = 1.155550e+01
+Iter = 311, Time = 1.153922e+01
+Iter = 312, Time = 1.154925e+01
+Iter = 313, Time = 1.159064e+01
+Iter = 314, Time = 1.168309e+01
+Iter = 315, Time = 1.154277e+01
+Iter = 316, Time = 1.167049e+01
+Iter = 317, Time = 1.196897e+01
+Iter = 318, Time = 1.158495e+01
+Iter = 319, Time = 1.192761e+01
+Iter = 320, Time = 1.159336e+01
+Iter = 321, Time = 1.157741e+01
+Iter = 322, Time = 1.180893e+01
+Iter = 323, Time = 1.158101e+01
+Iter = 324, Time = 1.157101e+01
+Iter = 325, Time = 1.157564e+01
+Iter = 326, Time = 1.153862e+01
+Iter = 327, Time = 1.158598e+01
+Iter = 328, Time = 1.189175e+01
+Iter = 329, Time = 1.159167e+01
+Iter = 330, Time = 1.158401e+01
+Iter = 331, Time = 1.183160e+01
+Iter = 332, Time = 1.159728e+01
+Iter = 333, Time = 1.158533e+01
+Iter = 334, Time = 1.160975e+01
+Iter = 335, Time = 1.159946e+01
+Iter = 336, Time = 1.155124e+01
+Iter = 337, Time = 1.167263e+01
+Iter = 338, Time = 1.193588e+01
+Iter = 339, Time = 1.158235e+01
+Iter = 340, Time = 1.194191e+01
+Iter = 341, Time = 1.157743e+01
+Iter = 342, Time = 1.207163e+01
+Iter = 343, Time = 1.157864e+01
+Iter = 344, Time = 1.192576e+01
+Iter = 345, Time = 1.159778e+01
+Iter = 346, Time = 1.168589e+01
+Iter = 347, Time = 1.160108e+01
+Iter = 348, Time = 1.173180e+01
+Iter = 349, Time = 1.167701e+01
+Iter = 350, Time = 1.181629e+01
+Iter = 351, Time = 1.157432e+01
+Iter = 352, Time = 1.167895e+01
+Iter = 353, Time = 1.164078e+01
+Iter = 354, Time = 1.162313e+01
+Iter = 355, Time = 1.172487e+01
+Iter = 356, Time = 1.171836e+01
+Iter = 357, Time = 1.174698e+01
+Iter = 358, Time = 1.166745e+01
+Iter = 359, Time = 1.165376e+01
+Iter = 360, Time = 1.183009e+01
+Iter = 361, Time = 1.166170e+01
+Iter = 362, Time = 1.176744e+01
+Iter = 363, Time = 1.183624e+01
+Iter = 364, Time = 1.178116e+01
+Iter = 365, Time = 1.163615e+01
+Iter = 366, Time = 1.169537e+01
+Iter = 367, Time = 1.162259e+01
+Iter = 368, Time = 1.192429e+01
+Iter = 369, Time = 1.166025e+01
+Iter = 370, Time = 1.190245e+01
+Iter = 371, Time = 1.189742e+01
+Iter = 372, Time = 1.172337e+01
+Iter = 373, Time = 1.167526e+01
+Iter = 374, Time = 1.184258e+01
+Iter = 375, Time = 1.175855e+01
+Iter = 376, Time = 1.195416e+01
+Iter = 377, Time = 1.165384e+01
+Iter = 378, Time = 1.173739e+01
+Iter = 379, Time = 1.179200e+01
+Iter = 380, Time = 1.174594e+01
+Iter = 381, Time = 1.165504e+01
+Iter = 382, Time = 1.166818e+01
+Iter = 383, Time = 1.174918e+01
+Iter = 384, Time = 1.180585e+01
+Iter = 385, Time = 1.167160e+01
+Iter = 386, Time = 1.175013e+01
+Iter = 387, Time = 1.187958e+01
+Iter = 388, Time = 1.182070e+01
+Iter = 389, Time = 1.166702e+01
+Iter = 390, Time = 1.190853e+01
+Iter = 391, Time = 1.171518e+01
+Iter = 392, Time = 1.181428e+01
+Iter = 393, Time = 1.164645e+01
+Iter = 394, Time = 1.176374e+01
+Iter = 395, Time = 1.166359e+01
+Iter = 396, Time = 1.166317e+01
+Iter = 397, Time = 1.169333e+01
+Iter = 398, Time = 1.180905e+01
+Iter = 399, Time = 1.167659e+01
+Iter = 400, Time = 1.179790e+01
+Iter = 401, Time = 1.164166e+01
+Iter = 402, Time = 1.167457e+01
+Iter = 403, Time = 1.166566e+01
+Iter = 404, Time = 1.189395e+01
+Iter = 405, Time = 1.166062e+01
+Iter = 406, Time = 1.179248e+01
+Iter = 407, Time = 1.166439e+01
+Iter = 408, Time = 1.164263e+01
+Iter = 409, Time = 1.189454e+01
+Iter = 410, Time = 1.167669e+01
+Iter = 411, Time = 1.164741e+01
+Iter = 412, Time = 1.160495e+01
+Iter = 413, Time = 1.164152e+01
+Iter = 414, Time = 1.162293e+01
+Iter = 415, Time = 1.168607e+01
+Iter = 416, Time = 1.164704e+01
+Iter = 417, Time = 1.165723e+01
+Iter = 418, Time = 1.162535e+01
+Iter = 419, Time = 1.160414e+01
+Iter = 420, Time = 1.162959e+01
+Iter = 421, Time = 1.173491e+01
+Iter = 422, Time = 1.163208e+01
+Iter = 423, Time = 1.163779e+01
+Iter = 424, Time = 1.165143e+01
+Iter = 425, Time = 1.164766e+01
+Iter = 426, Time = 1.165021e+01
+Iter = 427, Time = 1.161257e+01
+Iter = 428, Time = 1.173583e+01
+Iter = 429, Time = 1.166907e+01
+Iter = 430, Time = 1.159340e+01
+Iter = 431, Time = 1.162939e+01
+Iter = 432, Time = 1.184610e+01
+Iter = 433, Time = 1.161041e+01
+Iter = 434, Time = 1.179712e+01
+Iter = 435, Time = 1.161171e+01
+Iter = 436, Time = 1.186917e+01
+Iter = 437, Time = 1.161774e+01
+Iter = 438, Time = 1.180359e+01
+Iter = 439, Time = 1.158602e+01
+Iter = 440, Time = 1.160597e+01
+Iter = 441, Time = 1.158028e+01
+Iter = 442, Time = 1.168065e+01
+Iter = 443, Time = 1.162067e+01
+Iter = 444, Time = 1.159806e+01
+Iter = 445, Time = 1.158178e+01
+Iter = 446, Time = 1.164132e+01
+Iter = 447, Time = 1.157072e+01
+Iter = 448, Time = 1.164566e+01
+Iter = 449, Time = 1.155618e+01
+Iter = 450, Time = 1.170707e+01
+Iter = 451, Time = 1.194774e+01
+Iter = 452, Time = 1.158208e+01
+Iter = 453, Time = 1.186496e+01
+Iter = 454, Time = 1.159052e+01
+Iter = 455, Time = 1.160379e+01
+Iter = 456, Time = 1.156026e+01
+Iter = 457, Time = 1.163114e+01
+Iter = 458, Time = 1.154476e+01
+Iter = 459, Time = 1.160996e+01
+Iter = 460, Time = 1.162003e+01
+Iter = 461, Time = 1.156124e+01
+Iter = 462, Time = 1.165754e+01
+Iter = 463, Time = 1.193635e+01
+Iter = 464, Time = 1.159308e+01
+Iter = 465, Time = 1.160595e+01
+Iter = 466, Time = 1.154057e+01
+Iter = 467, Time = 1.155556e+01
+Iter = 468, Time = 1.155187e+01
+Iter = 469, Time = 1.158103e+01
+Iter = 470, Time = 1.159112e+01
+Iter = 471, Time = 1.156327e+01
+Iter = 472, Time = 1.158471e+01
+Iter = 473, Time = 1.155589e+01
+Iter = 474, Time = 1.156982e+01
+Iter = 475, Time = 1.154291e+01
+Iter = 476, Time = 1.157186e+01
+Iter = 477, Time = 1.152166e+01
+Iter = 478, Time = 1.155722e+01
+Iter = 479, Time = 1.190062e+01
+Iter = 480, Time = 1.156574e+01
+Iter = 481, Time = 1.155259e+01
+Iter = 482, Time = 1.176607e+01
+Iter = 483, Time = 1.154709e+01
+Iter = 484, Time = 1.164139e+01
+Iter = 485, Time = 1.153583e+01
+Iter = 486, Time = 1.176499e+01
+Iter = 487, Time = 1.152275e+01
+Iter = 488, Time = 1.167297e+01
+Iter = 489, Time = 1.154608e+01
+Iter = 490, Time = 1.181424e+01
+Iter = 491, Time = 1.154632e+01
+Reweighting: 1
+
+Iter = 492, Time = 1.152683e+01
+Iter = 493, Time = 1.158812e+01
+Iter = 494, Time = 1.164419e+01
+Iter = 495, Time = 1.173099e+01
+Iter = 496, Time = 1.159360e+01
+Iter = 497, Time = 1.163382e+01
+Iter = 498, Time = 1.161223e+01
+Iter = 499, Time = 1.187805e+01
+Iter = 500, Time = 1.157757e+01
+Iter = 501, Time = 1.159678e+01
+Iter = 502, Time = 1.165870e+01
+Iter = 503, Time = 1.156915e+01
+Iter = 504, Time = 1.155821e+01
+Iter = 505, Time = 1.173550e+01
+Iter = 506, Time = 1.157055e+01
+Iter = 507, Time = 1.157978e+01
+Iter = 508, Time = 1.156247e+01
+Iter = 509, Time = 1.167030e+01
+Iter = 510, Time = 1.155345e+01
+Iter = 511, Time = 1.164110e+01
+Iter = 512, Time = 1.191959e+01
+Iter = 513, Time = 1.156570e+01
+Iter = 514, Time = 1.183100e+01
+Iter = 515, Time = 1.153513e+01
+Iter = 516, Time = 1.174978e+01
+Iter = 517, Time = 1.152370e+01
+Iter = 518, Time = 1.176423e+01
+Iter = 519, Time = 1.150661e+01
+Iter = 520, Time = 1.173238e+01
+Iter = 521, Time = 1.155678e+01
+Iter = 522, Time = 1.150012e+01
+Iter = 523, Time = 1.156905e+01
+Iter = 524, Time = 1.153783e+01
+Iter = 525, Time = 1.147094e+01
+Iter = 526, Time = 1.147897e+01
+Iter = 527, Time = 1.146735e+01
+Iter = 528, Time = 1.145120e+01
+Iter = 529, Time = 1.170474e+01
+Iter = 530, Time = 1.150419e+01
+Iter = 531, Time = 1.157873e+01
+Iter = 532, Time = 1.147495e+01
+Iter = 533, Time = 1.146765e+01
+Iter = 534, Time = 1.165685e+01
+Iter = 535, Time = 1.148785e+01
+Iter = 536, Time = 1.173621e+01
+Iter = 537, Time = 1.145975e+01
+Iter = 538, Time = 1.170047e+01
+Iter = 539, Time = 1.145977e+01
+Iter = 540, Time = 1.143630e+01
+Iter = 541, Time = 1.146012e+01
+Iter = 542, Time = 1.143279e+01
+Iter = 543, Time = 1.156262e+01
+Iter = 544, Time = 1.148455e+01
+Iter = 545, Time = 1.146287e+01
+Iter = 546, Time = 1.158778e+01
+Iter = 547, Time = 1.146278e+01
+Iter = 548, Time = 1.151768e+01
+Iter = 549, Time = 1.180821e+01
+Iter = 550, Time = 1.144914e+01
+Iter = 551, Time = 1.168439e+01
+Iter = 552, Time = 1.140737e+01
+Iter = 553, Time = 1.166870e+01
+Iter = 554, Time = 1.144760e+01
+Iter = 555, Time = 1.176528e+01
+Iter = 556, Time = 1.144238e+01
+Iter = 557, Time = 1.142878e+01
+Iter = 558, Time = 1.144720e+01
+Iter = 559, Time = 1.138835e+01
+Iter = 560, Time = 1.142019e+01
+Iter = 561, Time = 1.139481e+01
+Iter = 562, Time = 1.140988e+01
+Iter = 563, Time = 1.138099e+01
+Iter = 564, Time = 1.144078e+01
+Iter = 565, Time = 1.176814e+01
+Iter = 566, Time = 1.139878e+01
+Iter = 567, Time = 1.142309e+01
+Iter = 568, Time = 1.139162e+01
+Iter = 569, Time = 1.150657e+01
+Iter = 570, Time = 1.134478e+01
+Iter = 571, Time = 1.142628e+01
+Iter = 572, Time = 1.173500e+01
+Iter = 573, Time = 1.135188e+01
+Iter = 574, Time = 1.139374e+01
+Iter = 575, Time = 1.134914e+01
+Iter = 576, Time = 1.157390e+01
+Iter = 577, Time = 1.141630e+01
+Iter = 578, Time = 1.138985e+01
+Iter = 579, Time = 1.137756e+01
+Iter = 580, Time = 1.135794e+01
+Iter = 581, Time = 1.148983e+01
+Iter = 582, Time = 1.137090e+01
+Iter = 583, Time = 1.151921e+01
+Iter = 584, Time = 1.152054e+01
+Iter = 585, Time = 1.134350e+01
+Iter = 586, Time = 1.159180e+01
+Iter = 587, Time = 1.138741e+01
+Iter = 588, Time = 1.155030e+01
+Iter = 589, Time = 1.136431e+01
+Iter = 590, Time = 1.137986e+01
+Iter = 591, Time = 1.135305e+01
+Iter = 592, Time = 1.137683e+01
+Iter = 593, Time = 1.143358e+01
+Iter = 594, Time = 1.138842e+01
+Iter = 595, Time = 1.137533e+01
+Iter = 596, Time = 1.140358e+01
+Iter = 597, Time = 1.167415e+01
+Iter = 598, Time = 1.144142e+01
+Iter = 599, Time = 1.167048e+01
+Iter = 600, Time = 1.131512e+01
+Iter = 601, Time = 1.156066e+01
+Iter = 602, Time = 1.129977e+01
+Iter = 603, Time = 1.137358e+01
+Iter = 604, Time = 1.165717e+01
+Iter = 605, Time = 1.133530e+01
+Iter = 606, Time = 1.160681e+01
+Iter = 607, Time = 1.133758e+01
+Iter = 608, Time = 1.136499e+01
+Iter = 609, Time = 1.146449e+01
+Iter = 610, Time = 1.136617e+01
+Iter = 611, Time = 1.129461e+01
+Iter = 612, Time = 1.147335e+01
+Iter = 613, Time = 1.132595e+01
+Iter = 614, Time = 1.148119e+01
+Iter = 615, Time = 1.134425e+01
+Iter = 616, Time = 1.162568e+01
+Iter = 617, Time = 1.132285e+01
+Iter = 618, Time = 1.143575e+01
+Iter = 619, Time = 1.138060e+01
+Iter = 620, Time = 1.162196e+01
+Iter = 621, Time = 1.131216e+01
+Iter = 622, Time = 1.156532e+01
+Iter = 623, Time = 1.127612e+01
+Iter = 624, Time = 1.164918e+01
+Iter = 625, Time = 1.127501e+01
+Iter = 626, Time = 1.129201e+01
+Iter = 627, Time = 1.131720e+01
+Iter = 628, Time = 1.126960e+01
+Iter = 629, Time = 1.131401e+01
+Iter = 630, Time = 1.140563e+01
+Iter = 631, Time = 1.130962e+01
+Iter = 632, Time = 1.155551e+01
+Iter = 633, Time = 1.130186e+01
+Iter = 634, Time = 1.129866e+01
+Iter = 635, Time = 1.128059e+01
+Iter = 636, Time = 1.125511e+01
+Iter = 637, Time = 1.141220e+01
+Iter = 638, Time = 1.130570e+01
+Iter = 639, Time = 1.139559e+01
+Iter = 640, Time = 1.127542e+01
+Iter = 641, Time = 1.135240e+01
+Iter = 642, Time = 1.123348e+01
+Iter = 643, Time = 1.130559e+01
+Iter = 644, Time = 1.121903e+01
+Iter = 645, Time = 1.137960e+01
+Iter = 646, Time = 1.131437e+01
+Iter = 647, Time = 1.129702e+01
+Iter = 648, Time = 1.147719e+01
+Iter = 649, Time = 1.134559e+01
+Iter = 650, Time = 1.144975e+01
+Iter = 651, Time = 1.120658e+01
+Iter = 652, Time = 1.139028e+01
+Iter = 653, Time = 1.126076e+01
+Iter = 654, Time = 1.120714e+01
+Iter = 655, Time = 1.125647e+01
+Iter = 656, Time = 1.130654e+01
+Iter = 657, Time = 1.157963e+01
+Iter = 658, Time = 1.122886e+01
+Iter = 659, Time = 1.121932e+01
+Iter = 660, Time = 1.118699e+01
+Iter = 661, Time = 1.121189e+01
+Iter = 662, Time = 1.118584e+01
+Iter = 663, Time = 1.117294e+01
+Iter = 664, Time = 1.124290e+01
+Iter = 665, Time = 1.131423e+01
+Iter = 666, Time = 1.156300e+01
+Iter = 667, Time = 1.123208e+01
+Iter = 668, Time = 1.144640e+01
+Iter = 669, Time = 1.121439e+01
+Iter = 670, Time = 1.145204e+01
+Iter = 671, Time = 1.128927e+01
+Iter = 672, Time = 1.144770e+01
+Iter = 673, Time = 1.127301e+01
+Iter = 674, Time = 1.145516e+01
+Iter = 675, Time = 1.121871e+01
+Iter = 676, Time = 1.150163e+01
+Iter = 677, Time = 1.123111e+01
+Iter = 678, Time = 1.121496e+01
+Iter = 679, Time = 1.126690e+01
+Iter = 680, Time = 1.162937e+01
+Iter = 681, Time = 1.131385e+01
+Iter = 682, Time = 1.137878e+01
+Iter = 683, Time = 1.136683e+01
+Iter = 684, Time = 1.159572e+01
+Iter = 685, Time = 1.147811e+01
+Iter = 686, Time = 1.174053e+01
+Iter = 687, Time = 1.151512e+01
+Iter = 688, Time = 1.153955e+01
+Iter = 689, Time = 1.155644e+01
+Iter = 690, Time = 1.180672e+01
+Iter = 691, Time = 1.153525e+01
+Iter = 692, Time = 1.169658e+01
+Iter = 693, Time = 1.155328e+01
+Iter = 694, Time = 1.155909e+01
+Iter = 695, Time = 1.153092e+01
+Iter = 696, Time = 1.180428e+01
+Iter = 697, Time = 1.152499e+01
+Iter = 698, Time = 1.157808e+01
+Iter = 699, Time = 1.144961e+01
+Iter = 700, Time = 1.143321e+01
+Iter = 701, Time = 1.154574e+01
+Iter = 702, Time = 1.178369e+01
+Iter = 703, Time = 1.146703e+01
+Iter = 704, Time = 1.176785e+01
+Iter = 705, Time = 1.147688e+01
+Iter = 706, Time = 1.153683e+01
+Iter = 707, Time = 1.145723e+01
+Iter = 708, Time = 1.147366e+01
+Iter = 709, Time = 1.140676e+01
+Iter = 710, Time = 1.152252e+01
+Iter = 711, Time = 1.144187e+01
+Iter = 712, Time = 1.146559e+01
+Iter = 713, Time = 1.152342e+01
+Iter = 714, Time = 1.146312e+01
+Iter = 715, Time = 1.142338e+01
+Iter = 716, Time = 1.180501e+01
+Iter = 717, Time = 1.146037e+01
+Iter = 718, Time = 1.178931e+01
+Iter = 719, Time = 1.146843e+01
+Iter = 720, Time = 1.159816e+01
+Iter = 721, Time = 1.150153e+01
+Iter = 722, Time = 1.151423e+01
+Iter = 723, Time = 1.166664e+01
+Iter = 724, Time = 1.150816e+01
+Iter = 725, Time = 1.175890e+01
+Iter = 726, Time = 1.153673e+01
+Iter = 727, Time = 1.160436e+01
+Iter = 728, Time = 1.179041e+01
+Iter = 729, Time = 1.147276e+01
+Iter = 730, Time = 1.149080e+01
+Iter = 731, Time = 1.175503e+01
+Iter = 732, Time = 1.151296e+01
+Iter = 733, Time = 1.177793e+01
+Iter = 734, Time = 1.151179e+01
+Iter = 735, Time = 1.150052e+01
+Iter = 736, Time = 1.152341e+01
+Iter = 737, Time = 1.145328e+01
+Iter = 738, Time = 1.152150e+01
+Iter = 739, Time = 1.182226e+01
+Iter = 740, Time = 1.148891e+01
+Iter = 741, Time = 1.146420e+01
+Iter = 742, Time = 1.148244e+01
+Iter = 743, Time = 1.144470e+01
+Iter = 744, Time = 1.145301e+01
+Iter = 745, Time = 1.147157e+01
+Iter = 746, Time = 1.153477e+01
+Iter = 747, Time = 1.179450e+01
+Iter = 748, Time = 1.149350e+01
+Iter = 749, Time = 1.177049e+01
+Iter = 750, Time = 1.148287e+01
+Iter = 751, Time = 1.147043e+01
+Iter = 752, Time = 1.146995e+01
+Iter = 753, Time = 1.146348e+01
+Iter = 754, Time = 1.169590e+01
+Iter = 755, Time = 1.148942e+01
+Iter = 756, Time = 1.173275e+01
+Iter = 757, Time = 1.150005e+01
+Iter = 758, Time = 1.160125e+01
+Iter = 759, Time = 1.149073e+01
+Iter = 760, Time = 1.158456e+01
+Iter = 761, Time = 1.153444e+01
+Iter = 762, Time = 1.181499e+01
+Iter = 763, Time = 1.152088e+01
+Iter = 764, Time = 1.199586e+01
+Iter = 765, Time = 1.150084e+01
+Iter = 766, Time = 1.173038e+01
+Iter = 767, Time = 1.155679e+01
+Iter = 768, Time = 1.180205e+01
+Iter = 769, Time = 1.151688e+01
+Iter = 770, Time = 1.172360e+01
+Iter = 771, Time = 1.150956e+01
+Iter = 772, Time = 1.181795e+01
+Iter = 773, Time = 1.150740e+01
+Iter = 774, Time = 1.149466e+01
+Iter = 775, Time = 1.150224e+01
+Iter = 776, Time = 1.145781e+01
+Iter = 777, Time = 1.149336e+01
+Iter = 778, Time = 1.147539e+01
+Iter = 779, Time = 1.149201e+01
+Iter = 780, Time = 1.147597e+01
+Iter = 781, Time = 1.150177e+01
+Iter = 782, Time = 1.145656e+01
+Iter = 783, Time = 1.146889e+01
+Iter = 784, Time = 1.144978e+01
+Iter = 785, Time = 1.147324e+01
+Iter = 786, Time = 1.145169e+01
+Iter = 787, Time = 1.153880e+01
+Iter = 788, Time = 1.178659e+01
+Iter = 789, Time = 1.148638e+01
+Iter = 790, Time = 1.146963e+01
+Iter = 791, Time = 1.159094e+01
+Reweighting: 2
+
+Iter = 792, Time = 1.144861e+01
+Iter = 793, Time = 1.156812e+01
+Iter = 794, Time = 1.161239e+01
+Iter = 795, Time = 1.172517e+01
+Iter = 796, Time = 1.153915e+01
+Iter = 797, Time = 1.182554e+01
+Iter = 798, Time = 1.156827e+01
+Iter = 799, Time = 1.166975e+01
+Iter = 800, Time = 1.152789e+01
+Iter = 801, Time = 1.181853e+01
+Iter = 802, Time = 1.151500e+01
+Iter = 803, Time = 1.177857e+01
+Iter = 804, Time = 1.154744e+01
+Iter = 805, Time = 1.177003e+01
+Iter = 806, Time = 1.152814e+01
+Iter = 807, Time = 1.158441e+01
+Iter = 808, Time = 1.150538e+01
+Iter = 809, Time = 1.165767e+01
+Iter = 810, Time = 1.145889e+01
+Iter = 811, Time = 1.174661e+01
+Iter = 812, Time = 1.155457e+01
+Iter = 813, Time = 1.149786e+01
+Iter = 814, Time = 1.155155e+01
+Iter = 815, Time = 1.148626e+01
+Iter = 816, Time = 1.193672e+01
+Iter = 817, Time = 1.152388e+01
+Iter = 818, Time = 1.163779e+01
+Iter = 819, Time = 1.147042e+01
+Iter = 820, Time = 1.148199e+01
+Iter = 821, Time = 1.151712e+01
+Iter = 822, Time = 1.147476e+01
+Iter = 823, Time = 1.155633e+01
+Iter = 824, Time = 1.146551e+01
+Iter = 825, Time = 1.147002e+01
+Iter = 826, Time = 1.148559e+01
+Iter = 827, Time = 1.155776e+01
+Iter = 828, Time = 1.147383e+01
+Iter = 829, Time = 1.170175e+01
+Iter = 830, Time = 1.147659e+01
+Iter = 831, Time = 1.173323e+01
+Iter = 832, Time = 1.156058e+01
+Iter = 833, Time = 1.152259e+01
+Iter = 834, Time = 1.144476e+01
+Iter = 835, Time = 1.159545e+01
+Iter = 836, Time = 1.147469e+01
+Iter = 837, Time = 1.162405e+01
+Iter = 838, Time = 1.148735e+01
+Iter = 839, Time = 1.154818e+01
+Iter = 840, Time = 1.148742e+01
+Iter = 841, Time = 1.183754e+01
+Iter = 842, Time = 1.151657e+01
+Iter = 843, Time = 1.172063e+01
+Iter = 844, Time = 1.147500e+01
+Iter = 845, Time = 1.189450e+01
+Iter = 846, Time = 1.150070e+01
+Iter = 847, Time = 1.153125e+01
+Iter = 848, Time = 1.147756e+01
+Iter = 849, Time = 1.165275e+01
+Iter = 850, Time = 1.155868e+01
+Iter = 851, Time = 1.161864e+01
+Iter = 852, Time = 1.152119e+01
+Iter = 853, Time = 1.166988e+01
+Iter = 854, Time = 1.150018e+01
+Iter = 855, Time = 1.170912e+01
+Iter = 856, Time = 1.152018e+01
+Iter = 857, Time = 1.171483e+01
+Iter = 858, Time = 1.151766e+01
+Iter = 859, Time = 1.174954e+01
+Iter = 860, Time = 1.150681e+01
+Iter = 861, Time = 1.165554e+01
+Iter = 862, Time = 1.149866e+01
+Iter = 863, Time = 1.154879e+01
+Iter = 864, Time = 1.143046e+01
+Iter = 865, Time = 1.169982e+01
+Iter = 866, Time = 1.143129e+01
+Iter = 867, Time = 1.170483e+01
+Iter = 868, Time = 1.146765e+01
+Iter = 869, Time = 1.171560e+01
+Iter = 870, Time = 1.151319e+01
+Iter = 871, Time = 1.186399e+01
+Iter = 872, Time = 1.148644e+01
+Iter = 873, Time = 1.157438e+01
+Iter = 874, Time = 1.144796e+01
+Iter = 875, Time = 1.171316e+01
+Iter = 876, Time = 1.148188e+01
+Iter = 877, Time = 1.171328e+01
+Iter = 878, Time = 1.148030e+01
+Iter = 879, Time = 1.171545e+01
+Iter = 880, Time = 1.150020e+01
+Iter = 881, Time = 1.160510e+01
+Iter = 882, Time = 1.145230e+01
+Iter = 883, Time = 1.174218e+01
+Iter = 884, Time = 1.148218e+01
+Iter = 885, Time = 1.177297e+01
+Iter = 886, Time = 1.148517e+01
+Iter = 887, Time = 1.174498e+01
+Iter = 888, Time = 1.150368e+01
+Iter = 889, Time = 1.153164e+01
+Iter = 890, Time = 1.145518e+01
+Iter = 891, Time = 1.151893e+01
+Iter = 892, Time = 1.146135e+01
+Iter = 893, Time = 1.146400e+01
+Iter = 894, Time = 1.152152e+01
+Iter = 895, Time = 1.141140e+01
+Iter = 896, Time = 1.147056e+01
+Iter = 897, Time = 1.153698e+01
+Iter = 898, Time = 1.144723e+01
+Iter = 899, Time = 1.162223e+01
+Iter = 900, Time = 1.149243e+01
+Iter = 901, Time = 1.152525e+01
+Iter = 902, Time = 1.158949e+01
+Iter = 903, Time = 1.151819e+01
+Iter = 904, Time = 1.153534e+01
+Iter = 905, Time = 1.147839e+01
+Iter = 906, Time = 1.158644e+01
+Iter = 907, Time = 1.146674e+01
+Iter = 908, Time = 1.162370e+01
+Iter = 909, Time = 1.152307e+01
+Iter = 910, Time = 1.146523e+01
+Iter = 911, Time = 1.145327e+01
+Iter = 912, Time = 1.158965e+01
+Iter = 913, Time = 1.148720e+01
+Iter = 914, Time = 1.153167e+01
+Iter = 915, Time = 1.154095e+01
+Iter = 916, Time = 1.183397e+01
+Iter = 917, Time = 1.145647e+01
+Iter = 918, Time = 1.152471e+01
+Iter = 919, Time = 1.145225e+01
+Iter = 920, Time = 1.161566e+01
+Iter = 921, Time = 1.147274e+01
+Iter = 922, Time = 1.159270e+01
+Iter = 923, Time = 1.146927e+01
+Iter = 924, Time = 1.148380e+01
+Iter = 925, Time = 1.151342e+01
+Iter = 926, Time = 1.145692e+01
+Iter = 927, Time = 1.148226e+01
+Iter = 928, Time = 1.177548e+01
+Iter = 929, Time = 1.151075e+01
+Iter = 930, Time = 1.149515e+01
+Iter = 931, Time = 1.169309e+01
+Iter = 932, Time = 1.142871e+01
+Iter = 933, Time = 1.146166e+01
+Iter = 934, Time = 1.142236e+01
+Iter = 935, Time = 1.147518e+01
+Iter = 936, Time = 1.157003e+01
+Iter = 937, Time = 1.146261e+01
+Iter = 938, Time = 1.157358e+01
+Iter = 939, Time = 1.144998e+01
+Iter = 940, Time = 1.174815e+01
+Iter = 941, Time = 1.150408e+01
+Iter = 942, Time = 1.166438e+01
+Iter = 943, Time = 1.148615e+01
+Iter = 944, Time = 1.147724e+01
+Iter = 945, Time = 1.166615e+01
+Iter = 946, Time = 1.157725e+01
+Iter = 947, Time = 1.182219e+01
+Iter = 948, Time = 1.152741e+01
+Iter = 949, Time = 1.175477e+01
+Iter = 950, Time = 1.147142e+01
+Iter = 951, Time = 1.159379e+01
+Iter = 952, Time = 1.148458e+01
+Iter = 953, Time = 1.161098e+01
+Iter = 954, Time = 1.146174e+01
+Iter = 955, Time = 1.150629e+01
+Iter = 956, Time = 1.145115e+01
+Iter = 957, Time = 1.169326e+01
+Iter = 958, Time = 1.143500e+01
+Iter = 959, Time = 1.161581e+01
+Iter = 960, Time = 1.149588e+01
+Iter = 961, Time = 1.148881e+01
+Iter = 962, Time = 1.145021e+01
+Iter = 963, Time = 1.150916e+01
+Iter = 964, Time = 1.147344e+01
+Iter = 965, Time = 1.148188e+01
+Iter = 966, Time = 1.144063e+01
+Iter = 967, Time = 1.151662e+01
+Iter = 968, Time = 1.145095e+01
+Iter = 969, Time = 1.146862e+01
+Iter = 970, Time = 1.148878e+01
+Iter = 971, Time = 1.168176e+01
+Iter = 972, Time = 1.148903e+01
+Iter = 973, Time = 1.149438e+01
+Iter = 974, Time = 1.158772e+01
+Iter = 975, Time = 1.148343e+01
+Iter = 976, Time = 1.159697e+01
+Iter = 977, Time = 1.142931e+01
+Iter = 978, Time = 1.141509e+01
+Iter = 979, Time = 1.171125e+01
+Iter = 980, Time = 1.150910e+01
+Iter = 981, Time = 1.152739e+01
+Iter = 982, Time = 1.168493e+01
+Iter = 983, Time = 1.156558e+01
+Iter = 984, Time = 1.142560e+01
+Iter = 985, Time = 1.147839e+01
+Iter = 986, Time = 1.161257e+01
+Iter = 987, Time = 1.149113e+01
+Iter = 988, Time = 1.158507e+01
+Iter = 989, Time = 1.146997e+01
+Iter = 990, Time = 1.148954e+01
+Iter = 991, Time = 1.145119e+01
+Iter = 992, Time = 1.163462e+01
+Iter = 993, Time = 1.150705e+01
+Iter = 994, Time = 1.157369e+01
+Iter = 995, Time = 1.144371e+01
+Iter = 996, Time = 1.153414e+01
+Iter = 997, Time = 1.151400e+01
+Iter = 998, Time = 1.171664e+01
+Iter = 999, Time = 1.145694e+01
+Iter = 1000, Time = 1.157401e+01
+Iter = 1001, Time = 1.147954e+01
+Iter = 1002, Time = 1.147918e+01
+Iter = 1003, Time = 1.158923e+01
+Iter = 1004, Time = 1.149336e+01
+Iter = 1005, Time = 1.158120e+01
+Iter = 1006, Time = 1.147690e+01
+Iter = 1007, Time = 1.146868e+01
+Iter = 1008, Time = 1.148982e+01
+Iter = 1009, Time = 1.146671e+01
+Iter = 1010, Time = 1.169473e+01
+Iter = 1011, Time = 1.144307e+01
+Iter = 1012, Time = 1.156797e+01
+Iter = 1013, Time = 1.146153e+01
+Iter = 1014, Time = 1.170077e+01
+Iter = 1015, Time = 1.142452e+01
+Iter = 1016, Time = 1.147341e+01
+Iter = 1017, Time = 1.149010e+01
+Iter = 1018, Time = 1.170655e+01
+Iter = 1019, Time = 1.148471e+01
+Iter = 1020, Time = 1.157289e+01
+Iter = 1021, Time = 1.145028e+01
+Iter = 1022, Time = 1.158688e+01
+Iter = 1023, Time = 1.145670e+01
+Iter = 1024, Time = 1.173333e+01
+Iter = 1025, Time = 1.150119e+01
+Iter = 1026, Time = 1.153646e+01
+Iter = 1027, Time = 1.146773e+01
+Iter = 1028, Time = 1.156579e+01
+Iter = 1029, Time = 1.149676e+01
+Iter = 1030, Time = 1.176645e+01
+Iter = 1031, Time = 1.144984e+01
+Iter = 1032, Time = 1.171844e+01
+Iter = 1033, Time = 1.145924e+01
+Iter = 1034, Time = 1.170835e+01
+Iter = 1035, Time = 1.143299e+01
+Iter = 1036, Time = 1.148129e+01
+Iter = 1037, Time = 1.173779e+01
+Iter = 1038, Time = 1.149197e+01
+Iter = 1039, Time = 1.155047e+01
+Iter = 1040, Time = 1.147151e+01
+Iter = 1041, Time = 1.162055e+01
+Iter = 1042, Time = 1.148528e+01
+Iter = 1043, Time = 1.172124e+01
+Iter = 1044, Time = 1.148328e+01
+Iter = 1045, Time = 1.165295e+01
+Iter = 1046, Time = 1.146134e+01
+Iter = 1047, Time = 1.183835e+01
+Iter = 1048, Time = 1.152896e+01
+Iter = 1049, Time = 1.156075e+01
+Iter = 1050, Time = 1.146291e+01
+Iter = 1051, Time = 1.146419e+01
+Iter = 1052, Time = 1.147557e+01
+Iter = 1053, Time = 1.171984e+01
+Iter = 1054, Time = 1.147811e+01
+Iter = 1055, Time = 1.164724e+01
+Iter = 1056, Time = 1.151126e+01
+Iter = 1057, Time = 1.171059e+01
+Iter = 1058, Time = 1.149471e+01
+Iter = 1059, Time = 1.148327e+01
+Iter = 1060, Time = 1.145464e+01
+Iter = 1061, Time = 1.153508e+01
+Iter = 1062, Time = 1.145273e+01
+Iter = 1063, Time = 1.159265e+01
+Iter = 1064, Time = 1.147973e+01
+Iter = 1065, Time = 1.161549e+01
+Iter = 1066, Time = 1.149797e+01
+Iter = 1067, Time = 1.154438e+01
+Iter = 1068, Time = 1.145959e+01
+Iter = 1069, Time = 1.146763e+01
+Iter = 1070, Time = 1.171884e+01
+Iter = 1071, Time = 1.148158e+01
+Iter = 1072, Time = 1.157478e+01
+Iter = 1073, Time = 1.155269e+01
+Iter = 1074, Time = 1.145960e+01
+Iter = 1075, Time = 1.173414e+01
+Iter = 1076, Time = 1.149368e+01
+Iter = 1077, Time = 1.159966e+01
+Iter = 1078, Time = 1.150121e+01
+Iter = 1079, Time = 1.146441e+01
+Iter = 1080, Time = 1.143265e+01
+Iter = 1081, Time = 1.173673e+01
+Iter = 1082, Time = 1.165506e+01
+Iter = 1083, Time = 1.155462e+01
+Iter = 1084, Time = 1.147763e+01
+Iter = 1085, Time = 1.151867e+01
+Iter = 1086, Time = 1.157729e+01
+Iter = 1087, Time = 1.174871e+01
+Iter = 1088, Time = 1.148231e+01
+Iter = 1089, Time = 1.182713e+01
+Iter = 1090, Time = 1.146854e+01
+Iter = 1091, Time = 1.154466e+01
+Reweighting: 3
+
+Iter = 1092, Time = 1.150970e+01
+Iter = 1093, Time = 1.151419e+01
+Iter = 1094, Time = 1.158084e+01
+Iter = 1095, Time = 1.153988e+01
+Iter = 1096, Time = 1.158105e+01
+Iter = 1097, Time = 1.152025e+01
+Iter = 1098, Time = 1.160124e+01
+Iter = 1099, Time = 1.156675e+01
+Iter = 1100, Time = 1.160548e+01
+Iter = 1101, Time = 1.153747e+01
+Iter = 1102, Time = 1.166442e+01
+Iter = 1103, Time = 1.155361e+01
+Iter = 1104, Time = 1.157064e+01
+Iter = 1105, Time = 1.163544e+01
+Iter = 1106, Time = 1.158503e+01
+Iter = 1107, Time = 1.151028e+01
+Iter = 1108, Time = 1.154546e+01
+Iter = 1109, Time = 1.155799e+01
+Iter = 1110, Time = 1.152007e+01
+Iter = 1111, Time = 1.150225e+01
+Iter = 1112, Time = 1.152533e+01
+Iter = 1113, Time = 1.152206e+01
+Iter = 1114, Time = 1.154095e+01
+Iter = 1115, Time = 1.152106e+01
+Iter = 1116, Time = 1.154023e+01
+Iter = 1117, Time = 1.150358e+01
+Iter = 1118, Time = 1.150034e+01
+Iter = 1119, Time = 1.146734e+01
+Iter = 1120, Time = 1.148746e+01
+Iter = 1121, Time = 1.154929e+01
+Iter = 1122, Time = 1.150545e+01
+Iter = 1123, Time = 1.144945e+01
+Iter = 1124, Time = 1.147902e+01
+Iter = 1125, Time = 1.143228e+01
+Iter = 1126, Time = 1.148158e+01
+Iter = 1127, Time = 1.144703e+01
+Iter = 1128, Time = 1.147837e+01
+Iter = 1129, Time = 1.143633e+01
+Iter = 1130, Time = 1.149972e+01
+Iter = 1131, Time = 1.146085e+01
+Iter = 1132, Time = 1.150210e+01
+Iter = 1133, Time = 1.141570e+01
+Iter = 1134, Time = 1.146660e+01
+Iter = 1135, Time = 1.142861e+01
+Iter = 1136, Time = 1.143431e+01
+Iter = 1137, Time = 1.144151e+01
+Iter = 1138, Time = 1.146433e+01
+Iter = 1139, Time = 1.156018e+01
+Iter = 1140, Time = 1.147072e+01
+Iter = 1141, Time = 1.147877e+01
+Iter = 1142, Time = 1.147190e+01
+Iter = 1143, Time = 1.140715e+01
+Iter = 1144, Time = 1.147961e+01
+Iter = 1145, Time = 1.141700e+01
+Iter = 1146, Time = 1.147820e+01
+Iter = 1147, Time = 1.146691e+01
+Iter = 1148, Time = 1.149295e+01
+Iter = 1149, Time = 1.140896e+01
+Iter = 1150, Time = 1.159131e+01
+Iter = 1151, Time = 1.144631e+01
+Iter = 1152, Time = 1.146815e+01
+Iter = 1153, Time = 1.144846e+01
+Iter = 1154, Time = 1.150795e+01
+Iter = 1155, Time = 1.146531e+01
+Iter = 1156, Time = 1.148493e+01
+Iter = 1157, Time = 1.146992e+01
+Iter = 1158, Time = 1.149206e+01
+Iter = 1159, Time = 1.148208e+01
+Iter = 1160, Time = 1.166715e+01
+Iter = 1161, Time = 1.147985e+01
+Iter = 1162, Time = 1.161342e+01
+Iter = 1163, Time = 1.148000e+01
+Iter = 1164, Time = 1.151357e+01
+Iter = 1165, Time = 1.147617e+01
+Iter = 1166, Time = 1.152797e+01
+Iter = 1167, Time = 1.148932e+01
+Iter = 1168, Time = 1.155029e+01
+Iter = 1169, Time = 1.162797e+01
+Iter = 1170, Time = 1.149320e+01
+Iter = 1171, Time = 1.147135e+01
+Iter = 1172, Time = 1.154337e+01
+Iter = 1173, Time = 1.142775e+01
+Iter = 1174, Time = 1.148574e+01
+Iter = 1175, Time = 1.145295e+01
+Iter = 1176, Time = 1.149755e+01
+Iter = 1177, Time = 1.143389e+01
+Iter = 1178, Time = 1.147847e+01
+Iter = 1179, Time = 1.154413e+01
+Iter = 1180, Time = 1.146041e+01
+Iter = 1181, Time = 1.159395e+01
+Iter = 1182, Time = 1.148400e+01
+Iter = 1183, Time = 1.142125e+01
+Iter = 1184, Time = 1.147178e+01
+Iter = 1185, Time = 1.143306e+01
+Iter = 1186, Time = 1.159039e+01
+Iter = 1187, Time = 1.141722e+01
+Iter = 1188, Time = 1.143432e+01
+Iter = 1189, Time = 1.140019e+01
+Iter = 1190, Time = 1.144721e+01
+Iter = 1191, Time = 1.143685e+01
+Iter = 1192, Time = 1.143010e+01
+Iter = 1193, Time = 1.142747e+01
+Iter = 1194, Time = 1.149016e+01
+Iter = 1195, Time = 1.142995e+01
+Iter = 1196, Time = 1.147096e+01
+Iter = 1197, Time = 1.143195e+01
+Iter = 1198, Time = 1.146708e+01
+Iter = 1199, Time = 1.142986e+01
+Iter = 1200, Time = 1.146817e+01
+Iter = 1201, Time = 1.158933e+01
+Iter = 1202, Time = 1.152292e+01
+Iter = 1203, Time = 1.145246e+01
+Iter = 1204, Time = 1.148470e+01
+Iter = 1205, Time = 1.144208e+01
+Iter = 1206, Time = 1.149702e+01
+Iter = 1207, Time = 1.145749e+01
+Iter = 1208, Time = 1.147587e+01
+Iter = 1209, Time = 1.142683e+01
+Iter = 1210, Time = 1.157868e+01
+Iter = 1211, Time = 1.143767e+01
+Iter = 1212, Time = 1.149506e+01
+Iter = 1213, Time = 1.142434e+01
+Iter = 1214, Time = 1.148463e+01
+Iter = 1215, Time = 1.144199e+01
+Iter = 1216, Time = 1.147755e+01
+Iter = 1217, Time = 1.143214e+01
+Iter = 1218, Time = 1.147488e+01
+Iter = 1219, Time = 1.144924e+01
+Iter = 1220, Time = 1.148049e+01
+Iter = 1221, Time = 1.142540e+01
+Iter = 1222, Time = 1.148876e+01
+Iter = 1223, Time = 1.143950e+01
+Iter = 1224, Time = 1.148192e+01
+Iter = 1225, Time = 1.143290e+01
+Iter = 1226, Time = 1.148923e+01
+Iter = 1227, Time = 1.143445e+01
+Iter = 1228, Time = 1.146951e+01
+Iter = 1229, Time = 1.141078e+01
+Iter = 1230, Time = 1.148050e+01
+Iter = 1231, Time = 1.142995e+01
+Iter = 1232, Time = 1.151458e+01
+Iter = 1233, Time = 1.145761e+01
+Iter = 1234, Time = 1.147232e+01
+Iter = 1235, Time = 1.143131e+01
+Iter = 1236, Time = 1.149005e+01
+Iter = 1237, Time = 1.144708e+01
+Iter = 1238, Time = 1.150936e+01
+Iter = 1239, Time = 1.142528e+01
+Iter = 1240, Time = 1.148307e+01
+Iter = 1241, Time = 1.150092e+01
+Iter = 1242, Time = 1.162334e+01
+Iter = 1243, Time = 1.141378e+01
+Iter = 1244, Time = 1.146109e+01
+Iter = 1245, Time = 1.141928e+01
+Iter = 1246, Time = 1.146403e+01
+Iter = 1247, Time = 1.143592e+01
+Iter = 1248, Time = 1.146872e+01
+Iter = 1249, Time = 1.144473e+01
+Iter = 1250, Time = 1.151778e+01
+Iter = 1251, Time = 1.143810e+01
+Iter = 1252, Time = 1.146146e+01
+Iter = 1253, Time = 1.144520e+01
+Iter = 1254, Time = 1.167157e+01
+Iter = 1255, Time = 1.144253e+01
+Iter = 1256, Time = 1.145910e+01
+Iter = 1257, Time = 1.143935e+01
+Iter = 1258, Time = 1.149166e+01
+Iter = 1259, Time = 1.144746e+01
+Iter = 1260, Time = 1.149782e+01
+Iter = 1261, Time = 1.143641e+01
+Iter = 1262, Time = 1.158709e+01
+Iter = 1263, Time = 1.142134e+01
+Iter = 1264, Time = 1.146652e+01
+Iter = 1265, Time = 1.143743e+01
+Iter = 1266, Time = 1.149548e+01
+Iter = 1267, Time = 1.144702e+01
+Iter = 1268, Time = 1.146456e+01
+Iter = 1269, Time = 1.144441e+01
+Iter = 1270, Time = 1.168004e+01
+Iter = 1271, Time = 1.144142e+01
+Iter = 1272, Time = 1.149967e+01
+Iter = 1273, Time = 1.142995e+01
+Iter = 1274, Time = 1.147835e+01
+Iter = 1275, Time = 1.145007e+01
+Iter = 1276, Time = 1.148513e+01
+Iter = 1277, Time = 1.141539e+01
+Iter = 1278, Time = 1.148588e+01
+Iter = 1279, Time = 1.144060e+01
+Iter = 1280, Time = 1.146239e+01
+Iter = 1281, Time = 1.140836e+01
+Iter = 1282, Time = 1.147598e+01
+Iter = 1283, Time = 1.143712e+01
+Iter = 1284, Time = 1.147137e+01
+Iter = 1285, Time = 1.142933e+01
+Iter = 1286, Time = 1.146679e+01
+Iter = 1287, Time = 1.142824e+01
+Iter = 1288, Time = 1.147004e+01
+Iter = 1289, Time = 1.142105e+01
+Iter = 1290, Time = 1.146790e+01
+Iter = 1291, Time = 1.142881e+01
+Iter = 1292, Time = 1.147499e+01
+Iter = 1293, Time = 1.141691e+01
+Iter = 1294, Time = 1.153005e+01
+Iter = 1295, Time = 1.142134e+01
+Iter = 1296, Time = 1.146821e+01
+Iter = 1297, Time = 1.149124e+01
+Iter = 1298, Time = 1.146617e+01
+Iter = 1299, Time = 1.144145e+01
+Iter = 1300, Time = 1.147805e+01
+Iter = 1301, Time = 1.143751e+01
+Iter = 1302, Time = 1.148211e+01
+Iter = 1303, Time = 1.142139e+01
+Iter = 1304, Time = 1.147311e+01
+Iter = 1305, Time = 1.141075e+01
+Iter = 1306, Time = 1.149520e+01
+Iter = 1307, Time = 1.139677e+01
+Iter = 1308, Time = 1.150100e+01
+Iter = 1309, Time = 1.144181e+01
+Iter = 1310, Time = 1.148381e+01
+Iter = 1311, Time = 1.141563e+01
+Iter = 1312, Time = 1.153421e+01
+Iter = 1313, Time = 1.156326e+01
+Iter = 1314, Time = 1.156758e+01
+Iter = 1315, Time = 1.142040e+01
+Iter = 1316, Time = 1.146459e+01
+Iter = 1317, Time = 1.143181e+01
+Iter = 1318, Time = 1.146098e+01
+Iter = 1319, Time = 1.145304e+01
+Iter = 1320, Time = 1.148059e+01
+Iter = 1321, Time = 1.144089e+01
+Iter = 1322, Time = 1.147475e+01
+Iter = 1323, Time = 1.141750e+01
+Iter = 1324, Time = 1.150129e+01
+Iter = 1325, Time = 1.143951e+01
+Iter = 1326, Time = 1.165349e+01
+Iter = 1327, Time = 1.143327e+01
+Iter = 1328, Time = 1.145699e+01
+Iter = 1329, Time = 1.142621e+01
+Iter = 1330, Time = 1.147781e+01
+Iter = 1331, Time = 1.142271e+01
+Iter = 1332, Time = 1.148007e+01
+Iter = 1333, Time = 1.146323e+01
+Iter = 1334, Time = 1.147775e+01
+Iter = 1335, Time = 1.143139e+01
+Iter = 1336, Time = 1.149934e+01
+Iter = 1337, Time = 1.144070e+01
+Iter = 1338, Time = 1.145911e+01
+Iter = 1339, Time = 1.148620e+01
+Iter = 1340, Time = 1.146074e+01
+Iter = 1341, Time = 1.144398e+01
+Iter = 1342, Time = 1.149533e+01
+Iter = 1343, Time = 1.143939e+01
+Iter = 1344, Time = 1.147439e+01
+Iter = 1345, Time = 1.147722e+01
+Iter = 1346, Time = 1.149049e+01
+Iter = 1347, Time = 1.141327e+01
+Iter = 1348, Time = 1.147157e+01
+Iter = 1349, Time = 1.141022e+01
+Iter = 1350, Time = 1.146133e+01
+Iter = 1351, Time = 1.143938e+01
+Iter = 1352, Time = 1.146043e+01
+Iter = 1353, Time = 1.142019e+01
+Iter = 1354, Time = 1.148973e+01
+Iter = 1355, Time = 1.144753e+01
+Iter = 1356, Time = 1.145677e+01
+Iter = 1357, Time = 1.144277e+01
+Iter = 1358, Time = 1.147868e+01
+Iter = 1359, Time = 1.144012e+01
+Iter = 1360, Time = 1.149394e+01
+Iter = 1361, Time = 1.144410e+01
+Iter = 1362, Time = 1.146982e+01
+Iter = 1363, Time = 1.142583e+01
+Iter = 1364, Time = 1.148051e+01
+Iter = 1365, Time = 1.142857e+01
+Iter = 1366, Time = 1.144538e+01
+Iter = 1367, Time = 1.144056e+01
+Iter = 1368, Time = 1.146796e+01
+Iter = 1369, Time = 1.143175e+01
+Iter = 1370, Time = 1.146589e+01
+Iter = 1371, Time = 1.141776e+01
+Iter = 1372, Time = 1.146409e+01
+Iter = 1373, Time = 1.143801e+01
+Iter = 1374, Time = 1.150097e+01
+Iter = 1375, Time = 1.143810e+01
+Iter = 1376, Time = 1.148196e+01
+Iter = 1377, Time = 1.144837e+01
+Iter = 1378, Time = 1.147495e+01
+Iter = 1379, Time = 1.145542e+01
+Iter = 1380, Time = 1.148802e+01
+Iter = 1381, Time = 1.140983e+01
+Iter = 1382, Time = 1.147697e+01
+Iter = 1383, Time = 1.142627e+01
+Iter = 1384, Time = 1.147029e+01
+Iter = 1385, Time = 1.141551e+01
+Iter = 1386, Time = 1.145010e+01
+Iter = 1387, Time = 1.142521e+01
+Iter = 1388, Time = 1.150365e+01
+Iter = 1389, Time = 1.143468e+01
+Iter = 1390, Time = 1.148240e+01
+Iter = 1391, Time = 1.143004e+01
+Reweighting: 4
+
+Iter = 1392, Time = 1.150481e+01
+Iter = 1393, Time = 1.157821e+01
+Iter = 1394, Time = 1.166258e+01
+Iter = 1395, Time = 1.161997e+01
+Iter = 1396, Time = 1.167309e+01
+Iter = 1397, Time = 1.157921e+01
+Iter = 1398, Time = 1.163958e+01
+Iter = 1399, Time = 1.160627e+01
+Iter = 1400, Time = 1.166223e+01
+Iter = 1401, Time = 1.173668e+01
+Iter = 1402, Time = 1.162561e+01
+Iter = 1403, Time = 1.160507e+01
+Iter = 1404, Time = 1.162397e+01
+Iter = 1405, Time = 1.158572e+01
+Iter = 1406, Time = 1.169449e+01
+Iter = 1407, Time = 1.163185e+01
+Iter = 1408, Time = 1.166511e+01
+Iter = 1409, Time = 1.158761e+01
+Iter = 1410, Time = 1.163077e+01
+Iter = 1411, Time = 1.158029e+01
+Iter = 1412, Time = 1.160375e+01
+Iter = 1413, Time = 1.154829e+01
+Iter = 1414, Time = 1.159298e+01
+Iter = 1415, Time = 1.158150e+01
+Iter = 1416, Time = 1.159507e+01
+Iter = 1417, Time = 1.156216e+01
+Iter = 1418, Time = 1.156208e+01
+Iter = 1419, Time = 1.154369e+01
+Iter = 1420, Time = 1.156526e+01
+Iter = 1421, Time = 1.157093e+01
+Iter = 1422, Time = 1.152262e+01
+Iter = 1423, Time = 1.149639e+01
+Iter = 1424, Time = 1.155571e+01
+Iter = 1425, Time = 1.150095e+01
+Iter = 1426, Time = 1.151337e+01
+Iter = 1427, Time = 1.147120e+01
+Iter = 1428, Time = 1.150606e+01
+Iter = 1429, Time = 1.153737e+01
+Iter = 1430, Time = 1.149200e+01
+Iter = 1431, Time = 1.144728e+01
+Iter = 1432, Time = 1.147272e+01
+Iter = 1433, Time = 1.145055e+01
+Iter = 1434, Time = 1.147160e+01
+Iter = 1435, Time = 1.153649e+01
+Iter = 1436, Time = 1.147002e+01
+Iter = 1437, Time = 1.148035e+01
+Iter = 1438, Time = 1.144076e+01
+Iter = 1439, Time = 1.137366e+01
+Iter = 1440, Time = 1.160939e+01
+Iter = 1441, Time = 1.137704e+01
+Iter = 1442, Time = 1.142133e+01
+Iter = 1443, Time = 1.136510e+01
+Iter = 1444, Time = 1.139667e+01
+Iter = 1445, Time = 1.135881e+01
+Iter = 1446, Time = 1.139776e+01
+Iter = 1447, Time = 1.145339e+01
+Iter = 1448, Time = 1.143059e+01
+Iter = 1449, Time = 1.134148e+01
+Iter = 1450, Time = 1.140152e+01
+Iter = 1451, Time = 1.135758e+01
+Iter = 1452, Time = 1.138630e+01
+Iter = 1453, Time = 1.131192e+01
+Iter = 1454, Time = 1.134923e+01
+Iter = 1455, Time = 1.127705e+01
+Iter = 1456, Time = 1.133651e+01
+Iter = 1457, Time = 1.128644e+01
+Iter = 1458, Time = 1.132841e+01
+Iter = 1459, Time = 1.138193e+01
+Iter = 1460, Time = 1.133230e+01
+Iter = 1461, Time = 1.128468e+01
+Iter = 1462, Time = 1.133832e+01
+Iter = 1463, Time = 1.131878e+01
+Iter = 1464, Time = 1.132442e+01
+Iter = 1465, Time = 1.126989e+01
+Iter = 1466, Time = 1.129208e+01
+Iter = 1467, Time = 1.130596e+01
+Iter = 1468, Time = 1.130990e+01
+Iter = 1469, Time = 1.143960e+01
+Iter = 1470, Time = 1.131984e+01
+Iter = 1471, Time = 1.133399e+01
+Iter = 1472, Time = 1.135307e+01
+Iter = 1473, Time = 1.133068e+01
+Iter = 1474, Time = 1.138590e+01
+Iter = 1475, Time = 1.137460e+01
+Iter = 1476, Time = 1.137438e+01
+Iter = 1477, Time = 1.142717e+01
+Iter = 1478, Time = 1.142436e+01
+Iter = 1479, Time = 1.138564e+01
+Iter = 1480, Time = 1.142230e+01
+Iter = 1481, Time = 1.139507e+01
+Iter = 1482, Time = 1.143985e+01
+Iter = 1483, Time = 1.142683e+01
+Iter = 1484, Time = 1.146122e+01
+Iter = 1485, Time = 1.143939e+01
+Iter = 1486, Time = 1.144415e+01
+Iter = 1487, Time = 1.142502e+01
+Iter = 1488, Time = 1.145944e+01
+Iter = 1489, Time = 1.148218e+01
+Iter = 1490, Time = 1.148700e+01
+Iter = 1491, Time = 1.147875e+01
+Iter = 1492, Time = 1.151626e+01
+Iter = 1493, Time = 1.146570e+01
+Iter = 1494, Time = 1.150262e+01
+Iter = 1495, Time = 1.147538e+01
+Iter = 1496, Time = 1.151425e+01
+Iter = 1497, Time = 1.157386e+01
+Iter = 1498, Time = 1.150132e+01
+Iter = 1499, Time = 1.151252e+01
+Iter = 1500, Time = 1.150569e+01
+Iter = 1501, Time = 1.152395e+01
+Iter = 1502, Time = 1.152299e+01
+Iter = 1503, Time = 1.151186e+01
+Iter = 1504, Time = 1.153861e+01
+Iter = 1505, Time = 1.152747e+01
+Iter = 1506, Time = 1.152126e+01
+Iter = 1507, Time = 1.157477e+01
+Iter = 1508, Time = 1.154786e+01
+Iter = 1509, Time = 1.152362e+01
+Iter = 1510, Time = 1.152597e+01
+Iter = 1511, Time = 1.150971e+01
+Iter = 1512, Time = 1.152286e+01
+Iter = 1513, Time = 1.158797e+01
+Iter = 1514, Time = 1.150320e+01
+Iter = 1515, Time = 1.157721e+01
+Iter = 1516, Time = 1.153057e+01
+Iter = 1517, Time = 1.156469e+01
+Iter = 1518, Time = 1.148367e+01
+Iter = 1519, Time = 1.165948e+01
+Iter = 1520, Time = 1.149073e+01
+Iter = 1521, Time = 1.148060e+01
+Iter = 1522, Time = 1.148653e+01
+Iter = 1523, Time = 1.148127e+01
+Iter = 1524, Time = 1.152325e+01
+Iter = 1525, Time = 1.144865e+01
+Iter = 1526, Time = 1.145153e+01
+Iter = 1527, Time = 1.147880e+01
+Iter = 1528, Time = 1.166277e+01
+Iter = 1529, Time = 1.145064e+01
+Iter = 1530, Time = 1.146135e+01
+Iter = 1531, Time = 1.146408e+01
+Iter = 1532, Time = 1.146639e+01
+Iter = 1533, Time = 1.145370e+01
+Iter = 1534, Time = 1.147091e+01
+Iter = 1535, Time = 1.151373e+01
+Iter = 1536, Time = 1.144336e+01
+Iter = 1537, Time = 1.148575e+01
+Iter = 1538, Time = 1.163164e+01
+Iter = 1539, Time = 1.140374e+01
+Iter = 1540, Time = 1.149567e+01
+Iter = 1541, Time = 1.143859e+01
+Iter = 1542, Time = 1.143947e+01
+Iter = 1543, Time = 1.142117e+01
+Iter = 1544, Time = 1.145303e+01
+Iter = 1545, Time = 1.142660e+01
+Iter = 1546, Time = 1.150629e+01
+Iter = 1547, Time = 1.167051e+01
+Iter = 1548, Time = 1.145140e+01
+Iter = 1549, Time = 1.141680e+01
+Iter = 1550, Time = 1.143469e+01
+Iter = 1551, Time = 1.142763e+01
+Iter = 1552, Time = 1.150178e+01
+Iter = 1553, Time = 1.145940e+01
+Iter = 1554, Time = 1.149045e+01
+Iter = 1555, Time = 1.146616e+01
+Iter = 1556, Time = 1.146581e+01
+Iter = 1557, Time = 1.148353e+01
+Iter = 1558, Time = 1.150158e+01
+Iter = 1559, Time = 1.151376e+01
+Iter = 1560, Time = 1.151682e+01
+Iter = 1561, Time = 1.149104e+01
+Iter = 1562, Time = 1.150184e+01
+Iter = 1563, Time = 1.156416e+01
+Iter = 1564, Time = 1.148480e+01
+Iter = 1565, Time = 1.152626e+01
+Iter = 1566, Time = 1.147804e+01
+Iter = 1567, Time = 1.146217e+01
+Iter = 1568, Time = 1.149751e+01
+Iter = 1569, Time = 1.167077e+01
+Iter = 1570, Time = 1.146958e+01
+Iter = 1571, Time = 1.147277e+01
+Iter = 1572, Time = 1.152394e+01
+Iter = 1573, Time = 1.155068e+01
+Iter = 1574, Time = 1.151446e+01
+Iter = 1575, Time = 1.155696e+01
+Iter = 1576, Time = 1.146844e+01
