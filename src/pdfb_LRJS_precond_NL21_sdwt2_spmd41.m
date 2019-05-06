@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd4(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
+function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd41(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
@@ -198,22 +198,15 @@ pUp = Composite();
 Wp = Composite();
 epsilonp = Composite();
 norm_res = Composite();
-sz_y = cell(K, 1);
-n_blocks = cell(K, 1);
 for k = 1:K
     norm_res_tmp = cell(length(c_chunks{k}), 1);
-    sz_y{k} = cell(length(c_chunks{k}), 1);
-    n_blocks{k} = cell(length(c_chunks{k}), 1);
     for i = 1:length(c_chunks{k})
         norm_res_tmp{i} = cell(length(y{k}{i}),1);
-        n_blocks{k}{i} = length(y{k}{i});
         for j = 1 : length(y{k}{i})
             norm_res_tmp{i}{j} = norm(y{k}{i}{j});
-            sz_y{k}{i}{j} = numel(y{k}{i}{j});
         end
     end
     yp{Q+k} = y{k};
-    y{k} = [];
     x_hat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
     Ap{Q+k} = A;
     Atp{Q+k} = At;
@@ -225,7 +218,7 @@ for k = 1:K
     norm_res{Q+k} = norm_res_tmp;
 end
 
-clear norm_res_tmp epsilon pU W G y % W, G, y needed to compute the residual image 
+clear norm_res_tmp epsilon pU W G % W, G, y needed to compute the residual image 
 
 v2_ = Composite();
 t_block = Composite();
@@ -242,13 +235,13 @@ else
         t_block_ = cell(length(c_chunks{k}), 1);
         proj_tmp = cell(length(c_chunks{k}), 1);
         for i = 1:length(c_chunks{k})
-            v2_tmp{i} = cell(n_blocks{k}{i},1);
-            t_block_{i} = cell(n_blocks{k}{i},1);
-            proj_tmp{i} = cell(n_blocks{k}{i},1);
-            for j = 1 : n_blocks{k}{i}
-                v2_tmp{i}{j} = zeros(sz_y{k}{i}{j} ,1);
+            v2_tmp{i} = cell(length(y{k}{i}),1);
+            t_block_{i} = cell(length(y{k}{i}),1);
+            proj_tmp{i} = cell(length(y{k}{i}),1);
+            for j = 1 : length(y{k}{i})
+                v2_tmp{i}{j} = zeros(length(y{k}{i}{j}) ,1);
                 t_block_{i}{j} = 0;
-                proj_tmp{i}{j} = zeros(sz_y{k}{i}{j}, 1);
+                proj_tmp{i}{j} = zeros(size(y{k}{i}{j}));
             end
         end
         v2_{Q+k} = v2_tmp;
@@ -257,7 +250,7 @@ else
     end
 end
 
-clear proj_tmp v2_tmp norm_res_tmp t_block_ G y
+clear proj_tmp v2_tmp norm_res_tmp t_block_ y
 
 reweight_last_step_iter = 0;
 reweight_step_count = 0;

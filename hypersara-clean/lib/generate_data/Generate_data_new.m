@@ -41,8 +41,8 @@ param_block_structure.use_manual_partitioning = 0;
 %%
 param_data.cov_type = 'vlaa';
 
-%T = 200;
-%hrs = 6;
+% T = 200;
+% hrs = 6;
 
 [u1, v1, na, antennas] = generate_uv_coverage2(T, hrs, param_data.cov_type);
 u1 = u1(:);

@@ -4,7 +4,7 @@ clear all;
 close all;
 clc;
 
-flag_algo = 2; tot = 20; Qx = 2; Qy = 2; Qc = 2; ind = 1; img_size = 2048;
+flag_algo = 2; tot = 20; Qx = 2; Qy = 2; Qc = 2; ind = 1; img_size = 512; %2048;
 parallel_version = 'spmd4';
 
 addpath hypersara-clean/lib/
