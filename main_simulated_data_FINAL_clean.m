@@ -5,6 +5,10 @@ close all;
 clc;
 
 flag_algo = 2; tot = 20; Qx = 2; Qy = 2; Qc = 2; ind = 1; img_size = 512; %2048;
+Qc2 = 2;
+T = 100;
+hrs = 6;
+
 parallel_version = 'spmd4';
 
 addpath hypersara-clean/lib/
@@ -44,7 +48,7 @@ load_data = 0;
 save_full_operator = 0;
 load_full_operator = 0;
 
-free_memory = 0;
+free_memory = 1;
 free_Gw = 0;
 
 generate_measurements = 1;
@@ -126,23 +130,6 @@ end
 % spectral faceting (interlaved sampling)
 id = interleaved_facets(Qc, c);
 
-% spatial faceting
-Q = Qx*Qy;
-rg_y = domain_decomposition(Qy, Ny);
-rg_x = domain_decomposition(Qx, Nx);
-
-% create starting index of the spatial facets (I) and associated dimensions
-% (dims). Beware: I starts at (0, 0)
-I = zeros(Q, 2);
-dims = zeros(Q, 2);
-for qx = 1:Qx
-    for qy = 1:Qy
-        q = (qx-1)*Qy+qy;
-        I(q, :) = [rg_y(qy, 1)-1, rg_x(qx, 1)-1];
-        dims(q, :) = [rg_y(qy,2)-rg_y(qy,1)+1, rg_x(qx,2)-rg_x(qx,1)+1];
-    end
-end
-
 % create the complete tessellation (spectral)
 if ind > 0
     x0 = x0(:,:,id{ind});
@@ -150,11 +137,6 @@ if ind > 0
     ch = [1:c];
     f = f(id{ind});
     X0 = reshape(x0,Nx*Ny,c);
-end
-
-% create the complete tessellation (spatial)
-for q = 1:Q
-    x_split{q} = x0(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2),:);
 end
 
 %
@@ -167,24 +149,22 @@ elseif flag_algo == 2 % Faceted HyperSARA
 end
 param_HSI.num_workers
 
-
 %% Generate or Load subsampling mask
 if generate_data
-    Generate_data_new
+    Generate_data_new % to be investigated
 end
 
 %%
-sigma_noise = 5; %Equivalent to having inSNR = 40 dB
+sigma_noise = 5; % Equivalent to having inSNR = 40 dB
+
 % Generate or Load subsampling mask
 if generate_measurements
     Generate_Measurements
 end
 
 clear c;
-%% Compute map estimator
-if solve_minimization
-    Solver_simulated_data_FINAL_clean
-end
 
-% end
-%
+%% Compute MAP estimator
+if solve_minimization
+    Solver_simulated_data_FINAL_clean % to be investigated
+end

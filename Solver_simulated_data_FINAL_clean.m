@@ -53,37 +53,38 @@ end
 
 %% sparsity operator definition
 nlevel = 4; % wavelet level
-%wlt_basis = {'db8'};
-wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; % wavelet basis to be used
-% wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8'}; % wavelet basis to be used
-L = [2*(1:8)'; 0]; % length of the filters
+wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; % wavelet basis to be used, always put self in last position is used
+L = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
 
-[Psi1, Psit1] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-P = length(Psi1);
+if flag_algo < 2
+    
+    [Psi1, Psit1] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
+    P = length(Psi1);
 
-for k = 1 : P
-    f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
-    f = sprintf('%s%i},Ny,Nx);', f,k);
-    Psi{k} = eval(f);
-    
-    b(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
-    
-    ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
-    Psit{k} = eval(ft);
+    for k = 1 : P
+        f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
+        f = sprintf('%s%i},Ny,Nx);', f,k);
+        Psi{k} = eval(f);
+
+        b(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
+
+        ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
+        Psit{k} = eval(ft);
+    end
+
+    %% Full sparsity operator
+    [Psiw, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
+    bb = size(Psitw(zeros(Ny,Nx,1)),1);
+
+    Psi_full = @(x_wave) HS_forward_sparsity(x_wave,Psiw,Ny,Nx);
+    Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,bb);
 end
 
-%% Full sparsity operator
-[Psiw, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-bb = size(Psitw(zeros(Ny,Nx,1)),1);
-
-Psi_full = @(x_wave) HS_forward_sparsity(x_wave,Psiw,Ny,Nx);
-Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,bb);
-
-%% Splitting operator FULL
-Sp = @(x) Split_forward_operator(x,I,dims,Q);
-Spt = @(x) Split_adjoint_operator(x,I,dims,Q,Ny,Nx,length(ch));
-
-Sp_norm = pow_method_op(Sp,Spt,[Ny Nx length(ch)]); % [P.-A.] in theory, Sp_pnorm = Pnorm (no need to compute both)
+% %% Splitting operator FULL
+% Sp = @(x) Split_forward_operator(x,I,dims,Q);
+% Spt = @(x) Split_adjoint_operator(x,I,dims,Q,Ny,Nx,length(ch));
+% 
+% Sp_norm = pow_method_op(Sp,Spt,[Ny Nx length(ch)]); % [P.-A.] in theory, Sp_pnorm = Pnorm (no need to compute both)
 
 %% HSI parameter structure sent to the  HSI algorithm
 param_HSI.verbose = 2; % print log or not
@@ -139,13 +140,13 @@ if flag_algo == 1
 %         pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI2, X0);
     
     % test
-    rg_c = domain_decomposition(Qc, ch(end));
-    cell_c_chunks = cell(Qc, 1);
-    y_spmd = cell(Qc, 1);
-    epsilon_spmd = cell(Qc, 1);
-    aW_spmd = cell(Qc, 1);
-    W_spmd = cell(Qc, 1);
-    G_spmd = cell(Qc, 1);
+    rg_c = domain_decomposition(Qc2, ch(end));
+    cell_c_chunks = cell(Qc2, 1);
+    y_spmd = cell(Qc2, 1);
+    epsilon_spmd = cell(Qc2, 1);
+    aW_spmd = cell(Qc2, 1);
+    W_spmd = cell(Qc2, 1);
+    G_spmd = cell(Qc2, 1);
     
     for i = 1:Qc
         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
@@ -155,6 +156,9 @@ if flag_algo == 1
         W_spmd{i} = W(cell_c_chunks{i});
         G_spmd{i} = G(cell_c_chunks{i});
     end
+    
+    clear y epsilon aW W G
+    
     [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
         pdfb_LRJS_precond_NL21_sdwt2_spmd_serial_SARA(y_spmd, epsilon_spmd, A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qc, wlt_basis, nlevel, cell_c_chunks, ch(end));
     % - end test

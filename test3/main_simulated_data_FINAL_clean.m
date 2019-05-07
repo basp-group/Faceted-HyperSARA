@@ -21,7 +21,7 @@ addpath ../hypersara-clean/lib/
 addpath ../hypersara-clean/lib/generate_data/
 addpath ../hypersara-clean/lib/operators/
 addpath ../hypersara-clean/lib/CubeHelix/
-addpath ../irt/
+addpath ../nufft/
 addpath ../sdwt2/
 addpath ../src/
 addpath ../data/
