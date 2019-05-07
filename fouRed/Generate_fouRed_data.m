@@ -47,7 +47,7 @@ sampling_pattern = 'gaussian+large-holes';
 
 % sparam.file_name = '/Volumes/Data/MeasSets/meerkat2h.ar.uvw.dat'; % file name for uv coverage
 sparam.file_name = '/Volumes/Data/MeasSets/ska.2h.ar.uvw.dat'; % file name for uv coverage
-sparam.p = percentage(k); % number of measurements as proportion of number of pixels to recover
+sparam.p = percentage; % number of measurements as proportion of number of pixels to recover
 sparam.hole_number = 8000; % number of holes to introduce for 'gaussian+large-holes'
 sparam.hole_prob = 0.05; % probability of single pixel hole for 'gaussian+missing-pixels'
 sparam.hole_size = pi/60; % size of the missing frequency data

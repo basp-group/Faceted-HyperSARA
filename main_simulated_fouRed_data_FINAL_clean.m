@@ -14,7 +14,7 @@ addpath hypersara-clean/lib/
 addpath hypersara-clean/lib/generate_data/
 addpath hypersara-clean/lib/operators/
 addpath hypersara-clean/lib/CubeHelix/
-addpath ../irt/
+addpath nufft
 addpath sdwt2/
 addpath src/
 addpath data/
@@ -25,9 +25,9 @@ addpath hypersara-clean/lib/Proximity_operators/code/matlab/multi/
 % addpath ../hypersara/simulated_data/
 % addpath ../hypersara/alg/
 
-try
-    run('../irt/setup.m');
-end
+% try
+%     run('../irt/setup.m');
+% end
 
 usingReduction = 1;
 usingReductionPar = 0;
@@ -230,6 +230,6 @@ end
 %% Compute MAP estimator
 if solve_minimization     
     if usingReduction
-        Solver_fouRed_simulated_data_FINAL
+        Solver_simulated_fouRed_data_FINAL_clean
     end
 end

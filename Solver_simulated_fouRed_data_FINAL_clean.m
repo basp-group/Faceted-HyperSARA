@@ -144,13 +144,13 @@ if solve_HS
     
     for i = 1:Qc2
         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
-        y_spmd{i} = y(cell_c_chunks{i});
+        y_spmd{i} = yT(cell_c_chunks{i});
         epsilon_spmd{i} = epsilons_t(cell_c_chunks{i});
         aW_spmd{i} = aW(cell_c_chunks{i});
         W_spmd{i} = W(cell_c_chunks{i});
-        T_spmd{i} = T(cell_c_chunks{i});
+        T_spmd{i} = Ti(cell_c_chunks{i});
     end
-    clear y epsilon aW W G
+    clear yT epsilons_t aW W Ti
     
 %     [xsol,v0,v1,v2,g,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res] = ...
 %         pdfb_LRJS_Adapt_blocks_rwNL21_par_sing_precond_new_sim

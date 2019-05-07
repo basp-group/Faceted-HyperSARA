@@ -38,9 +38,9 @@ for i = 1:length(ch)
     noiseMat = operatorR(noise{i}, Phi_t{i}, Sigma{i}, Mask{i});
     
     if usingReductionPar
-        [yT{i}, rn{i}, T{i}, W{i}] = util_gen_sing_block_structure(yMat, noiseMat, Sigma{i}, Mask{i}, param_sing_block_structure);
+        [yT{i}, rn{i}, Ti{i}, W{i}] = util_gen_sing_block_structure(yMat, noiseMat, Sigma{i}, Mask{i}, param_sing_block_structure);
     else
-        T{i} = {Sigma{i}};
+        Ti{i} = {Sigma{i}};
         W{i} = {Mask{i}};
         yT{i} = {yMat};
         rn{i} = {noiseMat};
@@ -49,7 +49,7 @@ for i = 1:length(ch)
     R = length(W{i});
     aW{i} = cell(R, 1);
     for q = 1:R
-        aW{i}{q} = 1./T{i}{q};
+        aW{i}{q} = 1./Ti{i}{q};
         epsilont{i}{q} = norm(rn{i}{q});
         epsilons_t{i}{q} = 1.001*epsilont{i}{q};     % data fidelity error * 1.001
     end

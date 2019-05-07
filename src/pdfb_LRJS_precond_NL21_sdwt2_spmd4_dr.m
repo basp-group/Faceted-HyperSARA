@@ -31,7 +31,7 @@ function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,
 No = size(W{1}{1}{1}, 1);
 
 % number of pixels (spatial dimensions)
-[M, N] = size(At(zeros(No, 1)));
+[M, N] = size(At{1}(zeros(No, 1)));
 
 % define reference spatial facets (no overlap)
 Q = Qx*Qy;
