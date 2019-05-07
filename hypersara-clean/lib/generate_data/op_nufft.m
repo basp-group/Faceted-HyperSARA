@@ -15,21 +15,24 @@ function [A, At, Gw, scale] = op_nufft(p, N, Nn, No, Ns)
 % Gw[:][:]      - global convolution kernel matrix
 % scale[:][:]   - scale paremters for the oversampled FFT
 
+% [07/05/2019] Code modification, P.-A. Thouvenin.
 
 %% compute the overall gridding matrix and its associated kernels
 
-st = nufft_init(p, N, Nn, No, Ns);
-scale = st.sn;
+% st = nufft_init(p, N, Nn, No, Ns);
+% scale = st.sn;
 
-if isa(st.p, 'fatrix2')
-    error('fatrix2 has some very weird bugs with subindexing; force st.p to be a (sparse) matrix');
-end
+[Gw, scale] = createG(p, Nn, N, No, Ns);
+
+% if isa(st.p, 'fatrix2')
+%     error('fatrix2 has some very weird bugs with subindexing; force st.p to be a (sparse) matrix');
+% end
 
 %% operator function handles
 [A, At] = op_nu_so_fft2(N, No, scale);
 
 % whole G is stored in st.p
-Gw = st.p;
+% Gw = st.p;
 
 end
 

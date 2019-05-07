@@ -4,6 +4,9 @@ clc
 
 
 flag_algo = 2; tot = 20; Qx = 2; Qy = 2; Qc = 2; ind = 1; img_size = 512; %2048;
+Qc2 = 2;
+T = 200;
+hrs = 6;
 parallel_version = 'spmd4';
 
 addpath fouRed/
@@ -162,23 +165,6 @@ end
 % spectral faceting (interlaved sampling)
 id = interleaved_facets(Qc, c);
 
-% spatial faceting
-Q = Qx*Qy;
-rg_y = domain_decomposition(Qy, Ny);
-rg_x = domain_decomposition(Qx, Nx);
-
-% create starting index of the spatial facets (I) and associated dimensions
-% (dims). Beware: I starts at (0, 0)
-I = zeros(Q, 2);
-dims = zeros(Q, 2);
-for qx = 1:Qx
-    for qy = 1:Qy
-        q = (qx-1)*Qy+qy;
-        I(q, :) = [rg_y(qy, 1)-1, rg_x(qx, 1)-1];
-        dims(q, :) = [rg_y(qy,2)-rg_y(qy,1)+1, rg_x(qx,2)-rg_x(qx,1)+1];
-    end
-end
-
 % create the complete tessellation (spectral)
 if ind > 0
     x0 = x0(:,:,id{ind});
@@ -188,18 +174,13 @@ if ind > 0
     X0 = reshape(x0,Nx*Ny,c);
 end
 
-% create the complete tessellation (spatial)
-for q = 1:Q
-    x_split{q} = x0(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2),:);
-end
-
 %
 if flag_algo == 0 % L11
     param_HSI.num_workers = 34;
 elseif flag_algo == 1 % HyperSARA
     param_HSI.num_workers = 1;
 elseif flag_algo == 2 % Faceted HyperSARA
-    param_HSI.num_workers = length(x_split)*2+1;  %%%%%%%%%%% TO BE SET BY P.-A.
+    param_HSI.num_workers = Qx*Qy*2+1;  %%%%%%%%%%% TO BE SET BY P.-A.
 end
 param_HSI.num_workers
 
@@ -224,7 +205,6 @@ end
 %%
 sigma_noise = 0.1;
 %     input_snr = 40; % noise level (on the measurements)
-num_tests = 1;
 % Generate or Load subsampling mask
 if usingReduction
     Generate_fouRed_Measurements
@@ -242,27 +222,14 @@ else
 end
 clear c;
     
-    %% Fourier reduction
-    if usingReduction
-        Fourier_reduction_ch
-    end
-    
-    %% Compute map estimator
-    if solve_minimization     
-        if usingReduction
-            Solver_fouRed_simulated_data_FINAL
-        else
-            Solver_simulated_data_splitting_FINAL
-%             Solver_simulated_data
-        end
-    end
-    
-    %% Compute uncertainty quantification
-    
-    if solve_minimization_UQ_HS
-        
-        Solver_UQ_simulated_data_HS_crop
-        
-    end
+%% Fourier reduction
+if usingReduction
+    Fourier_reduction_ch
 end
 
+%% Compute MAP estimator
+if solve_minimization     
+    if usingReduction
+        Solver_fouRed_simulated_data_FINAL
+    end
+end

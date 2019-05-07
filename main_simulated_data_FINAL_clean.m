@@ -15,17 +15,18 @@ addpath hypersara-clean/lib/
 addpath hypersara-clean/lib/generate_data/
 addpath hypersara-clean/lib/operators/
 addpath hypersara-clean/lib/CubeHelix/
-addpath ../irt/
+% addpath ../irt/
 addpath sdwt2/
 addpath src/
 addpath data/
+addpath nufft/
 addpath hypersara-clean/lib/Proximity_operators/code/matlab/indicator/
 addpath hypersara-clean/lib/Proximity_operators/code/matlab/multi/
 %addpath hypersara-clean/alg
 
-try
-    run('../irt/setup.m');
-end
+% try
+%     run('../irt/setup.m');
+% end
 
 seed = 1;
 rng(seed);
@@ -145,7 +146,7 @@ if flag_algo == 0 % L11
 elseif flag_algo == 1 % HyperSARA
     param_HSI.num_workers = 1;
 elseif flag_algo == 2 % Faceted HyperSARA
-    param_HSI.num_workers = length(x_split)*2+1;  %%%%%%%%%%% TO BE SET BY P.-A.
+    param_HSI.num_workers = Qx*Qy*2+1;  %%%%%%%%%%% TO BE SET BY P.-A.
 end
 param_HSI.num_workers
 
