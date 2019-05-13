@@ -361,9 +361,11 @@ end
 norm_res = norm(res(:));
 v2 = cell(K, 1);
 proj = cell(K, 1);
+epsilon = cell(K, 1);
 for i = 1:K
     v2{i} = v2_{2+i};
     proj{i} = proj_{2+i};
+    epsilon{i} = epsilonp{2+i};
 end
 
 %Final log (merge this step with the computation of the residual image for

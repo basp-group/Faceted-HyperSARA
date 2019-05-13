@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,weights0,weights1,proj_,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd5(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
+function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd5(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
 
 % Data update and primal update gathered in the same nodes 
 
@@ -534,9 +534,11 @@ end
 norm_res = norm(res(:));
 v2 = cell(K, 1);
 proj = cell(K, 1);
+epsilon = cell(K, 1);
 for i = 1:K
     v2{i} = v2_{Q+i};
     proj{i} = proj_{Q+i};
+    epsilon{i} = epsilonp{Q+i};
 end
 
 %Final log (merge this step with the computation of the residual image for
