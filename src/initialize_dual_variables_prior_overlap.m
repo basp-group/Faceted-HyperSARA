@@ -7,7 +7,6 @@ p = prod(Ncoefs, 2);
 % else
 %     sz = 3*sum(p) - 2*sum(p(nlevel+1:nlevel+1:end));
 % end
-
 sz = 3*sum(p(1:end)) - 2*sum(p(nlevel+1:nlevel+1:end)) - 2*p(end); % number of coeffs with the Dirac basis
 
 v0 = zeros(prod(dims_overlap_ref), c);

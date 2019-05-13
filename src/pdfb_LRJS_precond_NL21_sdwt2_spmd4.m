@@ -27,6 +27,12 @@ function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,
 
 % maxNumCompThreads(param.num_workers);
 
+% initialize monitoring variables (display active)
+SNR = 0;
+SNR_average = 0;
+norm_epsilon_check = 0;
+norm_residual_check = 0;
+
 % size of the oversampled Fourier space (vectorized)
 No = size(W{1}{1}{1}, 1);
 
@@ -322,7 +328,7 @@ for t = t_start : param.max_iter
             
             % update ghost cells (versions of xhat with overlap)
             % overlap_q = dims_overlap_ref_q - dims_q;
-            tw = tic;
+%             tw = tic;
             x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
@@ -339,7 +345,7 @@ for t = t_start : param.max_iter
             %g_ = sigma00.Value*g0(overlap(1)+1:end, overlap(2)+1:end, :) + ...
             %    sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
             g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
-            t_op = toc(tw);
+%             t_op = toc(tw);
             
             % retrieve portions of g2 from the data nodes
             for i = 1:Kp.Value
@@ -353,10 +359,10 @@ for t = t_start : param.max_iter
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
-            tw = tic;
+%             tw = tic;
             [v2_, g2, proj_, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
-            t_op = toc(tw);
+%             t_op = toc(tw);
             % send portions of g2 to the prior/primal nodes
             for q = 1:Qp.Value
                 labSend(g2(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
@@ -376,15 +382,15 @@ for t = t_start : param.max_iter
     end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
-    t_op_prior = 0;
-    for q = 1:Q
-       t_op_prior = max(t_op_prior, t_op{q}); 
-    end
-    
-    t_op_data = 0;
-    for k = 1:K
-       t_op_data = max(t_op_data, t_op{Q+k}); 
-    end
+%     t_op_prior = 0;
+%     for q = 1:Q
+%        t_op_prior = max(t_op_prior, t_op{q}); 
+%     end
+%     
+%     t_op_data = 0;
+%     for k = 1:K
+%        t_op_data = max(t_op_data, t_op{Q+k}); 
+%     end
     
     %% Display
     if ~mod(t,10)

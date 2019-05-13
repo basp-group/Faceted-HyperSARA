@@ -25,6 +25,12 @@ function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,
 
 % maxNumCompThreads(param.num_workers);
 
+% initialize monitoring variables (display active)
+SNR = 0;
+SNR_average = 0;
+norm_epsilon_check = 0;
+norm_residual_check = 0;
+
 % size of the oversampled Fourier space (vectorized)
 No = size(W{1}{1}{1}, 1);
 
