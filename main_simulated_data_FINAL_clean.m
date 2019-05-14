@@ -4,7 +4,7 @@ clear all;
 close all;
 clc;
 
-flag_algo = 2; tot = 20; Qx = 2; Qy = 2; Qc = 2; ind = 1; img_size = 512; %2048;
+flag_algo = 2; tot = 20; Qx = 2; Qy = 2; Qc = 1; ind = 1; img_size = 512; %2048;
 Qc2 = 2;
 T = 100;
 hrs = 6;

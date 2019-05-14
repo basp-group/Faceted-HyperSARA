@@ -134,15 +134,16 @@ if flag_algo == 1
 %         pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI2, X0);
     
     % test
-    rg_c = domain_decomposition(Qc, ch(end));
-    cell_c_chunks = cell(Qc, 1);
-    y_spmd = cell(Qc, 1);
-    epsilon_spmd = cell(Qc, 1);
-    aW_spmd = cell(Qc, 1);
-    W_spmd = cell(Qc, 1);
-    G_spmd = cell(Qc, 1);
+    Qc2 = q2;
+    rg_c = domain_decomposition(Qc2, ch(end));
+    cell_c_chunks = cell(Qc2, 1);
+    y_spmd = cell(Qc2, 1);
+    epsilon_spmd = cell(Qc2, 1);
+    aW_spmd = cell(Qc2, 1);
+    W_spmd = cell(Qc2, 1);
+    G_spmd = cell(Qc2, 1);
     
-    for i = 1:Qc
+    for i = 1:Qc2
         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
         y_spmd{i} = y(cell_c_chunks{i});
         epsilon_spmd{i} = epsilons(cell_c_chunks{i});

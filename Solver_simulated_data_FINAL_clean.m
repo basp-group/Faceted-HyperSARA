@@ -148,7 +148,7 @@ if flag_algo == 1
     W_spmd = cell(Qc2, 1);
     G_spmd = cell(Qc2, 1);
     
-    for i = 1:Qc
+    for i = 1:Qc2
         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
         y_spmd{i} = y(cell_c_chunks{i});
         epsilon_spmd{i} = epsilons(cell_c_chunks{i});
