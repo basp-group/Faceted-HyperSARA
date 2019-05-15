@@ -12,6 +12,8 @@ L = 100;
 Qx = 3;
 Qy = 3;
 Q = Qx*Qy;
+nlevel = 4;
+filter_size = 16; % use db8 wavelet filter
 
 %% generate auxiliary parameters for the spatial faceting (sdwt2)
 
@@ -30,37 +32,7 @@ for qx = 1:Qx
     end
 end
 [~, ~, I_overlap_ref, dims_overlap_ref, I_overlap, dims_overlap, ...
-    ~, ~, status, offset, offsetL, offsetR, Ncoefs, temLIdxs, temRIdxs] = generate_segdwt_indices(N, I, dims, 4, {'db8'}, 16);
-
-% % overlap dimension of the neighbour (necessary to define the ghost cells properly)
-% overlap = zeros(Q, 2);
-% overlap_g_south = zeros(Q, 2);
-% overlap_g_east = zeros(Q, 2);
-% overlap_g_south_east = zeros(Q, 2);
-% for q = 1:Q
-%     [qy, qx] = ind2sub([Qy, Qx], q);
-%     overlap(q, :) = max(dims_overlap{q}) - dims(q,:);
-%     if qy < Qy
-%         % S (qy+1, qx)
-%         overlap_g_south(q, :) = overlap((qx-1)*Qy + qy+1);
-%         
-%         if qx < Qx
-%             % SE (qy+1, qx+1)
-%             overlap_g_south_east(q, :) = overlap(qx*Qy + qy+1);
-%         else
-%             overlap_g_south_east(q, :) = [0, 0];
-%         end
-%     else
-%         overlap_g_south(q, :) = [0, 0];
-%         overlap_g_south_east(q, :) = [0, 0];
-%     end
-%     if qx < Qx
-%         % E (qy, qx+1)
-%         overlap_g_east(q, :) = overlap(qx*Qy + qy);
-%     else
-%         overlap_g_east(q, :) = [0, 0];
-%     end
-% end
+    ~, ~, status, offset, offsetL, offsetR, Ncoefs, temLIdxs, temRIdxs] = generate_segdwt_indices(N, I, dims, nlevel, {'db8'}, filter_size);
 
 % create weight matrix W (full image size)
 W = zeros(N);
@@ -72,11 +44,39 @@ W = 1./W;
 
 figure; imagesc(W); colorbar;
 
+%% Create overlap with a fixed overlap, lower than or equal to the maximum 
+%% overlap size in sdwt2
+
+% maximum overlap in sdwt2, d can be taken smaller in practice
+d = (2^nlevel - 1)*(filter_size-1);
+rg_yo = domain_decomposition_overlap2(Qy, N(1), d);
+rg_xo = domain_decomposition_overlap2(Qx, N(2), d);
+Io = zeros(Q, 2);
+dims_o = zeros(Q, 2);
+for qx = 1:Qx
+    for qy = 1:Qy
+        q = (qx-1)*Qy+qy;
+        Io(q, :) = [rg_yo(qy, 1)-1, rg_xo(qx, 1)-1];
+        dims_o(q, :) = [rg_yo(qy,2)-rg_yo(qy,1)+1, rg_xo(qx,2)-rg_xo(qx,1)+1];
+    end
+end
+% create weight matrix Wo (if needed)
+Wo = zeros(N);
+for q = 1:Q
+   Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) = ...
+       Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) + ones(dims_o(q,:)); 
+end
+Wo = 1./Wo;
+
+figure; imagesc(Wo); colorbar;
+
 %% run comparison
 full_prior = zeros(n_run, 1);
 facet_prior = zeros(n_run, 1);
 wfacet_prior = zeros(n_run, 1);
 facet_prior_wo = zeros(n_run, 1);
+facet_prior_o = zeros(n_run, 1);
+wfacet_prior_o = zeros(n_run, 1);
 
 for n = 1:n_run
 
@@ -103,7 +103,21 @@ for n = 1:n_run
     %% facet prior (no overlap)
     facet_prior_wo(n) = 0;
     for q = 1:Q
-        facet_prior_wo(n) = facet_prior_wo(n) + facet_nuclear_norm(X(I_overlap_ref(q,1)+1:I_overlap_ref(q,1)+dims(q,1), I_overlap_ref(q,2)+1:I_overlap_ref(q,2)+dims(q,2), :));
+        facet_prior_wo(n) = facet_prior_wo(n) + facet_nuclear_norm(X(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :));
+    end
+    
+    %% facet prior (fixed overlap d)
+    facet_prior_o(n) = 0;
+    for q = 1:Q
+        facet_prior_o(n) = facet_prior_o(n) + facet_nuclear_norm(X(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dim_os(q,2), :));
+    end
+    
+    %% weighted faceted prior (foxed overlap)
+    wfacet_prior_o(n) = 0;
+    for q = 1:Q
+        wfacet_prior_o(n) = wfacet_prior_o(n) + facet_nuclear_norm( ...
+            Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)).* ...
+            X(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2), :));
     end
 end
 
@@ -112,3 +126,5 @@ m = mean(full_prior);
 d1 = mean(abs(full_prior - facet_prior))/m;
 d2 = mean(abs(full_prior - wfacet_prior))/m;
 d3 = mean(abs(full_prior - facet_prior_wo))/m;
+d4 = mean(abs(full_prior - facet_prior_o))/m;
+d5 = mean(abs(full_prior - wfacet_prior_o))/m;
