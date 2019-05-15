@@ -42,7 +42,7 @@ for q = 1:Q
 end
 W = 1./W;
 
-figure; imagesc(W); colorbar;
+figure; imagesc(W); colormap; colorbar;
 
 %% Create overlap with a fixed overlap, lower than or equal to the maximum 
 %% overlap size in sdwt2
@@ -68,7 +68,7 @@ for q = 1:Q
 end
 Wo = 1./Wo;
 
-figure; imagesc(Wo); colorbar;
+figure; imagesc(Wo); colormap; colorbar;
 
 %% run comparison
 full_prior = zeros(n_run, 1);
@@ -128,3 +128,6 @@ d2 = mean(abs(full_prior - wfacet_prior))/m;
 d3 = mean(abs(full_prior - facet_prior_wo))/m;
 d4 = mean(abs(full_prior - facet_prior_o))/m;
 d5 = mean(abs(full_prior - wfacet_prior_o))/m;
+
+save(['results_Qx=',num2str(Qx),'_Qy=',num2str(Qy),'.mat'], 'm', 'N', 'Qx',...
+      'Qy', 'L', 'm', 'd1', 'd2', 'd3', 'd4', 'd5', 'd')
