@@ -109,10 +109,10 @@ for n = 1:n_run
     %% facet prior (fixed overlap d)
     facet_prior_o(n) = 0;
     for q = 1:Q
-        facet_prior_o(n) = facet_prior_o(n) + facet_nuclear_norm(X(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dim_os(q,2), :));
+        facet_prior_o(n) = facet_prior_o(n) + facet_nuclear_norm(X(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2), :));
     end
     
-    %% weighted faceted prior (foxed overlap)
+    %% weighted faceted prior (fixed overlap)
     wfacet_prior_o(n) = 0;
     for q = 1:Q
         wfacet_prior_o(n) = wfacet_prior_o(n) + facet_nuclear_norm( ...
