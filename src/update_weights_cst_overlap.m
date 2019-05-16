@@ -7,7 +7,8 @@ function [weights1, weights0] = update_weights_cst_overlap(x_overlap, size_v1, .
 % encapsulated in a function)
 
 % nuclear norm
-sol = reshape(x_overlap(crop(1)+1:end, crop(2)+1:end), [prod(dims_overlap_ref), size(x_overlap, 3)]);
+sol = x_overlap(crop(1)+1:end, crop(2)+1:end, :);
+sol = reshape(sol, [numel(sol)/size(x_overlap, 3), size(x_overlap, 3)]);
 [~,S00,~] = svd(sol,'econ');
 d_val0 = abs(diag(S00));
 weights0 = reweight_alpha ./ (reweight_alpha + d_val0);

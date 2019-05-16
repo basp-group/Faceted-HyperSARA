@@ -65,8 +65,8 @@ clear rg_y rg_x;
 id_dirac = find(ismember(wavelet, 'self'), 1);
 dirac_present = ~isempty(id_dirac);
 
-rg_yo = domain_decomposition_overlap2(Qy, N(1), d);
-rg_xo = domain_decomposition_overlap2(Qx, N(2), d);
+rg_yo = domain_decomposition_overlap2(Qy, M, d);
+rg_xo = domain_decomposition_overlap2(Qx, N, d);
 Io = zeros(Q, 2);
 dims_o = zeros(Q, 2);
 for qx = 1:Qx
@@ -126,6 +126,8 @@ overlap_g_south = Composite();
 overlap_g_east = Composite();
 overlap_g_south_east = Composite();
 overlap = Composite();
+% constant overlap: facet size
+dims_oq = Composite();
 % initialize composite variables and constants
 for q = 1:Q
     Iq{q} = I(q, :);
@@ -142,6 +144,7 @@ for q = 1:Q
     offsetLq{q} = offsetL(q,:);
     offsetRq{q} = offsetR(q,:);
     overlap{q} = max(dims_overlap{q}) - dims(q,:); % amount of overlap necessary for each facet
+    dims_oq{q} = dims_o(q, :);
 end
 
 % overlap dimension of the neighbour (necessary to define the ghost cells properly)
@@ -168,7 +171,7 @@ for q = 1:Q
     else
         overlap_g_east{q} = [0, 0];
     end
-    crop{q} = dims_overlap_ref(q,:) - (dims(q,:)+d);
+    crop{q} = dims_overlap_ref(q,:) - dims_o(q,:); % possiblr issue here...
 end
 %%-- end initialisation auxiliary variables sdwt2
 
@@ -196,7 +199,7 @@ if isfield(param,'init_v0') || isfield(param,'init_v1')
 else
     spmd
         if labindex <= Qp.Value
-            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_cst_overlap(Ncoefs, dims_o, c, nlevelp.Value);
+            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_cst_overlap(Ncoefs_q, dims_oq, c, nlevelp.Value);% issue here
         end
     end
 end
@@ -359,12 +362,12 @@ for t = t_start : param.max_iter
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             
             % update dual variables (nuclear, l21)
-            [v0_, g0] = update_nuclear_spmd(v0_, x_overlap(crop(1)+1:end, crop(2)+1:end), weights0_, beta0.Value);
+            [v0_, g0] = update_nuclear_spmd(v0_, x_overlap(crop(1)+1:end, crop(2)+1:end, :), weights0_, beta0.Value); % check crop
             [v1_, g1] = update_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
             g = sigma11.Value*g1;
-            g(crop(1)+1:end, crop(2)+1:end) = g(crop(1)+1:end, crop(2)+1:end) + sigma00.Value*g0;
+            g(crop(1)+1:end, crop(2)+1:end, :) = g(crop(1)+1:end, crop(2)+1:end, :) + sigma00.Value*g0;
             g = comm2d_reduce(g, overlap, Qyp.Value, Qxp.Value);
             
             % compute g_ for the final update term
@@ -518,7 +521,8 @@ for t = t_start : param.max_iter
 
                 [weights1_, weights0_] = update_weights_cst_overlap(x_overlap, size(v1_), ...
                     Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
-                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap);
+                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap, crop);
+                
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
 %             else
 %                 % compute residual image on the data nodes

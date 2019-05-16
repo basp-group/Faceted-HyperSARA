@@ -6,7 +6,8 @@ function [l21_norm, nuclear_norm] = prior_overlap_spmd_cst(x_overlap, Iq, ...
 
 % nuclear norm
 c = size(x_overlap, 3);
-xhatm = reshape(x_overlap(crop(1)+1:end, crop(2)+1:end),prod(dims_overlap_ref_q),c);
+xhatm = x_overlap(crop(1)+1:end, crop(2)+1:end, :);
+xhatm = reshape(xhatm,numel(xhatm)/c,c);
 [~,S0,~] = svd(xhatm,'econ');
 nuclear_norm = norm(diag(S0),1);
 
