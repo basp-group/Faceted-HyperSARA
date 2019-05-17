@@ -77,12 +77,18 @@ for qx = 1:Qx
     end
 end
 % create weight matrix Wo (if needed)
-Wo = zeros(N);
-for q = 1:Q
-   Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) = ...
-       Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) + ones(dims_o(q,:)); 
-end
-Wo = 1./Wo;
+% Wo = zeros(N);
+% for q = 1:Q
+%    Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) = ...
+%        Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) + ones(dims_o(q,:)); 
+% end
+% Wo = 1./Wo;
+
+% auxiliary variable to create bilinear interpolated weights
+V = zeros(6, 6);
+V(:,1) = tol;
+V(:,[2,3]) = [tol; 1-tol; 1; 1; 1-tol; tol].*ones(1, 2);
+V(:, 4:6) = fliplr(V(:, 1:3));
 
 % total number of workers (Q: facets workers, K: data workers)
 numworkers = Q + K;
@@ -172,7 +178,13 @@ for q = 1:Q
     else
         overlap_g_east{q} = [0, 0];
     end
-    w{q} = Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2));
+    
+    % w{q} = Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2));
+    x = [1, d, d+1, dims_o(q,2)-d, dims_o(q,2)-d+1, dims_o(q,2)];
+    y = [1, d, d+1, dims_o(q,1)-d, dims_o(q,1)-d+1, dims_o(q,1)];
+    [X, Y] = meshgrid(x, y);
+    [Xq, Yq] = meshgrid(1:dims_o(q,2), 1:dims_o(q,1));
+    w{q} = interp2(X, Y, V, Xq, Yq, 'linear'); 
     crop{q} = dims_overlap_ref(q,:) - dims_o(q,:);
 end
 %%-- end initialisation auxiliary variables sdwt2
