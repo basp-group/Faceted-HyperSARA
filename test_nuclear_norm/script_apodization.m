@@ -6,17 +6,22 @@ addpath ../sdwt2
 %% Check apodization functions, see their use with overlapping facets 
 % (in the reconstruction process)
 
-N = [50, 20];
+N = [512, 512];
+Qx = 3;
+Qy = 3;
+Q = Qx*Qy;
+tol = 1e-3;
+
 % w = ones(N);
 % % N = Npadded - Nfacet + 1;
 % 
-% Generate the 2D Gaussian window
-sigx = 5e-1;
-sigy = 5e-1;
-alpha_x = 2*(N(2) - 1)*sigx;
-alpha_y = 2*(N(1) - 1)*sigy;
-wy = gausswin(N(1), alpha_y);
-wx = gausswin(N(2), alpha_x); % possibly take a different window...
+% % Generate the 2D Gaussian window
+% sigx = 5e-1;
+% sigy = 5e-1;
+% alpha_x = 2*(N(2) - 1)*sigx;
+% alpha_y = 2*(N(1) - 1)*sigy;
+% wy = gausswin(N(1), alpha_y);
+% wx = gausswin(N(2), alpha_x); % possibly take a different window...
 
 % wx = kaiser(N(2));
 % wx(N/2+1:end) = 1;
@@ -34,20 +39,20 @@ wx = gausswin(N(2), alpha_x); % possibly take a different window...
 % wg = wg./wsum;
 % wg2 = wg2./wsum;
 
-% Convolve with a unit window of the facet size
-wg = wy.*(wx.');
-w = ones(N);
-w = conv2(wg, w, 'same');
-
-% Threshold the smallest coefficients to zero / renormalize the window
-w(w < 1e-5) = 1e-5; % set threshold as a parameter
-w = w/max(w(:)); % normalized window
+% % Convolve with a unit window of the facet size
+% wg = wy.*(wx.');
+% w = ones(N);
+% w = conv2(wg, w, 'same');
+% 
+% % Threshold the smallest coefficients to zero / renormalize the window
+% w(w < 1e-5) = 1e-5; % set threshold as a parameter
+% w = w/max(w(:)); % normalized window
 
 %% Option 2
 % just linear interpolation (needs to be checked)
 
 % maximum overlap in sdwt2, d can be taken smaller in practice
-d = (2^nlevel - 1)*(filter_size-1);
+d = 50; %(2^nlevel - 1)*(filter_size-1);
 rg_yo = domain_decomposition_overlap2(Qy, N(1), d);
 rg_xo = domain_decomposition_overlap2(Qx, N(2), d);
 Io = zeros(Q, 2);
@@ -94,4 +99,65 @@ y = [1, d, d+1, N(1)-d, N(1)-d+1, N(1)];
 Vq = interp2(X, Y, V, Xq, Yq, 'linear');
 
 % true bilinear interpolation (to be kept in the final algo?)
-test = Vq(1:d,1:d) + Vq(end-d+1:end, end-d+1:end); 
+test = Vq(1:d,1:d) + Vq(end-d+1:end, end-d+1:end) + ...
+       Vq(1:d,end-d+1:end) + Vq(end-d+1:end, 1:d); 
+
+% test with multiple facets, constant overlap
+w = cell(Q, 1);
+for q = 1:Q
+   [qy, qx] = ind2sub([Qy, Qx], q);
+   Vq = V;
+    if qx == 1
+        Vq(1:end-1, 1:2) = 1;
+        if qy == 1
+            Vq(1:2,1:end-1) = 1;
+        elseif qy == Qy
+            Vq(end-1:end, :) = 1;
+        end
+    elseif qx == Qx
+        Vq(1:end-2, end-1:end) = 1;
+        if qy == 1
+            Vq(1:2,3:end) = 1;
+        elseif qy == Qy
+            Vq(end-1:end, :) = 1;
+            
+        end
+    end
+    xx = [1, d, d+1, dims_o(q,2)-d, dims_o(q,2)-d+1, dims_o(q,2)];
+    yy = [1, d, d+1, dims_o(q,1)-d, dims_o(q,1)-d+1, dims_o(q,1)];
+    [XX, YY] = meshgrid(xx, yy);
+    [Xq, Yq] = meshgrid(1:dims_o(q,2), 1:dims_o(q,1));
+    w{q} = interp2(XX, YY, Vq, Xq, Yq, 'linear');     
+end
+
+for q = 1:Q
+   [qy, qx] = ind2sub([Qy, Qx], q);
+    if qx == 1
+        wdx = [ones(1, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
+    elseif qx == Qx
+        wdx = [linspace(tol, 1-tol, d), ones(1, dims_o(q,2)-2*d), ones(1, d)];
+    else
+        wdx = [linspace(tol, 1-tol, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
+    end
+    
+    if qy == 1
+        wdy = [ones(1, d), ones(1, dims_o(q,1)-2*d), linspace(1-tol, tol, d)];
+    elseif qy == Qy
+        wdy = [linspace(tol, 1-tol, d), ones(1, dims_o(q,1)-2*d), ones(1, d)];
+    else
+        wdy = [linspace(tol, 1-tol, d), ones(1, dims_o(q,1)-2*d), linspace(1-tol, tol, d)];
+    end
+    w{q} = (wdy.').*wdx;    
+end
+
+% ok, perfect... use this procedure instead (easier to implement...)
+figure;
+for q = 1:Q
+    [qy, qx] = ind2sub([Qy, Qx], q);
+    qm = (qy-1)*Qx + qx;
+    subplot(Qy, Qx, qm);
+    imshow(w{q}); colormap gray; % to be checked again (problem in the way the images are displayed)
+end
+
+test = w{1}(end-d+1:end, end-d+1:end) + w{2}(1:d, end-d+1:end) ...
+       + w{4}(end-d+1:end, 1:d) + w{5}(1:d, 1:d);

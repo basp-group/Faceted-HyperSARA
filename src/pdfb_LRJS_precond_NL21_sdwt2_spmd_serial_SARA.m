@@ -104,7 +104,6 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 % see warm-restart in detail for this step...
 Ap = Composite();
 Atp = Composite();
-x_hat_i = Composite();
 Gp = Composite();
 yp = Composite();
 pUp = Composite();
@@ -121,7 +120,7 @@ for k = 1:K
         end
     end
     yp{2+k} = y{k};
-    x_hat_i{2+k} = zeros(M, N, length(c_chunks{k}));
+    xhat_i{2+k} = zeros(M, N, length(c_chunks{k}));
     Ap{2+k} = A;
     Atp{2+k} = At;
     Gp{2+k} = G{k};
@@ -220,7 +219,7 @@ for t = t_start : param.max_iter
             tic
             [v1_, g1_] = run_par_l21(v1_, Psit_, Psi_, xhat, weights1_, beta1.Value, sigma11.Value);  
             tw = toc;
-        else % data nodes, 2:K+1 (labindex > 2)
+        else % data nodes, 3:K+2 (labindex > 2)
             tic
             [v2_, g2_, proj_, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
@@ -228,8 +227,7 @@ for t = t_start : param.max_iter
         end
     end
     
-    g = g1_{2};
-    g = g + g0_{1};
+    g = g0_{1} + g1_{2};
     for i = 1:K
         g(:,:,c_chunks{i}) = g(:,:,c_chunks{i}) + g2_{2+i};
     end
@@ -324,7 +322,7 @@ for t = t_start : param.max_iter
             if labindex == 1
                 weights0_ = update_weights_nuclear_serial(xsol, reweight_alpha);
             elseif labindex == 2
-                weights1_ = update_weights_l21_serial(xsol, Psit, weights1_, reweight_alpha);
+                weights1_ = update_weights_l21_serial(xsol, Psit_, weights1_, reweight_alpha);
             end
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha;

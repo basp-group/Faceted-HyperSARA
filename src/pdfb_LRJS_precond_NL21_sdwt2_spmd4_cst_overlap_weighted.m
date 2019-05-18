@@ -86,7 +86,7 @@ end
 
 % auxiliary variable to create bilinear interpolated weights
 V = zeros(6, 6);
-tol = 1e-3; 
+tol = 1e-3;
 V(:,1) = tol;
 V(:,[2,3]) = [tol; 1-tol; 1; 1; 1-tol; tol].*ones(1, 2);
 V(:, 4:6) = fliplr(V(:, 1:3));
@@ -181,11 +181,25 @@ for q = 1:Q
     end
     
     % w{q} = Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2));
-    xx = [1, d, d+1, dims_o(q,2)-d, dims_o(q,2)-d+1, dims_o(q,2)];
-    yy = [1, d, d+1, dims_o(q,1)-d, dims_o(q,1)-d+1, dims_o(q,1)];
-    [XX, YY] = meshgrid(xx, yy);
-    [Xq, Yq] = meshgrid(1:dims_o(q,2), 1:dims_o(q,1));
-    w{q} = interp2(XX, YY, V, Xq, Yq, 'linear'); 
+    
+    % define the weigths (depends on the position of the facet inside the grid)
+    % to be tested on an independent script first
+    if qx == 1
+        wdx = [ones(1, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
+    elseif qx == Qx
+        wdx = [linspace(tol, 1-tol, d), ones(1, dims_o(q,2)-2*d), ones(1, d)];
+    else
+        wdx = [linspace(tol, 1-tol, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
+    end    
+    if qy == 1
+        wdy = [ones(1, d), ones(1, dims_o(q,1)-2*d), linspace(1-tol, tol, d)];
+    elseif qy == Qy
+        wdy = [linspace(tol, 1-tol, d), ones(1, dims_o(q,1)-2*d), ones(1, d)];
+    else
+        wdy = [linspace(tol, 1-tol, d), ones(1, dims_o(q,1)-2*d), linspace(1-tol, tol, d)];
+    end
+    w{q} = (wdy.').*wdx;    
+    
     crop{q} = dims_overlap_ref(q,:) - dims_o(q,:);
 end
 clear XX YY xx yy Xq Yq V
