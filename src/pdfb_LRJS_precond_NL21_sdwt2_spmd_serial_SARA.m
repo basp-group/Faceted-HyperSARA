@@ -48,10 +48,11 @@ parpool(cirrus_cluster, numworkers);
 
 % instantiate Psi, Psit
 [Psi, Psit] = op_sp_wlt_basis(wavelet, nlevel, M, N);
-Psi_ = Composite();
-Psit_ = Composite();
-Psi_{2} = Psi;
-Psit_{2} = Psit;
+spmd
+    if labindex == 2
+        [Psi_, Psit_] = op_sp_wlt_basis(wavelet, nlevel, M, N);
+    end
+end
 
 % Initializations.
 if isfield(param,'init_xsol')
@@ -255,7 +256,7 @@ for t = t_start : param.max_iter
         nuclear = nuclear_norm(xsol);
         
         % l21 norm
-        l21 = sum(l21_norm_sara(xsol, Psit, s{2}));
+        l21 = l21_norm_sara(xsol, Psit, s{2});
         
         
         % retrieve value of the monitoring variables (residual norms)
@@ -377,7 +378,7 @@ end
 % nuclear norm
 nuclear = nuclear_norm(xsol);
 % l21 norm
-l21 = sum(l21_norm_sara(xsol, Psit, s{2}));
+l21 = l21_norm_sara(xsol, Psit, s{2});
 
 % SNR (only on the master node this time)
 sol = reshape(xsol(:),numel(xsol(:))/c,c);
