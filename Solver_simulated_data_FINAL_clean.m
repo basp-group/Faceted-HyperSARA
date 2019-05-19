@@ -128,17 +128,17 @@ if flag_algo == 1
     param_HSI2.nu2 = Anorm; % bound on the norm of the operator A*G
     param_HSI.reweight_alpha_ff = 0.9;
     param_HSI2.reweight_abs_of_max = 0.005;
-    param_HSI2.use_reweight_steps = 1;
+    param_HSI2.use_reweight_steps = 0;
     param_HSI2.total_reweights = 30;
     param_HSI2.use_reweight_eps = 0;
     
     disp('-----------------------------------------')
     disp('HyperSARA')
     disp('-----------------------------------------')
-    
-%     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-%         pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_new_sim(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI2, X0);
-    
+         
+%     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+%         pdfb_LRJS_Adapt_blocks_rwNL21_precond_new_sim(y, epsilons, A, At, aW, G, W, Psi_full, Psit_full, param_HSI2, X0);
+
     % test
     rg_c = domain_decomposition(Qc2, ch(end));
     cell_c_chunks = cell(Qc2, 1);
@@ -183,7 +183,7 @@ end
 %% SARA
 if flag_algo == 0
     param_HSI2 = param_HSI;
-    param_HSI2.use_reweight_steps = 1;
+    param_HSI2.use_reweight_steps = 0;
     param_HSI2.total_reweights = 30;
     util_create_pool(param_HSI.num_workers);
     maxNumCompThreads(param_HSI.num_workers);

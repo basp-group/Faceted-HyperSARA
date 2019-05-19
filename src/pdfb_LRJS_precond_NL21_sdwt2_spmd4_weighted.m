@@ -208,7 +208,7 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 % see warm-restart in detail for this step...
 Ap = Composite();
 Atp = Composite();
-x_hat_i = Composite();
+xhat_i = Composite();
 Gp = Composite();
 yp = Composite();
 pUp = Composite();
@@ -231,7 +231,7 @@ for k = 1:K
     end
     yp{Q+k} = y{k};
     y{k} = [];
-    x_hat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
+    xhat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
     Ap{Q+k} = A;
     Atp{Q+k} = At;
     Gp{Q+k} = G{k};
