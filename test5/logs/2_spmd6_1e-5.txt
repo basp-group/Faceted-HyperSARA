@@ -1,0 +1,15 @@
+
+ncores = 36
+memory = unlimited
+
+MATLAB settings have been changed.  These settings persist between MATLAB sessions.
+Maximum number of computational threads (maxNumCompThreads)          = 36
+Preferred number of workers in a parallel pool (PreferredNumWorkers) = 36
+MATLAB default cluster profile is 'local'
+MATLAB 'local' cluster profile settings:
+Number of workers to start on your local machine (NumWorkers)        = 36
+Number of computational threads to use on each worker (NumThreads)   = 1
+
+NumWorkers and NumThreads can be changed (using parcluster and saveProfile)
+but NumWorkers * NumThreads should be less than 36
+
