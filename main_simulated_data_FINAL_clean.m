@@ -4,9 +4,9 @@ clear all;
 close all;
 clc;
 
-flag_algo = 2; tot = 20; Qx = 2; Qy = 2; Qc = 1; ind = 1; img_size = 512; %2048;
+flag_algo = 2; tot = 20; Qx = 2; Qy = 2; Qc = 1; ind = 1; img_size = 1024;
 Qc2 = 2;
-T = 100;
+T = 100; % 1500, 3000
 hrs = 6;
 
 parallel_version = 'spmd4';
@@ -15,18 +15,12 @@ addpath hypersara-clean/lib/
 addpath hypersara-clean/lib/generate_data/
 addpath hypersara-clean/lib/operators/
 addpath hypersara-clean/lib/CubeHelix/
-% addpath ../irt/
 addpath sdwt2/
 addpath src/
 addpath data/
 addpath nufft/
 addpath hypersara-clean/lib/Proximity_operators/code/matlab/indicator/
 addpath hypersara-clean/lib/Proximity_operators/code/matlab/multi/
-%addpath hypersara-clean/alg
-
-% try
-%     run('../irt/setup.m');
-% end
 
 seed = 1;
 rng(seed);
@@ -56,7 +50,6 @@ generate_measurements = 1;
 load_measurements = 0;
 
 solve_minimization = 1;
-
 
 compute_Anorm_preconditioned = 1;
 save_Anorm_preconditioned = 0;
@@ -99,15 +92,6 @@ if generate_undersampled_cube
     Ny
     c
 end
-
-% %% Display spectra
-% figure, hold on;
-% for i = 1 : 10 : size(X0,1)
-%     if X0(i,end) > 0
-%         plot (X0(i,:))
-%     end
-% end
-% xlim([1 c]);
 
 %% For monochromatic imaging
 %
@@ -152,7 +136,7 @@ param_HSI.num_workers
 
 %% Generate or Load subsampling mask
 if generate_data
-    Generate_data_new % to be investigated
+    Generate_data_new % investigate reduction memory usage
 end
 
 %%
@@ -167,5 +151,5 @@ clear c;
 
 %% Compute MAP estimator
 if solve_minimization
-    Solver_simulated_data_FINAL_clean % to be investigated
+    Solver_simulated_data_FINAL_clean % investigate reduction memory usage
 end

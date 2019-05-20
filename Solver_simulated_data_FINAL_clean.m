@@ -2,30 +2,19 @@ if flag_algo == 0
     
     % Compute measurement operator spectral norm for each channel individually
     for i = ch
-        %Anorm_ch(i) = pow_method_op(@(x) sqrt(cell2mat(aW{i})) .* (Gw{i}*A(x)), @(x) real(At(Gw{i}' * (sqrt(cell2mat(aW{i})) .* x))), [Ny Nx 1]);
-        
+        %Anorm_ch(i) = pow_method_op(@(x) sqrt(cell2mat(aW{i})) .* (Gw{i}*A(x)), @(x) real(At(Gw{i}' * (sqrt(cell2mat(aW{i})) .* x))), [Ny Nx 1]);        
         F = afclean( @(x) HS_forward_operator_precond_G(x, {G{i}}, {W{i}}, A, {aW{i}}));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, {G{i}}, {W{i}}, At, {aW{i}}, Ny, Nx));
         Anorm_ch(i) = pow_method_op(F, Ft, [Ny Nx 1]);
     end
     
 else
-  
-    %     % Compute full measurement operator spectral norm
-    %     F = afclean( @(x) HS_forward_operator_precond(x, Gw, A, aW));
-    %     Ft = afclean( @(y) HS_adjoint_operator_precond(y, Gw, At, aW, Ny, Nx));
-    %     Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]);
-    
     % Compute full measurement operator spectral norm
     F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
     Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
     Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]);
     
 end
-
-% if exist('Gw','var')
-%     clear Gw;
-% end
 
 %% Generate initial epsilons by performing imaging with NNLS on each data block separately
 if generate_eps_nnls
@@ -53,7 +42,7 @@ end
 
 %% sparsity operator definition
 nlevel = 4; % wavelet level
-wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; % wavelet basis to be used, always put self in last position is used
+wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; % wavelet basis to be used, always put self in last position if used
 L = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
 
 if flag_algo < 2
@@ -224,82 +213,84 @@ if flag_algo==2
     param_HSI2.use_reweight_steps = 1;
     param_HSI2.total_reweights = 30;
     param_HSI2.use_reweight_eps = 0;
-    
-    %copy-paste my current codes, to be cleansed before going to cirrus
-     %% 
-    % [P.-A.] only portion to be revised---------')
+
     disp('Split L21 + Nuclear + wavelets')
     disp('-----------------------------------------')
-%     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res] = ...
-%     pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_sim_NL21_split_sdwt2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel);   
+    %[xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,iterh,rel_fval,nuclear,l21,norm_res,res] = ...
+    %pdfb_LRJS_Adapt_blocks_rwNL21_par_precond_sim_NL21_split_sdwt2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel);   
 
     % [P.-A.]
-%     [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-%     pdfb_LRJS_precond_NL21_sdwt2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, chunks, Psit_full);
+    %[xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+    %pdfb_LRJS_precond_NL21_sdwt2(y_t{q}, epsilons_t{q}, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, chunks, Psit_full);
+
+    % spectral tesselation (non-overlapping)
+    rg_c = domain_decomposition(Qc2, ch(end));
+    cell_c_chunks = cell(Qc2, 1);
+    y_spmd = cell(Qc2, 1);
+    epsilon_spmd = cell(Qc2, 1);
+    aW_spmd = cell(Qc2, 1);
+    W_spmd = cell(Qc2, 1);
+    G_spmd = cell(Qc2, 1);
+    
+    for i = 1:Qc2
+        cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+        y_spmd{i} = y(cell_c_chunks{i});
+        epsilon_spmd{i} = epsilons(cell_c_chunks{i});
+        aW_spmd{i} = aW(cell_c_chunks{i});
+        W_spmd{i} = W(cell_c_chunks{i});
+        G_spmd{i} = G(cell_c_chunks{i});
+    end
+    
+    clear y epsilon aW W G
 
     switch parallel_version
-%         case 'parfeval'
-%             [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-%             pdfb_LRJS_precond_NL21_sdwt2_parfeval(y, epsilons, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
-        case 'parfeval2'
-            [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-            pdfb_LRJS_precond_NL21_sdwt2_parfeval2(y, epsilons, A, At, aW, G, W, param_HSI2, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
-        case 'spmd3'
-            [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-            pdfb_LRJS_precond_NL21_sdwt2_spmd3(y, epsilons, A, At, aW, G, W, param_HSI2, X0, Qx, Qy, wlt_basis, L, nlevel);
-        case 'spmd4'
+        %%-arcihved version        
+        %         case 'parfeval'
+        %             [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+        % %             pdfb_LRJS_precond_NL21_sdwt2_parfeval(y, epsilons, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
+        %         case 'parfeval2'
+        %             [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+        %             pdfb_LRJS_precond_NL21_sdwt2_parfeval2(y, epsilons, A, At, aW, G, W, param_HSI2, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
+        %         case 'spmd3'
+        %             [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+        %             pdfb_LRJS_precond_NL21_sdwt2_spmd3(y, epsilons, A, At, aW, G, W, param_HSI2, X0, Qx, Qy, wlt_basis, L, nlevel);
 
-            % spectral tesselation (non-overlapping)
-            rg_c = domain_decomposition(Qc2, ch(end));
-            cell_c_chunks = cell(Qc2, 1);
-            y_spmd = cell(Qc2, 1);
-            epsilon_spmd = cell(Qc2, 1);
-            aW_spmd = cell(Qc2, 1);
-            W_spmd = cell(Qc2, 1);
-            G_spmd = cell(Qc2, 1);
-            
-            for i = 1:Qc2
-                cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
-                y_spmd{i} = y(cell_c_chunks{i});
-                epsilon_spmd{i} = epsilons(cell_c_chunks{i});
-                aW_spmd{i} = aW(cell_c_chunks{i});
-                W_spmd{i} = W(cell_c_chunks{i});
-                G_spmd{i} = G(cell_c_chunks{i});
-            end
-            
-            clear y epsilon aW W G
-            
+        case 'spmd4' % reference version, overlap between the facets underlying the nuclear norms
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd4(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
                 wlt_basis, L, nlevel, cell_c_chunks, ch(end));
             
+        case 'spmd4_weighted' % same as spmd4, with weigthed correction (piece-wise constant, following Audrey's suggestion)
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd4_weighted(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
                 wlt_basis, L, nlevel, cell_c_chunks, ch(end));
             
-            % to be debugged
+        case 'spmd4_cst' % cst overlap for the facets undelrying the nuclear norms (d < overlap from sdwt2)
             d = (power(2, nlevel)-1)*(14)/2; % use of db8
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
                 wlt_basis, L, nlevel, cell_c_chunks, ch(end), d);
             
+        case 'spmd4_cst_weighted'% same as spmd_sct, weight correction (apodization window in this case)
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
                 wlt_basis, L, nlevel, cell_c_chunks, ch(end), d);
             
-%             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-%                 pdfb_LRJS_precond_NL21_sdwt2_spmd5(y_spmd, epsilon_spmd, ...
-%                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
-%                 wlt_basis, L, nlevel, cell_c_chunks, ch(end)); % gather image and data on the same nodes (extra communications compared to spmd4 for reweigthing and monitoring variables)
-%             
-%             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-%                 pdfb_LRJS_precond_NL21_sdwt2_spmd6(y_spmd, epsilon_spmd, ...
-%                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
-%                 wlt_basis, L, nlevel, cell_c_chunks, ch(end));
+        case 'spmd5' % alternative implementation (gather primal variables and data on the same nodes)        
+            [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+                pdfb_LRJS_precond_NL21_sdwt2_spmd5(y_spmd, epsilon_spmd, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+                wlt_basis, L, nlevel, cell_c_chunks, ch(end)); % gather image and data on the same nodes (extra communications compared to spmd4 for reweigthing and monitoring variables)
+       
+        case 'spmd6' % same as spmd4, but no overlap for the facets on which the nuclear norms are taken
+            [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+                pdfb_LRJS_precond_NL21_sdwt2_spmd6(y_spmd, epsilon_spmd, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+                wlt_basis, L, nlevel, cell_c_chunks, ch(end));
         otherwise
             error('Unknown parallelisation option.')
     end
