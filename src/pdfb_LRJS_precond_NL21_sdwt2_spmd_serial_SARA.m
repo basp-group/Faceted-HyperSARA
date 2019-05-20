@@ -364,7 +364,7 @@ weights1 = weights1_{2};
 % Calculate residual images
 res = zeros(size(xsol));
 spmd
-    if labindex > Qp.Value
+    if labindex > 2
         res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-2}), yp, Gp, Ap, Atp, Wp);
     end
 end
