@@ -112,24 +112,35 @@ Wp = Composite();
 epsilonp = Composite();
 norm_res = Composite();
 xhat_i = Composite();
+sz_y = cell(K, 1);
+n_blocks = cell(K, 1);
 for k = 1:K
     norm_res_tmp = cell(length(c_chunks{k}), 1);
+    sz_y{k} = cell(length(c_chunks{k}), 1);
+    n_blocks{k} = cell(length(c_chunks{k}), 1);
     for i = 1:length(c_chunks{k})
-        norm_res_tmp{i} = cell(length(G{k}{i}),1);
-        for j = 1 : length(G{k}{i})
+        norm_res_tmp{i} = cell(length(y{k}{i}),1);
+        n_blocks{k}{i} = length(y{k}{i});
+        for j = 1 : length(y{k}{i})
             norm_res_tmp{i}{j} = norm(y{k}{i}{j});
+            sz_y{k}{i}{j} = numel(y{k}{i}{j});
         end
     end
     yp{2+k} = y{k};
-    xhat_i{2+k} = zeros(M, N, length(c_chunks{k}));
+    y{k} = [];
     Ap{2+k} = A;
     Atp{2+k} = At;
     Gp{2+k} = G{k};
+    G{k} = [];
     Wp{2+k} = W{k};
+    W{k} = [];
     pUp{2+k} = pU{k};
+    pU{k} = [];
     epsilonp{2+k} = epsilon{k};
     norm_res{2+k} = norm_res_tmp;
 end
+
+clear norm_res_tmp epsilon pU W G y
 
 v2_ = Composite();
 t_block = Composite();
@@ -146,13 +157,13 @@ else
         t_block_ = cell(length(c_chunks{k}), 1);
         proj_tmp = cell(length(c_chunks{k}), 1);
         for i = 1:length(c_chunks{k})
-            v2_tmp{i} = cell(length(G{k}{i}),1);
-            t_block_{i} = cell(length(G{k}{i}),1);
-            proj_tmp{i} = cell(length(G{k}{i}),1);
-            for j = 1 : length(G{k}{i})
-                v2_tmp{i}{j} = zeros(length(y{k}{i}{j}) ,1);
+            v2_tmp{i} = cell(n_blocks{k}{i},1);
+            t_block_{i} = cell(n_blocks{k}{i},1);
+            proj_tmp{i} = cell(n_blocks{k}{i},1);
+            for j = 1 : n_blocks{k}{i}
+                v2_tmp{i}{j} = zeros(sz_y{k}{i}{j} ,1);
                 t_block_{i}{j} = 0;
-                proj_tmp{i}{j} = zeros(size(y{k}{i}{j}));
+                proj_tmp{i}{j} = zeros(sz_y{k}{i}{j}, 1);
             end
         end
         v2_{2+k} = v2_tmp;
@@ -161,7 +172,7 @@ else
     end
 end
 
-clear proj_tmp v2_tmp norm_res_tmp t_block_
+clear proj_tmp v2_tmp norm_res_tmp t_block_ G y
 
 reweight_last_step_iter = 0;
 reweight_step_count = 0;
@@ -240,12 +251,12 @@ for t = t_start : param.max_iter
     end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
-    t_nuclear = tw{1};
-    t_l21 = tw{2};
-    t_data = 0;
-    for k = 1:K
-       t_data = max(t_data, tw{2+k}); 
-    end
+%     t_nuclear = tw{1};
+%     t_l21 = tw{2};
+%     t_data = 0;
+%     for k = 1:K
+%        t_data = max(t_data, tw{2+k}); 
+%     end
     
     %% Display
     if ~mod(t,10)
@@ -343,24 +354,23 @@ toc(start_loop)
 
 % Collect distributed values (reweight_alpha, weights0_, weights1_, v0_, v1_)
 v0 = v0_{1};
+v0_{1} = [];
 v1 = v1_{2};
+v1_{2} = [];
 weights0 = weights0_{1};
 weights1 = weights1_{2};
 
 % to be completely modified (within spmd function?)
 % Calculate residual images
 res = zeros(size(xsol));
-for k = 1 : K
-    for i = 1 : length(c_chunks{k})
-        Fx = A(xsol(:,:,c_chunks{k}(i)));
-        g2 = zeros(No,1);
-        for j = 1 : length(G{k}{i})
-            res_f = y{k}{i}{j} - G{k}{i}{j} * Fx(W{k}{i}{j});
-            u2 = G{k}{i}{j}' * res_f;
-            g2(W{k}{i}{j}) = g2(W{k}{i}{j}) + u2; % no overlap between different groups? (content of W...)
-        end
-        res(:,:,c_chunks{k}(i)) = real(At(g2)); % residual images
+spmd
+    if labindex > Qp.Value
+        res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-2}), yp, Gp, Ap, Atp, Wp);
     end
+end
+for k = 1 : K
+    res(:,:,c_chunks{k}) = res_{2+k};
+    res_{2+k} = [];
 end
 
 norm_res = norm(res(:));
@@ -369,8 +379,11 @@ proj = cell(K, 1);
 epsilon = cell(K, 1);
 for i = 1:K
     v2{i} = v2_{2+i};
+    v2_{2+i} = [];
     proj{i} = proj_{2+i};
+    proj_{2+i} = [];
     epsilon{i} = epsilonp{2+i};
+    epsilonp{2+i} = [];
 end
 
 %Final log (merge this step with the computation of the residual image for
