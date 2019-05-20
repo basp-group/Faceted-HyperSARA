@@ -210,6 +210,7 @@ end
 
 figure;
 min_w = Inf;
+max_w = 0;
 for q = 1:Q
     [qy, qx] = ind2sub([Qy, Qx], q);
     qm = (qy-1)*Qx + qx;
@@ -217,7 +218,6 @@ for q = 1:Q
     imagesc(w2{q}, [0, 1]); axis off; axis image; % to be checked again (problem in the way the images are displayed)
     colorbar
     min_w = min(min_w, min(w2{q}(:)));
+    max_w = max(max_w, max(w2{q}(:)));
 end
 % keep hamming window for the moment, change the window later on
-%
-
