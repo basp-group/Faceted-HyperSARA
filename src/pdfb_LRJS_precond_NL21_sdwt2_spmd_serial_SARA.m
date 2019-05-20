@@ -358,7 +358,9 @@ v0_{1} = [];
 v1 = v1_{2};
 v1_{2} = [];
 weights0 = weights0_{1};
+weights0_{1} = [];
 weights1 = weights1_{2};
+weights1_{2} = [];
 
 % to be completely modified (within spmd function?)
 % Calculate residual images

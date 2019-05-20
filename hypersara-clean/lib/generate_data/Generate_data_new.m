@@ -115,5 +115,5 @@ end
 
 %% Free memory
 if free_memory
-    clear u v u1 v1 uw vw aWw nW nWw;
+    clear u v u1 v1 uw vw aWw nW nWw r antennas na mm bmax uvidx;
 end

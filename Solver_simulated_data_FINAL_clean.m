@@ -113,13 +113,13 @@ param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipso
 
 %% HyperSARA
 if flag_algo == 1
-    param_HSI2 = param_HSI;
-    param_HSI2.nu2 = Anorm; % bound on the norm of the operator A*G
+%     param_HSI2 = param_HSI;
+    param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
     param_HSI.reweight_alpha_ff = 0.9;
-    param_HSI2.reweight_abs_of_max = 0.005;
-    param_HSI2.use_reweight_steps = 0;
-    param_HSI2.total_reweights = 30;
-    param_HSI2.use_reweight_eps = 0;
+    param_HSI.reweight_abs_of_max = 0.005;
+    param_HSI.use_reweight_steps = 0;
+    param_HSI.total_reweights = 30;
+    param_HSI.use_reweight_eps = 0;
     
     disp('-----------------------------------------')
     disp('HyperSARA')
@@ -149,7 +149,7 @@ if flag_algo == 1
     clear y epsilon aW W G
     
     [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-        pdfb_LRJS_precond_NL21_sdwt2_spmd_serial_SARA(y_spmd, epsilon_spmd, A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qc2, wlt_basis, nlevel, cell_c_chunks, ch(end));
+        pdfb_LRJS_precond_NL21_sdwt2_spmd_serial_SARA(y_spmd, epsilon_spmd, A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qc2, wlt_basis, nlevel, cell_c_chunks, ch(end));
     % - end test
     
     c = size(xsol,3);
@@ -206,13 +206,13 @@ end
 
 if flag_algo==2
     
-    param_HSI2 = param_HSI;
-    param_HSI2.nu2 = Anorm; % bound on the norm of the operator A*G
+%     param_HSI2 = param_HSI;
+    param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
     param_HSI.reweight_alpha_ff = 0.9;
-    param_HSI2.reweight_abs_of_max = 0.005;
-    param_HSI2.use_reweight_steps = 1;
-    param_HSI2.total_reweights = 30;
-    param_HSI2.use_reweight_eps = 0;
+    param_HSI.reweight_abs_of_max = 0.005;
+    param_HSI.use_reweight_steps = 1;
+    param_HSI.total_reweights = 30;
+    param_HSI.use_reweight_eps = 0;
 
     disp('Split L21 + Nuclear + wavelets')
     disp('-----------------------------------------')
@@ -250,46 +250,46 @@ if flag_algo==2
         % %             pdfb_LRJS_precond_NL21_sdwt2_parfeval(y, epsilons, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
         %         case 'parfeval2'
         %             [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-        %             pdfb_LRJS_precond_NL21_sdwt2_parfeval2(y, epsilons, A, At, aW, G, W, param_HSI2, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
+        %             pdfb_LRJS_precond_NL21_sdwt2_parfeval2(y, epsilons, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel, Psit_full);
         %         case 'spmd3'
         %             [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-        %             pdfb_LRJS_precond_NL21_sdwt2_spmd3(y, epsilons, A, At, aW, G, W, param_HSI2, X0, Qx, Qy, wlt_basis, L, nlevel);
+        %             pdfb_LRJS_precond_NL21_sdwt2_spmd3(y, epsilons, A, At, aW, G, W, param_HSI, X0, Qx, Qy, wlt_basis, L, nlevel);
 
         case 'spmd4' % reference version, overlap between the facets underlying the nuclear norms
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd4(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, Qc2, ...
                 wlt_basis, L, nlevel, cell_c_chunks, ch(end));
             
         case 'spmd4_weighted' % same as spmd4, with weigthed correction (piece-wise constant, following Audrey's suggestion)
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd4_weighted(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, Qc2, ...
                 wlt_basis, L, nlevel, cell_c_chunks, ch(end));
             
         case 'spmd4_cst' % cst overlap for the facets undelrying the nuclear norms (d < overlap from sdwt2)
             d = (power(2, nlevel)-1)*(14)/2; % use of db8
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, Qc2, ...
                 wlt_basis, L, nlevel, cell_c_chunks, ch(end), d);
             
         case 'spmd4_cst_weighted'% same as spmd_sct, weight correction (apodization window in this case)
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, Qc2, ...
                 wlt_basis, L, nlevel, cell_c_chunks, ch(end), d);
             
         case 'spmd5' % alternative implementation (gather primal variables and data on the same nodes)        
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd5(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, Qc2, ...
                 wlt_basis, L, nlevel, cell_c_chunks, ch(end)); % gather image and data on the same nodes (extra communications compared to spmd4 for reweigthing and monitoring variables)
        
         case 'spmd6' % same as spmd4, but no overlap for the facets on which the nuclear norms are taken
             [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
                 pdfb_LRJS_precond_NL21_sdwt2_spmd6(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, Qc2, ...
                 wlt_basis, L, nlevel, cell_c_chunks, ch(end));
         otherwise
             error('Unknown parallelisation option.')

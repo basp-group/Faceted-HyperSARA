@@ -147,7 +147,7 @@ if generate_measurements
     Generate_Measurements
 end
 
-clear c;
+clear c x0;
 
 %% Compute MAP estimator
 if solve_minimization
