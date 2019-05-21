@@ -424,8 +424,7 @@ for t = t_start : param.max_iter
     %% Display
     if ~mod(t,100)
         
-        % [P.-A.]
-        %% compute value of the priors in parallel (include weights*?)
+        %% compute value of the priors in parallel
         spmd
             if labindex <= Qp.Value
                 % compute values for the prior terms

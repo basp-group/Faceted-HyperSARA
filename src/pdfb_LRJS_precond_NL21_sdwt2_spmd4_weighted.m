@@ -562,22 +562,8 @@ for q = 1:Q
     xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
 end
 
-% to be completely modified (within spmd function?)
 % Calculate residual images
 res = zeros(size(xsol));
-% for k = 1 : K
-%     for i = 1 : length(c_chunks{k})
-%         Fx = A(xsol(:,:,c_chunks{k}(i)));
-%         g2 = zeros(No,1);
-%         for j = 1 : length(G{k}{i})
-%             res_f = y{k}{i}{j} - G{k}{i}{j} * Fx(W{k}{i}{j});
-%             u2 = G{k}{i}{j}' * res_f;
-%             g2(W{k}{i}{j}) = g2(W{k}{i}{j}) + u2; % no overlap between different groups? (content of W...)
-%         end
-%         res(:,:,c_chunks{k}(i)) = real(At(g2)); % residual images
-%     end
-% end
-
 spmd
     if labindex > Qp.Value
         res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
