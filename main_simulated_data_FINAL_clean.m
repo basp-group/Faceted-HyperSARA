@@ -11,6 +11,11 @@ hrs = 6;
 
 parallel_version = 'spmd4';
 
+if strcmp(parallel_version, 'spmd4_cst_weighted') || strcmp(parallel_version, 'spmd4_cst')
+    nlevel = 4;
+    d = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
+end
+    
 addpath hypersara-clean/lib/
 addpath hypersara-clean/lib/generate_data/
 addpath hypersara-clean/lib/operators/

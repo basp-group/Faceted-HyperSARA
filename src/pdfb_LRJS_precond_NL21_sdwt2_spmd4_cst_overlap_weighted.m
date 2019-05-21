@@ -1,5 +1,5 @@
 function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-    pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d)
+    pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place. Constant overlap for the nuclear norm assuming d
@@ -171,38 +171,54 @@ for q = 1:Q
     
     % define the weigths (depends on the position of the facet inside the grid)
     % to be tested on an independent script first
-%     if qx == 1
-%         wdx = [ones(1, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
-%     elseif qx == Qx
-%         wdx = [linspace(tol, 1-tol, d), ones(1, dims_o(q,2)-2*d), ones(1, d)];
-%     else
-%         wdx = [linspace(tol, 1-tol, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
-%     end    
-%     if qy == 1
-%         wdy = [ones(1, d), ones(1, dims_o(q,1)-2*d), linspace(1-tol, tol, d)];
-%     elseif qy == Qy
-%         wdy = [linspace(tol, 1-tol, d), ones(1, dims_o(q,1)-2*d), ones(1, d)];
-%     else
-%         wdy = [linspace(tol, 1-tol, d), ones(1, dims_o(q,1)-2*d), linspace(1-tol, tol, d)];
-%     end
-%     w{q} = (wdy.').*wdx;  
-    
-    % example with the hamming window
-    dims_diff = dims_o(q, :) - dims(q, :);
-    if qx > 1
-        wc = window('hamming',2*dims_diff(2)).';
-        wc = [wc(1:dims_diff(2)), ones(1, dims(q, 2))];
-    else
-        wc = ones(1, dims_o(q, 2));
-    end
-    if qy > 1
-        wr = window('hamming',2*dims_diff(1)).';
-        wr =  [wr(1:dims_diff(1)), ones(1, dims(q, 1))];
-    else
-        wr = ones(1, dims_o(q, 1));
-    end
-    w{q} = (wr.').*wc;
-    
+    switch window_type
+        case 'triangular'
+            if qx == 1
+                wdx = [ones(1, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
+            elseif qx == Qx
+                wdx = [linspace(tol, 1-tol, d), ones(1, dims_o(q,2)-2*d), ones(1, d)];
+            else
+                wdx = [linspace(tol, 1-tol, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
+            end    
+            if qy == 1
+                wdy = [ones(1, d), ones(1, dims_o(q,1)-2*d), linspace(1-tol, tol, d)];
+            elseif qy == Qy
+                wdy = [linspace(tol, 1-tol, d), ones(1, dims_o(q,1)-2*d), ones(1, d)];
+            else
+                wdy = [linspace(tol, 1-tol, d), ones(1, dims_o(q,1)-2*d), linspace(1-tol, tol, d)];
+            end
+            w{q} = (wdy.').*wdx; 
+        case 'hamming'
+            dims_diff = dims_o(q, :) - dims(q, :);
+            if qx > 1
+                wc = window('hamming',2*dims_diff(2)).';
+                wc = [wc(1:dims_diff(2)), ones(1, dims(q, 2))];
+            else
+                wc = ones(1, dims_o(q, 2));
+            end
+            if qy > 1
+                wr = window('hamming',2*dims_diff(1)).';
+                wr =  [wr(1:dims_diff(1)), ones(1, dims(q, 1))];
+            else
+                wr = ones(1, dims_o(q, 1));
+            end
+            w{q} = (wr.').*wc;
+        otherwise % make sure there is no 0 at the boundaries of the window
+            dims_diff = dims_o(q, :) - dims(q, :);
+            if qx > 1
+                wc = window(window_type,2*dims_diff(2)).';
+                wc = [wc(1:dims_diff(2)), ones(1, dims(q, 2))];
+            else
+                wc = ones(1, dims_o(q, 2));
+            end
+            if qy > 1
+                wr = window(window_type,2*dims_diff(1)).';
+                wr =  [wr(1:dims_diff(1)), ones(1, dims(q, 1))];
+            else
+                wr = ones(1, dims_o(q, 1));
+            end
+            w{q} = (wr.').*wc;
+    end 
     crop{q} = dims_overlap_ref(q,:) - dims_o(q,:);
 end
 clear XX YY xx yy Xq Yq V
