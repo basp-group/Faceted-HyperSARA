@@ -368,8 +368,7 @@ for t = t_start : param.max_iter
     %% Display
     if ~mod(t,100)
         
-        % [P.-A.]
-        %% compute value of the priors in parallel (include weights*?)
+        %% compute value of the priors in parallel
         spmd
             if labindex <= Qp.Value
                 % compute values for the prior terms
@@ -408,7 +407,7 @@ for t = t_start : param.max_iter
         norm_residual_check = 0;
         for i = Q+1:Q+K
             norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-            norm_residual_check = norm_residual_check + norm_residual_check_i{i}; % problem structure norm_residual_check_i
+            norm_residual_check = norm_residual_check + norm_residual_check_i{i};
         end
         norm_epsilon_check = sqrt(norm_epsilon_check);
         norm_residual_check = sqrt(norm_residual_check);
@@ -458,7 +457,7 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
-    if (param.step_flag && rel_fval(t) < param.reweight_rel_obj)
+    if (param.step_flag && t>500) % rel_fval(t) < param.reweight_rel_obj)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end

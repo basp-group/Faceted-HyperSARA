@@ -375,10 +375,9 @@ for t = t_start : param.max_iter
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
     %% Display
-    if ~mod(t,10)
+    if ~mod(t,100)
         
-        % [P.-A.]
-        %% compute value of the priors in parallel (include weights*?)
+        %% compute value of the priors in parallel
         spmd
             if labindex <= Qp.Value
                 % compute values for the prior terms
@@ -456,7 +455,7 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
-    if (param.step_flag && rel_fval(t) < param.reweight_rel_obj)
+    if (param.step_flag && t>500) %rel_fval(t) < param.reweight_rel_obj)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
@@ -467,6 +466,20 @@ for t = t_start : param.max_iter
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
+        % SNR
+        % get xsol back from the workers
+        for q = 1:Q
+            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        end
+        sol = reshape(xsol(:),numel(xsol(:))/c,c);
+        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+        psnrh = zeros(c,1);
+        for i = 1:c
+            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+        end
+        SNR_average = mean(psnrh);
+        
+        % update weights
         spmd
             if labindex <= Qp.Value
                 x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
@@ -477,13 +490,23 @@ for t = t_start : param.max_iter
                     Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap);
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
-%             else
-%                 % compute residual image on the data nodes
-%                 res_ = compute_residual_images(x, y, G, A, At); % to be possibly removed (not) used here...
+            else
+                % compute residual image on the data nodes
+                res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
             end
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
-        %-- end modifications
+        
+        % Compute residual images (master node)
+        res = zeros(size(xsol));
+        for k = 1 : K
+            res(:,:,c_chunks{k}) = res_{Q+k};
+        end
+        
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+            mkdir('./results/')
+            save(['./results/result_HyperSARA_spmd6_'  num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','xsol','res','SNR','SNR_average');
+        end   
         
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;
@@ -511,22 +534,8 @@ for q = 1:Q
     xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
 end
 
-% to be completely modified (within spmd function?)
 % Calculate residual images
 res = zeros(size(xsol));
-% for k = 1 : K
-%     for i = 1 : length(c_chunks{k})
-%         Fx = A(xsol(:,:,c_chunks{k}(i)));
-%         g2 = zeros(No,1);
-%         for j = 1 : length(G{k}{i})
-%             res_f = y{k}{i}{j} - G{k}{i}{j} * Fx(W{k}{i}{j});
-%             u2 = G{k}{i}{j}' * res_f;
-%             g2(W{k}{i}{j}) = g2(W{k}{i}{j}) + u2; % no overlap between different groups? (content of W...)
-%         end
-%         res(:,:,c_chunks{k}(i)) = real(At(g2)); % residual images
-%     end
-% end
-
 spmd
     if labindex > Qp.Value
         res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);

@@ -224,18 +224,18 @@ for t = t_start : param.max_iter
     %% Update dual variables
     spmd
         if labindex == 1 % nuclear prior node
-            tic;
+            %tic;
             [v0_, g0_] = run_par_nuclear(v0_, xhat, weights0_, beta0.Value, sigma00.Value);
-            tw = toc;  
+            %tw = toc;  
         elseif labindex == 2 % l21 prior node (full SARA prior)
-            tic
+            %tic
             [v1_, g1_] = run_par_l21(v1_, Psit_, Psi_, xhat, weights1_, beta1.Value, sigma11.Value);  
-            tw = toc;
+            %tw = toc;
         else % data nodes, 3:K+2 (labindex > 2)
-            tic
+            %tic
             [v2_, g2_, proj_, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
-            tw = toc;
+            %tw = toc;
         end
     end
     
@@ -259,7 +259,7 @@ for t = t_start : param.max_iter
 %     end
     
     %% Display
-    if ~mod(t,10)
+    if ~mod(t,100)
         
         % [P.-A.]
         %% compute value of the priors
@@ -319,7 +319,7 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
-    if (param.step_flag && rel_fval(t) < param.reweight_rel_obj)
+    if (param.step_flag && t > 500) %rel_fval(t) < param.reweight_rel_obj)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
@@ -338,6 +338,32 @@ for t = t_start : param.max_iter
             end
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha;
+        
+        % Compute residual image
+        res = zeros(size(xsol));
+        spmd
+            if labindex > 2
+                res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-2}), yp, Gp, Ap, Atp, Wp);
+            end
+        end
+        for k = 1 : K
+            res(:,:,c_chunks{k}) = res_{2+k};
+            res_{2+k} = [];
+        end
+        
+        % SNR (only on the master node)
+        sol = reshape(xsol(:),numel(xsol(:))/c,c);
+        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+        psnrh = zeros(c,1);
+        for i = 1:c
+            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+        end
+        SNR_average = mean(psnrh);
+        
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+            mkdir('./results')
+            save(['./results/result_HyperSARA_serial_spmd_'  num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','xsol','res','SNR','SNR_average');
+        end
         
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;

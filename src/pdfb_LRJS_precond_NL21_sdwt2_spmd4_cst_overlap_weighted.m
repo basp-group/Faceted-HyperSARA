@@ -19,14 +19,8 @@ function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,
 % Modified by: P.-A. Thouvenin.
 
 %% REMARKS
-% 1. Do I need to have the number of nodes Q, I available as parallel
-% constants? (automatically broadcasted otherwise each time they are used?)
-% 2. Try to find a compromise between Li and Nk, depending on the size of
-% the problem at hand (assuming the data size is not the main bottleneck),
-% and depending on the computational complexity of the task to be driven by
-% each worker -> see if there is any acceleration here...
-% 4. Backup options have been removed four the moment, see initialization
-% from a set of known variables (warm-restart) [really useful in practice? 
+% 1. Add switch for the type of window considered (just make sure the 
+% window does not reach 0).
 %%
 
 % maxNumCompThreads(param.num_workers);
@@ -83,13 +77,6 @@ end
 %        Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) + ones(dims_o(q,:)); 
 % end
 % Wo = 1./Wo;
-
-% auxiliary variable to create bilinear interpolated weights
-V = zeros(6, 6);
-tol = 1e-3;
-V(:,1) = tol;
-V(:,[2,3]) = [tol; 1-tol; 1; 1; 1-tol; tol].*ones(1, 2);
-V(:, 4:6) = fliplr(V(:, 1:3));
 
 % total number of workers (Q: facets workers, K: data workers)
 numworkers = Q + K;
@@ -305,7 +292,7 @@ for k = 1:K
     norm_res{Q+k} = norm_res_tmp;
 end
 
-clear norm_res_tmp epsilon pU W G y % W, G, y needed to compute the residual image 
+clear norm_res_tmp epsilon pU W G y
 
 v2_ = Composite();
 t_block = Composite();
@@ -468,10 +455,9 @@ for t = t_start : param.max_iter
 %     end
     
     %% Display
-    if ~mod(t,10)
+    if ~mod(t,100)
         
-        % [P.-A.]
-        %% compute value of the priors in parallel (include weights*?)
+        %% compute value of the priors in parallel
         spmd
             if labindex <= Qp.Value
                 % compute values for the prior terms
@@ -548,7 +534,7 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
-    if (param.step_flag && rel_fval(t) < param.reweight_rel_obj)
+    if (param.step_flag && t>500) %rel_fval(t) < param.reweight_rel_obj)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
@@ -559,6 +545,20 @@ for t = t_start : param.max_iter
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
+        % SNR
+        % get xsol back from the workers
+        for q = 1:Q
+            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        end
+        sol = reshape(xsol(:),numel(xsol(:))/c,c);
+        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+        psnrh = zeros(c,1);
+        for i = 1:c
+            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+        end
+        SNR_average = mean(psnrh);
+        
+        % update weights
         spmd
             if labindex <= Qp.Value
                 x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
@@ -569,13 +569,23 @@ for t = t_start : param.max_iter
                     Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap, w, crop);
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
-%             else
-%                 % compute residual image on the data nodes
-%                 res_ = compute_residual_images(x, y, G, A, At); % to be possibly removed (not) used here...
+            else
+                % compute residual image on the data nodes
+                res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
             end
         end
-        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
-        %-- end modifications
+        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node       
+        
+        % Compute residual images (master node)
+        res = zeros(size(xsol));
+        for k = 1 : K
+            res(:,:,c_chunks{k}) = res_{Q+k};
+        end
+        
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+            mkdir('./results/')
+            save(['./results/result_HyperSARA_spmd4_cst_weighted_'  num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','xsol','res','SNR','SNR_average');
+        end 
         
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;
