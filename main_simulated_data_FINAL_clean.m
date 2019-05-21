@@ -8,7 +8,7 @@ flag_algo = 2; tot = 20; Qx = 1; Qy = 2; Qc = 1; ind = 1; img_size = 1024;
 Qc2 = 2;
 T = 1500; % 1500, 3000
 hrs = 6;
-
+window_type = 'hamming';
 parallel_version = 'spmd4';
 
 if strcmp(parallel_version, 'spmd4_cst_weighted') || strcmp(parallel_version, 'spmd4_cst')
