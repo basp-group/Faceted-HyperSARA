@@ -4,8 +4,8 @@ clear all;
 close all;
 clc;
 
-flag_algo = 2; tot = 20; Qx = 2; Qy = 2; Qc = 1; ind = 1; img_size = 1024;
-Qc2 = 2;
+flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512;
+Qc2 = 1;
 T = 1500; % 1500, 3000
 hrs = 6;
 window_type = 'hamming';

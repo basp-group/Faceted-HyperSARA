@@ -83,10 +83,6 @@ clear rg_y rg_x;
 id_dirac = find(ismember(wavelet, 'self'), 1);
 dirac_present = ~isempty(id_dirac);
 
-% check which overlap is the largest (sdwt2 or nuclear norms)
-bool_crop = prod(max(dims_overlap_ref, 1) > max(dims_o, 1));% 0: dwt2 largest, 1: nucler norm largest
-% ...
-
 % total number of workers (Q: facets workers, K: data workers)
 numworkers = Q + K;
 cirrus_cluster = parcluster('local');
@@ -130,6 +126,10 @@ overlap_g_south = Composite();
 overlap_g_east = Composite();
 overlap_g_south_east = Composite();
 overlap = Composite();
+% 
+crop_nuclear = Composite();
+crop_l21 = Composite();
+
 % initialize composite variables and constants
 for q = 1:Q
     Iq{q} = I(q,:);
@@ -147,15 +147,35 @@ for q = 1:Q
     offsetLq{q} = offsetL(q,:);
     offsetRq{q} = offsetR(q,:);
     
-    if bool_crop
-        overlap{q} = max(dims_overlap{q}) - dims(q,:); % amount of overlap necessary for each facet
+    % check which overlap is the largest (sdwt2 or nuclear norms)
+    bool_crop = dims_overlap_ref(q,:) >= dims_o(q,:); % 0: nuclear norm largest, 1: dwt2 largest
+    tmp_crop_l21 = [0, 0];
+    tmp_crop_nuclear = [0, 0];
+    if bool_crop(1)
+        % sdwt2 largest
+        tmp_crop_nuclear(1) = dims_overlap_ref(q,1) - dims_o(q,1);
     else
-        overlap{q} = dims_o(q, :) - dims(q,:);
+        tmp_crop_l21(1) = dims_o(q,1) - dims_overlap_ref(q,1);
     end
+    
+    if bool_crop(2)
+        % sdwt2 largest
+        tmp_crop_nuclear(2) = dims_overlap_ref(q,2) - dims_o(q,2);
+    else
+        tmp_crop_l21(2) = dims_o(q,2) - dims_overlap_ref(q,2);
+    end
+    crop_l21{q} = tmp_crop_l21;
+    crop_nuclear{q} = tmp_crop_nuclear;    
+    overlap{q} = max(max(dims_overlap{q}) - dims(q,:), dims_o(q, :) - dims(q,:));    
+%     if bool_crop{q}
+%         overlap{q} = max(dims_overlap{q}) - dims(q,:); % amount of overlap necessary for each facet
+%     else
+%         overlap{q} = dims_o(q, :) - dims(q,:);
+%     end
 end
 
 % overlap dimension of the neighbour (necessary to define the ghost cells properly)
-crop = Composite();
+%crop = Composite();
 for q = 1:Q
     [qy, qx] = ind2sub([Qy, Qx], q);
     if qy < Qy
@@ -178,7 +198,9 @@ for q = 1:Q
     else
         overlap_g_east{q} = [0, 0];
     end
-    crop{q} = dims_o(q,:) - dims_overlap_ref(q,:); % dims_overlap_ref(q,:) - dims_o(q,:);
+    
+    % problem with crop: make sure I am in the apporpriate configuration!
+    %crop{q} = abs(dims_o(q,:) - dims_overlap_ref(q,:)); % dims_overlap_ref(q,:) - dims_o(q,:);
     % assuming dims_o > dims_overlap_ref
 end
 %%-- end initialisation auxiliary variables sdwt2
@@ -208,7 +230,8 @@ else
     spmd
         % to be changed (modify the sizes if needed, ans the way the elements are cropped)
         if labindex <= Qp.Value
-            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_overlap(Ncoefs_q, dims_q, dims_oq, dirac_present, c, nlevelp.Value);
+            max_dims = max(dims_overlap_ref_q, dims_oq);
+            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_overlap(Ncoefs_q, dims_q, max_dims-crop_nuclear, dirac_present, c, nlevelp.Value);
         end
     end
 end
@@ -344,6 +367,7 @@ for t = t_start : param.max_iter
     %fprintf('Iter %i\n',t);
     start_iter = tic;
     
+    % issue at this stage (indices, to be investigated)
     spmd
         if labindex <= Q
             % primal/prior nodes (1:Q)
@@ -357,26 +381,18 @@ for t = t_start : param.max_iter
             end
             
             % update ghost cells (versions of xhat with overlap)
-            % TO BE UPDATED (NOT SO EASY)
-            x_overlap = zeros([dims_oq, size(xsol_q, 3)]); % zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+            x_overlap = zeros([max_dims, size(xsol_q, 3)]); % zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             
             % update dual variables (nuclear, l21)
-            % d > d_sdwt2
-            [v0_, g0] = update_nuclear_spmd(v0_, x_overlap, weights0_, beta0.Value);
-            [v1_, g1] = update_l21_spmd(v1_, x_overlap(crop(1)+1:end, crop(2)+1:end, :), weights1_, beta1.Value, Iq, ...
+            [v0_, g0] = update_nuclear_spmd(v0_, x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :), weights0_, beta0.Value);
+            [v1_, g1] = update_l21_spmd(v1_, x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :), weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
-            g = sigma00.Value*g0;
-            g(crop(1)+1:end, crop(2)+1:end, :) = g(crop(1)+1:end, crop(2)+1:end, :) + sigma11.Value*g1;
-%             % d < d_sdwt2
-%             [v0_, g0] = update_nuclear_spmd(v0_, x_overlap(crop(1)+1:end, crop(2)+1:end, :), weights0_, beta0.Value);
-%             [v1_, g1] = update_l21_spmd(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
-%                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
-%                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
-%             g = sigma11.Value*g1;
-%             g(crop(1)+1:end, crop(2)+1:end, :) = g(crop(1)+1:end, crop(2)+1:end, :) + sigma00.Value*g0;            
+            g = zeros(size(x_overlap));
+            g(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :) = sigma00.Value*g0;
+            g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) = g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) + sigma11.Value*g1;          
             g = comm2d_reduce(g, overlap, Qyp.Value, Qxp.Value);
             
             % compute g_ for the final update term
@@ -416,22 +432,17 @@ for t = t_start : param.max_iter
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
     %% Display
-    if ~mod(t,100)
+    if ~mod(t,10)
         
         %% compute value of the priors in parallel
         spmd
             if labindex <= Qp.Value
                 % compute values for the prior terms
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-                x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-
-                %         [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
-%             dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-%             offsetLq, offsetRq); % d < d_sdwt2
-        
-                [l21_norm, nuclear_norm] = prior_overlap_spmd_cst2(x_overlap, Iq, ...
-                    dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop); % d > d_sdwt2
+                x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);               
+                [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3(x_overlap, Iq, ...
+                    offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                    offsetLq, offsetRq, crop_l21, crop_nuclear);
             end
         end
         
@@ -523,16 +534,18 @@ for t = t_start : param.max_iter
         spmd
             if labindex <= Qp.Value
                 %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-                x_overlap = zeros([dims_oq, size(xsol_q, 3)]);
-                
+                %x_overlap = zeros([dims_oq, size(xsol_q, 3)]);
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
-                % TO BE MODIFIED
-                [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
-                    Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
-                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap);
-                
+                % TO BE MODIFIED (see which element needs to be cropped, and how)
+%                 [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
+%                     Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
+%                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap);
+                [weights1_, weights0_] = update_weights_overlap2(x_overlap, size(v1_), ...
+                    Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
+                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
+                    reweight_alphap, crop_l21, crop_nuclear);    
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
             else
                 % compute residual image on the data nodes
@@ -606,18 +619,20 @@ spmd
     if labindex <= Qp.Value
         % TO BE MODIFIED
         %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-        x_overlap = zeros([dims_oq, size(xsol_q, 3)]);
+        %x_overlap = zeros([dims_oq, size(xsol_q, 3)]);
         
         x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
         x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
         
-%         [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
-%             dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-%             offsetLq, offsetRq); % d < d_sdwt2
-        
-        [l21_norm, nuclear_norm] = prior_overlap_spmd_cst2(x_overlap, Iq, ...
-            dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            offsetLq, offsetRq, crop); % d > d_sdwt2
+        %         [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
+        %             dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+        %             offsetLq, offsetRq); % d < d_sdwt2
+        %         [l21_norm, nuclear_norm] = prior_overlap_spmd_cst2(x_overlap, Iq, ...
+        %             dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+        %             offsetLq, offsetRq, crop); % d > d_sdwt2
+        [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3(x_overlap, Iq, ...
+            offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+            offsetLq, offsetRq, crop_l21, crop_nuclear);
     end
 end
 
