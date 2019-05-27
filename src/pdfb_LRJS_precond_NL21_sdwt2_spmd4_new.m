@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd4_new(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, p)
+function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd4_new(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, p, bool_weights)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
@@ -60,6 +60,16 @@ for qx = 1:Qx
         Io(q, :) = [rg_yo(qy, 1)-1, rg_xo(qx, 1)-1];
         dims_o(q, :) = [rg_yo(qy,2)-rg_yo(qy,1)+1, rg_xo(qx,2)-rg_xo(qx,1)+1];
     end
+end
+
+% create global weigth matrix (for l21 regularization term)
+Weight = zeros(N);
+if bool_weights
+    for q = 1:Q
+       Weight(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) = ...
+           Weight(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) + ones(dims_o(q,:)); 
+    end
+    Weight = 1./Weight;
 end
 
 % define reference spatial facets (no overlap)
@@ -176,6 +186,7 @@ end
 
 % overlap dimension of the neighbour (necessary to define the ghost cells properly)
 %crop = Composite();
+w = Composite();
 for q = 1:Q
     [qy, qx] = ind2sub([Qy, Qx], q);
     if qy < Qy
@@ -202,6 +213,7 @@ for q = 1:Q
     % problem with crop: make sure I am in the apporpriate configuration!
     %crop{q} = abs(dims_o(q,:) - dims_overlap_ref(q,:)); % dims_overlap_ref(q,:) - dims_o(q,:);
     % assuming dims_o > dims_overlap_ref
+    w{q} = Weight(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2));
 end
 %%-- end initialisation auxiliary variables sdwt2
 
@@ -386,7 +398,7 @@ for t = t_start : param.max_iter
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             
             % update dual variables (nuclear, l21)
-            [v0_, g0] = update_nuclear_spmd(v0_, x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :), weights0_, beta0.Value);
+            [v0_, g0] = update_nuclear_spmd_weighted(v0_, x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :), w, weights0_, beta0.Value);
             [v1_, g1] = update_l21_spmd(v1_, x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :), weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
@@ -440,9 +452,9 @@ for t = t_start : param.max_iter
                 % compute values for the prior terms
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);               
-                [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3(x_overlap, Iq, ...
+                [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3_weighted(x_overlap, Iq, ...
                     offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear);
+                    offsetLq, offsetRq, crop_l21, crop_nuclear, w);
             end
         end
         
@@ -542,10 +554,10 @@ for t = t_start : param.max_iter
 %                 [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
 %                     Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
 %                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap);
-                [weights1_, weights0_] = update_weights_overlap2(x_overlap, size(v1_), ...
+                [weights1_, weights0_] = update_weights_overlap2_weighted(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                    reweight_alphap, crop_l21, crop_nuclear);    
+                    reweight_alphap, crop_l21, crop_nuclear, w);    
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
             else
                 % compute residual image on the data nodes
@@ -630,9 +642,9 @@ spmd
         %         [l21_norm, nuclear_norm] = prior_overlap_spmd_cst2(x_overlap, Iq, ...
         %             dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
         %             offsetLq, offsetRq, crop); % d > d_sdwt2
-        [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3(x_overlap, Iq, ...
+        [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3_weighted(x_overlap, Iq, ...
             offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            offsetLq, offsetRq, crop_l21, crop_nuclear);
+            offsetLq, offsetRq, crop_l21, crop_nuclear, w);
     end
 end
 

@@ -10,6 +10,7 @@ T = 1500; % 1500, 3000
 hrs = 6;
 window_type = 'hamming';
 parallel_version = 'spmd4';
+bool_weights = true; % for the spmd4_new version (50% overlap version)
 
 if strcmp(parallel_version, 'spmd4_cst_weighted') || strcmp(parallel_version, 'spmd4_cst')
     nlevel = 4;
