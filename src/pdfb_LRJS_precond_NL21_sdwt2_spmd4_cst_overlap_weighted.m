@@ -173,6 +173,7 @@ for q = 1:Q
     % to be tested on an independent script first
     switch window_type
         case 'triangular'
+            tol = 1e-3;
             if qx == 1
                 wdx = [ones(1, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
             elseif qx == Qx
