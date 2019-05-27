@@ -175,14 +175,14 @@ for q = 1:Q
         case 'triangular'
             tol = 1e-3;
             if qx == 1
-                wdx = [ones(1, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
+                wdx = [ones(1, dims(q,2)-d), linspace(1-tol, tol, d)];
             elseif qx == Qx
                 wdx = [linspace(tol, 1-tol, d), ones(1, dims_o(q,2)-2*d), ones(1, d)];
             else
                 wdx = [linspace(tol, 1-tol, d), ones(1, dims_o(q,2)-2*d), linspace(1-tol, tol, d)];
             end    
             if qy == 1
-                wdy = [ones(1, d), ones(1, dims_o(q,1)-2*d), linspace(1-tol, tol, d)];
+                wdy = [ones(1, dims(q,1)-d), linspace(1-tol, tol, d)];
             elseif qy == Qy
                 wdy = [linspace(tol, 1-tol, d), ones(1, dims_o(q,1)-2*d), ones(1, d)];
             else
