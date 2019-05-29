@@ -63,13 +63,16 @@ for qx = 1:Qx
 end
 
 % create global weigth matrix (for l21 regularization term)
-Weight = zeros(N);
+
 if bool_weights
+    Weight = zeros(N);
     for q = 1:Q
        Weight(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) = ...
            Weight(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) + ones(dims_o(q,:)); 
     end
     Weight = 1./Weight;
+else
+    Weight = ones(N);
 end
 
 % define reference spatial facets (no overlap)
@@ -574,7 +577,7 @@ for t = t_start : param.max_iter
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             mkdir('./results/')
-            save(['./results/result_HyperSARA_spmd4_'  num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','xsol','res','SNR','SNR_average');
+            save(['./results/result_HyperSARA_spmd4_new'  num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','xsol','res','SNR','SNR_average');
         end 
         
         if (reweight_step_count >= param.total_reweights)
