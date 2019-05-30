@@ -25,4 +25,4 @@ x(facet_size/2+1:end-facet_size/2, facet_size/2+1:end-facet_size/2) = x_temp;
 figure; imagesc(log10(x), [-5, 0]); colorbar; axis equal
 
 % save result
-% fitswrite('padded_W28_1024.fits', x)
+fitswrite(x, 'data/padded_W28_1024.fits')
