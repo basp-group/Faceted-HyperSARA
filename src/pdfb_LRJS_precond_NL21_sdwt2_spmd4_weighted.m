@@ -63,7 +63,7 @@ id_dirac = find(ismember(wavelet, 'self'), 1);
 dirac_present = ~isempty(id_dirac);
 
 % create global weigth matrix (for l21 regularization term)
-Weight = zeros(N);
+Weight = zeros(M, N);
 for q = 1:Q
    Weight(I_overlap_ref(q,1)+1:I_overlap_ref(q,1)+dims_overlap_ref(q,1), I_overlap_ref(q,2)+1:I_overlap_ref(q,2)+dims_overlap_ref(q,2)) = ...
        Weight(I_overlap_ref(q,1)+1:I_overlap_ref(q,1)+dims_overlap_ref(q,1), I_overlap_ref(q,2)+1:I_overlap_ref(q,2)+dims_overlap_ref(q,2)) + ones(dims_overlap_ref(q,:)); 

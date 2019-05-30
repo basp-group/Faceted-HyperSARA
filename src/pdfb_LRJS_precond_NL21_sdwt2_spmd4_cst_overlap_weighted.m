@@ -71,7 +71,7 @@ for qx = 1:Qx
     end
 end
 % create weight matrix Wo (if needed)
-% Wo = zeros(N);
+% Wo = zeros(M, N);
 % for q = 1:Q
 %    Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) = ...
 %        Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) + ones(dims_o(q,:)); 

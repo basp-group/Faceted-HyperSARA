@@ -65,14 +65,14 @@ end
 % create global weigth matrix (for l21 regularization term)
 
 if bool_weights
-    Weight = zeros(N);
+    Weight = zeros(M, N);
     for q = 1:Q
        Weight(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) = ...
            Weight(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) + ones(dims_o(q,:)); 
     end
     Weight = 1./Weight;
 else
-    Weight = ones(N);
+    Weight = ones(M, N);
 end
 
 % define reference spatial facets (no overlap)

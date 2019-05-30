@@ -76,7 +76,7 @@ if bool_weights
     end
     Weight = 1./Weight;
 else
-    Weight = ones(N);
+    Weight = ones(M, N);
 end
 
 % define reference spatial facets (no overlap)
