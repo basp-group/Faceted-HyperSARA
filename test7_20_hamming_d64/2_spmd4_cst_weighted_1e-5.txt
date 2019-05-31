@@ -9067,3 +9067,17 @@ Iter = 8380, Time = 6.899618e+00
 Iter = 8381, Time = 6.617930e+00
 Iter = 8382, Time = 6.841923e+00
 Iter = 8383, Time = 7.411678e+00
+Iter = 8384, Time = 6.993461e+00
+Iter = 8385, Time = 6.851464e+00
+Iter = 8386, Time = 7.188528e+00
+Iter = 8387, Time = 7.234528e+00
+Iter = 8388, Time = 8.202851e+00
+Iter = 8389, Time = 7.062417e+00
+Iter = 8390, Time = 7.504769e+00
+Iter = 8391, Time = 6.807236e+00
+Iter = 8392, Time = 7.731541e+00
+Iter = 8393, Time = 7.358970e+00
+Iter = 8394, Time = 7.122196e+00
+Iter = 8395, Time = 6.539266e+00
+Iter = 8396, Time = 7.076486e+00
+Iter = 8397, Time = 8.207818e+00

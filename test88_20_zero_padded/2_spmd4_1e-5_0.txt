@@ -9084,3 +9084,19 @@ Iter = 5893, Time = 8.992454e+00
 Iter = 5894, Time = 8.193241e+00
 Iter = 5895, Time = 8.939604e+00
 Iter = 5896, Time = 8.930908e+00
+Iter = 5897, Time = 8.607945e+00
+Iter = 5898, Time = 8.388151e+00
+Iter = 5899, Time = 8.441530e+00
+Iter = 5900, Time = 8.335131e+00
+Iter 5900
+N-norm = 3.408606e+03, L21-norm = 2.228746e+05, rel_fval = 3.655193e-03
+ epsilon = 4.590532e+02, residual = 1.603681e+04
+ SNR = 3.209516e+01, aSNR = 3.199965e+01
+
+Iter = 5901, Time = 8.991116e+00
+Reweighting: 18
+
+Iter = 5902, Time = 8.723436e+00
+Iter = 5903, Time = 8.361929e+00
+Iter = 5904, Time = 8.509757e+00
+Iter = 5905, Time = 8.497277e+00

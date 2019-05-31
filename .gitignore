@@ -7,4 +7,5 @@ result*
 irt*
 *.swo
 *.swp
-./test*
+test*
+nufft_*

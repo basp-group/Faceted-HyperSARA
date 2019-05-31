@@ -9345,3 +9345,24 @@ Iter = 6067, Time = 9.545255e+00
 Iter = 6068, Time = 8.558827e+00
 Iter = 6069, Time = 9.267382e+00
 Iter = 6070, Time = 8.723076e+00
+Iter 6070
+N-norm = 3.401264e+03, L21-norm = 2.113965e+05, rel_fval = 3.499992e-03
+ epsilon = 4.590532e+02, residual = 8.022145e+03
+ SNR = 3.722506e+01, aSNR = 3.718315e+01
+
+Iter = 6071, Time = 8.600122e+00
+Iter = 6072, Time = 8.716699e+00
+Iter = 6073, Time = 8.504078e+00
+Iter = 6074, Time = 8.904157e+00
+Iter = 6075, Time = 8.894943e+00
+Iter = 6076, Time = 8.641067e+00
+Iter = 6077, Time = 8.743559e+00
+Iter = 6078, Time = 8.434582e+00
+Iter = 6079, Time = 8.607766e+00
+Iter = 6080, Time = 8.706287e+00
+Iter 6080
+N-norm = 3.400833e+03, L21-norm = 2.113466e+05, rel_fval = 3.485172e-03
+ epsilon = 4.590532e+02, residual = 7.977287e+03
+ SNR = 3.722377e+01, aSNR = 3.717832e+01
+
+Iter = 6081, Time = 8.432349e+00
