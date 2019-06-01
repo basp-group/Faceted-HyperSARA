@@ -218,6 +218,7 @@ for q = 1:Q
     % assuming dims_o > dims_overlap_ref
     w{q} = Weight(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2));
 end
+clear qy qx;
 %%-- end initialisation auxiliary variables sdwt2
 
 %Initializations.
@@ -247,7 +248,7 @@ else
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
             [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_overlap(Ncoefs_q, dims_q, max_dims-crop_nuclear, dirac_present, c, nlevelp.Value);
-            [qy, qx] = ind2sub([Qyp.Value, Qx.Value], labindex);
+            [qy, qx] = ind2sub([Qy, Qx], labindex); % error here... why (issue, only zeros for the image)
         end
     end
 end
