@@ -247,6 +247,7 @@ else
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
             [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_overlap(Ncoefs_q, dims_q, max_dims-crop_nuclear, dirac_present, c, nlevelp.Value);
+            [qy, qx] = ind2sub([Qyp.Value, Qx.Value], labindex);
         end
     end
 end
@@ -390,6 +391,24 @@ for t = t_start : param.max_iter
             % update primal variable
             [xsol_q, xhat_q, rel_x_q, norm_x_q] = update_primal(xsol_q, g_q);
             
+            % force image to be zero on the borders (size of one overlap)
+            if (qx == 1)
+                xsol_q(:, 1:floor(p*size(xsol_q, 2))) = 0;
+                xhat_q(:, 1:floor(p*size(xsol_q, 2))) = 0;
+            end
+            if (qx == Qxp.Value)
+                xsol_q(:, end-floor(p*size(xsol_q, 2))+1:end) = 0;
+                xhat_q(:, end-floor(p*size(xsol_q, 2))+1:end) = 0;
+            end           
+            if (qy == 1)
+                xsol_q(1:floor(p*size(xsol_q, 1)), :) = 0;
+                xhat_q(1:floor(p*size(xsol_q, 1)), :) = 0;
+            end
+            if (qy == Qyp.Value)
+                xsol_q(end-floor(p*size(xsol_q, 1))+1:end, :) = 0;
+                xhat_q(end-floor(p*size(xsol_q, 1))+1:end, :) = 0;
+            end
+      
             % send xhat_q (communication towards the data nodes)
             for i = 1:K
                 labSend(xhat_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
