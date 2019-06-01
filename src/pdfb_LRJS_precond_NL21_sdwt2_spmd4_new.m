@@ -394,20 +394,20 @@ for t = t_start : param.max_iter
             
             % force image to be zero on the borders (size of one overlap)
             if (qx == 1)
-                xsol_q(:, 1:floor(p*size(xsol_q, 2))) = 0;
-                xhat_q(:, 1:floor(p*size(xsol_q, 2))) = 0;
+                xsol_q(:, 1:floor(p*dims_o(q,2))) = 0;
+                xhat_q(:, 1:floor(p*dims_o(q,2))) = 0;
             end
             if (qx == Qxp.Value)
-                xsol_q(:, end-floor(p*size(xsol_q, 2))+1:end) = 0;
-                xhat_q(:, end-floor(p*size(xsol_q, 2))+1:end) = 0;
+                xsol_q(:, end-floor(p*dims_o(q,2))+1:end) = 0;
+                xhat_q(:, end-floor(p*dims_o(q,2))+1:end) = 0;
             end           
             if (qy == 1)
-                xsol_q(1:floor(p*size(xsol_q, 1)), :) = 0;
-                xhat_q(1:floor(p*size(xsol_q, 1)), :) = 0;
+                xsol_q(1:floor(p*dims_o(q,1)), :) = 0;
+                xhat_q(1:floor(p*dims_o(q,1)), :) = 0;
             end
             if (qy == Qyp.Value)
-                xsol_q(end-floor(p*size(xsol_q, 1))+1:end, :) = 0;
-                xhat_q(end-floor(p*size(xsol_q, 1))+1:end, :) = 0;
+                xsol_q(end-floor(p*dims_o(q,1))+1:end, :) = 0;
+                xhat_q(end-floor(p*dims_o(q,1))+1:end, :) = 0;
             end
       
             % send xhat_q (communication towards the data nodes)
