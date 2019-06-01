@@ -70,13 +70,6 @@ for qx = 1:Qx
         dims_o(q, :) = [rg_yo(qy,2)-rg_yo(qy,1)+1, rg_xo(qx,2)-rg_xo(qx,1)+1];
     end
 end
-% create weight matrix Wo (if needed)
-% Wo = zeros(M, N);
-% for q = 1:Q
-%    Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) = ...
-%        Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) + ones(dims_o(q,:)); 
-% end
-% Wo = 1./Wo;
 
 % total number of workers (Q: facets workers, K: data workers)
 numworkers = Q + K;
@@ -142,6 +135,17 @@ for q = 1:Q
 end
 
 % overlap dimension of the neighbour (necessary to define the ghost cells properly)
+% define weights, depending on the weigthing option
+if strcmp(window_type, 'piecewise_constant')
+    % create weight matrix Wo (if needed)
+    Wo = zeros(M, N);
+    for q = 1:Q
+       Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) = ...
+           Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2)) + ones(dims_o(q,:)); 
+    end
+    Wo = 1./Wo;
+end
+
 w = Composite();
 crop = Composite(); % indicates crop from the redundant sdwt2 facets
 for q = 1:Q
@@ -166,8 +170,6 @@ for q = 1:Q
     else
         overlap_g_east{q} = [0, 0];
     end
-    
-    % w{q} = Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2));
     
     % define the weigths (depends on the position of the facet inside the grid)
     % to be tested on an independent script first
@@ -204,6 +206,8 @@ for q = 1:Q
                 wr = ones(1, dims_o(q, 1));
             end
             w{q} = (wr.').*wc;
+        case 'piecewise_constant'
+            w{q} = Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2));
         otherwise % make sure there is no 0 at the boundaries of the window
             dims_diff = dims_o(q, :) - dims(q, :);
             if qx > 1
@@ -222,7 +226,7 @@ for q = 1:Q
     end 
     crop{q} = dims_overlap_ref(q,:) - dims_o(q,:);
 end
-clear XX YY xx yy Xq Yq V
+clear XX YY xx yy Xq Yq V Wo
 %%-- end initialisation auxiliary variables sdwt2
 
 %Initializations.
