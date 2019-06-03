@@ -393,19 +393,19 @@ for t = t_start : param.max_iter
             [xsol_q, xhat_q, rel_x_q, norm_x_q] = update_primal(xsol_q, g_q);
             
             % force image to be zero on the borders (size of one overlap)
-            if (qx == 1)
+            if (qx == 1) && (Qxp.Value > 1)
                 xsol_q(:, 1:floor(p*dims_o(q,2)), :) = 0;
                 xhat_q(:, 1:floor(p*dims_o(q,2)), :) = 0;
             end
-            if (qx == Qxp.Value)
+            if (qx == Qxp.Value) && (Qxp.Value > 1)
                 xsol_q(:, end-floor(p*dims_o(q,2))+1:end, :) = 0;
                 xhat_q(:, end-floor(p*dims_o(q,2))+1:end, :) = 0;
             end           
-            if (qy == 1)
+            if (qy == 1) && (Qyp.Value > 1)
                 xsol_q(1:floor(p*dims_o(q,1)), :, :) = 0;
                 xhat_q(1:floor(p*dims_o(q,1)), :, :) = 0;
             end
-            if (qy == Qyp.Value)
+            if (qy == Qyp.Value) && (Qyp.Value > 1)
                 xsol_q(end-floor(p*dims_o(q,1))+1:end, :, :) = 0;
                 xhat_q(end-floor(p*dims_o(q,1))+1:end, :, :) = 0;
             end
