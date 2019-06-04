@@ -154,8 +154,7 @@ for q = 1:Q
     crop_l21{q} = tmp_crop_l21;
     crop_nuclear{q} = tmp_crop_nuclear;    
     overlap{q} = max(max(dims_overlap{q}) - dims(q,:), dims_o(q, :) - dims(q,:)); 
-    
-    overlap{q} = max(dims_overlap{q}) - dims(q,:); % amount of overlap necessary for each facet
+    % amount of overlap necessary for each facet
     dims_oq{q} = dims_o(q, :);
 end
 
@@ -417,7 +416,7 @@ for t = t_start : param.max_iter
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             
-            % update dual variables (nuclear, l21)
+            % update dual variables (nuclear, l21) % errors here
             [v0_, g0] = update_nuclear_spmd_weighted(v0_, x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :), w, weights0_, beta0.Value);
             [v1_, g1] = update_l21_spmd(v1_, x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :), weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
