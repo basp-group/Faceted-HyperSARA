@@ -1,9 +1,8 @@
 clc; clear all; close all;
 format compact;
 
-addpath ../src
+addpath ../sdwt2
 addpath ../data
-addpath ../utils
 
 % x = double(imread('data/lena.bmp'))/255;
 x = fitsread('W28_1024.fits');
@@ -23,12 +22,16 @@ p = 0.5;
 
 % overlapping facets
 % define overlapping facets
-rg_yo = domain_decomposition_overlap3(Qy, N(1), p);
-rg_xo = domain_decomposition_overlap3(Qx, N(2), p);
+d = 256;
 
-% equivalent number of facets for the non-redundant version
-Qx = floor(Qx/p)+1-floor(1/p);
-Qy = floor(Qy/p)+1-floor(1/p);
+rg_yo = domain_decomposition_overlap2(Qy, N(1), d);
+rg_xo = domain_decomposition_overlap2(Qx, N(2), d);
+
+% rg_yo = domain_decomposition_overlap3(Qy, N(1), p);
+% rg_xo = domain_decomposition_overlap3(Qx, N(2), p);
+% % equivalent number of facets for the non-redundant version
+% Qx = floor(Qx/p)+1-floor(1/p);
+% Qy = floor(Qy/p)+1-floor(1/p);
 Q = Qx*Qy;
 
 % define starting indices/sizes of the overlapping facets 
@@ -73,7 +76,7 @@ L = [2*n,0].'; % filter length
 %%- begin initialization sdwt2
 % instantiate auxiliary variables for sdwt2
 [~, ~, ~, dims_overlap_ref, I_overlap, dims_overlap, ...
-    ~, ~, status, offset, offsetL, offsetR, Ncoefs, temLIdxs, temRIdxs] = generate_segdwt_indices([M, N], I, dims, nlevel, wavelet, L);
+    ~, ~, status, offset, offsetL, offsetR, Ncoefs, temLIdxs, temRIdxs] = generate_segdwt_indices(N, I, dims, nlevel, wavelet, L);
 
 % total number of workers (Q: facets workers, K: data workers)
 delete(gcp('nocreate'))
@@ -119,7 +122,7 @@ overlap = Composite();
 crop_nuclear = Composite();
 crop_l21 = Composite();
 %
-xq = Comopsite();
+xq = Composite();
 
 % initialize composite variables and constants
 for q = 1:Q
@@ -155,7 +158,7 @@ for q = 1:Q
     else
         tmp_crop_l21(2) = dims_o(q,2) - dims_overlap_ref(q,2);
     end
-    crop_l21{q} = tmp_crop_l21;
+    crop_l21{q} = tmp_crop_l21; % quite large... surprising
     crop_nuclear{q} = tmp_crop_nuclear;    
     overlap{q} = max(max(dims_overlap{q}) - dims(q,:), dims_o(q, :) - dims(q,:));
     
@@ -189,32 +192,36 @@ for q = 1:Q
     end
 end
 
-spmd   
-    x_overlap = zeros([max_dims, size(xsol_q, 3)]); % zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-    x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
+spmd
+    max_dims = max(dims_overlap_ref_q, dims_oq);
+    x_overlap = zeros([max_dims, size(x, 3)]); % zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+    x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xq;
     x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+
+    g0 = x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :);
+    g1 = update_l21_spmd_debug(x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :), Iq, dims_q, I_overlap_q, dims_overlap_q, ...
+        offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, ...
+        offsetLq, offsetRq, dims_overlap_ref_q);    
     
-    zerosNum = dims_overlap_ref_q + offsetLq + offsetRq;
-    x2 = zeros(zerosNum);
-    x2(offsetLq(1)+1:end-offsetRq(1),...
-            offsetLq(q)+1:end-offsetRq(2), :)...
-            = x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :);
+    g = zeros(size(x_overlap));
+%     g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) = g1;
+    g(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :) = g0; % find the appropriate position in there! find a way to fix this issue
     
-    % forward operator [put the following instructions into a parfeval for parallelisation]
-    SPsitLx = sdwt2_sara(x2, Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q);
-    
-    % inverse operator (for a single facet) (inverse = adjoin for spd, properly implement the adjoint operator for different boundary conditions) u{q}
-    g = isdwt2_sara(SPsitLx, I_q, dims_q, I_overlap_q, dims_overlap_q, Ncoefs_q, nlevelp.Value, waveletp.Value, temLIdxs_q, temRIdxs_q);
-    
+%     % forward operator [put the following instructions into a parfeval for parallelisation]
+%     SPsitLx = sdwt2_sara(x2, Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q);
+%     
+%     % inverse operator (for a single facet) (inverse = adjoin for spd, properly implement the adjoint operator for different boundary conditions) u{q}
+%     g = isdwt2_sara(SPsitLx, I_q, dims_q, I_overlap_q, dims_overlap_q, Ncoefs_q, nlevelp.Value, waveletp.Value, temLIdxs_q, temRIdxs_q);
+%     
     % communicate borders + aggregate (reduction)
     g = comm2d_reduce(g, overlap, Qyp.Value, Qxp.Value);
+    x2 = g(overlap(1)+1:end, overlap(2)+1:end, :);
 end
 
 x_rec = zeros(N);
 for q = 1:Q
-    x_rec(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2)) = g{q};
+    x_rec(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2)) = x2{q};
 end
 figure; imagesc(log10(x_rec));
 
 norm(x(:) - x_rec(:))
-
