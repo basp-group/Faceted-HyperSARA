@@ -393,22 +393,22 @@ for t = t_start : param.max_iter
             [xsol_q, xhat_q, rel_x_q, norm_x_q] = update_primal(xsol_q, g_q);
             
             % force image to be zero on the borders (size of one overlap)
-            if (qx == 1) && (Qxp.Value > 1)
-                xsol_q(:, 1:floor(p*dims_o(q,2)), :) = 0;
-                xhat_q(:, 1:floor(p*dims_o(q,2)), :) = 0;
-            end
-            if (qx == Qxp.Value) && (Qxp.Value > 1)
-                xsol_q(:, end-floor(p*dims_o(q,2))+1:end, :) = 0;
-                xhat_q(:, end-floor(p*dims_o(q,2))+1:end, :) = 0;
-            end           
-            if (qy == 1) && (Qyp.Value > 1)
-                xsol_q(1:floor(p*dims_o(q,1)), :, :) = 0;
-                xhat_q(1:floor(p*dims_o(q,1)), :, :) = 0;
-            end
-            if (qy == Qyp.Value) && (Qyp.Value > 1)
-                xsol_q(end-floor(p*dims_o(q,1))+1:end, :, :) = 0;
-                xhat_q(end-floor(p*dims_o(q,1))+1:end, :, :) = 0;
-            end
+%             if (qx == 1) && (Qxp.Value > 1)
+%                 xsol_q(:, 1:floor(p*dims_o(q,2)), :) = 0;
+%                 xhat_q(:, 1:floor(p*dims_o(q,2)), :) = 0;
+%             end
+%             if (qx == Qxp.Value) && (Qxp.Value > 1)
+%                 xsol_q(:, end-floor(p*dims_o(q,2))+1:end, :) = 0;
+%                 xhat_q(:, end-floor(p*dims_o(q,2))+1:end, :) = 0;
+%             end           
+%             if (qy == 1) && (Qyp.Value > 1)
+%                 xsol_q(1:floor(p*dims_o(q,1)), :, :) = 0;
+%                 xhat_q(1:floor(p*dims_o(q,1)), :, :) = 0;
+%             end
+%             if (qy == Qyp.Value) && (Qyp.Value > 1)
+%                 xsol_q(end-floor(p*dims_o(q,1))+1:end, :, :) = 0;
+%                 xhat_q(end-floor(p*dims_o(q,1))+1:end, :, :) = 0;
+%             end
       
             % send xhat_q (communication towards the data nodes)
             for i = 1:K
@@ -421,12 +421,12 @@ for t = t_start : param.max_iter
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             
             % update dual variables (nuclear, l21)
-            [v0_, g0] = update_nuclear_spmd_weighted(v0_, x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :), w, weights0_, beta0.Value);
+%             [v0_, g0] = update_nuclear_spmd_weighted(v0_, x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :), w, weights0_, beta0.Value);
             [v1_, g1] = update_l21_spmd(v1_, x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :), weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
             g = zeros(size(x_overlap));
-            g(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :) = sigma00.Value*g0;
+%             g(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :) = sigma00.Value*g0;
             g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) = g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) + sigma11.Value*g1;          
             g = comm2d_reduce(g, overlap, Qyp.Value, Qxp.Value);
             
