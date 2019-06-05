@@ -553,6 +553,11 @@ for t = t_start : param.max_iter
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node       
         
+        % get xsol back from the workers
+        for q = 1:Q
+            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        end
+        
         % Compute residual images (master node)
         res = zeros(size(xsol));
         for k = 1 : K
