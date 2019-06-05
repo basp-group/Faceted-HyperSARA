@@ -7,7 +7,7 @@ ci = length(epsilon);
 for i = 1 : ci
     for  j = 1 : length(epsilon{i})
         if  norm_res{i}{j} < adapt_eps_tol_in * epsilon{i}{j}
-            if t > t_block{i}{j} + adapt_eps_steps && rel_fval(t) < adapt_eps_rel_obj
+            if t > t_block{i}{j} + adapt_eps_steps && rel_fval < adapt_eps_rel_obj
                 epsilon{i}{j} = norm_res{i}{j} + (-norm_res{i}{j} + epsilon{i}{j}) * (1 - adapt_eps_change_percentage);
                 t_block{i}{j} = t;
                 %count_eps_update_down = count_eps_update_down + 1;
@@ -16,7 +16,7 @@ for i = 1 : ci
         end
         
         if  norm_res{i}{j} > adapt_eps_tol_out * epsilon{i}{j}
-            if t > t_block{i}{j} + adapt_eps_steps && rel_fval(t) < adapt_eps_rel_obj
+            if t > t_block{i}{j} + adapt_eps_steps && rel_fval < adapt_eps_rel_obj
                 epsilon{i}{j} = epsilon{i}{j} + (norm_res{i}{j} - epsilon{i}{j}) * adapt_eps_change_percentage;
                 t_block{i}{j} = t;
                 %count_eps_update_up = count_eps_update_up + 1;
