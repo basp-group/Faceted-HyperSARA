@@ -10,7 +10,7 @@ Qy = 4; % number of facets
 Qx = 4;
 Q = Qx*Qy;
 % N = round(N_ref./(1 - 2*p./[Qy, Qx]));
-N = N_ref + [0, N_ref(2)/Qx];
+N = N_ref + N_ref./[Qx, Qy];
 
 % determine the size of the border:
 % N_new - 2*p*N_new/Q = N, along each dimension
@@ -31,7 +31,7 @@ figure; imagesc(log10(x_temp), [-5, 0]); colorbar; axis equal
 
 % extend with extra zeros 
 x = zeros(N); % half facet size added to both dims for 50% overlap
-x(:, 1:end-256) = x_temp;
+x(1:end-256, 1:end-256) = x_temp;
 
 figure; imagesc(log10(x), [-5, 0]); colorbar; axis equal
 
