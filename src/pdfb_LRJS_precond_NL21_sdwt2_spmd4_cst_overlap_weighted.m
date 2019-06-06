@@ -232,7 +232,7 @@ for q = 1:Q
         case 'piecewise_constant'
             w{q} = Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2));
         otherwise % make sure there is no 0 at the boundaries of the window
-            w{q} = ones(dims_o);
+            w{q} = ones(dims_o(q,:));
     end 
 end
 clear XX YY xx yy Xq Yq V Wo
