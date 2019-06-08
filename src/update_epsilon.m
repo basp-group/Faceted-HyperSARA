@@ -11,7 +11,7 @@ for i = 1 : ci
                 epsilon{i}{j} = norm_res{i}{j} + (-norm_res{i}{j} + epsilon{i}{j}) * (1 - adapt_eps_change_percentage);
                 t_block{i}{j} = t;
                 %count_eps_update_down = count_eps_update_down + 1;
-                %fprintf('Updated  epsilon DOWN: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
+                fprintf('Updated  epsilon DOWN: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
             end
         end
         
@@ -20,7 +20,7 @@ for i = 1 : ci
                 epsilon{i}{j} = epsilon{i}{j} + (norm_res{i}{j} - epsilon{i}{j}) * adapt_eps_change_percentage;
                 t_block{i}{j} = t;
                 %count_eps_update_up = count_eps_update_up + 1;
-                %fprintf('Updated  epsilon UP: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
+                fprintf('Updated  epsilon UP: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
             end
         end
     end

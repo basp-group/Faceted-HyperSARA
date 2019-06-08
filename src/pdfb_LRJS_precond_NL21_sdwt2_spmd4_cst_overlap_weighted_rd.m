@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
     pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted_rd(y, epsilon, A, At, pU, G, W, param, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
@@ -53,8 +53,6 @@ clear rg_y rg_x;
 % instantiate auxiliary variables for sdwt2
 [~, ~, I_overlap_ref, dims_overlap_ref, I_overlap, dims_overlap, ...
     ~, ~, status, offset, offsetL, offsetR, Ncoefs, temLIdxs, temRIdxs] = generate_segdwt_indices([M, N], I, dims, nlevel, wavelet, L);
-id_dirac = find(ismember(wavelet, 'self'), 1);
-dirac_present = ~isempty(id_dirac);
 
 rg_yo = domain_decomposition_overlap2(Qy, M, d);
 rg_xo = domain_decomposition_overlap2(Qx, N, d);
@@ -241,6 +239,7 @@ if isfield(param,'init_xsol')
     fprintf('xsol uploaded \n\n')
 else
     xsol = zeros(M,N,c);
+    param.init_xsol = xsol;
     fprintf('xsol NOT uploaded \n\n')
 end
 
@@ -252,18 +251,22 @@ weights1_ = Composite();
 if isfield(param,'init_v0') || isfield(param,'init_v1')
     for q = 1:Q
         v0_{q} = param.init_v0{q};
-        v1_{q} = param.init_v0{q};
+        v1_{q} = param.init_v1{q};
         weights0_{q} = param.init_weights0{q};
         weights1_{q} = param.init_weights1{q};
     end
 else
+    param.init_v0 = cell(Q, 1);
+    param.init_v1 = cell(Q, 1);
+    param.init_weights0 = cell(Q, 1);
+    param.init_weights1 = cell(Q, 1);
     spmd
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
             [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_cst_overlap(Ncoefs_q, max_dims-crop_nuclear, c, nlevelp.Value);
         end
     end
-end
+end 
 
 %% Data node parameters
 A = afclean(A);
@@ -325,6 +328,9 @@ if isfield(param,'init_v2') % assume all the other related elements are also ava
         t_block{Q+k} = param.init_t_block{k};
     end
 else
+    param.init_v2 = cell(K, 1);
+    param.init_proj = cell(K, 1);
+    param.init_t_block = cell(K, 1);
     for k = 1:K
         v2_tmp = cell(length(c_chunks{k}), 1);
         t_block_ = cell(length(c_chunks{k}), 1);
@@ -347,8 +353,19 @@ end
 
 clear proj_tmp v2_tmp norm_res_tmp t_block_ G y
 
-reweight_last_step_iter = 0;
-reweight_step_count = 0;
+if isfield(param,'init_reweight_step_count')
+    reweight_step_count = param.init_reweight_step_count;
+else
+    param.init_reweight_step_count = 0;
+    reweight_step_count = 0;
+end
+
+if isfield(param,'init_reweight_last_iter_step')
+    reweight_last_step_iter = param.init_reweight_last_iter_step;
+else
+    param.init_reweight_last_iter_step = 0;
+    reweight_last_step_iter = 0;
+end
 rw_counts = 1;
 
 %% Reweighting parameters
@@ -360,11 +377,20 @@ for q = 1:Q
 end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
+
 g_q = Composite();
 xsol_q = Composite();
-for q = 1:Q
-    xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-    g_q{q} = zeros([dims(q, :), c]);
+if isfield(param,'init_g')
+    for q = 1:Q
+        xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        g_q{q} = param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+    end
+else
+    param.init_g = zeros(size(xsol)); % 0 values...
+    for q = 1:Q
+        xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        g_q{q} = zeros([dims(q, :), c]);
+    end
 end
 
 %Step sizes computation
@@ -387,7 +413,13 @@ beta1 = parallel.pool.Constant(param.gamma/sigma1);
 flag = 0;
 rel_fval = zeros(param.max_iter, 1);
 end_iter = zeros(param.max_iter, 1);
-t_start = 1; % use of t_start?
+
+if isfield('init_t_start')
+    t_start = param.init_t_start;
+else
+    param.init_t_start = 1;
+    t_start = 1;
+end
 
 start_loop = tic;
 
@@ -535,6 +567,11 @@ for t = t_start : param.max_iter
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
         
+        % get xsol back from the workers
+        for q = 1:Q
+            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        end
+        
         % update weights
         spmd
             if labindex <= Qp.Value
@@ -553,10 +590,26 @@ for t = t_start : param.max_iter
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node       
         
-        % get xsol back from the workers
-        for q = 1:Q
-            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        % Save parameters
+        epsilon = cell(K, 1);
+        for k = 1:K
+            param.init_v2{k} = v2_{Q+k};
+            param.init_proj{k} = proj_{Q+k};
+            param.init_t_block{k} = t_block{Q+k};
+            epsilon{k} = epsilonp{Q+k};
         end
+        for q = 1:Q
+            param.init_v0{q} = v0_{q};
+            param.init_v1{q} = v1_{q};
+            param.init_weights0{q} = weights0_{q};
+            param.init_weights1{q} = weights1_{q};
+            param.init_xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+            param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
+        end
+        param.reweight_alpha = reweight_alpha;
+        param.init_reweight_step_count = reweight_step_count+1;
+        param.init_reweight_last_iter_step = t;
+        param.init_t_start = t;
         
         % Compute residual images (master node)
         res = zeros(size(xsol));
@@ -566,7 +619,7 @@ for t = t_start : param.max_iter
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             mkdir('./results/')
-            save(['./results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','xsol','res');
+            save(['./results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','param','res', 'epsilon');
         end 
         
         if (reweight_step_count >= param.total_reweights)
@@ -577,21 +630,15 @@ for t = t_start : param.max_iter
         
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
-        rw_counts = rw_counts + 1;        
+        rw_counts = rw_counts + 1;
+        
+        epsilon = [];
     end
 end
 toc(start_loop)
 
-% Collect distributed values (reweight_alpha, weights0_, weights1_, v0_, v1_)
-v0 = cell(Q, 1);
-v1 = cell(Q, 1);
-weights0 = cell(Q, 1);
-weights1 = cell(Q, 1);
+% Collect image back to the master
 for q = 1:Q
-    v0{q} = v0_{q};
-    v1{q} = v1_{q};
-    weights0{q} = weights0_{q};
-    weights1{q} = weights1_{q};
     xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
 end
 
@@ -605,17 +652,7 @@ end
 for k = 1 : K
     res(:,:,c_chunks{k}) = res_{Q+k};
 end
-
-
 norm_res = norm(res(:));
-v2 = cell(K, 1);
-proj = cell(K, 1);
-epsilon = cell(K, 1);
-for i = 1:K
-    v2{i} = v2_{Q+i};
-    proj{i} = proj_{Q+i};
-    epsilon{i} = epsilonp{Q+i};
-end
 
 %Final log (merge this step with the computation of the residual image for
 % each frequency of interest)
@@ -629,6 +666,26 @@ spmd
             offsetLq, offsetRq, crop_l21, crop_nuclear, w);
     end
 end
+
+epsilon = cell(K, 1);
+for k = 1:K
+    param.init_v2{k} = v2_{Q+k};
+    param.init_proj{k} = proj_{Q+k};
+    param.init_t_block{k} = t_block{Q+k};
+    epsilon{k} = epsilonp{Q+k};
+end
+for q = 1:Q
+    param.init_v0{q} = v0_{q};
+    param.init_v1{q} = v1_{q};
+    param.init_weights0{q} = weights0_{q};
+    param.init_weights1{q} = weights1_{q};
+    param.init_xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+    param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
+end
+param.reweight_alpha = reweight_alpha;
+param.init_reweight_step_count = reweight_step_count;
+param.init_reweight_last_iter_step = t;
+param.init_t_start = t;
 
 l21 = 0;
 nuclear = 0;
@@ -651,7 +708,7 @@ if (param.verbose > 0)
     end
 end
 
-end_iter = end_iter(end_iter > 0);
-rel_fval = rel_fval(1:numel(end_iter));
+% end_iter = end_iter(end_iter > 0);
+% rel_fval = rel_fval(1:numel(end_iter));
 
 end
