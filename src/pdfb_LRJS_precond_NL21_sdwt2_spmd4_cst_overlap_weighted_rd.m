@@ -414,7 +414,7 @@ flag = 0;
 rel_fval = zeros(param.max_iter, 1);
 end_iter = zeros(param.max_iter, 1);
 
-if isfield('init_t_start')
+if isfield(param, 'init_t_start')
     t_start = param.init_t_start;
 else
     param.init_t_start = 1;
