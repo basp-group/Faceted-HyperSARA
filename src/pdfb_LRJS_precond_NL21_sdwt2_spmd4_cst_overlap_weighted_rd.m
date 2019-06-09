@@ -615,6 +615,7 @@ for t = t_start : param.max_iter
         res = zeros(size(xsol));
         for k = 1 : K
             res(:,:,c_chunks{k}) = res_{Q+k};
+            res_{Q+k} = [];
         end
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
@@ -670,17 +671,27 @@ end
 epsilon = cell(K, 1);
 for k = 1:K
     param.init_v2{k} = v2_{Q+k};
+    v2_{Q+k} = [];
     param.init_proj{k} = proj_{Q+k};
+    proj_{Q+k} = [];
     param.init_t_block{k} = t_block{Q+k};
+    t_block{Q+k} = [];
     epsilon{k} = epsilonp{Q+k};
+    epsilonp{Q+k} = [];
 end
 for q = 1:Q
     param.init_v0{q} = v0_{q};
-    param.init_v1{q} = v1_{q};
+    v0_{q} = [];
+    param.init_v1{q} = v1_{q}; 
+    v1_{q} = [];
     param.init_weights0{q} = weights0_{q};
+    weights0_{q} = [];
     param.init_weights1{q} = weights1_{q};
+    weights1_{q} = [];
     param.init_xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+    xsol_q{q} = [];
     param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
+    g_q{q} = [];
 end
 param.reweight_alpha = reweight_alpha;
 param.init_reweight_step_count = reweight_step_count;
