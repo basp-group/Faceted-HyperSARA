@@ -205,6 +205,7 @@ if isfield(param,'init_g')
     g = param.init_g;
 else
     param.init_g = zeros(size(xsol));
+    g = zeros(size(xsol));
 end    
 
 %Step sizes computation
