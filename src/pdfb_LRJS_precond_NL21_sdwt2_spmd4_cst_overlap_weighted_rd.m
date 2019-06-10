@@ -248,12 +248,14 @@ v0_ = Composite();
 weights0_ = Composite();
 v1_ = Composite();
 weights1_ = Composite();
+max_dims = Composite();
 if isfield(param,'init_v0') || isfield(param,'init_v1')
     for q = 1:Q
         v0_{q} = param.init_v0{q};
         v1_{q} = param.init_v1{q};
         weights0_{q} = param.init_weights0{q};
         weights1_{q} = param.init_weights1{q};
+        max_dims{q} = max(dims_overlap_ref(q,:), dims_o(q,:));
     end
 else
     param.init_v0 = cell(Q, 1);
