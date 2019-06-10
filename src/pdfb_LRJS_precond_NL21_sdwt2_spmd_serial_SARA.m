@@ -389,9 +389,9 @@ for t = t_start : param.max_iter
         end
         
         param.init_v0 = v0_{1};
-        param.init_v1 = v1_{1};
+        param.init_v1 = v1_{2};
         param.init_weights0 = weights0_{1};
-        param.init_weights1 = weights1_{1};
+        param.init_weights1 = weights1_{2};
         param.init_xsol = xsol;
         param.init_g = g;
         param.reweight_alpha = reweight_alpha;
