@@ -240,7 +240,7 @@ if isfield(param,'init_xsol')
 else
     xsol = zeros(M,N,c);
     param.init_xsol = xsol;
-    fprintf('xsol NOT uploaded \n\n')
+    fprintf('xsol initialized \n\n')
 end
 
 % Primal / prior nodes (l21/nuclear norm dual variables)
@@ -260,7 +260,7 @@ if isfield(param,'init_v0') || isfield(param,'init_v1')
             end
         end
     end
-    fprintf('v0, v1, weigths0, weights1 uploaded')
+    fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
 else
     param.init_v0 = cell(Q, 1);
     param.init_v1 = cell(Q, 1);
@@ -272,6 +272,7 @@ else
             [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_cst_overlap(Ncoefs_q, max_dims-crop_nuclear, c, nlevelp.Value);
         end
     end
+    fprintf('v0, v1, weigths0, weights1 initialized \n\n')
 end 
 
 %% Data node parameters
@@ -333,7 +334,7 @@ if isfield(param,'init_v2') % assume all the other related elements are also ava
         proj_{Q+k} = param.init_proj{k};
         t_block{Q+k} = param.init_t_block{k};
     end
-    fprintf('v2, proj, t_block uploaded')
+    fprintf('v2, proj, t_block uploaded \n\n')
 else
     param.init_v2 = cell(K, 1);
     param.init_proj = cell(K, 1);
@@ -356,6 +357,7 @@ else
         proj_{Q+k} = proj_tmp;
         t_block{Q+k} = t_block_;
     end
+    fprintf('v2, proj, t_block initialized \n\n')
 end
 
 clear proj_tmp v2_tmp norm_res_tmp t_block_ G y
@@ -366,14 +368,16 @@ if isfield(param,'init_reweight_step_count')
 else
     param.init_reweight_step_count = 0;
     reweight_step_count = 0;
+    fprintf('reweight_step_count initialized \n\n')
 end
 
 if isfield(param,'init_reweight_last_iter_step')
     reweight_last_step_iter = param.init_reweight_last_iter_step;
-    fprintf('reweight_last_iter_step uploaded')
+    fprintf('reweight_last_iter_step uploaded \n\n')
 else
     param.init_reweight_last_iter_step = 0;
     reweight_last_step_iter = 0;
+    fprintf('reweight_last_iter_step initialized \n\n')
 end
 rw_counts = 1;
 
@@ -394,12 +398,14 @@ if isfield(param,'init_g')
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
         g_q{q} = param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
     end
+    fprintf('g uploaded \n\n')
 else
     param.init_g = zeros(size(xsol)); % 0 values...
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
         g_q{q} = zeros([dims(q, :), c]);
     end
+    fprintf('g initialized \n\n')
 end
 
 %Step sizes computation
@@ -425,10 +431,11 @@ end_iter = zeros(param.max_iter, 1);
 
 if isfield(param, 'init_t_start')
     t_start = param.init_t_start;
-    fprintf('t_start uploaded')
+    fprintf('t_start uploaded \n\n')
 else
     param.init_t_start = 1;
     t_start = 1;
+    fprintf('t_start initialized \n\n')
 end
 
 start_loop = tic;
