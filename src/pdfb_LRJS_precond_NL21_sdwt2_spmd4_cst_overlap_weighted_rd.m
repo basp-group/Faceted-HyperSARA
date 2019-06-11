@@ -1,4 +1,4 @@
-function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
     pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted_rd(y, epsilon, A, At, pU, G, W, param, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
@@ -295,7 +295,7 @@ yp = Composite();
 pUp = Composite();
 Wp = Composite();
 epsilonp = Composite();
-norm_res = Composite();
+norm_residual_check_i = Composite();
 sz_y = cell(K, 1);
 n_blocks = cell(K, 1);
 for k = 1:K
@@ -320,7 +320,7 @@ for k = 1:K
     Wp{Q+k} = W{k};
     pUp{Q+k} = pU{k};
     epsilonp{Q+k} = epsilon{k};
-    norm_res{Q+k} = norm_res_tmp;
+    norm_residual_check_i{Q+k} = norm_res_tmp;
 end
 
 clear norm_res_tmp epsilon pU W G y
@@ -565,7 +565,7 @@ for t = t_start : param.max_iter
     if param.use_adapt_eps && t > param.adapt_eps_start
         spmd
             if labindex > Qp.Value
-                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_fval(t), norm_res, ...
+                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_fval(t), norm_residual_check_i, ...
                     adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_obj.Value, ...
                     adapt_eps_change_percentage.Value);
             end
@@ -670,7 +670,7 @@ end
 for k = 1 : K
     res(:,:,c_chunks{k}) = res_{Q+k};
 end
-norm_res = norm(res(:));
+norm_res_out = norm(res(:));
 
 %Final log (merge this step with the computation of the residual image for
 % each frequency of interest)
