@@ -1,6 +1,6 @@
 function [l21_norm, nuclear_norm] = prior_overlap_spmd(x_overlap, Iq, ...
-    dims_q, offset, status_q, nlevel, wavelet, Ncoefs_q, dims_overlap_ref_q, ...
-    offsetLq, offsetRq)
+    offset, status_q, nlevel, wavelet, Ncoefs_q, dims_overlap_ref_q, ...
+    offsetLq, offsetRq, size_v1)
 
 % remark: add the weights in the formula? to be determined... (for now, keep as is)
 
@@ -16,11 +16,10 @@ x_ = zeros([zerosNum, size(x_overlap, 3)]);
 x_(offsetLq(1)+1:end-offsetRq(1), offsetLq(2)+1:end-offsetRq(2), :) = x_overlap;
 
 % compute local l21-norm
-l21_norm = 0;
+z = zeros(size_v1);
 for l = 1 : c
-    w = sdwt2_sara(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
-    l2 = sqrt(sum(abs(w).^2,2));
-    l21_norm = l21_norm + norm(l2(:),1);
+    z(:,l) = sdwt2_sara(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
 end
+l21_norm = sum(sqrt(sum(abs(z).^2,2)), 1);
 
 end

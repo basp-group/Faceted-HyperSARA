@@ -1,4 +1,4 @@
-function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
     pdfb_LRJS_precond_NL21_sdwt2_spmd_serial_SARA(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
@@ -26,7 +26,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
 % initialize monitoring variables (display active)
 SNR = 0;
 SNR_average = 0;
-norm_epsilon_check = 0;
+norm_epsilon_check = Inf;
 norm_residual_check = 0;
 
 % size of the oversampled Fourier space (vectorized)
@@ -61,7 +61,7 @@ if isfield(param,'init_xsol')
     fprintf('xsol uploaded \n\n')
 else
     xsol = zeros(M,N,c);
-    fprintf('xsol NOT uploaded \n\n')
+    fprintf('xsol initialized \n\n')
 end
 
 % Primal / prior nodes (l21/nuclear norm dual variables)
@@ -75,6 +75,7 @@ if isfield(param,'init_v0') || isfield(param,'init_v1')
     weights0_{1} = param.init_weights0;
     weights1_{2} = param.init_weights1;
     s = size(param.init_v1, 1);
+    fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
 else
     spmd
         if labindex == 1
@@ -88,6 +89,7 @@ else
     param.init_v1 = v1_{2};
     param.init_weights0 = weights0_{1};
     param.init_weights1 = weights1_{2};
+    fprintf('v0, v1, weigths0, weights1 initialized \n\n')
 end
 
 %% Data node parameters
@@ -155,6 +157,7 @@ if isfield(param,'init_v2') % assume all the other related elements are also ava
         proj_{2+k} = param.init_proj{k};
         t_block{2+k} = param.init_t_block{k};
     end
+    fprintf('v2, proj, t_block uploaded \n\n')
 else
     param.init_v2 = cell(K, 1);
     param.init_proj = cell(K, 1);
@@ -177,6 +180,7 @@ else
         proj_{2+k} = proj_tmp;
         t_block{2+k} = t_block_;
     end
+    fprintf('v2, proj, t_block initialized \n\n')
 end
 
 clear proj_tmp v2_tmp norm_res_tmp t_block_ G y
@@ -203,9 +207,11 @@ reweight_steps = param.reweight_steps;
 
 if isfield(param,'init_g')
     g = param.init_g;
+    fprintf('g uploaded \n\n')
 else
     param.init_g = zeros(size(xsol));
     g = zeros(size(xsol));
+    fprintf('g initialized \n\n')
 end    
 
 %Step sizes computation
@@ -264,7 +270,7 @@ for t = t_start : param.max_iter
             %tw = toc;
         else % data nodes, 3:K+2 (labindex > 2)
             %tic
-            [v2_, g2_, proj_, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            [v2_, g2_, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             %tw = toc;
         end
@@ -449,7 +455,7 @@ for k = 1 : K
     res_{2+k} = [];
 end
 
-norm_res = norm(res(:));
+norm_res_out = norm(res(:));
 epsilon = cell(K, 1);
 for i = 1:K
     param.init_v2{i} = v2_{2+i};

@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
     pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
@@ -272,6 +272,7 @@ else
             [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_cst_overlap(Ncoefs_q, max_dims-crop_nuclear, c, nlevelp.Value);
         end
     end
+    fprintf('v0, v1, weigths0, weights1 initialized \n\n')
 end
 
 %% Data node parameters
@@ -333,6 +334,7 @@ if isfield(param,'init_v2') % assume all the other related elements are also ava
         proj_{Q+k} = param.init_proj{k};
         t_block{Q+k} = param.init_t_block{k};
     end
+    fprintf('v2, proj, t_block uploaded \n\n')
 else
     for k = 1:K
         v2_tmp = cell(length(c_chunks{k}), 1);
@@ -352,12 +354,26 @@ else
         proj_{Q+k} = proj_tmp;
         t_block{Q+k} = t_block_;
     end
+    fprintf('v2, proj, t_block initialized \n\n')
 end
 
 clear proj_tmp v2_tmp norm_res_tmp t_block_ G y
 
-reweight_last_step_iter = 0;
-reweight_step_count = 0;
+if isfield(param,'init_reweight_step_count')
+    reweight_step_count = param.init_reweight_step_count;
+    fprintf('reweight_step_count uploaded')
+else
+    reweight_step_count = 0;
+    fprintf('reweight_step_count initialized \n\n')
+end
+
+if isfield(param,'init_reweight_last_iter_step')
+    reweight_last_step_iter = param.init_reweight_last_iter_step;
+    fprintf('reweight_last_iter_step uploaded \n\n')
+else
+    reweight_last_step_iter = 0;
+    fprintf('reweight_last_iter_step initialized \n\n')
+end
 rw_counts = 1;
 
 %% Reweighting parameters
@@ -369,11 +385,21 @@ for q = 1:Q
 end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
+
 g_q = Composite();
 xsol_q = Composite();
-for q = 1:Q
-    xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-    g_q{q} = zeros([dims(q, :), c]);
+if isfield(param,'init_g')
+    for q = 1:Q
+        xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        g_q{q} = param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+    end
+    fprintf('g uploaded \n\n')
+else
+    for q = 1:Q
+        xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        g_q{q} = zeros([dims(q, :), c]);
+    end
+    fprintf('g initialized \n\n')
 end
 
 %Step sizes computation
@@ -447,7 +473,7 @@ for t = t_start : param.max_iter
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
-            [v2_, g2, proj_, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             % send portions of g2 to the prior/primal nodes
             for q = 1:Qp.Value
@@ -480,7 +506,7 @@ for t = t_start : param.max_iter
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
                 [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3_weighted(x_overlap, Iq, ...
                     offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear, w);
+                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
             end
         end
         
@@ -577,9 +603,6 @@ for t = t_start : param.max_iter
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
-%                 [weights1_, weights0_] = update_weights_cst_overlap_weighted(x_overlap, size(v1_), ...
-%                     Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
-%                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap, w, crop);
                 [weights1_, weights0_] = update_weights_overlap2_weighted(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
@@ -641,7 +664,7 @@ for k = 1 : K
 end
 
 
-norm_res = norm(res(:));
+norm_res_out = norm(res(:));
 v2 = cell(K, 1);
 proj = cell(K, 1);
 epsilon = cell(K, 1);
@@ -663,7 +686,7 @@ spmd
 %             offsetLq, offsetRq, w, crop);
         [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3_weighted(x_overlap, Iq, ...
             offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            offsetLq, offsetRq, crop_l21, crop_nuclear, w);
+            offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
     end
 end
 

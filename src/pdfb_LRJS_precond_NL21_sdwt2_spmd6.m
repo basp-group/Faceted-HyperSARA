@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd6(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
+function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd6(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
@@ -29,7 +29,7 @@ function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,
 % initialize monitoring variables (display active)
 SNR = 0;
 SNR_average = 0;
-norm_epsilon_check = 0;
+norm_epsilon_check = Inf;
 norm_residual_check = 0;
 
 % size of the oversampled Fourier space (vectorized)
@@ -152,7 +152,7 @@ if isfield(param,'init_xsol')
     fprintf('xsol uploaded \n\n')
 else
     xsol = zeros(M,N,c);
-    fprintf('xsol NOT uploaded \n\n')
+    fprintf('xsol initialized \n\n')
 end
 
 % Primal / prior nodes (l21/nuclear norm dual variables)
@@ -167,22 +167,20 @@ if isfield(param,'init_v0') || isfield(param,'init_v1')
         weights0_{q} = param.init_weights0{q};
         weights1_{q} = param.init_weights1{q};
     end
+    fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
 else
     spmd
         if labindex <= Qp.Value
             [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior(Ncoefs_q, dims_q, dirac_present, c, nlevelp.Value);
         end
     end
+    fprintf('v0, v1, weigths0, weights1 initialized \n\n')
 end
 
 %% Data node parameters: to be completely modified
 % data nodes
-% to be done properly with an spmd
-
 A = afclean(A);
 At = afclean(At);
-
-% see if these constants are properly updated in practice
 elipse_proj_max_iter = parallel.pool.Constant(param.elipse_proj_max_iter);
 elipse_proj_min_iter = parallel.pool.Constant(param.elipse_proj_min_iter);
 elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
@@ -192,7 +190,6 @@ adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
 adapt_eps_rel_obj = parallel.pool.Constant(param.adapt_eps_rel_obj);
 adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
 
-% to be cleansed later on (change the format of the input data?)
 Ap = Composite();
 Atp = Composite();
 x_hat_i = Composite();
@@ -240,6 +237,7 @@ if isfield(param,'init_v2') % assume all the other related elements are also ava
         proj_{Q+k} = param.init_proj{k};
         t_block{Q+k} = param.init_t_block{k};
     end
+    fprintf('v2, proj, t_block uploaded \n\n')
 else
     for k = 1:K
         v2_tmp = cell(length(c_chunks{k}), 1);
@@ -259,12 +257,26 @@ else
         proj_{Q+k} = proj_tmp;
         t_block{Q+k} = t_block_;
     end
+    fprintf('v2, proj, t_block initialized \n\n')
 end
 
 clear proj_tmp v2_tmp norm_res_tmp t_block_ G y
 
-reweight_last_step_iter = 0;
-reweight_step_count = 0;
+if isfield(param,'init_reweight_step_count')
+    reweight_step_count = param.init_reweight_step_count;
+    fprintf('reweight_step_count uploaded')
+else
+    reweight_step_count = 0;
+    fprintf('reweight_step_count initialized \n\n')
+end
+
+if isfield(param,'init_reweight_last_iter_step')
+    reweight_last_step_iter = param.init_reweight_last_iter_step;
+    fprintf('reweight_last_iter_step uploaded \n\n')
+else
+    reweight_last_step_iter = 0;
+    fprintf('reweight_last_iter_step initialized \n\n')
+end
 rw_counts = 1;
 
 %% Reweighting parameters
@@ -276,11 +288,22 @@ for q = 1:Q
 end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
+
 g_q = Composite();
 xsol_q = Composite();
-for q = 1:Q
-    xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-    g_q{q} = zeros([dims(q, :), c]);
+if isfield(param,'init_g')
+    for q = 1:Q
+        xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        g_q{q} = param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+    end
+    fprintf('g uploaded \n\n')
+else
+    param.init_g = zeros(size(xsol)); % 0 values...
+    for q = 1:Q
+        xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        g_q{q} = zeros([dims(q, :), c]);
+    end
+    fprintf('g initialized \n\n')
 end
 
 %Step sizes computation
@@ -303,7 +326,14 @@ beta1 = parallel.pool.Constant(param.gamma/sigma1);
 flag = 0;
 rel_fval = zeros(param.max_iter, 1);
 end_iter = zeros(param.max_iter, 1);
-t_start = 1; % use of t_start?
+
+if isfield(param, 'init_t_start')
+    t_start = param.init_t_start;
+    fprintf('t_start uploaded \n\n')
+else
+    t_start = 1;
+    fprintf('t_start initialized \n\n')
+end
 
 start_loop = tic;
 
@@ -352,7 +382,7 @@ for t = t_start : param.max_iter
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
-            [v2_, g2, proj_, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             
             % send portions of g2 to the prior/primal nodes
@@ -387,8 +417,8 @@ for t = t_start : param.max_iter
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
                 [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
-                    dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq);
+                    offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                    offsetLq, offsetRq, size(v1_));
             end
         end
         
@@ -545,7 +575,7 @@ for k = 1 : K
     res(:,:,c_chunks{k}) = res_{Q+k};
 end
 
-norm_res = norm(res(:));
+norm_res_out = norm(res(:));
 v2 = cell(K, 1);
 proj = cell(K, 1);
 epsilon = cell(K, 1);
@@ -564,8 +594,8 @@ spmd
         x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
         
         [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, overlap, Iq, ...
-            dims_q, offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            offsetLq, offsetRq);
+            offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+            offsetLq, offsetRq, size(v1_));
     end
 end
 
