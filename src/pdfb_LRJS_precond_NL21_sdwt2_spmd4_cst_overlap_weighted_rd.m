@@ -571,7 +571,8 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
-    if (param.step_flag && t>500) %rel_fval(t) < param.reweight_rel_obj)
+    if (param.step_flag && rel_fval(t) < param.reweight_rel_obj && ...
+        norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
