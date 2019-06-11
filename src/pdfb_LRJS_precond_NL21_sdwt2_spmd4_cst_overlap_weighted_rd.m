@@ -295,7 +295,7 @@ yp = Composite();
 pUp = Composite();
 Wp = Composite();
 epsilonp = Composite();
-norm_residual_check_i = Composite();
+norm_res = Composite();
 sz_y = cell(K, 1);
 n_blocks = cell(K, 1);
 for k = 1:K
@@ -320,7 +320,7 @@ for k = 1:K
     Wp{Q+k} = W{k};
     pUp{Q+k} = pU{k};
     epsilonp{Q+k} = epsilon{k};
-    norm_residual_check_i{Q+k} = norm_res_tmp;
+    norm_res{Q+k} = norm_res_tmp;
 end
 
 clear norm_res_tmp epsilon pU W G y
@@ -487,7 +487,7 @@ for t = t_start : param.max_iter
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
-            [v2_, g2, proj_, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             % send portions of g2 to the prior/primal nodes
             for q = 1:Qp.Value
@@ -565,7 +565,7 @@ for t = t_start : param.max_iter
     if param.use_adapt_eps && t > param.adapt_eps_start
         spmd
             if labindex > Qp.Value
-                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_fval(t), norm_residual_check_i, ...
+                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_fval(t), norm_res, ...
                     adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_obj.Value, ...
                     adapt_eps_change_percentage.Value);
             end

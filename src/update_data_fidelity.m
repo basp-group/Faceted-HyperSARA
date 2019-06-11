@@ -1,4 +1,4 @@
-function [v2, Ftx, proj, norm_res, norm_epsilon] = update_data_fidelity(v2, y, xhat, proj, A, At, G, W, pU, epsilon, ...
+function [v2, Ftx, proj, norm_res, norm_epsilon, global_norm_res] = update_data_fidelity(v2, y, xhat, proj, A, At, G, W, pU, epsilon, ...
                      elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps, sigma22)
 
 % 1. the structure of this function needs to be completely changed in the case
@@ -9,6 +9,7 @@ Ftx = zeros(size(xhat));
 ci = size(xhat, 3);
 norm_res = cell(ci, 1);
 norm_epsilon = 0;
+global_norm_res = 0;
 for i = 1 : ci
     Fx = A(xhat(:,:,i));
     g2 = zeros(size(Fx));
@@ -22,6 +23,7 @@ for i = 1 : ci
         g2(W{i}{j}) = g2(W{i}{j}) + u2;
         
         norm_res{i}{j} = norm(r2 - y{i}{j}, 2);
+        global_norm_res = global_norm_res + norm_res{i}{j}^2;
         norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
     end
     Ftx(:,:,i) = real(At(g2));
