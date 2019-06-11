@@ -1,9 +1,5 @@
 function [v2, Ftx, proj, norm_res, global_norm_res, norm_epsilon] = update_data_fidelity(v2, y, xhat, proj, A, At, G, W, pU, epsilon, ...
                      elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps, sigma22)
-
-% 1. the structure of this function needs to be completely changed in the case
-% of multiple, distributed data blocks for each ingle frequency (much more completated)
-% 2. possibly hange the structure of the data given here...
                  
 Ftx = zeros(size(xhat));
 ci = size(xhat, 3);

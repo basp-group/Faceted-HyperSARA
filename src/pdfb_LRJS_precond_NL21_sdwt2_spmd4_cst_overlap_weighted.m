@@ -28,7 +28,7 @@ function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,
 % initialize monitoring variables (display active)
 SNR = 0;
 SNR_average = 0;
-norm_epsilon_check = 0;
+norm_epsilon_check = Inf;
 norm_residual_check = 0;
 
 % size of the oversampled Fourier space (vectorized)
@@ -244,7 +244,7 @@ if isfield(param,'init_xsol')
     fprintf('xsol uploaded \n\n')
 else
     xsol = zeros(M,N,c);
-    fprintf('xsol NOT uploaded \n\n')
+    fprintf('xsol initialized \n\n')
 end
 
 % Primal / prior nodes (l21/nuclear norm dual variables)
@@ -258,7 +258,13 @@ if isfield(param,'init_v0') || isfield(param,'init_v1')
         v1_{q} = param.init_v0{q};
         weights0_{q} = param.init_weights0{q};
         weights1_{q} = param.init_weights1{q};
+        spmd
+            if labindex <= Qp.Value
+                max_dims = max(dims_overlap_ref_q, dims_oq);
+            end
+        end
     end
+    fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
 else
     spmd
         if labindex <= Qp.Value

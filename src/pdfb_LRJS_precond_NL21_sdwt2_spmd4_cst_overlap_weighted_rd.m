@@ -25,7 +25,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] =
 % maxNumCompThreads(param.num_workers);
 
 % initialize monitoring variables (display active)
-norm_epsilon_check = 0;
+norm_epsilon_check = Inf;
 norm_residual_check = 0;
 
 % size of the oversampled Fourier space (vectorized)
@@ -514,13 +514,11 @@ for t = t_start : param.max_iter
         %% compute value of the priors in parallel
         spmd
             if labindex <= Qp.Value
-                % compute values for the prior terms
-                %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
                 [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3_weighted(x_overlap, Iq, ...
                     offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear, w);
+                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
             end
         end
         
@@ -681,7 +679,7 @@ spmd
         
         [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3_weighted(x_overlap, Iq, ...
             offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            offsetLq, offsetRq, crop_l21, crop_nuclear, w);
+            offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
     end
 end
 
