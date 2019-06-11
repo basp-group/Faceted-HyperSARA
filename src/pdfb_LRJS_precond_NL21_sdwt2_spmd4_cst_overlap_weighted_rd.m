@@ -248,15 +248,19 @@ v0_ = Composite();
 weights0_ = Composite();
 v1_ = Composite();
 weights1_ = Composite();
-max_dims = Composite();
 if isfield(param,'init_v0') || isfield(param,'init_v1')
     for q = 1:Q
         v0_{q} = param.init_v0{q};
         v1_{q} = param.init_v1{q};
         weights0_{q} = param.init_weights0{q};
         weights1_{q} = param.init_weights1{q};
-        max_dims{q} = max(dims_overlap_ref(q,:), dims_o(q,:));
+        spmd
+            if labindex <= Qp.Value
+                max_dims = max(dims_overlap_ref_q, dims_oq);
+            end
+        end
     end
+    fprintf('v0, v1, weigths0, weights1 uploaded')
 else
     param.init_v0 = cell(Q, 1);
     param.init_v1 = cell(Q, 1);
@@ -329,6 +333,7 @@ if isfield(param,'init_v2') % assume all the other related elements are also ava
         proj_{Q+k} = param.init_proj{k};
         t_block{Q+k} = param.init_t_block{k};
     end
+    fprintf('v2, proj, t_block uploaded')
 else
     param.init_v2 = cell(K, 1);
     param.init_proj = cell(K, 1);
@@ -357,6 +362,7 @@ clear proj_tmp v2_tmp norm_res_tmp t_block_ G y
 
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
+    fprintf('reweight_step_count uploaded')
 else
     param.init_reweight_step_count = 0;
     reweight_step_count = 0;
@@ -364,6 +370,7 @@ end
 
 if isfield(param,'init_reweight_last_iter_step')
     reweight_last_step_iter = param.init_reweight_last_iter_step;
+    fprintf('reweight_last_iter_step uploaded')
 else
     param.init_reweight_last_iter_step = 0;
     reweight_last_step_iter = 0;
@@ -418,6 +425,7 @@ end_iter = zeros(param.max_iter, 1);
 
 if isfield(param, 'init_t_start')
     t_start = param.init_t_start;
+    fprintf('t_start uploaded')
 else
     param.init_t_start = 1;
     t_start = 1;
