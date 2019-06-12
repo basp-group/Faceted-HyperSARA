@@ -20,7 +20,7 @@ z = zeros(size_v1);
 for l = 1 : size(x_, 3)
     z(:, l) = sdwt2_sara(x_(:, :, l), I, offset, status, nlevel, wavelet, Ncoefs);
 end
-d_val1 = sqrt(sum(abs((w)).^2,2));
+d_val1 = sqrt(sum(abs((z)).^2,2));
 weights1 = reweight_alpha ./ (reweight_alpha + d_val1);
 
 end

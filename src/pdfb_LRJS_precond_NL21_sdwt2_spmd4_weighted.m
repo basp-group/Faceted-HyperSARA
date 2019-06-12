@@ -443,7 +443,7 @@ for t = t_start : param.max_iter
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
                 [l21_norm, nuclear_norm] = prior_overlap_spmd_weighted(x_overlap, Iq, ...
                     offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, w);
+                    offsetLq, offsetRq, w, size(v1_));
             end
         end
         

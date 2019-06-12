@@ -58,10 +58,10 @@ load_measurements = 0;
 solve_minimization = 1;
 
 compute_Anorm_preconditioned = 1;
-save_Anorm_preconditioned = 0;
+save_Anorm_preconditioned = 1;
 
 compute_Anorm = 1;
-save_Anorm = 0;
+save_Anorm = 1;
 
 compute_Anorm_ch = 0;
 save_Anorm_ch = 0;
