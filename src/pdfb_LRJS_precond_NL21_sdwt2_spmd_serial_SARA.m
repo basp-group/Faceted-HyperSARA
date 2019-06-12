@@ -68,10 +68,12 @@ end
 v0_ = Composite();
 weights0_ = Composite();
 v1_ = Composite();
+s_ = Composite();
 weights1_ = Composite();
 if isfield(param,'init_v0') || isfield(param,'init_v1')
     v0_{1} = param.init_v0;
     v1_{2} = param.init_v1;
+    s_{2} = size(v1_{2});
     weights0_{1} = param.init_weights0;
     weights1_{2} = param.init_weights1;
     s = size(param.init_v1, 1);
@@ -82,9 +84,10 @@ else
             v0_ = zeros(M*N, c);
             weights0_ = ones(min(M*N, c), 1);
         elseif labindex == 2
-            [v1_, weights1_, s] = initialize_l21_serial(xsol, Psit_, 'zpd', nlevel);
+            [v1_, weights1_, s_] = initialize_l21_serial(xsol, Psit_, 'zpd', nlevel);
         end
     end
+    s = s_{2};
     param.init_v0 = v0_{1};
     param.init_v1 = v1_{2};
     param.init_weights0 = weights0_{1};
@@ -304,7 +307,7 @@ for t = t_start : param.max_iter
         nuclear = nuclear_norm(xsol);
         
         % l21 norm
-        l21 = l21_norm_sara(xsol, Psit, s{2});
+        l21 = l21_norm_sara(xsol, Psit, s);
         
         % retrieve value of the monitoring variables (residual norms)
         norm_epsilon_check = 0;
@@ -477,7 +480,7 @@ param.init_t_start = t;
 % nuclear norm
 nuclear = nuclear_norm(xsol);
 % l21 norm
-l21 = l21_norm_sara(xsol, Psit, s{2});
+l21 = l21_norm_sara(xsol, Psit, s);
 
 % SNR (only on the master node this time)
 sol = reshape(xsol(:),numel(xsol(:))/c,c);
