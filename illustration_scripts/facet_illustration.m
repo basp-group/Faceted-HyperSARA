@@ -11,7 +11,7 @@ N = [1024, 1024];
 Qx = 4;
 Qy = 4;
 Q = Qx*Qy;
-d = 256;
+d = 100;
 
 wlt_basis = {'db8'};
 L = 16;
@@ -55,8 +55,8 @@ for qx = 1:Qx
         q = (qx-1)*Qy+qy;
         Io(q, :) = [rg_yo(qy, 1)-1, rg_xo(qx, 1)-1];
         dims_o(q, :) = [rg_yo(qy,2)-rg_yo(qy,1)+1, rg_xo(qx,2)-rg_xo(qx,1)+1];
+        overlap(q, :) =  dims_o(q,:) - dims(q,:);%max(dims_overlap_ref(q, :), dims_o(q, :)) - dims(q,:); % issue here! max(dims_overlap{q}, [], 1)
     end
-    overlap(q, :) = max(max(dims_overlap{q}), dims_o(q, :)) - dims(q,:); 
 end
 
 %% plot the results
@@ -164,18 +164,41 @@ set(f,'PaperUnits','normalized')
 set(f,'PaperType','A4');
 set(f,'PaperOrientation',orient);
 set(f,'units','normalized','outerposition',[0 0 0.40 0.70])
+
+total_size_x = sum(dims_o(:,2));
+total_size_y = sum(dims_o(:,1));
+max_dims_o = max(dims_o, [], 1);
+
+% see how to properly display the images with their respective size (respect local and global ratio)
+
 for i=1:nr
     for ii=1:nc
-        ax = subaxis(nr,nc,ii,i,'SpacingHoriz',0.01,'SpacingVert',0.01); % best option !
-        
+        ax = subaxis(nr,nc,ii,i, dims_o(q,2)/max_dims_o(2), dims_o(q,1)/max_dims_o(1),'SpacingHoriz',0.01,'SpacingVert',0.01); % best option !
         q = (ii-1)*nr + i;
-%         qm = (qy-1)*Qx + qx;
         imagesc(log10(x(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2))), [-5, 0]); 
-%         hold on
-%         
-%         xx = [overlap(q,1), overlap(q,1)];
-%         yy = [0, 1];
-%         line(xx,yy,'Color','r','LineStyle','--')
+        hold on
+        
+        % vertical lines
+        if overlap(q,2) == 0 && overlap(q,1) > 0
+            xx = [overlap(q,2)+1, overlap(q,2)+1];
+            yy = [1, dims_o(q,1)];
+            line(xx,yy,'Color','r','LineStyle','--')
+        else
+            xx = [overlap(q,2), overlap(q,2)];
+            yy = [1, dims_o(q,1)];
+            line(xx,yy,'Color','r','LineStyle','--')
+        end
+        
+        % horizontal lines
+        if overlap(q,1) == 0 && overlap(q,2) > 0
+            xx = [1, dims_o(q,2)];
+            yy = [overlap(q,1)+1, overlap(q,1)+1];
+            line(xx,yy,'Color','r','LineStyle','--')
+        else
+            xx = [1, dims_o(q,2)];
+            yy = [overlap(q,1), overlap(q,1)];
+            line(xx,yy,'Color','r','LineStyle','--')
+        end
 
         set(gca,'xticklabel',[]) % remove default ticks from imagesc
         set(gca,'yticklabel',[])
