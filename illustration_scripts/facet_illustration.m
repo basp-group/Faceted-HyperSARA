@@ -117,9 +117,11 @@ set(f,'units','normalized','outerposition',[0 0 0.40 0.70]) % 0.7 0.59
 
 for i=1:nr
     for ii=1:nc
-        ax = subaxis(nr,nc,ii,i,'SpacingHoriz',0.01,'SpacingVert',0.01); % best option !
-        
+        %ax = subaxis(nr,nc,ii,i,'SpacingHoriz',0.01,'SpacingVert',0.01); % best option !
         q = (ii-1)*nr + i;
+        
+        qm = (i-1)*nc + ii;
+        subplot(nr, nc, qm)
 %         qm = (qy-1)*Qx + qx;
         imagesc(log10(x(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2))), [-5, 0]); 
         
@@ -168,13 +170,25 @@ set(f,'units','normalized','outerposition',[0 0 0.40 0.70])
 total_size_x = sum(dims_o(:,2));
 total_size_y = sum(dims_o(:,1));
 max_dims_o = max(dims_o, [], 1);
+min_dims_o = min(dims_o, [], 1);
 
 % see how to properly display the images with their respective size (respect local and global ratio)
 
 for i=1:nr
     for ii=1:nc
-        ax = subaxis(nr,nc,ii,i, dims_o(q,2)/max_dims_o(2), dims_o(q,1)/max_dims_o(1),'SpacingHoriz',0.01,'SpacingVert',0.01); % best option !
+        if ii == 1
+            pos_prev = [0, 0, 0, 0];
+        end
+        ax = subaxis(nr,nc,ii,i,'SpacingHoriz',0.01,'SpacingVert',0.01); % best option !
+        % dims_o(q,2)/max_dims_o(2), dims_o(q,1)/max_dims_o(1)
+        % min_dims_o(2)/dims_o(q,2), min_dims_o(1)/dims_o(q,1)
         q = (ii-1)*nr + i;
+%         pos = get(ax, 'Position');
+%         set(gca, 'Position', [pos(1)-pos_prev(1)+pos_prev(3), pos(2)-pos_prev(2)+pos_prev(4), dims_o(q,2)/(Qx*max_dims_o(2)), dims_o(q,1)/(Qy*max_dims_o(1))]) % ok for the dims, not ok for the positions
+%         pos_prev = pos;
+        
+%         qm = (i-1)*nc + ii;
+%         subplot(nr, nc, qm)
         imagesc(log10(x(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2))), [-5, 0]); 
         hold on
         
