@@ -17,16 +17,16 @@ if strcmp(parallel_version, 'spmd4_cst_weighted') || strcmp(parallel_version, 's
     d = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
 end
     
-addpath hypersara-clean/lib/
-addpath hypersara-clean/lib/generate_data/
-addpath hypersara-clean/lib/operators/
-addpath hypersara-clean/lib/CubeHelix/
+addpath lib/
+addpath lib/generate_data/
+addpath lib/operators/
+addpath lib/CubeHelix/
+addpath lib/Proximity_operators/code/matlab/indicator/
+addpath lib/Proximity_operators/code/matlab/multi/
 addpath sdwt2/
 addpath src/
 addpath data/
 addpath nufft/
-addpath hypersara-clean/lib/Proximity_operators/code/matlab/indicator/
-addpath hypersara-clean/lib/Proximity_operators/code/matlab/multi/
 
 seed = 1;
 rng(seed);
