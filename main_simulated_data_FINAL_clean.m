@@ -28,8 +28,10 @@ addpath lib/CubeHelix/
 addpath lib/Proximity_operators/code/matlab/indicator/
 addpath lib/Proximity_operators/code/matlab/multi/
 addpath sdwt2/
-addpath src/
 addpath data/
+addpath src/
+addpath src/spmd
+addpath src/spmd/spmd4 % spmd4 spmd4_weighted, spmd6
 
 seed = 1;
 rng(seed);
