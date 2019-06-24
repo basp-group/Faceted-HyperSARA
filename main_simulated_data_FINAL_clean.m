@@ -8,6 +8,8 @@ flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512;
 Qc2 = 1;
 T = 1500; % 1500, 3000
 hrs = 6;
+
+% select algorithm parameters
 window_type = 'hamming';
 parallel_version = 'spmd4';
 bool_weights = true; % for the spmd4_new version (50% overlap version)
@@ -20,13 +22,14 @@ end
 addpath lib/
 addpath lib/generate_data/
 addpath lib/operators/
+addpath lib/nufft/
+addpath lib/utils/
 addpath lib/CubeHelix/
 addpath lib/Proximity_operators/code/matlab/indicator/
 addpath lib/Proximity_operators/code/matlab/multi/
 addpath sdwt2/
 addpath src/
 addpath data/
-addpath nufft/
 
 seed = 1;
 rng(seed);
