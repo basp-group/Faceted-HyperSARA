@@ -1,5 +1,5 @@
 function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
-    pdfb_LRJS_precond_NL21_sdwt2_spmd4(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
+    pdfb_LRJS_precond_NL21_sdwt2_spmd4(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, nChannels)
 % Facet HyperSARA: ...
 %
 %
@@ -19,7 +19,7 @@ function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,
 % > param       algorithm parameters (struct)
 %
 %   general
-%   > .verbose                       print log or not
+%   > .verbose           print log or not
 %   > .rel_obj   (1e-5)  stopping criterion
 %   > .max_iter (10000)  max number of iterations
 %
@@ -243,7 +243,7 @@ if isfield(param,'init_xsol')
     xsol = param.init_xsol;
     fprintf('xsol uploaded \n\n')
 else
-    xsol = zeros(M,N,c);
+    xsol = zeros(M,N,nChannels);
     fprintf('xsol initialized \n\n')
 end
 
@@ -263,7 +263,7 @@ if isfield(param,'init_v0') || isfield(param,'init_v1')
 else
     spmd
         if labindex <= Qp.Value
-            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_overlap(Ncoefs_q, dims_q, dims_overlap_ref_q, dirac_present, c, nlevelp.Value);
+            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_overlap(Ncoefs_q, dims_q, dims_overlap_ref_q, dirac_present, nChannels, nlevelp.Value);
         end
     end
     fprintf('v0, v1, weigths0, weights1 initialized \n\n')
@@ -391,7 +391,7 @@ if isfield(param,'init_g')
 else
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-        g_q{q} = zeros([dims(q, :), c]);
+        g_q{q} = zeros([dims(q, :), nChannels]);
     end
     fprintf('g initialized \n\n')
 end
@@ -549,10 +549,10 @@ for t = t_start : param.max_iter
         for q = 1:Q
             xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
-        sol = reshape(xsol(:),numel(xsol(:))/c,c);
+        sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
         SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(c,1);
-        for i = 1:c
+        psnrh = zeros(nChannels,1);
+        for i = 1:nChannels
             psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
         end
         SNR_average = mean(psnrh);
@@ -601,10 +601,10 @@ for t = t_start : param.max_iter
         for q = 1:Q
             xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
-        sol = reshape(xsol(:),numel(xsol(:))/c,c);
+        sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
         SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(c,1);
-        for i = 1:c
+        psnrh = zeros(nChannels,1);
+        for i = 1:nChannels
             psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
         end
         SNR_average = mean(psnrh);
@@ -706,10 +706,10 @@ for q = 1:Q
 end
 
 % SNR (computed only on the master node)
-sol = reshape(xsol(:),numel(xsol(:))/c,c);
+sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
 SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-psnrh = zeros(c,1);
-for i = 1:c
+psnrh = zeros(nChannels,1);
+for i = 1:nChannels
     psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
 end
 SNR_average = mean(psnrh);

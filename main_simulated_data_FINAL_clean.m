@@ -31,7 +31,7 @@ addpath sdwt2/
 addpath data/
 addpath src/
 addpath src/spmd
-addpath src/spmd/spmd4 % spmd4 spmd4_weighted, spmd6
+addpath src/spmd/spmd4 % spmd4 spmd4_weighted, spmd6: to be added depending on the configuration
 
 seed = 1;
 rng(seed);
