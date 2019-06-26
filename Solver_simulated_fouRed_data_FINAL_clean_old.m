@@ -2,11 +2,11 @@
 if compute_Anorm
 %     if usingReduction
     if usingPrecondition
-        F = afclean( @(x) HS_fouRed_forward_operator(x, A, At, H, Sigma, Mask, [oy*Ny ox*Nx], W, aW));
-        Ft = afclean( @(y) HS_fouRed_adjoint_operator(y, A, At, H, Sigma, Mask, [Ny, Nx], [oy*Ny ox*Nx], W, aW));
+        F = afclean( @(x) HS_fouRed_forward_operator(x, B, aW));
+        Ft = afclean( @(y) HS_fouRed_adjoint_operator(y, Bt, aW));
     else
-        F = afclean( @(x) HS_fouRed_forward_operator(x, A, At, H, Sigma, Mask, [oy*Ny ox*Nx], W));
-        Ft = afclean( @(y) HS_fouRed_adjoint_operator(y, A, At, H, Sigma, Mask, [Ny, Nx], [oy*Ny ox*Nx], W));
+        F = afclean( @(x) HS_fouRed_forward_operator(x, B));
+        Ft = afclean( @(y) HS_fouRed_adjoint_operator(y, Bt));
     end
     Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]); 
 %     else
@@ -25,7 +25,6 @@ end
 if exist('Gw','var')
     clear Gw;
 end
-clear F Ft;
 % %% Generate initial epsilons by performing imaging with NNLS on each data block separately
 % if generate_eps_nnls
 %     % param_nnls.im = im; % original image, used to compute the SNR
@@ -148,10 +147,10 @@ if solve_HS
         y_spmd{i} = yT(cell_c_chunks{i});
         epsilon_spmd{i} = epsilons_t(cell_c_chunks{i});
         aW_spmd{i} = aW(cell_c_chunks{i});
-        W_spmd{i} = Wm(cell_c_chunks{i});
+        W_spmd{i} = W(cell_c_chunks{i});
         T_spmd{i} = Ti(cell_c_chunks{i});
     end
-    clear yT epsilons_t aW Wm Ti
+    clear yT epsilons_t aW W Ti
     
 %     [xsol,v0,v1,v2,g,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res] = ...
 %         pdfb_LRJS_Adapt_blocks_rwNL21_par_sing_precond_new_sim

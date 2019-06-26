@@ -3,11 +3,21 @@ close all
 clc
 
 
-flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512; %2048;
+flag_algo = 2; tot = 20; Qx = 1; Qy = 2; Qc = 2; ind = 1; img_size = 512; %2048;
 Qc2 = 1;
-T = 200; % 1500
+T = 1500;
 hrs = 6;
 parallel_version = 'spmd4';
+
+% select algorithm parameters
+window_type = 'hamming';
+parallel_version = 'spmd4';
+bool_weights = true; % for the spmd4_new version (50% overlap version)
+
+if strcmp(parallel_version, 'spmd4_cst_weighted') || strcmp(parallel_version, 'spmd4_cst')
+    nlevel = 4;
+    d = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
+end
 
 addpath fouRed/
 addpath lib/
@@ -21,9 +31,10 @@ addpath lib/Proximity_operators/code/matlab/multi/
 addpath sdwt2/
 addpath src/
 addpath src/dr/
-addpath scr/spmd/
 addpath data/
 
+seed = 1;
+rng(seed);
 
 usingReduction = 1;
 usingReductionPar = 0;
