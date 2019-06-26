@@ -118,3 +118,8 @@ for i = 1:length(ch)
     G{i} = Gw{i}(:, W{i});
 
 end
+
+%% Free memory
+if free_memory
+    clear u v u1 v1 uw vw aWw nW nWw r antennas na mm bmax uvidx Gw Gw_a b_l;
+end
