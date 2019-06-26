@@ -247,7 +247,7 @@ if flag_algo==2
     clear y epsilon aW W G
 
     switch parallel_version
-        %%-arcihved version        
+        %%-archived version        
         %         case 'parfeval'
         %             [xsol,v0,v1,v2,g,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
         % %             pdfb_LRJS_precond_NL21_sdwt2_parfeval(y, epsilons, A, At, aW, G, W, Sp, Spt, param_HSI, X0, Qx, Qy, num_chunk, wlt_basis, L, nlevel, c_chunks, Psit_full);
