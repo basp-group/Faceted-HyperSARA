@@ -25,5 +25,6 @@ for m = 1 : length(sigma_noise)
     end
 end
 
+clear r u v u1 v1 uw vw
 % Nm = length(ch) * numel(y_t{1}{1});
 % [epsilon,epsilons] = util_gen_data_fidelity_bounds(y_t, Nm, param_l2_ball, sigma_noise);
