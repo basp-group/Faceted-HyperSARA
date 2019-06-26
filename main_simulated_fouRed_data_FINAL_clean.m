@@ -21,7 +21,7 @@ addpath lib/Proximity_operators/code/matlab/multi/
 addpath sdwt2/
 addpath src/
 addpath src/dr/
-addpath scr/spmd/
+addpath src/spmd/
 addpath data/
 
 
@@ -56,7 +56,7 @@ save_full_operator = 0;
 load_full_operator = 0;
 
 free_memory = 1;
-free_Gw = 0;
+free_Gw = 1;
 
 generate_measurements = 1;
 load_measurements = 0;
@@ -182,11 +182,6 @@ param_HSI.num_workers
 
 
 %% Generate or Load subsampling mask
-if generate_data
-    Generate_data_new
-end
-
-
 percentage = 0.3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
 
 %% TO BE MODIFIED FROM HERE
@@ -195,7 +190,7 @@ percentage = 0.3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
 if usingReduction
     Generate_fouRed_data
 else
-    Generate_data
+    Generate_data_new
 end
 
 %%

@@ -95,6 +95,6 @@ for i = 1:length(ch)
     
 end
 
-clear y noise yTmat noiseMat G;
+clear y noise yTmat noiseMat G rn yMat dirac2D covariancemat d;
 
 fprintf('\nDimensionality reduction is finished\n');
