@@ -3,7 +3,7 @@ close all
 clc
 
 
-flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512; %2048;
+flag_algo = 2; tot = 20; Qx = 1; Qy = 1; Qc = 1; ind = 1; img_size = 64; %2048;
 Qc2 = 1;
 T = 200; % 1500
 hrs = 6;
@@ -180,13 +180,6 @@ elseif flag_algo == 2 % Faceted HyperSARA
 end
 param_HSI.num_workers
 
-
-%% Generate or Load subsampling mask
-if generate_data
-    Generate_data_new
-end
-
-
 percentage = 0.3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
 
 %% TO BE MODIFIED FROM HERE
@@ -195,7 +188,7 @@ percentage = 0.3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
 if usingReduction
     Generate_fouRed_data
 else
-    Generate_data
+    Generate_data_new
 end
 
 %%

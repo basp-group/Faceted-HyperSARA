@@ -23,7 +23,7 @@ end
 
 
 if exist('Gw','var')
-    clear Gw;
+    clear Gw Gw_a W;
 end
 clear F Ft;
 % %% Generate initial epsilons by performing imaging with NNLS on each data block separately
