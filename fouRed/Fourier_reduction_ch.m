@@ -13,7 +13,7 @@ param_fouRed.fastCov = 1;
 
 fprintf('\nDimensionality reduction...\n');
 for i = 1:length(ch)
-    H{i} = G{i}'*G{i};
+    H{i} = Gw{i}'*Gw{i};
 end
 
 for i = 1:length(ch)
@@ -24,7 +24,7 @@ for i = 1:length(ch)
     if param_fouRed.enable_estimatethreshold
         param_fouRed.x2 = norm(x0(:, :, i));
 %         param_fouRed.dirty2 = norm(Phi_t{i}(y{i})) / sqrt(numel(x0(:,:,i)));
-        param_fouRed.dirty2 = norm(operatorPhit(y{i}, G{i}', At, [oy*Ny ox*Nx], W{i})) / sqrt(numel(x0(:,:,i)));
+        param_fouRed.dirty2 = norm(operatorPhit(y{i}, Gw{i}', At) / sqrt(numel(x0(:,:,i))));
         if numel(sigma_noise_ch{i}) == 1
             param_fouRed.sigma_noise = sigma_noise_ch{i};
         else 
@@ -46,7 +46,7 @@ for i = 1:length(ch)
     % fast way of matrix probing (using psf)
     dirac2D = zeros(Ny, Nx);
     dirac2D(ceil((Ny+1)/2), ceil((Nx+1)/2)) = 1;
-    PSF = operatorIpsf(dirac2D, A, At, H{i}, [oy*Ny, ox*Nx], W{i});
+    PSF = operatorIpsf(dirac2D, A, At, H{i}, [oy*Ny, ox*Nx]);
     covariancemat = FT2(PSF);
     d = abs(real(covariancemat(:)));
     
@@ -54,8 +54,8 @@ for i = 1:length(ch)
         Mask{i} = (d >= prctile(d,100-param_fouRed.klargestpercent));
     elseif param_fouRed.enable_estimatethreshold
         % Embed the noise
-        noise = param_fouRed.sigma_noise/sqrt(2) * (randn(size(G{i}, 1),1) + 1j * randn(size(G{i}, 1), 1));
-        rn = FT2(At(G{i}'*noise));  % Apply F Phi
+        noise = param_fouRed.sigma_noise/sqrt(2) * (randn(size(Gw{i}, 1),1) + 1j * randn(size(Gw{i}, 1), 1));
+        rn = FT2(At(Gw{i}'*noise));  % Apply F Phi
 %         th = param_fouRed.gamma * std(rn(:)) / param_fouRed.x2;
         th_dirty = param_fouRed.gamma * std(rn(:)) / param_fouRed.dirty2;
         fprintf('\nThe estimate threshold using ground truth is %e \n', th);
@@ -70,11 +70,11 @@ for i = 1:length(ch)
     
 %     B{i} = @(x) operatorRPhi(x, A, At, H, W{i}, Sigma{i}, Mask{i}, [Ny, Nx]);
 %     Bt{i} = @(x) operatorRPhit(x, A, At, H, W{i}, Sigma{i}, Mask{i}, [Ny, Nx]);
-    FIpsf{i} = @(x) serialise(FT2(operatorIpsf(x, A, At, H{i}, [oy*Ny, ox*Nx], W{i})));  % F * Ipsf, image -> vect
-    FIpsf_t{i} = @(x) operatorIpsf(IFT2(reshape(x, [Ny, Nx])), A, At, H{i}, [Ny, Nx], W{i});  % Ipsf * F^T, vect -> image
+%     FIpsf{i} = @(x) serialise(FT2(operatorIpsf(x, A, At, H{i}, [oy*Ny, ox*Nx], W{i})));  % F * Ipsf, image -> vect
+%     FIpsf_t{i} = @(x) operatorIpsf(IFT2(reshape(x, [Ny, Nx])), A, At, H{i}, [Ny, Nx], W{i});  % Ipsf * F^T, vect -> image
    
-    yMat = dataReduce(y{i}, G{i}', At, [oy*Ny ox*Nx], W{i}, Sigma{i}, Mask{i});
-    noiseMat = dataReduce(noise{i}, G{i}', At, [oy*Ny ox*Nx], W{i}, Sigma{i}, Mask{i});
+    yMat = dataReduce(y{i}, Gw{i}', At, Sigma{i}, Mask{i});
+    noiseMat = dataReduce(noise{i}, Gw{i}', At, Sigma{i}, Mask{i});
     
     if usingReductionPar
         [yT{i}, rn{i}, Ti{i}, Wm{i}] = util_gen_sing_block_structure(yMat, noiseMat, Sigma{i}, Mask{i}, param_sing_block_structure);
@@ -95,6 +95,6 @@ for i = 1:length(ch)
     
 end
 
-clear covariancemat d dirac2D PSF rn y yMat noise noiseMat G;
+clear covariancemat d dirac2D PSF rn y yMat noise noiseMat Gw;
 
 fprintf('\nDimensionality reduction is finished\n');

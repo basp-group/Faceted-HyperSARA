@@ -2,11 +2,11 @@
 if compute_Anorm
 %     if usingReduction
     if usingPrecondition
-        F = afclean( @(x) HS_fouRed_forward_operator(x, A, At, H, Sigma, Mask, [oy*Ny ox*Nx], W, aW));
-        Ft = afclean( @(y) HS_fouRed_adjoint_operator(y, A, At, H, Sigma, Mask, [Ny, Nx], [oy*Ny ox*Nx], W, aW));
+        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Sigma, Mask, aW));
+        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Sigma, Mask, [Ny, Nx], aW));
     else
-        F = afclean( @(x) HS_fouRed_forward_operator(x, A, At, H, Sigma, Mask, [oy*Ny ox*Nx], W));
-        Ft = afclean( @(y) HS_fouRed_adjoint_operator(y, A, At, H, Sigma, Mask, [Ny, Nx], [oy*Ny ox*Nx], W));
+        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Sigma, Mask));
+        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Sigma, Mask, [Ny, Nx]));
     end
     Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]); 
 %     else
@@ -21,10 +21,6 @@ if compute_Anorm
 %     end
 end
 
-
-if exist('Gw','var')
-    clear Gw Gw_a W;
-end
 clear F Ft;
 % %% Generate initial epsilons by performing imaging with NNLS on each data block separately
 % if generate_eps_nnls
@@ -159,7 +155,7 @@ if solve_HS
     
     [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
         pdfb_LRJS_precond_NL21_sdwt2_spmd4_dr(y_spmd, [Ny, Nx], epsilon_spmd, ...
-        FIpsf, FIpsf_t, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+        A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
         wlt_basis, L, nlevel, cell_c_chunks, ch(end));
     
     c = size(xsol,3);

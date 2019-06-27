@@ -3,7 +3,7 @@ close all
 clc
 
 
-flag_algo = 2; tot = 20; Qx = 1; Qy = 1; Qc = 1; ind = 1; img_size = 64; %2048;
+flag_algo = 2; tot = 10; Qx = 1; Qy = 1; Qc = 1; ind = 1; img_size = 64; %2048;
 Qc2 = 1;
 T = 200; % 1500
 hrs = 6;
@@ -181,7 +181,7 @@ end
 param_HSI.num_workers
 
 %% Generate or Load subsampling mask
-percentage = 0.3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
+percentage = 3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
 
 %% TO BE MODIFIED FROM HERE
 

@@ -1,25 +1,15 @@
-function y = HS_fouRed_forward_operator(x, A, At, H, Sigma, Mask, No, W, aW)
+function y = HS_fouRed_forward_operator_new(x, A, At, H, Sigma, Mask, aW)
 % Phi' = Sigma * F * Phi^t * Phi = Sigma * F * A^t * H * A
 
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
 
 % Parameters
 [Ny, Nx, c] = size(x);
-if exist('No', 'var')
-    Noy = No(1);
-    Nox = No(2);
-end
 
 %
 for ind = 1:c
     x1 = A(real(x(:,:,ind)));
-    if exist('No', 'var') && exist('W', 'var')
-        tmp = H{ind} * x1(W{ind});
-        x2 = zeros(Noy*Nox,1);
-        x2(W{ind}) = tmp;
-    else
-        x2 = H{ind} * x1;    
-    end
+    x2 = H{ind} * x1;
     xtmp = FT2(real(At(x2)));
     xtmp = xtmp(:);
     xtmp = Sigma{ind} .* xtmp(Mask{ind});

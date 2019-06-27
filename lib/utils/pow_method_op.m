@@ -12,7 +12,7 @@ n = 1 ;
 
 epsilon = 10^(-8) ;
 
-nmax = 200;
+nmax = 20;
 
 cond = abs( pnew-p ) / pnew ;
 

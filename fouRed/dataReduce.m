@@ -1,4 +1,4 @@
-function y = dataReduce(x, Gt, At, No, W, Sigma, Mask)
+function y = dataReduce(x, Gt, At, Sigma, Mask, No, W)
 % the embeddding operator R = \sigma * S * F * Phi^T
 % Complex -> Complex
 FT2 = @(x) fftshift(fft2(ifftshift(x)));

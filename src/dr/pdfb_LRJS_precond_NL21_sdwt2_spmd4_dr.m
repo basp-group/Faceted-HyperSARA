@@ -1,4 +1,4 @@
-function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd4_dr(y, imsize, epsilon, A, At, pU, T, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
+function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = pdfb_LRJS_precond_NL21_sdwt2_spmd4_dr(y, imsize, epsilon, A, At, H, pU, T, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c)
 
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
@@ -37,7 +37,8 @@ norm_residual_check = 0;
 No = size(W{1}{1}{1}, 1);
 
 % number of pixels (spatial dimensions)
-[M, N] = size(At{1}(zeros(No, 1)));
+M = imsize(1);
+N = imsize(2);
 
 % define reference spatial facets (no overlap)
 Q = Qx*Qy;
@@ -197,6 +198,7 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 % see warm-restart in detail for this step...
 Ap = Composite();
 Atp = Composite();
+Hp = Composite();
 x_hat_i = Composite();
 Tp = Composite();
 yp = Composite();
@@ -221,8 +223,9 @@ for k = 1:K
     yp{Q+k} = y{k};
     y{k} = [];
     x_hat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
-    Ap{Q+k} = A{c_chunks{k}};
-    Atp{Q+k} = At{c_chunks{k}};
+    Ap{Q+k} = A;
+    Atp{Q+k} = At;
+    Hp{Q+k} = H(c_chunks{k});
     Tp{Q+k} = T{k};
     T{k} = [];
     Wp{Q+k} = W{k};
@@ -233,7 +236,7 @@ for k = 1:K
     norm_res{Q+k} = norm_res_tmp;
 end
 
-clear norm_res_tmp epsilon pU W G y % W, G, y needed to compute the residual image 
+clear norm_res_tmp epsilon pU W A At H y % W, G, y needed to compute the residual image 
 
 v2_ = Composite();
 t_block = Composite();
@@ -362,7 +365,7 @@ for t = t_start : param.max_iter
                     labReceive(q);
             end
             tw = tic;
-            [v2_, g2, proj_, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity_dr(v2_, yp, xhat_i, proj_, Ap, Atp, Tp, Wp, pUp, epsilonp, ...
+            [v2_, g2, proj_, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity_dr(v2_, yp, xhat_i, proj_, Ap, Atp, Hp, Tp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             t_op = toc(tw);
             % send portions of g2 to the prior/primal nodes
@@ -536,7 +539,7 @@ res = zeros(size(xsol));
 
 spmd
     if labindex > Qp.Value
-        res_ = compute_residual_images_dr(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Wp);
+        res_ = compute_residual_images_dr(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp);
     end
 end
 for k = 1 : K
