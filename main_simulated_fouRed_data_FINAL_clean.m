@@ -2,8 +2,7 @@ clear all
 close all
 clc
 
-
-flag_algo = 2; tot = 10; Qx = 1; Qy = 1; Qc = 1; ind = 1; img_size = 64; %2048;
+flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512; %2048;
 Qc2 = 1;
 T = 200; % 1500
 hrs = 6;
@@ -20,8 +19,9 @@ addpath lib/Proximity_operators/code/matlab/indicator/
 addpath lib/Proximity_operators/code/matlab/multi/
 addpath sdwt2/
 addpath src/
-addpath src/dr/
-addpath src/spmd/
+addpath src/
+addpath src/spmd/spmd4_weighted/
+addpath src/spmd/dr/
 addpath data/
 
 
@@ -134,9 +134,6 @@ if generate_undersampled_cube
     unds = c/tot; % take 1/unds images
     [x0,X0,f,c] = Generate_undersampled_cube_new(x0,f,Ny,Nx,c,unds);
     ch = [1 : c]; % number of channels loaded (note that this can be one).
-    Nx
-    Ny
-    c
 end
 
 %% For monochromatic imaging
