@@ -21,9 +21,19 @@ addpath sdwt2/
 addpath src/
 addpath src/
 addpath src/spmd/spmd4_weighted/
+addpath src/spmd/spmd4/
 addpath src/spmd/dr/
 addpath data/
 
+% select algorithm parameters
+window_type = 'hamming';
+parallel_version = 'spmd4';
+bool_weights = true; % for the spmd4_new version (50% overlap version)
+
+if strcmp(parallel_version, 'spmd4_cst_weighted') || strcmp(parallel_version, 'spmd4_cst')
+    nlevel = 4;
+    d = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
+end
 
 usingReduction = 1;
 usingReductionPar = 0;
@@ -178,7 +188,7 @@ end
 param_HSI.num_workers
 
 %% Generate or Load subsampling mask
-percentage = 3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
+percentage = 0.3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
 
 %% TO BE MODIFIED FROM HERE
 
