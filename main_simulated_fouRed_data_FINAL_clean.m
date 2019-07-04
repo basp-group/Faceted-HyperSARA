@@ -3,6 +3,7 @@ close all
 clc
 
 flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512; %2048;
+
 Qc2 = 1;
 T = 200; % 1500
 hrs = 6;
