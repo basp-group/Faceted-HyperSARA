@@ -1,4 +1,28 @@
 function res = compute_residual_images_dr(x, y, T, A, At, H, W)
+%compute_residual_images_dr: compute the residual images for each channel 
+% of interest.
+%-------------------------------------------------------------------------%
+%%
+% Input:
+%
+% > x             wideband image cube [N(1), N(2), L]
+% > y             visibilities (blocked) {L}{nblocks}
+% > T             reduction operator {L}{nblocks} (Sigma)
+% > A             measurement operator @[1]
+% > At            adjoint measurement operator @[1]
+% > H             holographic matrices G'*G {L}
+% > W             masking operators (selection Fourier plane) {L}{nblocks}
+%
+% Output:
+%
+% < residual_image  residual image cube [N(1), N(2), L]
+%-------------------------------------------------------------------------%
+%%
+% Code: P.-A. Thouvenin.
+% [../../2019]
+%-------------------------------------------------------------------------%
+%%
+
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
 IFT2 = @(x) fftshift(ifft2(ifftshift(x)));
 

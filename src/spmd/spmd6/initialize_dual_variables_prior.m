@@ -1,4 +1,29 @@
 function [v0, v1, weights0, weights1] = initialize_dual_variables_prior(Ncoefs, dims, dirac_present, c, nlevel)
+%initialize_dual_variables_prior: initialize all the dual variables for a 
+% given facet (nuclear and l21 norms).
+%-------------------------------------------------------------------------%
+%%
+% Input:
+%
+% > Ncoefs              wideband facet [M, N, L]
+% > dims                size of a non-overlapping facet [1, 2]
+% > dirac_present       flag indicating whether the Dirac dictionary is
+%                       used in the sparsifying dictionary
+% > c                   number of spectral channels [1]
+% > nlevel              number of wavelet decompositions [1]
+%
+% Output:
+%
+% < v0                  dual variable associated with the nuclear norm
+% < v1                  dual variable associated with the l21-norm
+% < weights0            weigths associated with the nuclear norm
+% < weights1            weigths ssociated with the l21-norm
+%-------------------------------------------------------------------------%
+%%
+% Code: P.-A. Thouvenin.
+% [../../2019]
+%-------------------------------------------------------------------------%
+%%
 
 % compute size of the dual variables and the weigths
 p = prod(Ncoefs, 2);

@@ -5,15 +5,18 @@ function [v0, g0] = update_nuclear_spmd(v0, xhat, weights0, beta0)
 %%
 % Input:
 %
-% > v0        dual variable associated with the nuclear nor prior [min(M*N, L), 1]
+% > v0        dual variable associated with the nuclear norm prior 
+%             [min(M*N, L), 1]
 % > xhat      auxiliary variable related to the wideband image [M, N, L]
-% > weights0  reweigthing weigths [min(M*N, L), 1]
+% > weights0  weights for the reweighting [min(M*N, L), 1]
 % > beta0     thresholding parameter (1 / gamma0) [1]
 %
 % Output:
 %
-% < v0        dual variable associated with the nuclear nor prior [min(M*N, L), 1]
-% < g0        auxiliary variable for the update of the primal variable [M, N, L]
+% < v0        dual variable associated with the nuclear norm prior 
+%             [min(M*N, L), 1]
+% < g0        auxiliary variable for the update of the primal variable 
+%             [M, N, L]
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

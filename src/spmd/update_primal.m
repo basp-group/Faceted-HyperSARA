@@ -11,7 +11,7 @@ function [xsol, xhat, rel_x, norm_x] = update_primal(xsol, g)
 %
 % < xsol      wideband facet [M, N, L]
 % < xhat      auxiliary variable related to the wideband facet [M, N, L]
-% < rel_x     square of the realtive variation [1]
+% < rel_x     square of the relative variation [1]
 % < norm_x    square Euclidean norm of xsol [1] 
 %-------------------------------------------------------------------------%
 %%

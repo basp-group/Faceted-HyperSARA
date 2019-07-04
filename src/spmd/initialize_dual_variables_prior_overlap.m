@@ -2,25 +2,25 @@ function [v0, v1, weights0, weights1] = ...
     initialize_dual_variables_prior_overlap(Ncoefs, dims, dims_overlap_ref,...
                                             dirac_present, c, nlevel)
 %initialize_dual_variables_prior_overlap: initialize all the dual variables
-% associated with a given facet (nuclear and l21 norms).
+% for a given facet (nuclear and l21 norms).
 %-------------------------------------------------------------------------%
 %%
 % Input:
 %
 % > Ncoefs              wideband facet [M, N, L]
-% > dims                auxiliary variable related to the wideband facet [M, N, L]
-% > dims_overlap_ref    dimension of a facet (with overlap)
-% > dirac_present       falg indicating whether the Dirac dictionary is
+% > dims                size of a non-overlapping facet [1, 2]
+% > dims_overlap_ref    dimension of a facet (with overlap) [1, 2]
+% > dirac_present       flag indicating whether the Dirac dictionary is
 %                       used in the sparsifying dictionary
-% > c                   number of spectral channels
+% > c                   number of spectral channels [1]
 % > nlevel              number of wavelet decompositions [1]
 %
 % Output:
 %
 % < v0                  dual variable associated with the nuclear norm
 % < v1                  dual variable associated with the l21-norm
-% < weights0            weigths (reweighting) associated with the nuclear norm
-% < weights1            weigths (reweighting) associated with the l21-norm
+% < weights0            weigths associated with the nuclear norm
+% < weights1            weigths ssociated with the l21-norm
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

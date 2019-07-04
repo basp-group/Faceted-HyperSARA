@@ -9,20 +9,21 @@ function [v1, g] = update_l21_spmd(v1, x_overlap, weights, beta1, Iq, dims_q,...
 %%
 % Input:
 %
-% > v1                       dual variable associated with the facet l21-norm [s, L]
+% > v1                      dual variable associated with the facet l21-
+%                           norm [s, L]
 % > x_overlap               overlapping image facet [M, N, L]
 % > weights                 weights to balance the effect of redundant
 %                           pixels due to the overlap between facets [M, N]
 % > beta1                   update step (mu / gamma1) [1]
-% > Iq                      starting index of the non-overlapping base facet
-%                           [1, 2]
+% > Iq                      starting index of the non-overlapping base 
+%                           facet [1, 2]
 % > dims_q                  dimensions of the non-overlapping base facet
 %                           [1, 2]
 % > I_overlap_q             starting index of the facet [1, 2]
 % > dims_overlap_q          dimensions of the facet [1, 2]
 % > offset                  offset to be used from one dictionary to
-%                           another (different overlap needed -> cropping)
-%                           {nDictionaries}
+%                           another (different overlap needed for each 
+%                           dictionary -> cropping) {nDictionaries}
 % > status_q                status of the current facet (vert. and hrz) ...
 % > nlevel                  depth of the wavelet decompositions
 % > wavelet                 name of the wavelet dictionaries
@@ -31,7 +32,7 @@ function [v1, g] = update_l21_spmd(v1, x_overlap, weights, beta1, Iq, dims_q,...
 % > temLIdxs_q              amount of cropping from the "left" [1, 2]
 % > temRIdxs_q              amount of cropping from the "right" [1, 2]
 % > offsetLq                amount of zero-pading from the "left" [1, 2]
-% > offsetRq                amout of zer-padding from the "right" [1, 2]
+% > offsetRq                amout of zero-padding from the "right" [1, 2]
 % > dims_overlap_ref_q      dimension of the facet [1, 2]    
 %
 % Output:
