@@ -1,6 +1,106 @@
 function [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
     pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d)
-
+%pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap: faceted HyperSARA
+%
+%
+%
+%
+%-------------------------------------------------------------------------%
+%%
+% Input: 
+%
+% > y           blocks of visivilities {L}{nblocks_l}
+% > epsilon     l2-ball norms {L}{nblocks_l}
+% > A           measurement operator
+% > At          adjoint of the measurement operator
+% > pU          preconditioning matrices {L}{nblocks_l}
+% > G           gridding matrices {L}{nblocks_l}
+% > W           masks for selection of the blocks of visibilities
+% > param       algorithm parameters (struct)
+%
+%   general
+%   > .verbose           print log or not
+%   > .rel_obj   (1e-5)  stopping criterion
+%   > .max_iter (10000)  max number of iterations
+%
+%   convergence
+%   > .nu0 = 1
+%   > .nu1      upper bound on the norm of the operator Psi
+%   > .nu2      norm of the faceting operator (= 1)
+%   > .gamma    regularization parameter (l21 norm)
+%
+%   reweighting
+%   > .reweight_alpha_ff   (0.9)        
+%   > .total_reweights      (30)     -1 if you don't want reweighting
+%   > .use_reweight_steps    (1)     reweighting by fixed steps
+%   > .reweight_step_size  (300)     reweighting step size
+%   > .reweight_steps = [5000: param_HSI.reweight_step_size :10000];
+%   > .step_flag = 1;
+%   > .use_reweight_eps   (false)    reweighting w.r.t the relative change of the solution
+%   > .reweight_max_reweight_itr     param_HSI.max_iter - param_HSI.reweight_step_size;
+%   > .reweight_rel_obj   (1e-4)     criterion for performing reweighting
+%   > .reweight_min_steps_rel_obj (300) minimum number of iterations between consecutive reweights
+%
+%   projection onto ellipsoid (preconditioning)
+%   > .elipse_proj_max_iter (20)     max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
+%   > .elipse_proj_min_iter  (1)     min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
+%   > .elipse_proj_eps    (1e-8)     stopping criterion
+%
+%   adaptive epsilon
+%   > .use_adapt_eps                 flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
+%   > .adapt_eps_start (200)         minimum num of iter before stating adjustment
+%   > .adapt_eps_tol_in (0.99)       tolerance inside the l2 ball
+%   > .adapt_eps_tol_out (1.001)     tolerance outside the l2 ball
+%   > .adapt_eps_steps (100)         min num of iter between consecutive updates
+%   > .adapt_eps_rel_obj (5e-4)      bound on the relative change of the solution
+%   > .adapt_eps_change_percentage  (0.5*(sqrt(5)-1)) weight of the update w.r.t the l2 norm of the residual data
+%
+%
+% > X0          ground truth wideband image [M*N, L]
+% > Qx          number of facets along dimension x [1]
+% > Qy          number of facets along dimension y [1]
+% > K           number of datab computing processes [1]
+% > wavelet     wavelet doctionaries considered (should contain 'self' by
+%               default in last position)
+% > L           size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
+% > nlevel      decomposition depth [1]
+% > c_chunks    indices of the bands handled by each data node {K, 1}
+% > c           total number of specrtal channels [1]
+% > d           size of the fixed overlap for the faceted nuclear norm 
+%               [1, 2]
+%
+%
+% Output:
+%
+% < xsol        reconstructed wideband image [M*N, L]
+% < v0          dual variables associated with the nuclear norms {Q}
+% < v1          dual variables associated with the l21 norms {Q}
+% < v2          dual variables associated with the data fidelity terms {K}
+% < weights0    weights associated with the nuclear norm prior {Q}
+% < weights1    weights associated with the nuclear norm prior {Q}
+% < proj        projected 
+% < t_block     index of the last iteration where the weigths have been
+%               updated
+% < reweight_alpha  last value of the reweigthing parameter [1]
+% < epsilon         updated value of th l2-ball radii {...}
+% < t               index of the last iteration step [1]
+% < rel_fval        relative variation
+% < nuclear         value of the faceted nuclear norm
+% < l21             value of the l21 regularization term
+% < norm_res_out    norm of the reidual image 
+% < res             residual image [M, N]
+% < end_iter        last iteration
+%-------------------------------------------------------------------------%
+%%
+% Code: P.-A. Thouvenin, A. Abdulaziz, M. Jiang
+% [../../2019]
+%-------------------------------------------------------------------------%
+%%
+% Note:
+% Code based on the HyperSARA code developed by A. Abdulaziz, available at 
+% https://basp-group.github.io/Hyper-SARA/
+%-------------------------------------------------------------------------%
+%%
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place. Constant overlap for the nuclear norm assuming d
 % is smaller than the smallest overlap for the sdwt2 (the other option 

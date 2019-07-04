@@ -21,7 +21,8 @@ function [v2, Ftx, proj, norm_res, global_norm_res, norm_epsilon] = update_data_
 % > A                               measurement operator @[1]
 % > At                              adjoint measurement operator @[1]
 % > H                               holographic matric G'*G {L}
-% > T                               reduction operator {L}{nblocks} (Sigma)
+% > T                               pseudo singular values from the 
+%                                   reduction operator {L}{nblocks} (Sigma)
 % > W                               masking operator {L}{nblocks}
 % > pU                              preconditioning matrices {L}{nblocks}
 % > epsilon                         l2-ball radius {L}{nblocks}
