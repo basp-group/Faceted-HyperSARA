@@ -1,4 +1,33 @@
 function [v1, g1] = run_par_l21(v1, Psit, Psi, xhat, weights1, beta1, sigma1)
+%run_par_l21: update the dual variable related to the facet l21-norm
+% prior.
+%-------------------------------------------------------------------------%
+%%
+% Input:
+%
+% > v1                      dual variable associated with the facet l21-
+%                           norm [s, L]
+% > Psit                    full SARA operator @[1]                     
+% > Psi                     adjoint of the full SARA operator @[1] 
+% > xhat                    auxiliary variable related to the wideband
+%                           image [M, N, L]
+% > weights1                weights associated with the reweigthing step
+%                           pixels due to the overlap between facets [M, N]
+% > beta1                   update step (mu / gamma1) [1]
+% > sigma1                  convergence parameter [1]
+%
+% Output:
+%
+% < v1                      dual variable associated with the l21-norm 
+%                           prior [s, L]
+% < g1                      auxiliary variable for the update of the primal
+%                           variable [M, N, L]
+%-------------------------------------------------------------------------%
+%%
+% Code: P.-A. Thouvenin.
+% [../../2019]
+%-------------------------------------------------------------------------%
+%%
 
 r1 = zeros(size(v1));
 g1 = zeros(size(xhat));

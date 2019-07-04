@@ -1,4 +1,26 @@
 function weights = update_weights_l21_serial(x, Psit, weights, reweight_alpha)
+%update_weights_l21_serial: update the weigths for the reweighting of the
+% l21-norm prior.
+%-------------------------------------------------------------------------%
+%%
+% Input:
+%
+% > x                       wideband image [M, N, L]
+% > Psit                    full SARA operator @[1]                     
+% > weights                 weights associated with the reweigthing step 
+%                           [s, L]
+% > reweight_alpha          reweighting parameter [1]
+%
+% Output:
+%
+% < weights                 weights associated with the reweigthing step 
+%                           [s, L]
+%-------------------------------------------------------------------------%
+%%
+% Code: P.-A. Thouvenin.
+% [../../2019]
+%-------------------------------------------------------------------------%
+%%
 
 w = zeros(size(weights, 1), size(x, 3));
 for l = 1 : size(x, 3)
