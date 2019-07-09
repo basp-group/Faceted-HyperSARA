@@ -23,9 +23,8 @@ for ind = 1:c
             x1 = zeros(Ny * Nx, 1);
             x1(Mask{ind}{j}) = xtmp;
             x1 = reshape(x1, Ny, Nx);
-            y(:,:,ind) = y(:,:,ind) + H{ind}{j} * A(IFT2(x1));
+            y(:,:,ind) = y(:,:,ind) + At(H{ind}{j} * A(IFT2(x1)));
         end
-        y(:,:,ind) = At(H{ind}{j} * A(IFT2(x1)));
     else
         if exist('aW', 'var')
             xtmp = sqrt(cell2mat(aW{ind})) .* x(:,ind);

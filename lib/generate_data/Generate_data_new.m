@@ -37,24 +37,49 @@ param_block_structure.fpartition = [icdf('norm', 0.25, 0, pi/4), 0, icdf('norm',
 
 param_block_structure.use_manual_partitioning = 0;
 
+%% samplig pattern parameters
+% options 'gaussian', 'file', 'gaussian+large-holes', 'file+undersample', ''gaussian+missing-pixels'
+% sampling_pattern = 'file+undersample';
+% sampling_pattern = 'gaussian';
+sampling_pattern = 'gaussian+large-holes';
+%  sampling_pattern = 'gaussian+missing-pixels';
+% sampling_pattern = 'file';
+
+% sparam.file_name = '/Volumes/Data/MeasSets/meerkat2h.ar.uvw.dat'; % file name for uv coverage
+sparam.file_name = '/Volumes/Data/MeasSets/ska.2h.ar.uvw.dat'; % file name for uv coverage
+sparam.p = percentage; % number of measurements as proportion of number of pixels to recover
+sparam.hole_number = 8000; % number of holes to introduce for 'gaussian+large-holes'
+sparam.hole_prob = 0.05; % probability of single pixel hole for 'gaussian+missing-pixels'
+sparam.hole_size = pi/60; % size of the missing frequency data
+sparam.fpartition = [pi]; % partition (symetrically) of the data to nodes (frequency ranges)
+% sparam.fpartition = [0, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
+% sparam.fpartition = [-0.25*pi, 0, 0.25*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
+% sparam.fpartition = [-0.3*pi, -0.15*pi, 0, 0.15*pi, 0.3*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
+% sparam.fpartition = [-0.35*pi, -0.25*pi, -0.15*pi, 0, 0.15*pi, 0.25*pi, 0.35*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
+sparam.sigma = pi/3; % variance of the gaussion over continous frequency
+sparam.sigma_holes = pi/3; % variance of the gaussion for the holes
+
+%% generate the sampling pattern
+sparam.N = N; % number of pixels in the image
+sparam.Nox = ox*Nx; % number of pixels in the image
+sparam.Noy = oy*Ny; % number of pixels in the image
 
 %%
-param_data.cov_type = 'vlaa';
+% param_data.cov_type = 'vlaa';
 
 % T = 200;
 % hrs = 6;
 
-[u1, v1, na, antennas] = generate_uv_coverage2(T, hrs, param_data.cov_type);
-u1 = u1(:);
-v1 = v1(:);
+% [u1, v1, na, antennas] = generate_uv_coverage2(T, hrs, param_data.cov_type);
+[u, v] = util_gen_sampling_pattern(sampling_pattern, sparam);
 
-%figure(11), scatter(u1,v1,'r.'); %hold on; scatter(-u1,v1,'b.');
-
-%remove all the visibilities outside the range [-pi, pi]
-r = sqrt(u1.^2 + v1.^2);
+% remove all the visibilities outside the range [-pi, pi]
+r = sqrt(u{1}.^2 + v{1}.^2);
 size(r(r>pi))
 bmax = max(r)
 
+u1 = u{1};
+v1 = v{1};
 [mm] = find(r > pi);
 u1(mm) = 0;
 v1(mm) = 0;
@@ -66,17 +91,38 @@ r = sqrt(u1.^2 + v1.^2);
 size(r(r>pi))
 bmax = max(r)
 
-%figure(2), scatter(u1,-v1,'b.');
+u1 = u1/2;
+v1 = v1/2;
 
-% mkdir('results')
-% save('./results/uv.mat','u1','v1');
+%figure(11), scatter(u1,v1,'r.'); %hold on; scatter(-u1,v1,'b.');
 
-if ~generate_simple_image
-    u1 = u1/2;
-    v1 = v1/2;
-end
-
-size(u1)
+%remove all the visibilities outside the range [-pi, pi]
+% r = sqrt(u1.^2 + v1.^2);
+% size(r(r>pi))
+% bmax = max(r)
+% 
+% [mm] = find(r > pi);
+% u1(mm) = 0;
+% v1(mm) = 0;
+% 
+% u1 = u1(u1 ~= 0);
+% v1 = v1(v1 ~= 0);
+% 
+% r = sqrt(u1.^2 + v1.^2);
+% size(r(r>pi))
+% bmax = max(r)
+% 
+% %figure(2), scatter(u1,-v1,'b.');
+% 
+% % mkdir('results')
+% % save('./results/uv.mat','u1','v1');
+% 
+% if ~generate_simple_image
+%     u1 = u1/2;
+%     v1 = v1/2;
+% end
+% 
+% size(u1)
 
 %%
 for i = ch
