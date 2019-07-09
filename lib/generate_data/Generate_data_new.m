@@ -24,7 +24,7 @@ param_block_structure.use_uniform_partitioning = 0;
 param_block_structure.uniform_partitioning_no = 4;
 
 param_block_structure.use_equal_partitioning = 1;
-param_block_structure.equal_partitioning_no = 1;
+param_block_structure.equal_partitioning_no = 4;
 
 param_block_structure.use_manual_frequency_partitioning = 0;
 % sparam.fpartition = [pi]; % partition (symetrically) of the data to nodes (frequency ranges)
@@ -97,7 +97,7 @@ for i = ch
     fprintf('Initializing the NUFFT operator\n\n');
     %tstart = tic;
    
-    [A, At, G{i}, W{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW); 
+    [A, At, Gw{i}, W{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW); 
     %[A, At, G{i}, W{i}, Gw{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
 end
 %figure, scatter(uw{i},vw{i},'r.');

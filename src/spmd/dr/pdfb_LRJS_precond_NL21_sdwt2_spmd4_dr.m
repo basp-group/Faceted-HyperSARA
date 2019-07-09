@@ -513,7 +513,7 @@ for t = t_start : param.max_iter
 %     end
     
     %% Display
-    if ~mod(t,100)
+    if ~mod(t,10)
         
         % compute value of the priors in parallel
         spmd

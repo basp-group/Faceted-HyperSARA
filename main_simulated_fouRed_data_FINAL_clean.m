@@ -1,8 +1,9 @@
 clear all
 close all
 clc
+delete(gcp('nocreate'))
 
-flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512; %2048;
+flag_algo = 2; tot = 20; Qx = 1; Qy = 1; Qc = 1; ind = 1; img_size = 64; %2048;
 
 Qc2 = 1;
 T = 200; % 1500
@@ -20,7 +21,7 @@ addpath lib/Proximity_operators/code/matlab/indicator/
 addpath lib/Proximity_operators/code/matlab/multi/
 addpath sdwt2/
 addpath src/
-addpath src/
+addpath src/spmd/
 addpath src/spmd/spmd4_weighted/
 addpath src/spmd/spmd4/
 addpath src/spmd/dr/
@@ -38,8 +39,9 @@ end
 
 usingReduction = 1;
 usingReductionPar = 0;
+usingBlocking = 1;
 usingPrecondition = 1;
-normalize_data = 0;
+normalize_data = 1;
 klargestpercent = 20;
 
 
@@ -194,7 +196,7 @@ percentage = 0.3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
 %% TO BE MODIFIED FROM HERE
 
 %% Generate or Load subsampling mask
-if usingReduction
+if usingReduction && ~usingBlocking
     Generate_fouRed_data
 else
     Generate_data_new

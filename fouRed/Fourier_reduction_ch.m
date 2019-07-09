@@ -12,60 +12,93 @@ param_fouRed.covmatfile = 'covariancemat.mat';
 param_fouRed.fastCov = 1;
 
 fprintf('\nDimensionality reduction...\n');
-for i = 1:length(ch)
-    H{i} = Gw{i}'*Gw{i};
-end
 
 for i = 1:length(ch)
-    
-%     Phi{i} = @(x) operatorPhi(x, G{i}, A, [oy*Ny ox*Nx], W{i});
-%     Phi_t{i} = @(x) operatorPhit(x, G{i}', At, [oy*Ny ox*Nx], W{i});
-    
-    if param_fouRed.enable_estimatethreshold
-        param_fouRed.x2 = norm(x0(:, :, i));
-%         param_fouRed.dirty2 = norm(Phi_t{i}(y{i})) / sqrt(numel(x0(:,:,i)));
-        param_fouRed.dirty2 = norm(operatorPhit(y{i}, Gw{i}', At) / sqrt(numel(x0(:,:,i))));
-        if numel(sigma_noise_ch{i}) == 1
-            param_fouRed.sigma_noise = sigma_noise_ch{i};
-        else 
-            tmp = sigma_noise_ch{i};
-            param_fouRed.sigma_noise = mean(tmp(:));
+    if usingBlocking
+        for j = 1: length(Gw{i})
+            H{i}{j} = Gw{i}{j}'*Gw{i}{j};
+            if param_fouRed.enable_estimatethreshold
+                param_fouRed.x2 = norm(x0(:, :, i));
+        %         param_fouRed.dirty2 = norm(Phi_t{i}(y{i})) / sqrt(numel(x0(:,:,i)));
+                param_fouRed.dirty2 = norm(operatorPhit(y{i}, Gw{i}', At) / sqrt(numel(x0(:,:,i))));
+                if numel(sigma_noise_ch{i}{j}) == 1
+                    param_fouRed.sigma_noise{i}{j} = sigma_noise_ch{i}{j};
+                else 
+                    tmp = sigma_noise_ch{i}{j};
+                    param_fouRed.sigma_noise{i}{j} = mean(tmp(:));
+                end
+            end
+            % no longer invoke function fourierReduction to reduce lambda functions
+            % fast way of matrix probing (using psf)
+            dirac2D = zeros(Ny, Nx);
+            dirac2D(ceil((Ny+1)/2), ceil((Nx+1)/2)) = 1;
+            PSF = operatorIpsf(dirac2D, A, At, H{i}{j}, [oy*Ny, ox*Nx]);
+            covariancemat = FT2(PSF);
+            d_mat = abs(real(covariancemat(:)));
+
+            if param_fouRed.enable_klargestpercent
+                Wm{i}{j} = (d_mat >= prctile(d_mat,100-param_fouRed.klargestpercent));
+            elseif param_fouRed.enable_estimatethreshold
+                % Embed the noise
+                noise1 = param_fouRed.sigma_noise{i}{j} * (randn(size(Gw{i}{j}, 1),1) + 1j * randn(size(Gw{i}{j}, 1), 1));
+                rn = FT2(At(Gw{i}{j}'*noise1));  % Apply F Phi
+        %         th = param_fouRed.gamma * std(rn(:)) / param_fouRed.x2;
+                th_dirty = param_fouRed.gamma * std(rn(:)) / param_fouRed.dirty2;
+                fprintf('\nThe estimate threshold using ground truth is %e \n', th);
+                Wm{i}{j} = (d_mat >= th_dirty);
+            end
+            d_mat = d_mat(Wm{i}{j});
+            fprintf('\nThe threshold is %e \n', min(d_mat));
+
+            Ti{i}{j} = max(param_fouRed.diagthresholdepsilon, d_mat);  % This ensures that inverting the values will not explode in computation
+            Ti{i}{j} = 1./sqrt(Ti{i}{j});
+
+            yT{i}{j} = dataReduce(y{i}{j}, Gw{i}{j}', At, Ti{i}{j}, Wm{i}{j});
+            rn{i}{j} = dataReduce(noise{i}{j}, Gw{i}{j}', At, Ti{i}{j}, Wm{i}{j});
+            
+            Gw{i}{j} = [];
         end
-    end
     
-    % psf operator Ipsf, singular value matrix Sigma, mask matrix (to reduce the dimension)
-%     [Ipsf{i}, Mask{i}, Sigma{i}, FIpsf{i}, FIpsf_t{i}] = fourierReduction(G{i}, A, At, [Ny, Nx], W{i}, param_fouRed);
-%     
-%     B{i} = @(x) operatorRPhi(x, Ipsf{i}, Sigma{i}, Mask{i}, [Ny, Nx]);
-%     Bt{i} = @(x) operatorRPhit(x, Ipsf{i}, Sigma{i}, Mask{i}, [Ny, Nx]);
-%     
-%     yMat = operatorR(y{i}, Phi_t{i}, Sigma{i}, Mask{i});
-%     noiseMat = operatorR(noise{i}, Phi_t{i}, Sigma{i}, Mask{i});    
-
-    % no longer invoke function fourierReduction to reduce lambda functions
-    % fast way of matrix probing (using psf)
-    dirac2D = zeros(Ny, Nx);
-    dirac2D(ceil((Ny+1)/2), ceil((Nx+1)/2)) = 1;
-    PSF = operatorIpsf(dirac2D, A, At, H{i}, [oy*Ny, ox*Nx]);
-    covariancemat = FT2(PSF);
-    d = abs(real(covariancemat(:)));
+    else
     
-    if param_fouRed.enable_klargestpercent
-        Mask{i} = (d >= prctile(d,100-param_fouRed.klargestpercent));
-    elseif param_fouRed.enable_estimatethreshold
-        % Embed the noise
-        noise = param_fouRed.sigma_noise/sqrt(2) * (randn(size(Gw{i}, 1),1) + 1j * randn(size(Gw{i}, 1), 1));
-        rn = FT2(At(Gw{i}'*noise));  % Apply F Phi
-%         th = param_fouRed.gamma * std(rn(:)) / param_fouRed.x2;
-        th_dirty = param_fouRed.gamma * std(rn(:)) / param_fouRed.dirty2;
-        fprintf('\nThe estimate threshold using ground truth is %e \n', th);
-        Mask{i} = (d >= th_dirty);
-    end
-    d = d(Mask{i});
-    fprintf('\nThe threshold is %e \n', min(d));
+        H{i} = Gw{i}'*Gw{i};
+    
+        if param_fouRed.enable_estimatethreshold
+            param_fouRed.x2 = norm(x0(:, :, i));
+    %         param_fouRed.dirty2 = norm(Phi_t{i}(y{i})) / sqrt(numel(x0(:,:,i)));
+            param_fouRed.dirty2 = norm(operatorPhit(y{i}, Gw{i}', At) / sqrt(numel(x0(:,:,i))));
+            if numel(sigma_noise_ch{i}) == 1
+                param_fouRed.sigma_noise = sigma_noise_ch{i};
+            else 
+                tmp = sigma_noise_ch{i};
+                param_fouRed.sigma_noise = mean(tmp(:));
+            end
+        end
 
-    Sigma{i} = max(param_fouRed.diagthresholdepsilon, d);  % This ensures that inverting the values will not explode in computation
-    Sigma{i} = 1./sqrt(Sigma{i});
+        % no longer invoke function fourierReduction to reduce lambda functions
+        % fast way of matrix probing (using psf)
+        dirac2D = zeros(Ny, Nx);
+        dirac2D(ceil((Ny+1)/2), ceil((Nx+1)/2)) = 1;
+        PSF = operatorIpsf(dirac2D, A, At, H{i}, [oy*Ny, ox*Nx]);
+        covariancemat = FT2(PSF);
+        d_mat = abs(real(covariancemat(:)));
+
+        if param_fouRed.enable_klargestpercent
+            Mask{i} = (d_mat >= prctile(d_mat,100-param_fouRed.klargestpercent));
+        elseif param_fouRed.enable_estimatethreshold
+            % Embed the noise
+            noise1 = param_fouRed.sigma_noise * (randn(size(Gw{i}, 1),1) + 1j * randn(size(Gw{i}, 1), 1));
+            rn = FT2(At(Gw{i}'*noise1));  % Apply F Phi
+    %         th = param_fouRed.gamma * std(rn(:)) / param_fouRed.x2;
+            th_dirty = param_fouRed.gamma * std(rn(:)) / param_fouRed.dirty2;
+            fprintf('\nThe estimate threshold using ground truth is %e \n', th);
+            Mask{i} = (d_mat >= th_dirty);
+        end
+        d_mat = d_mat(Mask{i});
+        fprintf('\nThe threshold is %e \n', min(d_mat));
+
+        Sigma{i} = max(param_fouRed.diagthresholdepsilon, d_mat);  % This ensures that inverting the values will not explode in computation
+        Sigma{i} = 1./sqrt(Sigma{i});
     
     
 %     B{i} = @(x) operatorRPhi(x, A, At, H, W{i}, Sigma{i}, Mask{i}, [Ny, Nx]);
@@ -73,16 +106,18 @@ for i = 1:length(ch)
 %     FIpsf{i} = @(x) serialise(FT2(operatorIpsf(x, A, At, H{i}, [oy*Ny, ox*Nx], W{i})));  % F * Ipsf, image -> vect
 %     FIpsf_t{i} = @(x) operatorIpsf(IFT2(reshape(x, [Ny, Nx])), A, At, H{i}, [Ny, Nx], W{i});  % Ipsf * F^T, vect -> image
    
-    yMat = dataReduce(y{i}, Gw{i}', At, Sigma{i}, Mask{i});
-    noiseMat = dataReduce(noise{i}, Gw{i}', At, Sigma{i}, Mask{i});
-    
-    if usingReductionPar
-        [yT{i}, rn{i}, Ti{i}, Wm{i}] = util_gen_sing_block_structure(yMat, noiseMat, Sigma{i}, Mask{i}, param_sing_block_structure);
-    else
-        Ti{i} = {Sigma{i}};
-        Wm{i} = {Mask{i}};
-        yT{i} = {yMat};
-        rn{i} = {noiseMat};
+        yMat = dataReduce(y{i}, Gw{i}', At, Sigma{i}, Mask{i});
+        noiseMat = dataReduce(noise{i}, Gw{i}', At, Sigma{i}, Mask{i});
+        Gw{i} = [];
+        
+        if usingReductionPar
+            [yT{i}, rn{i}, Ti{i}, Wm{i}] = util_gen_sing_block_structure(yMat, noiseMat, Sigma{i}, Mask{i}, param_sing_block_structure);
+        else
+            Ti{i} = {Sigma{i}};
+            Wm{i} = {Mask{i}};
+            yT{i} = {yMat};
+            rn{i} = {noiseMat};
+        end
     end
     
     R = length(Wm{i});
@@ -91,10 +126,9 @@ for i = 1:length(ch)
         aW{i}{q} = 1./Ti{i}{q};
         epsilont{i}{q} = norm(rn{i}{q});
         epsilons_t{i}{q} = 1.001*epsilont{i}{q};     % data fidelity error * 1.001
-    end
-    
+    end    
 end
 
-clear covariancemat d dirac2D PSF rn y yMat noise noiseMat Gw;
+clear covariancemat d_mat dirac2D PSF rn y yMat noise noiseMat Gw Sigma Mask;
 
 fprintf('\nDimensionality reduction is finished\n');

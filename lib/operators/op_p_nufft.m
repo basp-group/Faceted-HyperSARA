@@ -64,16 +64,17 @@ else
             %% now trim the zero rows and store a mask in W
 
             % preallocate W for speed
-            W{q} = false(No(1)*No(2), 1);
+%             W{q} = false(No(1)*No(2), 1);
 
             % use the absolute values to speed up the search
-            Gb_a = abs(Gb);
+%             Gb_a = abs(Gb);
 
             % check if eack line is entirely zero
-            W{q} = Gb_a' * ones(b_l, 1) ~= 0;
+%             W{q} = Gb_a' * ones(b_l, 1) ~= 0;
             
             % store only what we need from G
-            G{q} = Gb(:, W{q});
+%             G{q} = Gb(:, W{q});
+            G{q} = Gb;
 
             % iterate among the blocks
             b_st = b_st+b_l;
@@ -108,13 +109,14 @@ else
             Gb = spdiags(ww{q}, 0, b_l, b_l) * Gb;
             
             % use the absolute values to speed up the search
-            Gb_a = abs(Gb);
+%             Gb_a = abs(Gb);
 
             % check if eack line is entirely zero
-            W{q} = Gb_a' * ones(size(Gb, 1), 1) ~= 0;
+%             W{q} = Gb_a' * ones(size(Gb, 1), 1) ~= 0;
 
             % store only what we need from G
-            G{q} = Gb(:, W{q});
+%             G{q} = Gb(:, W{q});
+            G{q} = Gb;
 
             %% fill the whole Gw
             %Gw(b_st:b_st+b_l-1, :) = Gb;

@@ -2,13 +2,15 @@
 if compute_Anorm
 %     if usingReduction
     if usingPrecondition
-        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Sigma, Mask, aW));
-        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Sigma, Mask, [Ny, Nx], aW));
+        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Ti, Wm, aW));
+        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Ti, Wm, [Ny, Nx], aW));
     else
-        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Sigma, Mask));
-        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Sigma, Mask, [Ny, Nx]));
+        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Ti, Wm));
+        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Ti, Wm, [Ny, Nx]));
     end
     Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]); 
+%     Anorm = 22623755815039.39;
+%     Anorm = 2.1111e+10;
 %     else
 %         if exist(['./simulated_data/data/Anorm.mat'], 'file')
 %             load(['./simulated_data/data/Anorm.mat']);
@@ -86,7 +88,7 @@ param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
 param_HSI.gamma0 = 1;
 param_HSI.gamma = 1e-2;  %convergence parameter L1 (soft th parameter)
 param_HSI.rel_obj = 1e-5; % stopping criterion
-param_HSI.max_iter = 500; % max number of iterations
+param_HSI.max_iter = 1000; % max number of iterations
 
 param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
 param_HSI.adapt_eps_start = 500; % minimum num of iter before stating adjustment
@@ -154,15 +156,15 @@ if solve_HS
 %     (yT, [Ny, Nx, length(ch)], epsilons_t, FIpsf, FIpsf_t, aW, T, W, Psi, Psit, param_HSI,X0);
     
     % new solvers
-%     [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-%         pdfb_LRJS_precond_NL21_sdwt2_spmd4_dr(y_spmd, [Ny, Nx], epsilon_spmd, ...
-%         A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
-%         wlt_basis, L, nlevel, cell_c_chunks, ch(end));
-    
     [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
-    pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted_dr(y_spmd, [Ny, Nx], ...
-    epsilon_spmd, A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
-    wlt_basis, L, nlevel, cell_c_chunks, ch(end), d, window_type);
+        pdfb_LRJS_precond_NL21_sdwt2_spmd4_dr(y_spmd, [Ny, Nx], epsilon_spmd, ...
+        A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+        wlt_basis, L, nlevel, cell_c_chunks, ch(end));
+    
+%     [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
+%     pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted_dr(y_spmd, [Ny, Nx], ...
+%     epsilon_spmd, A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+%     wlt_basis, L, nlevel, cell_c_chunks, ch(end), d, window_type);
     
 %     [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
 %     pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted_dr_real(y_spmd, [Ny, Nx], ...
@@ -178,8 +180,8 @@ if solve_HS
     end
     SNR_average = mean(psnrh)    
     
-    mkdir('results/')
-    save(['results/results_hyperSARA_fouRed_', alg_version, '_', parallel_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
-    fitswrite(xsol,['results/x_hyperSARA_fouRed_', alg_version, '_', parallel_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), '.fits'])
+%     mkdir('results/')
+%     save(['results/results_hyperSARA_fouRed_', alg_version, '_', parallel_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
+%     fitswrite(xsol,['results/x_hyperSARA_fouRed_', alg_version, '_', parallel_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), '.fits'])
 
 end
