@@ -24,7 +24,7 @@ param_block_structure.use_uniform_partitioning = 0;
 param_block_structure.uniform_partitioning_no = 4;
 
 param_block_structure.use_equal_partitioning = 1;
-param_block_structure.equal_partitioning_no = 4;
+param_block_structure.equal_partitioning_no = 1;
 
 param_block_structure.use_manual_frequency_partitioning = 0;
 % sparam.fpartition = [pi]; % partition (symetrically) of the data to nodes (frequency ranges)

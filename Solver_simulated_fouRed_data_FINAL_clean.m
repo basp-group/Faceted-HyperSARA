@@ -8,9 +8,8 @@ if compute_Anorm
         F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Ti, Wm));
         Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Ti, Wm, [Ny, Nx]));
     end
-    Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]); 
-%     Anorm = 22623755815039.39;
-%     Anorm = 2.1111e+10;
+%     Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]); 
+    Anorm = 21174485950.1509;
 %     else
 %         if exist(['./simulated_data/data/Anorm.mat'], 'file')
 %             load(['./simulated_data/data/Anorm.mat']);
