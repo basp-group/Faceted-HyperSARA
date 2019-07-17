@@ -260,7 +260,7 @@ for i = ch % loop over the 32 channels
         Wm{i} = cell(numel(u1), 1);
         
         for j = 1:numel(u1) % loop over the blocks for the current channel
-            [A, At, G, ~] = op_p_nufft([{v1{j}} {u1{j}}], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], {nW1{j}}); 
+            [A, At, G, ~] = op_p_nufft([v1(j) u1(j)], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW1(j)); 
             % this function can take cell inputs (but no need to keep multiple G matrices in memory)
             H{i}{j} = (G{1}')*G{1};
         
