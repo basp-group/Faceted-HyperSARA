@@ -3,7 +3,7 @@ close all
 clc
 delete(gcp('nocreate'))
 
-flag_algo = 2; tot = 20; Qx = 1; Qy = 1; Qc = 1; ind = 1; img_size = 64; %2048;
+flag_algo = 2; tot = 20; Qx = 1; Qy = 1; Qc = 1; ind = 1; img_size = 512; %2048;
 
 Qc2 = 1;
 T = 200; % 1500
@@ -25,6 +25,7 @@ addpath src/spmd/
 addpath src/spmd/spmd4_weighted/
 addpath src/spmd/spmd4/
 addpath src/spmd/dr/
+addpath src/spmd/standard/
 addpath data/
 
 % select algorithm parameters
@@ -39,9 +40,9 @@ end
 
 usingReduction = 1;
 usingReductionPar = 0;
-usingBlocking = 1;
+usingBlocking = 0;
 usingPrecondition = 1;
-normalize_data = 1;
+normalize_data = 0;
 klargestpercent = 20;
 
 

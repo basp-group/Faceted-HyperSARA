@@ -8,8 +8,8 @@ if compute_Anorm
         F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Ti, Wm));
         Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Ti, Wm, [Ny, Nx]));
     end
-%     Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]); 
-    Anorm = 21174485950.1509;
+    Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]); 
+%     Anorm = 21174485950.1509;
 %     else
 %         if exist(['./simulated_data/data/Anorm.mat'], 'file')
 %             load(['./simulated_data/data/Anorm.mat']);
@@ -159,6 +159,8 @@ if solve_HS
         pdfb_LRJS_precond_NL21_sdwt2_spmd4_dr(y_spmd, [Ny, Nx], epsilon_spmd, ...
         A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
         wlt_basis, L, nlevel, cell_c_chunks, ch(end));
+    
+    % Serial Fourier-reduced hyperSARA
     
 %     [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
 %     pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted_dr(y_spmd, [Ny, Nx], ...
