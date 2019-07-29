@@ -68,6 +68,34 @@ param_block_structure.use_manual_partitioning = 1;
 
 %% load real_data;
 if extract_raw_data
+%     [y, uw1, vw1, nWw, f, time_, pos] = util_load_real_vis_data(visibility_file_name,configuration_file_name, ind);
+%     [uw, vw, pixel_size] = scale_uv(visibility_file_name,configuration_file_name, uw1, vw1);
+%     save(['CYG_data_raw_ind=' num2str(ind) '.mat'],'-v7.3', 'y', 'uw', 'vw', 'nWw', 'f', 'time_', 'pos', 'pixel_size');
+
+%     % solution 1: 32 independent mat files
+%     [y, uw, vw, nWw, f, time_, pos] = util_load_real_vis_data_dr(visibility_file_name, nSpw, ind);
+%     save(['CYG_data_raw_dr_ind=' num2str(ind) '.mat'], '-v7.3', 'y', 'uw', 'vw', 'nWw', 'f', 'time_', 'pos');
+    
+    % solution 2: 1 dataset for each variable of interest (see for the 
+    % blocking strategy to be applied here)
+%     y = cell(32, 1);
+%     for l = 1:2*nSpw
+%         y{l} = [];
+%         for n = 1:nSpw
+%             filename = [visibility_file_name, num2str(n), '.mat'];
+%             file = matfile(filename);  
+%             y{l} = [y{l}; cell2mat(file.y(1,l))];
+%         end
+%     end
+    % or 
+%     for l = 1:2*nSpw
+%         y{l} = cell(16, 1);
+%         for n = 1:nSpw
+%             filename = [visibility_file_name, num2str(n), '.mat'];
+%             file = matfile(filename);  
+%             y{l}{n} = cell2mat(file.y(1,l));
+%         end
+%     end
     % or (probably the best option so far) 'y', 'uw', 'vw', 'nWw', 'f', 'time_', 'pos'
     y = cell(2*nSpw, 1);
     for l = 1:2*nSpw
@@ -153,16 +181,17 @@ if extract_raw_data
     save('CYG_pos.mat', 'pos', '-v7.3');
     clear pos
     % see what needs to be finalized in terms of dimensionality reduction
-    % idem for the remaining variables: H, ...
+    % idem for the reamining variables: H, ...
 else
     %load(['CYG_data_raw_ind=' num2str(ind) '.mat']);
-    load(['CYG_data_raw_dr_ind=' num2str(ind) '.mat']); % load only the variables needed at one point (otherwise, quite large!)
+    load(['CYG_data_raw_dr_ind=' num2str(ind) '.mat']); % load only the variables needed at one point (oterhwise, quite large!)
 end
 
 % figure(1),
 % for i = length(uw)
 %     scatter(uw{i},vw{i},'.');hold on;
 % end
+
 
 %% adapt to DR (see codes from Ming / ask Ming directly if necessary)
 %%
@@ -207,7 +236,6 @@ for i = ch % loop over the 32 channels
     nW{i} = [];
     uvidx{i} = [];
     
-    % TO BE FIXED (only preliminary for now)
     for k = 1:numel(nSpw) % concatenate all the blocks coming from the 16 consecutive channels (loop over the 16 channels)
         % set the blocks structure (per frequency) [is aW{i} necessary?]
         param_block.pos = pos{1}{k};
@@ -216,16 +244,11 @@ for i = ch % loop over the 32 channels
         aWw = util_gen_preconditioning_matrix(uw{1}{k}, vw{1}{k}, param_precond); % see if still necessary: needs to be kept in memory for DR? (no a priori)
         [u1, v1, ~, uvidx1, aW, nW1] = util_gen_block_structure(uw{1}{k}, vw{1}{k}, aWw, nWw{1}{k}, param_block_structure);
         
-        % explode u1, put u1{1} concatenated in a variable, u1{2} in
-        % another, ...
-        
-        
         % reorder the blocks along a single dimension (remove intermediate level of the frequencies)
         u{i} = [u{i}; u1];
         v{i} = [v{i}; v1];
         nW{i} = [nW{i}; nW1];
         uvidx{i} = [uvidx{i}; uvidx1];
-    end
         
         % measurement operator initialization
         fprintf('Initializing the NUFFT operator\n\n');
