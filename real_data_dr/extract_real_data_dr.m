@@ -14,7 +14,8 @@ nChannels = 2*nSpw; % total number of "virtual" channels (i.e., after
 nBlocks = 9;        % number of data blocks (needs to be known beforehand,
                     % quite restrictive here), change l.70 accordingly
 klargestpercent = 20;
-extract_raw_data = true;
+extract_raw_data = false;
+generate_eps_nnls = true; 
 % param_real_data.pixel_size = 0.3; % in arcsec
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
 
@@ -170,10 +171,7 @@ else
     new_file_u = matfile('CYG_u.mat');
     new_file_v = matfile('CYG_v.mat');
     new_file_nW = matfile('CYG_nW.mat');
-end
-
-%% Estimate epsilon with NNLS on each data block
-... to be implemented here ...
+end 
 
 %% Define DR operators / reduce data blocks
 %%
@@ -181,7 +179,8 @@ end
 H = cell(nChannels, 1);  % holographic matrices
 yT = cell(nChannels, 1); % reduced data
 T = cell(nChannels, 1);  % preconditioning matrix (inverse of singular values)
-Wm = cell(nChannels, 1); % masks for the Fourier plane corresponding to 
+Wm = cell(nChannels, 1); % mask DR 
+W = cell(nChannels, 1);  % masks for the Fourier plane corresponding to 
                          % data blocks
 
 % loop over virtual channels
@@ -190,7 +189,7 @@ for l = 1:nChannels
     % measurement operator initialization
     fprintf('Initializing the NUFFT operator\n\n');
     
-    %% --- Fourier reduction --- %%  
+    % --- Fourier reduction --- %  
     y_tmp = new_file_y.y(l,1);
     u_tmp = new_file_u.u(l,1);
     v_tmp = new_file_v.v(l,1);
@@ -200,16 +199,17 @@ for l = 1:nChannels
     T{l} = cell(numel(u_tmp{1}), 1);
     yT{l} = cell(numel(u_tmp{1}), 1);
     Wm{l} = cell(numel(u_tmp{1}), 1);
+    % W{l} = cell(numel(u_tmp{1}), 1);
     
     % loop over the data blocks within each "virtual" channel
     for j = 1:numel(u_tmp{1})
         
-        [A, At, G, ~] = op_p_nufft([v_tmp{1}(j) u_tmp{1}(j)], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW_tmp{1}(j));
+        [A, At, G, ~] = op_p_nufft([v_tmp{1}(j) u_tmp{1}(j)], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW_tmp{1}(j)); % W1 is empty, why?
         % note: the above function can take cell inputs (but no need to keep multiple G matrices in memory)
-        H{l}{j} = (G{1}')*G{1}; % pprogressively write to disk? (huge...)
+        H{l}{j} = (G{1}')*G{1}; % progressively write to disk? (huge...)
         
         % estimate threshold
-        dirty2 = norm(operatorPhit(y_tmp{1}{j}, G{1}', At) / sqrt(N));
+        dirty2 = norm(operatorPhit(y_tmp{1}{j}, G{1}', At, W1{1}) / sqrt(N));
         
         % fast matrix probing (using psf)
         dirac2D = zeros(Ny, Nx);
@@ -234,6 +234,7 @@ for l = 1:nChannels
         T{l}{j} = max(param_fouRed.diagthresholdepsilon, d_mat);  % ensures that inverting the values will not explode in computation
         T{l}{j} = 1./sqrt(T{l}{j});
         Wm{l}{j} = Mask;
+        % W{l}{j} = W1{1};
         
         % reduce the data block
         yT{l}{j} = dataReduce(v_tmp{1}{j}, G{1}', At, T{l}{j}, Wm{l}{j});
@@ -242,6 +243,44 @@ for l = 1:nChannels
     % beforehand...
     %% ---
 end
+
+%% Estimate epsilon with NNLS on each data block
+... to be implemented here ...
+if generate_eps_nnls
+    param_nnls.verbose = 0; % print log or not
+    param_nnls.rel_obj = 1e-5; % stopping criterion
+    param_nnls.max_iter = 1000; % max number of iterations
+    param_nnls.sol_steps = [inf]; % saves images at the given iterations
+    param_nnls.beta = 1;
+    eps_b = cell(nChannels, 1);
+    
+    % solve NNLS per block
+    for l = 1:nChannels
+        y_tmp = new_file_y.y(l,1);
+        u_tmp = new_file_u.u(l,1);
+        v_tmp = new_file_v.v(l,1);
+        nW_tmp = new_file_nW.nW(l,1);
+        y_tmp = y_tmp{1};
+        u_tmp = u_tmp{1};
+        v_tmp = v_tmp{1};
+        nW_tmp = nW_tmp{1};
+        Wml = Wm{l}; 
+        Tl = T{l}; 
+        
+        eps_ = cell(nBlocks, 1);
+        parfor j = 1:nBlocks
+            [A, At, G, W1] = op_p_nufft([v_tmp(j) u_tmp(j)], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW_tmp(j));
+            [sol, ~] = fb_nnls_blocks(y_tmp{j}, A, At, G{1}(:, W1{1}), W1{1}, param_nnls); % check format of "sol" (matrix)
+            res = y_tmp(j) - G{1}*A(sol); % check computation of the residual
+            reduced_res = dataReduce(res, G{1}', At, Tl{j}, Wml{j});
+            eps_{j} = norm(reduced_res(:), 2);
+        end
+        eps_b{l} = eps_;
+    end
+    save('eps_b.mat','-v7.3', 'eps_b');
+else
+    load('eps_b.mat');
+end  
 
 % %% Save data
 % if save_data
