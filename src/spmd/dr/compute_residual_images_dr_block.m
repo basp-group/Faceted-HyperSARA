@@ -32,16 +32,16 @@ res = zeros(size(x));
 
 for i = 1 : ci
     g2 = zeros(Ny*Nx,1);
-    H_mat = sparse(size(H{i}{1}));
+    Fx0 = A(real(x(:,:,i)));
     for j = 1:length(H{i})
-        Fx = FT2(real(At(H{i}{j} * A(real(x(:,:,i))))));
+        Fx = FT2(real(At(H{i}{j} * Fx0)));
         Fx = Fx(:);
         res_f = y{i}{j} - T{i}{j} .* Fx(W{i}{j});
         u2 = T{i}{j} .* res_f;
         g2(W{i}{j}) = g2(W{i}{j}) + u2;
-        H_mat = H{i}{j} + H_mat;
+   
+        res(:,:,i) = res(:,:,i) + real(At(H{i}{j}*A(real(IFT2(reshape(g2, Ny, Nx))))));
     end
-    res(:,:,i) = real(At(H_mat*A(real(IFT2(reshape(g2, Ny, Nx)))))); % adapt
 end
 
 end

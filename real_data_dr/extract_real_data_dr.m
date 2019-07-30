@@ -1,9 +1,9 @@
 %% Real data extraction
-addpath ../lib/utils/
-addpath ../fouRed/
-addpath ../../real_data_dr
-addpath ../lib/operators
-addpath ../lib/nufft
+% addpath ../lib/utils/
+% addpath ../fouRed/
+% addpath ../lib/operators
+% addpath ../lib/nufft
+addpath ../data_mnras_dr
 
 visibility_file_name = 'CYG_data_raw_ind=';
 param_real_data.image_size_Nx = 2560;
@@ -14,7 +14,7 @@ nChannels = 2*nSpw; % total number of "virtual" channels (i.e., after
 nBlocks = 9;        % number of data blocks (needs to be known beforehand,
                     % quite restrictive here), change l.70 accordingly
 klargestpercent = 20;
-extract_raw_data = false;
+extract_real_data = true;
 generate_eps_nnls = true; 
 % param_real_data.pixel_size = 0.3; % in arcsec
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
@@ -74,13 +74,13 @@ if param_block_structure.use_manual_partitioning == 1
 end
 
 %% Load/extract real data from band-interleaved .mat files
-if extract_raw_data
+if extract_real_data
     % visibilities
     y = cell(nChannels, 1);
     for l = 1:numel(y)
         y{l} = cell(nBlocks, 1);
     end
-    save('CYG_y.mat', 'y', '-v7.3');
+    save('real_data_dr/CYG_y.mat', 'y', '-v7.3');
     clear y;
         
     % u
@@ -88,7 +88,7 @@ if extract_raw_data
     for l = 1:numel(u)
         u{l} = cell(nBlocks, 1);
     end
-    save('CYG_u.mat', 'u', '-v7.3');
+    save('real_data_dr/CYG_u.mat', 'u', '-v7.3');
     clear u;
     
     % v
@@ -96,7 +96,7 @@ if extract_raw_data
     for l = 1:numel(v)
         v{l} = cell(nBlocks, 1);
     end
-    save('CYG_v.mat', 'v', '-v7.3');
+    save('real_data_dr/CYG_v.mat', 'v', '-v7.3');
     clear v;
     
     % nWw: caling NUFFT
@@ -104,7 +104,7 @@ if extract_raw_data
     for l = 1:numel(nW)
         nW{l} = cell(nBlocks, 1);
     end
-    save('CYG_nW.mat', 'nW', '-v7.3');
+    save('real_data_dr/CYG_nW.mat', 'nW', '-v7.3');
     clear nW;
     
 %     % position of data for different configs inside each visibility vector
@@ -124,10 +124,10 @@ if extract_raw_data
 %     save('CYG_time.mat', 'time', '-v7.3');
 %     clear time;
     
-    new_file_y = matfile('CYG_y.mat', 'Writable', true);
-    new_file_u = matfile('CYG_u.mat', 'Writable', true);
-    new_file_v = matfile('CYG_v.mat', 'Writable', true);
-    new_file_nW = matfile('CYG_nW.mat', 'Writable', true);
+    new_file_y = matfile('real_data_dr/CYG_y.mat', 'Writable', true);
+    new_file_u = matfile('real_data_dr/CYG_u.mat', 'Writable', true);
+    new_file_v = matfile('real_data_dr/CYG_v.mat', 'Writable', true);
+    new_file_nW = matfile('real_data_dr/CYG_nW.mat', 'Writable', true);
     
     for l = 1:2*nSpw
         for n = 1:nSpw
@@ -167,14 +167,53 @@ if extract_raw_data
         end
     end
 else
-    new_file_y = matfile('CYG_y.mat');
-    new_file_u = matfile('CYG_u.mat');
-    new_file_v = matfile('CYG_v.mat');
-    new_file_nW = matfile('CYG_nW.mat');
+    new_file_y = matfile('real_data_dr/CYG_y.mat');
+    new_file_u = matfile('real_data_dr/CYG_u.mat');
+    new_file_v = matfile('real_data_dr/CYG_v.mat');
+    new_file_nW = matfile('real_data_dr/CYG_nW.mat');
 end 
 
+%% Estimate epsilon with NNLS on each data block
+if generate_eps_nnls
+    parpool(6)
+    [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
+    
+    param_nnls.verbose = 2; % print log or not
+    param_nnls.rel_obj = 1e-5; % stopping criterion
+    param_nnls.max_iter = 10; % max number of iterations 1000
+    param_nnls.sol_steps = [inf]; % saves images at the given iterations
+    param_nnls.beta = 1;
+    epsilon = cell(nChannels, 1);
+    
+    % solve NNLS per block
+    for l = 1:nChannels
+        y_tmp = new_file_y.y(l,1);
+        u_tmp = new_file_u.u(l,1);
+        v_tmp = new_file_v.v(l,1);
+        nW_tmp = new_file_nW.nW(l,1);
+        y_tmp = y_tmp{1};
+        u_tmp = u_tmp{1};
+        v_tmp = v_tmp{1};
+        nW_tmp = nW_tmp{1};
+        Wml = Wm{l};
+        Tl = T{l};
+        
+        eps_ = cell(nBlocks, 1); 
+        parfor j = 1:nBlocks
+            [~, ~, G, W1] = op_p_nufft([v_tmp(j) u_tmp(j)], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW_tmp(j));
+            [sol, ~] = fb_nnls_blocks(y_tmp{j}, A, At, G{1}(:, W1{1}), W1{1}, param_nnls); % check format of "sol" (matrix)
+            res = y_tmp{j} - G{1}*A(sol); % check computation of the residual
+            reduced_res = dataReduce(res, G{1}', At, Tl{j}, Wml{j});
+            eps_{j} = norm(reduced_res(:), 2);
+        end
+        epsilon{l} = eps_;
+    end
+    save('real_data_dr/epsilon.mat','-v7.3', 'epsilon');
+else
+    load('real_data_dr/epsilon.mat');
+end
+
 %% Define DR operators / reduce data blocks
-%%
 % output from the definition of the Fourier reduction scheme
 H = cell(nChannels, 1);  % holographic matrices
 yT = cell(nChannels, 1); % reduced data
@@ -182,6 +221,7 @@ T = cell(nChannels, 1);  % preconditioning matrix (inverse of singular values)
 Wm = cell(nChannels, 1); % mask DR 
 W = cell(nChannels, 1);  % masks for the Fourier plane corresponding to 
                          % data blocks
+aW = cell(nChannels, 1); % preconditioner 
 
 % loop over virtual channels
 for l = 1:nChannels
@@ -199,6 +239,7 @@ for l = 1:nChannels
     T{l} = cell(numel(u_tmp{1}), 1);
     yT{l} = cell(numel(u_tmp{1}), 1);
     Wm{l} = cell(numel(u_tmp{1}), 1);
+    aW{l} = cell(numel(u_tmp{1}), 1);
     % W{l} = cell(numel(u_tmp{1}), 1);
     
     % loop over the data blocks within each "virtual" channel
@@ -209,7 +250,7 @@ for l = 1:nChannels
         H{l}{j} = (G{1}')*G{1}; % progressively write to disk? (huge...)
         
         % estimate threshold
-        dirty2 = norm(operatorPhit(y_tmp{1}{j}, G{1}', At, W1{1}) / sqrt(N));
+        dirty2 = norm(operatorPhit(y_tmp{1}{j}, G{1}', At) / sqrt(N));
         
         % fast matrix probing (using psf)
         dirac2D = zeros(Ny, Nx);
@@ -235,6 +276,7 @@ for l = 1:nChannels
         T{l}{j} = 1./sqrt(T{l}{j});
         Wm{l}{j} = Mask;
         % W{l}{j} = W1{1};
+        aW{l}{j} = 1./T{l}{j};
         
         % reduce the data block
         yT{l}{j} = dataReduce(v_tmp{1}{j}, G{1}', At, T{l}{j}, Wm{l}{j});
@@ -242,56 +284,8 @@ for l = 1:nChannels
     % missing: definition of epsilon... [to be checked with Ming]: do NNLS
     % beforehand...
     %% ---
-end
+end 
 
-%% Estimate epsilon with NNLS on each data block
-... to be implemented here ...
-if generate_eps_nnls
-    param_nnls.verbose = 0; % print log or not
-    param_nnls.rel_obj = 1e-5; % stopping criterion
-    param_nnls.max_iter = 1000; % max number of iterations
-    param_nnls.sol_steps = [inf]; % saves images at the given iterations
-    param_nnls.beta = 1;
-    eps_b = cell(nChannels, 1);
-    
-    % solve NNLS per block
-    for l = 1:nChannels
-        y_tmp = new_file_y.y(l,1);
-        u_tmp = new_file_u.u(l,1);
-        v_tmp = new_file_v.v(l,1);
-        nW_tmp = new_file_nW.nW(l,1);
-        y_tmp = y_tmp{1};
-        u_tmp = u_tmp{1};
-        v_tmp = v_tmp{1};
-        nW_tmp = nW_tmp{1};
-        Wml = Wm{l}; 
-        Tl = T{l}; 
-        
-        eps_ = cell(nBlocks, 1);
-        parfor j = 1:nBlocks
-            [A, At, G, W1] = op_p_nufft([v_tmp(j) u_tmp(j)], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW_tmp(j));
-            [sol, ~] = fb_nnls_blocks(y_tmp{j}, A, At, G{1}(:, W1{1}), W1{1}, param_nnls); % check format of "sol" (matrix)
-            res = y_tmp(j) - G{1}*A(sol); % check computation of the residual
-            reduced_res = dataReduce(res, G{1}', At, Tl{j}, Wml{j});
-            eps_{j} = norm(reduced_res(:), 2);
-        end
-        eps_b{l} = eps_;
-    end
-    save('eps_b.mat','-v7.3', 'eps_b');
-else
-    load('eps_b.mat');
-end  
-
-% %% Save data
-% if save_data
-%     save('CYG_data.mat','-v7.3', 'G', 'W', 'aW', 'yb');
-%     save('CYG_y.mat','-v7.3', 'y');
-% end
-%
-% %%
-% if save_full_operator && exist('Gw','var')
-%     save('CYG_Gw.mat','-v7.3', 'Gw');
-% end
 %
 % %% Free memory
 % if free_memory

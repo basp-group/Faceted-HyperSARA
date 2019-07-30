@@ -596,8 +596,8 @@ for t = t_start : param.max_iter
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
-            [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity_dr(v2_, yp, xhat_i, proj_, Ap, Atp, Hp, Tp, Wp, pUp, epsilonp, ...
-                elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
+            [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity_dr_block(v2_, yp, xhat_i, proj_, Ap, Atp, Hp, Tp, Wp, pUp, epsilonp, ...
+                elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value); % *_dr version when no blocking
             % send portions of g2 to the prior/primal nodes
             for q = 1:Qp.Value
                 labSend(g2(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
@@ -710,7 +710,7 @@ for t = t_start : param.max_iter
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
             else
                 % compute residual image on the data nodes
-                res_ = compute_residual_images_dr(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp);
+                res_ = compute_residual_images_dr_block(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp); % *_dr w/o data blocking
             end
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node       
@@ -772,7 +772,7 @@ end
 res = zeros(size(xsol));
 spmd
     if labindex > Qp.Value
-        res_ = compute_residual_images_dr(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp);
+        res_ = compute_residual_images_dr_block(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp); % *_dr w/o data blocking
     end
 end
 for k = 1 : K

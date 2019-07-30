@@ -61,13 +61,13 @@ norm_res = cell(ci, 1);
 global_norm_res = 0;
 norm_epsilon = 0;
 for i = 1 : ci
-    g2 = zeros(N, 1);
+    Fx0 = A(real(xhat(:,:,i)));
     H_mat = sparse(size(H{i}{1}, 1), size(H{i}{1}, 2));
+    g2 = zeros(N, 1);
+    norm_res{i} = cell(length(T{i}), 1);
     for j = 1:length(H{i})
-        Fx = FT2(real(At(H{i}{j} * A(real(xhat(:,:,i))))));
+        Fx = FT2(real(At(H{i}{j} * Fx0)));
         Fx = Fx(:);
-%         norm_res{i} = cell(length(T{i}), 1);
-%         for j = 1 : length(T{i})
         r2 = T{i}{j} .* Fx(W{i}{j});
         proj{i}{j} = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, ...
             r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
