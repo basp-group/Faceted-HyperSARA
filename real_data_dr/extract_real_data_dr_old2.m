@@ -8,14 +8,15 @@ addpath ../data_mnras_dr
 visibility_file_name = 'CYG_data_raw_ind=';
 param_real_data.image_size_Nx = 2560;
 param_real_data.image_size_Ny = 1536;
-nSpw = 16;          % number of spectral channels per MS file
-nChannels = 2*nSpw; % total number of "virtual" channels (i.e., after
-% concatenation) for the real dataset considered
+nSpw = 16;           % number of spectral channels per MS file
+nChannels = 2*nSpw; % total number of "virtual" channels (i.e., after 
+                    % concatenation) for the real dataset considered
 nBlocks = 9;        % number of data blocks (needs to be known beforehand,
-% quite restrictive here), change l.70 accordingly
+                    % quite restrictive here), change l.70 accordingly
 klargestpercent = 20;
 extract_real_data = false;
-generate_eps_nnls = true;
+generate_eps_nnls = true; 
+% param_real_data.pixel_size = 0.3; % in arcsec
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
 
 %% Config parameters
@@ -81,7 +82,7 @@ if extract_real_data
     end
     save('real_data_dr/CYG_y.mat', 'y', '-v7.3');
     clear y;
-    
+        
     % u
     u = cell(nChannels, 1);
     for l = 1:numel(u)
@@ -98,7 +99,7 @@ if extract_real_data
     save('real_data_dr/CYG_v.mat', 'v', '-v7.3');
     clear v;
     
-    % nWw: scaling NUFFT
+    % nWw: caling NUFFT
     nW = cell(nChannels, 1);
     for l = 1:numel(nW)
         nW{l} = cell(nBlocks, 1);
@@ -106,22 +107,22 @@ if extract_real_data
     save('real_data_dr/CYG_nW.mat', 'nW', '-v7.3');
     clear nW;
     
-    %     % position of data for different configs inside each visibility vector
-    %     % (e.g., A, B, C ...)
-    %     pos = cell(nChannels, 1);
-    %     for l = 1:numel(pos)
-    %         pos{l} = cell(nBlocks, 1);
-    %     end
-    %     save('CYG_pos.mat', 'pos', '-v7.3');
-    %     clear pos;
+%     % position of data for different configs inside each visibility vector
+%     % (e.g., A, B, C ...)
+%     pos = cell(nChannels, 1);
+%     for l = 1:numel(pos)
+%         pos{l} = cell(nBlocks, 1);
+%     end
+%     save('CYG_pos.mat', 'pos', '-v7.3');
+%     clear pos;    
     
-    %     % acquisition time
-    %     time = cell(nChannels, 1);
-    %     for l = 1:numel(time)
-    %         time{l} = cell(nBlocks, 1);
-    %     end
-    %     save('CYG_time.mat', 'time', '-v7.3');
-    %     clear time;
+%     % acquisition time
+%     time = cell(nChannels, 1);
+%     for l = 1:numel(time)
+%         time{l} = cell(nBlocks, 1);
+%     end
+%     save('CYG_time.mat', 'time', '-v7.3');
+%     clear time;
     
     new_file_y = matfile('real_data_dr/CYG_y.mat', 'Writable', true);
     new_file_u = matfile('real_data_dr/CYG_u.mat', 'Writable', true);
@@ -139,7 +140,8 @@ if extract_real_data
             vw = cell2mat(file.vw(1,l));
             nWw = cell2mat(file.nWw(1,l));
             
-            % blocking: set the blocks structure (per frequency)
+            % blocking
+            % set the blocks structure (per frequency)
             param_block.pos = pos;
             out_block = util_time_based_block_sp_ar(uw, time,param_block);
             param_block_structure.partition = out_block.partition;
@@ -147,7 +149,7 @@ if extract_real_data
             [u1, v1, ~, uvidx1, aW, nW1] = util_gen_block_structure(uw, vw, aWw, nWw, param_block_structure);
             
             % concatenate the visibility frequencies and the associated u/v
-            % points (make sure same number of blocks)
+            % points (make sure same number of blocks as )
             u_tmp = new_file_u.u(l,1);
             v_tmp = new_file_v.v(l,1);
             y_tmp = new_file_y.y(l,1);
@@ -169,115 +171,123 @@ else
     new_file_u = matfile('real_data_dr/CYG_u.mat');
     new_file_v = matfile('real_data_dr/CYG_v.mat');
     new_file_nW = matfile('real_data_dr/CYG_nW.mat');
-end
+end 
 
 %% Estimate epsilon with NNLS on each data block
-if reduce_data
-    
-    if generate_eps_nnls
-        % set up res_nnls to be saved on disk
-        res_nnls = cell(nChannels, 1);
-        for l = 1:numel(res_nnls)
-            res_nnls{l} = cell(nBlocks, 1);
-        end
-        save('real_data_dr/CYG_res_nnls.mat', 'res_nnls', '-v7.3');
-        clear res_nnls
-        
-        % parameter NNLS
-        param_nnls.verbose = 2;       % print log or not
-        param_nnls.rel_obj = 1e-5;    % stopping criterion
-        param_nnls.max_iter = 10;     % max number of iterations 1000
-        param_nnls.sol_steps = [inf]; % saves images at the given iterations
-        param_nnls.beta = 1;
-    end
-    new_file_res = matfile('real_data_dr/CYG_res_nnls.mat', 'Writable', true);
-    epsilon = cell(nChannels, 1);
-    eps = zeros(nBlocks, nChannels);
-    
-    % define operators
+if generate_eps_nnls
     parpool(6)
     [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
     
-    % instantiate variables for DR
-    H = cell(nChannels, 1);  % holographic matrices
-    yT = cell(nChannels, 1); % reduced data
-    T = cell(nChannels, 1);  % preconditioning matrix (inverse of singular values)
-    Wm = cell(nChannels, 1); % mask DR
-    W = cell(nChannels, 1);  % masks for the Fourier plane corresponding to
-    % data blocks
-    aW = cell(nChannels, 1); % preconditioner
+    param_nnls.verbose = 2; % print log or not
+    param_nnls.rel_obj = 1e-5; % stopping criterion
+    param_nnls.max_iter = 10; % max number of iterations 1000
+    param_nnls.sol_steps = [inf]; % saves images at the given iterations
+    param_nnls.beta = 1;
+    epsilon = cell(nChannels, 1);
     
-    % solve NNLS per block / estimate epsilon / reduce data
+    % solve NNLS per block
     for l = 1:nChannels
         y_tmp = new_file_y.y(l,1);
         u_tmp = new_file_u.u(l,1);
         v_tmp = new_file_v.v(l,1);
         nW_tmp = new_file_nW.nW(l,1);
-        res_tmp = new_file_res.res_nnls(l,1);
         y_tmp = y_tmp{1};
         u_tmp = u_tmp{1};
         v_tmp = v_tmp{1};
         nW_tmp = nW_tmp{1};
-        res_tmp = res_tmp{1};
-        
-        H{l} = cell(numel(u_tmp), 1);
-        T{l} = cell(numel(u_tmp), 1);
-        yTl = cell(numel(u_tmp), 1);
-        Wm{l} = cell(numel(u_tmp), 1);
-        aWl = cell(numel(u_tmp), 1);
-        eps_ = cell(numel(u_tmp), 1);
-        
-        Hl = H{l};
         Wml = Wm{l};
         Tl = T{l};
         
-        for j = 1:nBlocks
+        eps_ = cell(nBlocks, 1); 
+        parfor j = 1:nBlocks
             [~, ~, G, W1] = op_p_nufft([v_tmp(j) u_tmp(j)], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW_tmp(j));
-            if generate_eps_nnls
-                [sol, ~] = fb_nnls_blocks(y_tmp{j}, A, At, G{1}(:, W1{1}), W1{1}, param_nnls); % check format of "sol" (matrix)
-                res_tmp{j} = y_tmp{j} - G{1}*A(sol); % check computation of the residual
-            end
-            eps(j, l) = norm(res_tmp{j});
-            Hl{j} = (G{1}')*G{1}; % progressively write to disk? (possibly huge...)
-            
-            % estimate threshold
-            dirty2 = norm(operatorPhit(y_tmp{j}, G{1}', At) / sqrt(N));
-            
-            % fast matrix probing (using psf)
-            dirac2D = zeros(Ny, Nx);
-            dirac2D(ceil((Ny+1)/2), ceil((Nx+1)/2)) = 1;
-            PSF = operatorIpsf(dirac2D, A, At, Hl{j}, [oy*Ny, ox*Nx]);
-            covariancemat = FT2(PSF);
-            d_mat = abs(real(covariancemat(:)));
-
-            rn = FT2(At(G{1}'*res_tmp{j}));
-            th_dirty = param_fouRed.gamma * std(rn(:)) / dirty2;
-            Mask = (d_mat >= th_dirty);
-            d_mat = d_mat(Mask);
-            %
-            Tl{j} = max(param_fouRed.diagthresholdepsilon, d_mat);  % ensures that inverting the values will not explode in computation
-            Tl{j} = 1./sqrt(Tl{j});
-            Wml{j} = Mask;
-            aWl{j} = 1./Tl{j};
-            
-            % reduce the data block and residual
-            yTl{j} = dataReduce(y_tmp{j}, G{1}', At, Tl{j}, Wml{j});
-            reduced_res = dataReduce(res_tmp{j}, G{1}', At, Tl{j}, Wml{j});
+            [sol, ~] = fb_nnls_blocks(y_tmp{j}, A, At, G{1}(:, W1{1}), W1{1}, param_nnls); % check format of "sol" (matrix)
+            res = y_tmp{j} - G{1}*A(sol); % check computation of the residual
+            reduced_res = dataReduce(res, G{1}', At, Tl{j}, Wml{j});
             eps_{j} = norm(reduced_res(:), 2);
         end
-        T{l} = Tl;
-        Wm{l} = Wml;
-        aW{l} = aWl;
-        yT{l} = yTl;
-        H{l} = Hl;
         epsilon{l} = eps_;
-        new_file_res.res_nnls(l,1) = {res_tmp};
     end
-    save('real_data_dr/CYG_epsilon.mat','-v7.3', 'epsilon', 'eps');
-    save('real_data_dr/CYG_yT.mat','-v7.3', 'yT');
-    save('real_data_dr/CYG_DR.mat','-v7.3', 'H', 'T', 'aW', 'Wm');
+    save('real_data_dr/epsilon.mat','-v7.3', 'epsilon');
 else
-    load('real_data_dr/CYG_DR.mat');
-    load('real_data_dr/CYG_yT.mat','-v7.3')
-    load('real_data_dr/CYG_epsilon.mat');
+    load('real_data_dr/epsilon.mat');
 end
+
+%% Define DR operators / reduce data blocks
+% output from the definition of the Fourier reduction scheme
+H = cell(nChannels, 1);  % holographic matrices
+yT = cell(nChannels, 1); % reduced data
+T = cell(nChannels, 1);  % preconditioning matrix (inverse of singular values)
+Wm = cell(nChannels, 1); % mask DR 
+W = cell(nChannels, 1);  % masks for the Fourier plane corresponding to 
+                         % data blocks
+aW = cell(nChannels, 1); % preconditioner 
+
+% loop over virtual channels
+for l = 1:nChannels
+    
+    % measurement operator initialization
+    fprintf('Initializing the NUFFT operator\n\n');
+    
+    % --- Fourier reduction --- %  
+    y_tmp = new_file_y.y(l,1);
+    u_tmp = new_file_u.u(l,1);
+    v_tmp = new_file_v.v(l,1);
+    nW_tmp = new_file_nW.nW(l,1);
+    
+    H{l} = cell(numel(u_tmp{1}), 1);
+    T{l} = cell(numel(u_tmp{1}), 1);
+    yT{l} = cell(numel(u_tmp{1}), 1);
+    Wm{l} = cell(numel(u_tmp{1}), 1);
+    aW{l} = cell(numel(u_tmp{1}), 1);
+    % W{l} = cell(numel(u_tmp{1}), 1);
+    
+    % loop over the data blocks within each "virtual" channel
+    for j = 1:numel(u_tmp{1})
+        
+        [A, At, G, ~] = op_p_nufft([v_tmp{1}(j) u_tmp{1}(j)], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW_tmp{1}(j)); % W1 is empty, why?
+        % note: the above function can take cell inputs (but no need to keep multiple G matrices in memory)
+        H{l}{j} = (G{1}')*G{1}; % progressively write to disk? (huge...)
+        
+        % estimate threshold
+        dirty2 = norm(operatorPhit(y_tmp{1}{j}, G{1}', At) / sqrt(N));
+        
+        % fast matrix probing (using psf)
+        dirac2D = zeros(Ny, Nx);
+        dirac2D(ceil((Ny+1)/2), ceil((Nx+1)/2)) = 1;
+        PSF = operatorIpsf(dirac2D, A, At, H{l}{j}, [oy*Ny, ox*Nx]);
+        covariancemat = FT2(PSF);
+        d_mat = abs(real(covariancemat(:)));
+        clear covariancemat
+        %
+        if param_fouRed.enable_klargestpercent
+            Mask = (d_mat >= prctile(d_mat,100-param_fouRed.klargestpercent));
+        elseif param_fouRed.enable_estimatethreshold
+            % embed the noise
+            noise1 = param_fouRed.sigma_noise * (randn(size(G{1}, 1),1) + 1j * randn(size(G{1}, 1), 1));
+            rn = FT2(At(G{1}'*noise1));  % apply F Phi
+            th_dirty = param_fouRed.gamma * std(rn(:)) / dirty2;
+            fprintf('\nThe estimate threshold using ground truth is %e \n', th);
+            Mask = (d_mat >= th_dirty);
+        end
+        d_mat = d_mat(Mask);
+        %
+        T{l}{j} = max(param_fouRed.diagthresholdepsilon, d_mat);  % ensures that inverting the values will not explode in computation
+        T{l}{j} = 1./sqrt(T{l}{j});
+        Wm{l}{j} = Mask;
+        % W{l}{j} = W1{1};
+        aW{l}{j} = 1./T{l}{j};
+        
+        % reduce the data block
+        yT{l}{j} = dataReduce(v_tmp{1}{j}, G{1}', At, T{l}{j}, Wm{l}{j});
+    end
+    % missing: definition of epsilon... [to be checked with Ming]: do NNLS
+    % beforehand...
+    %% ---
+end 
+
+%
+% %% Free memory
+% if free_memory
+%     clear y u v uv_mat uv_mat1 uvidx uw vw ant1 ant2 aWw nW nWw out_block;
+% end

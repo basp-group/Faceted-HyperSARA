@@ -26,6 +26,7 @@ addpath data/
 addpath real_data_dr
 
 extract_raw_data = 1;
+reduce_data = 1;
 generate_eps_nnls = 0;
 solve_minimization = 1;
 solve_HS = 1;
@@ -34,7 +35,7 @@ compute_Anorm = 1;
 % select algorithm parameters
 window_type = 'triangular';
 bool_weights = true; % for the spmd4_new version (50% overlap version)
-d = (power(2, nlevel)-1)*(2*8 - 2); % amount of overlap (absolute number of pixels in the overlap)
+d = 256; %(power(2, nlevel)-1)*(2*8 - 2); % amount of overlap (absolute number of pixels in the overlap)
 
 % reduction parameters
 usingReduction = 1;
@@ -53,7 +54,6 @@ if compute_Anorm || ~extract_real_data
     Kx = 8; % number of neighbours for nufft
     Ky = 8; % number of neighbours for nufft
 end
-
 
 %% Extract / load real data (contains Fourier reduction and NNLS)
 extract_real_data_dr

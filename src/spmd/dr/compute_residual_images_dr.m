@@ -16,7 +16,7 @@ function res = compute_residual_images_dr(x, y, T, A, At, H, W)
 %
 % Output:
 %
-% < residual_image  residual image cube [N(1), N(2), L]
+% < res           residual image cube [N(1), N(2), L]
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
@@ -31,7 +31,7 @@ IFT2 = @(x) fftshift(ifft2(ifftshift(x)));
 res = zeros(size(x));
 
 for i = 1 : ci
-    Fx = FT2(real(At(H{i} * A(real(x(:,:,i))))));    % adapt
+    Fx = FT2(real(At(H{i} * A(real(x(:,:,i))))));
     Fx = Fx(:);
     g2 = zeros(numel(Fx),1);
     for j = 1 : length(T{i})
@@ -39,7 +39,7 @@ for i = 1 : ci
         u2 = T{i}{j} .* res_f;
         g2(W{i}{j}) = g2(W{i}{j}) + u2;
     end
-    res(:,:,i) = real(At(H{i}*A(real(IFT2(reshape(g2, Ny, Nx)))))); % adapt
+    res(:,:,i) = real(At(H{i}*A(real(IFT2(reshape(g2, Ny, Nx))))));
 end
 
 end

@@ -16,7 +16,7 @@ function res = compute_residual_images_dr_block(x, y, T, A, At, H, W)
 %
 % Output:
 %
-% < residual_image  residual image cube [N(1), N(2), L]
+% < res           residual image cube [N(1), N(2), L]
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
