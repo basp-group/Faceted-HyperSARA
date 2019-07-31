@@ -14,7 +14,7 @@ nChannels = 2*nSpw; % total number of "virtual" channels (i.e., after
 nBlocks = 9;        % number of data blocks (needs to be known beforehand,
 % quite restrictive here), change l.70 accordingly
 klargestpercent = 20;
-extract_real_data = false;
+extract_real_data = true;
 generate_eps_nnls = true;
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
 
@@ -129,6 +129,12 @@ if extract_real_data
     new_file_nW = matfile('real_data_dr/CYG_nW.mat', 'Writable', true);
     
     for l = 1:nChannels
+        % concatenate the visibility frequencies and the associated u/v
+        % points (make sure same number of blocks)
+        u_tmp = new_file_u.u(l,1);
+        v_tmp = new_file_v.v(l,1);
+        y_tmp = new_file_y.y(l,1);
+        nW_tmp = new_file_nW.nW(l,1);
         for n = 1:nSpw
             filename = [visibility_file_name, num2str(n), '.mat'];
             file = matfile(filename);
@@ -146,23 +152,17 @@ if extract_real_data
             aWw = util_gen_preconditioning_matrix(uw, vw, param_precond);
             [u1, v1, ~, uvidx1, aW, nW1] = util_gen_block_structure(uw, vw, aWw, nWw, param_block_structure);
             
-            % concatenate the visibility frequencies and the associated u/v
-            % points (make sure same number of blocks)
-            u_tmp = new_file_u.u(l,1);
-            v_tmp = new_file_v.v(l,1);
-            y_tmp = new_file_y.y(l,1);
-            nW_tmp = new_file_nW.nW(l,1);
             for m = 1:numel(u1)
                 u_tmp{1}{m} = [u_tmp{1}{m}; u1{m}];
                 v_tmp{1}{m} = [v_tmp{1}{m}; v1{m}];
                 y_tmp{1}{m} = [y_tmp{1}{m}; y(uvidx1{m})];
                 nW_tmp{1}{m} = [nW_tmp{1}{m}; nW1{m}];
             end
-            new_file_u.u(l,1) = u_tmp;
-            new_file_v.v(l,1) = v_tmp;
-            new_file_y.y(l,1) = y_tmp;
-            new_file_nW.nW(l,1) = nW_tmp;
         end
+        new_file_u.u(l,1) = u_tmp;
+        new_file_v.v(l,1) = v_tmp;
+        new_file_y.y(l,1) = y_tmp;
+        new_file_nW.nW(l,1) = nW_tmp;
     end
 else
     new_file_y = matfile('real_data_dr/CYG_y.mat');
@@ -251,7 +251,7 @@ if reduce_data
             d_mat = abs(real(covariancemat(:)));
 
             rn = FT2(At(G{1}'*res_tmp{j}));
-            th_dirty = param_fouRed.gamma * std(rn(:)) / dirty2;
+            th_dirty = param_fouRed.gamma * std(rn(:)) / (dirty2 / max(d_mat(:)));
             Mask = (d_mat >= th_dirty);
             d_mat = d_mat(Mask);
             %
