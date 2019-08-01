@@ -186,7 +186,7 @@ if reduce_data
         % parameter NNLS
         param_nnls.verbose = 2;       % print log or not
         param_nnls.rel_obj = 1e-5;    % stopping criterion
-        param_nnls.max_iter = 10;     % max number of iterations 1000
+        param_nnls.max_iter = 1000;     % max number of iterations 1000
         param_nnls.sol_steps = [inf]; % saves images at the given iterations
         param_nnls.beta = 1;
     end
@@ -195,7 +195,7 @@ if reduce_data
     eps = zeros(nBlocks, nChannels);
     
     % define operators
-    parpool(6)
+%     parpool(6)
     [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
     
     % instantiate variables for DR
@@ -241,7 +241,7 @@ if reduce_data
             Hl{j} = (G{1}')*G{1}; % progressively write to disk? (possibly huge...)
             
             % estimate threshold
-            dirty2 = norm(operatorPhit(y_tmp{j}, G{1}', At) / sqrt(N));
+            dirty2 = norm(operatorPhit(y_tmp{j}, G{1}', At), 'fro'); % / sqrt(N)
             
             % fast matrix probing (using psf)
             dirac2D = zeros(Ny, Nx);
