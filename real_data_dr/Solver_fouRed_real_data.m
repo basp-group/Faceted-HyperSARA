@@ -110,7 +110,7 @@ if solve_HS
     clear yT epsilon aW Wm T epsilon
     
     if  rw >= 0 
-        load(['./results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma) '_' num2str(rw) '.mat']);
+        load(['results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma) '_' num2str(rw) '.mat']);
         
         epsilon_spmd = epsilon;
         param_HSI.init_xsol = param.init_xsol;
@@ -131,12 +131,12 @@ if solve_HS
     end
     
     % solvers
+    mkdir('results/')
     [xsol,param_HSI,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
         facetHyperSARA_cst_overlap_weighted_dr_real_data(y_spmd, [Ny, Nx], ...
         epsilon_spmd, A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI, Qx, Qy, Qc2, ...
         wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type);
     
-    mkdir('results/')
     save(['results/results_hyperSARA_fouRed_', alg_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
         '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma),'.mat'], '-v7.3', ...
         'xsol', 'param_HSI', 'epsilon', 't', 'rel_fval', 'nuclear', 'l21', ...

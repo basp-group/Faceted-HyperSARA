@@ -57,7 +57,7 @@ end
 
 %% Load/extract real data from band-interleaved .mat files
 if extract_real_data
-    mkdir('real_data_dr')
+    mkdir(extraction_path)
     % visibilities
     y = cell(nChannels, 1);
     for l = 1:numel(y)
@@ -82,7 +82,7 @@ if extract_real_data
     save([extraction_path,'CYG_v.mat'], 'v', '-v7.3');
     clear v;
     
-    % nWw: scaling NUFFT
+    % nWw: natural weighting
     nW = cell(nChannels, 1);
     for l = 1:numel(nW)
         nW{l} = cell(nBlocks, 1);
