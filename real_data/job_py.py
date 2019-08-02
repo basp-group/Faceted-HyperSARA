@@ -2,7 +2,7 @@
 
 import csv, subprocess
 
-parameter_file_full_path = "/lustre/home/sc004/aa61/HyperSARA_dist_Full/test7_20/job_params.csv"
+parameter_file_full_path = "/lustre/home/sc004/aa61/HyperSARA_dist_Full/real_data33/job_params.csv"
 
 with open(parameter_file_full_path, "rb") as csvfile:
 
@@ -10,10 +10,10 @@ with open(parameter_file_full_path, "rb") as csvfile:
 
     for job in reader:
 
-        qsub_command = """qsub -N {0}_{1}_{2} \
-        -e /lustre/home/sc004/aa61/HyperSARA_dist_Full/test7_20/{0}_{1}_{2}.err \
-        -o /lustre/home/sc004/aa61/HyperSARA_dist_Full/test7_20/{0}_{1}_{2}.out \
-        -v alg={0},ver={1},gamma={2} run_batch.pbs""".format(*job)
+        qsub_command = """qsub -N {0}_{1} \
+        -e /lustre/home/sc004/aa61/HyperSARA_dist_Full/real_data33/{0}_{1}.err \
+        -o /lustre/home/sc004/aa61/HyperSARA_dist_Full/real_data33/{0}_{1}.out \
+        -v ind={0},gamma={1},rw={2} run_batch.pbs""".format(*job)
 
         # print qsub_command # Uncomment this line when testing to view the qsub command
 

@@ -2,10 +2,12 @@ clear all
 close all
 clc
 
+%% Paramters from the interface in CIRRUS (set manually for now)
+% -> to be set through .csv file (read with Python)
+% -> set value of the overlap parameter as well + window type
 rw = 0;
 gamma = 1e-5;
 job_id = 0;
-
 flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc2 = 1;
 parallel_version = '';
 

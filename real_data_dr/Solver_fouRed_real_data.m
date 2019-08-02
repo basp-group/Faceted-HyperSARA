@@ -10,6 +10,7 @@ if compute_Anorm
     %         H, Sigma, Mask, [Ny, Nx])); aW
     %     end
     Anorm = pow_method_op(F, Ft, [Ny Nx nChannels]);
+    mkdir('real_data_dr')
     save('real_data_dr/Anorm_dr.mat','-v7.3', 'Anorm');
 else
     load('real_data_dr/Anorm_dr.mat');
@@ -82,10 +83,7 @@ param_HSI.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
 param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
 param_HSI.elipse_proj_min_iter = 1; % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
 param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid
-
 param_HSI.precondition = usingPrecondition;
-
-%% TO BE UPDATED: A FEW ELEMENTS NEED TO BE DAPTED TO THIS SETTING
 
 %% L21 + Nuclear (facet-based version)
 if solve_HS
@@ -109,7 +107,7 @@ if solve_HS
         W_spmd{i} = Wm(cell_c_chunks{i});
         T_spmd{i} = T(cell_c_chunks{i});
     end
-    clear yT epsilon aW Wm Ti epsilons_t
+    clear yT epsilon aW Wm T epsilon
     
     if  rw >= 0 
         load(['./results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma) '_' num2str(rw) '.mat']);
@@ -136,7 +134,7 @@ if solve_HS
     [xsol,param_HSI,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
         facetHyperSARA_cst_overlap_weighted_dr_real_data(y_spmd, [Ny, Nx], ...
         epsilon_spmd, A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI, Qx, Qy, Qc2, ...
-        wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type); % to be modified
+        wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type);
     
     mkdir('results/')
     save(['results/results_hyperSARA_fouRed_', alg_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
