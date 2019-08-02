@@ -1,31 +1,13 @@
 %% Real data extraction
-% addpath ../lib/utils/
-% addpath ../fouRed/
-% addpath ../lib/operators
-% addpath ../lib/nufft
-addpath ../data_mnras_dr
 
-visibility_file_name = 'CYG_data_raw_ind=';
-param_real_data.image_size_Nx = 2560;
-param_real_data.image_size_Ny = 1536;
+% parameters for extraction
+param_real_data.image_size_Nx = Nx;
+param_real_data.image_size_Ny = Ny;
 nSpw = 16;          % number of spectral channels per MS file
 nChannels = 2*nSpw; % total number of "virtual" channels (i.e., after
-% concatenation) for the real dataset considered
+                    % concatenation) for the real dataset considered
 nBlocks = 9;        % number of data blocks (needs to be known beforehand,
-% quite restrictive here), change l.70 accordingly
-klargestpercent = 20;
-extract_real_data = true;
-generate_eps_nnls = true;
-FT2 = @(x) fftshift(fft2(ifftshift(x)));
-
-%% Config parameters
-Nx = param_real_data.image_size_Nx;
-Ny = param_real_data.image_size_Ny;
-N = Nx * Ny;
-ox = 2; % oversampling factors for nufft
-oy = 2; % oversampling factors for nufft
-Kx = 8; % number of neighbours for nufft
-Ky = 8; % number of neighbours for nufft
+                    % quite restrictive here), change l.70 accordingly
 
 %% Preconditioning parameters
 param_precond.N = N;       % number of pixels in the image
@@ -35,13 +17,14 @@ param_precond.gen_uniform_weight_matrix = 1; % weighting type
 param_precond.uniform_weight_sub_pixels = 1;
 
 %% Fourier reduction parameters
-param_fouRed.enable_klargestpercent = 1;
-param_fouRed.klargestpercent = klargestpercent;
-param_fouRed.enable_estimatethreshold = 0;
+% param_fouRed.enable_klargestpercent = 1;
+% klargestpercent = 20;
+% param_fouRed.klargestpercent = klargestpercent;
+% param_fouRed.enable_estimatethreshold = 1;
 param_fouRed.gamma = 3;             % By using threshold estimation, the optimal theshold reads as gamma * sigma / ||x||_2
 param_fouRed.diagthresholdepsilon = 1e-10;
-param_fouRed.covmatfileexists = 0;
-param_fouRed.covmatfile = 'covariancemat.mat';
+% param_fouRed.covmatfileexists = 0;
+% param_fouRed.covmatfile = 'covariancemat.mat';
 param_fouRed.fastCov = 1;
 
 %% Block structure
@@ -74,12 +57,13 @@ end
 
 %% Load/extract real data from band-interleaved .mat files
 if extract_real_data
+    mkdir('real_data_dr')
     % visibilities
     y = cell(nChannels, 1);
     for l = 1:numel(y)
         y{l} = cell(nBlocks, 1);
     end
-    save('real_data_dr/CYG_y.mat', 'y', '-v7.3');
+    save([extraction_path, 'CYG_y.mat'], 'y', '-v7.3');
     clear y;
     
     % u
@@ -87,7 +71,7 @@ if extract_real_data
     for l = 1:numel(u)
         u{l} = cell(nBlocks, 1);
     end
-    save('real_data_dr/CYG_u.mat', 'u', '-v7.3');
+    save([extraction_path, 'CYG_u.mat'], 'u', '-v7.3');
     clear u;
     
     % v
@@ -95,7 +79,7 @@ if extract_real_data
     for l = 1:numel(v)
         v{l} = cell(nBlocks, 1);
     end
-    save('real_data_dr/CYG_v.mat', 'v', '-v7.3');
+    save([extraction_path,'CYG_v.mat'], 'v', '-v7.3');
     clear v;
     
     % nWw: scaling NUFFT
@@ -103,7 +87,7 @@ if extract_real_data
     for l = 1:numel(nW)
         nW{l} = cell(nBlocks, 1);
     end
-    save('real_data_dr/CYG_nW.mat', 'nW', '-v7.3');
+    save([extraction_path, 'CYG_nW.mat'], 'nW', '-v7.3');
     clear nW;
     
     %     % position of data for different configs inside each visibility vector
@@ -112,7 +96,7 @@ if extract_real_data
     %     for l = 1:numel(pos)
     %         pos{l} = cell(nBlocks, 1);
     %     end
-    %     save('CYG_pos.mat', 'pos', '-v7.3');
+    %     save([extraction_path, 'CYG_pos.mat'], 'pos', '-v7.3');
     %     clear pos;
     
     %     % acquisition time
@@ -120,13 +104,13 @@ if extract_real_data
     %     for l = 1:numel(time)
     %         time{l} = cell(nBlocks, 1);
     %     end
-    %     save('CYG_time.mat', 'time', '-v7.3');
+    %     save([extraction_path, 'CYG_time.mat'], 'time', '-v7.3');
     %     clear time;
     
-    new_file_y = matfile('real_data_dr/CYG_y.mat', 'Writable', true);
-    new_file_u = matfile('real_data_dr/CYG_u.mat', 'Writable', true);
-    new_file_v = matfile('real_data_dr/CYG_v.mat', 'Writable', true);
-    new_file_nW = matfile('real_data_dr/CYG_nW.mat', 'Writable', true);
+    new_file_y = matfile([extraction_path, 'CYG_y.mat'], 'Writable', true);
+    new_file_u = matfile([extraction_path, 'CYG_u.mat'], 'Writable', true);
+    new_file_v = matfile([extraction_path, 'CYG_v.mat'], 'Writable', true);
+    new_file_nW = matfile([extraction_path, 'CYG_nW.mat'], 'Writable', true);
     
     for l = 1:nChannels
         % concatenate the visibility frequencies and the associated u/v
@@ -165,22 +149,21 @@ if extract_real_data
         new_file_nW.nW(l,1) = nW_tmp;
     end
 else
-    new_file_y = matfile('real_data_dr/CYG_y.mat');
-    new_file_u = matfile('real_data_dr/CYG_u.mat');
-    new_file_v = matfile('real_data_dr/CYG_v.mat');
-    new_file_nW = matfile('real_data_dr/CYG_nW.mat');
+    new_file_y = matfile([extraction_path,'CYG_y.mat']);
+    new_file_u = matfile([extraction_path,'CYG_u.mat']);
+    new_file_v = matfile([extraction_path,'CYG_v.mat']);
+    new_file_nW = matfile([extraction_path,'CYG_nW.mat']);
 end
 
 %% Estimate epsilon with NNLS on each data block
 if reduce_data
-    
     if generate_eps_nnls
         % set up res_nnls to be saved on disk
         res_nnls = cell(nChannels, 1);
         for l = 1:numel(res_nnls)
             res_nnls{l} = cell(nBlocks, 1);
         end
-        save('real_data_dr/CYG_res_nnls.mat', 'res_nnls', '-v7.3');
+        save([extraction_path, 'CYG_res_nnls.mat'], 'res_nnls', '-v7.3');
         clear res_nnls
         
         % parameter NNLS
@@ -190,12 +173,12 @@ if reduce_data
         param_nnls.sol_steps = [inf]; % saves images at the given iterations
         param_nnls.beta = 1;
     end
-    new_file_res = matfile('real_data_dr/CYG_res_nnls.mat', 'Writable', true);
+    new_file_res = matfile([extraction_path,'CYG_res_nnls.mat'], 'Writable', true);
     epsilon = cell(nChannels, 1);
     eps = zeros(nBlocks, nChannels);
     
     % define operators
-%     parpool(6)
+%     parpool(nBlocks)
     [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
     
     % instantiate variables for DR
@@ -206,6 +189,7 @@ if reduce_data
     W = cell(nChannels, 1);  % masks for the Fourier plane corresponding to
     % data blocks
     aW = cell(nChannels, 1); % preconditioner
+    FT2 = @(x) fftshift(fft2(ifftshift(x)));
     
     % solve NNLS per block / estimate epsilon / reduce data
     for l = 1:nChannels
@@ -273,11 +257,11 @@ if reduce_data
         epsilon{l} = eps_;
         new_file_res.res_nnls(l,1) = {res_tmp};
     end
-    save('real_data_dr/CYG_epsilon.mat','-v7.3', 'epsilon', 'eps');
-    save('real_data_dr/CYG_yT.mat','-v7.3', 'yT');
-    save('real_data_dr/CYG_DR.mat','-v7.3', 'H', 'T', 'aW', 'Wm');
+    save([extraction_path,'CYG_epsilon.mat'],'-v7.3', 'epsilon', 'eps');
+    save([extraction_path,'CYG_yT.mat'],'-v7.3', 'yT');
+    save([extraction_path,'CYG_DR.mat'],'-v7.3', 'H', 'T', 'aW', 'Wm'); % re-create if this takes too much useless space on disk
 else
-    load('real_data_dr/CYG_DR.mat');
-    load('real_data_dr/CYG_yT.mat','-v7.3')
-    load('real_data_dr/CYG_epsilon.mat');
+    load([extraction_path,'CYG_DR.mat']);
+    load([extraction_path,'CYG_yT.mat'],'-v7.3')
+    load([extraction_path,'CYG_epsilon.mat']);
 end

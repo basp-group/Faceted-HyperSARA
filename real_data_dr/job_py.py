@@ -13,7 +13,7 @@ with open(parameter_file_full_path, "rb") as csvfile:
         qsub_command = """qsub -N {0}_{1} \
         -e /lustre/home/sc004/aa61/HyperSARA_dist_Full/real_data33/{0}_{1}.err \
         -o /lustre/home/sc004/aa61/HyperSARA_dist_Full/real_data33/{0}_{1}.out \
-        -v ind={0},gamma={1},rw={2} run_batch.pbs""".format(*job)
+        -v gamma={0},rw={1} run_batch.pbs""".format(*job)
 
         # print qsub_command # Uncomment this line when testing to view the qsub command
 
