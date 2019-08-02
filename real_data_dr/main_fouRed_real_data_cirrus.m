@@ -30,18 +30,17 @@ extraction_path = '/home/shared/sc004/cyg_data_dr';
 % extraction_path = 'real_data_dr/';
 
 % path to source codes
-addpath fouRed/
-addpath lib/
-addpath lib/generate_data/
-addpath lib/operators/
-addpath lib/utils/
-addpath lib/CubeHelix/
-addpath lib/Proximity_operators/code/matlab/indicator/
-addpath lib/Proximity_operators/code/matlab/multi/
-addpath sdwt2/
-addpath src/
-addpath src/spmd
-addpath src/spmd/dr/
+addpath ../fouRed/
+addpath ../lib/
+addpath ../lib/generate_data/
+addpath ../lib/operators/
+addpath ../lib/utils/
+addpath ../lib/Proximity_operators/code/matlab/indicator/
+addpath ../lib/Proximity_operators/code/matlab/multi/
+addpath ../sdwt2/
+addpath ../src/
+addpath ../src/spmd
+addpath ../src/spmd/dr/
 addpath(irt_library)
 
 % reduction parameters

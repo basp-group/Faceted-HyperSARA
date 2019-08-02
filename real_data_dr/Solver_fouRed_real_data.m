@@ -10,10 +10,10 @@ if compute_Anorm
     %         H, Sigma, Mask, [Ny, Nx])); aW
     %     end
     Anorm = pow_method_op(F, Ft, [Ny Nx nChannels]);
-    mkdir('real_data_dr')
-    save('real_data_dr/Anorm_dr.mat','-v7.3', 'Anorm');
+    mkdir(extraction_path)
+    save([extraction_path, 'Anorm_dr.mat'],'-v7.3', 'Anorm');
 else
-    load('real_data_dr/Anorm_dr.mat');
+    load([extraction_path, 'Anorm_dr.mat']);
 end
 
 clear F Ft;
