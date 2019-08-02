@@ -104,7 +104,7 @@ if param_fouRed.enable_estimatethreshold
 %     param_fouRed.factor2 = sum(abs(psf(:)))/sqrt(N);
 %     param_fouRed.factor3 = norm((abs(psf)))/sqrt(N);
 %     param_fouRed.dirty2 = norm(At(Gw' * y{1}{1}))/sqrt(N);
-    param_fouRed.dirty2 = norm(Phi_t(y{1}{1}))/sqrt(N);
+    param_fouRed.dirty2 = norm(Phi_t(y{1}{1})); %/sqrt(N);
     param_fouRed.sigma_noise = sigma_noise;
 end
 
