@@ -1,10 +1,10 @@
 clc; clear all; close all;
 format compact;
 
-addpath ../data
-addpath ../sdwt2
-addpath ../../subaxis
-addpath ../../export_fig_master
+addpath ../../data
+addpath ../../sdwt2
+addpath ../../../subaxis
+addpath ../../../export_fig_master
 
 %% faceting parameters
 N = [1024, 1024];
