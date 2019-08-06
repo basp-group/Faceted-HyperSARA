@@ -2,11 +2,11 @@
 if compute_Anorm
 %     if usingReduction
     if usingPrecondition
-        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Sigma, Mask, aW));
-        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Sigma, Mask, [Ny, Nx], aW));
+        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Ti, Wm, aW));
+        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Ti, Wm, [Ny, Nx], aW));
     else
-        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Sigma, Mask));
-        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Sigma, Mask, [Ny, Nx]));
+        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, Ti, Wm));
+        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, Ti, Wm, [Ny, Nx]));
     end
     Anorm = pow_method_op(F, Ft, [Ny Nx length(ch)]); 
 %     else

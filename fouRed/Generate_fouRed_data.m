@@ -68,6 +68,7 @@ sparam.Noy = oy*Ny; % number of pixels in the image
 %%
 if generate_uv
     [u, v] = util_gen_sampling_pattern(sampling_pattern, sparam);
+    
     if save_data
         save(['./simulated_data/data/uv_' num2str(c) '_HI_final_' num2str(percentage(k)) '.mat'],'-v7.3', 'u', 'v');
     end
@@ -104,7 +105,7 @@ for i = 1:length(ch)
     
     uw{i} = (f(i)/f(1)) * u1;
     vw{i} = (f(i)/f(1)) * v1;
-    
+
     [A, At, Gw{i}, ~] = op_nufft([vw{i} uw{i}], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
 
     % use the absolute values to speed up the search

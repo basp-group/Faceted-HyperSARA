@@ -1,4 +1,4 @@
-function [u_ab, v_ab, na, antennas] = generate_uv_coverage(T, dl, cov_type, varargin)
+function [u_ab, v_ab, na, antennas] = generate_uv_coverage(T, hrs, dl, cov_type, varargin)
 
 % ----------------------------------------------------- %
 switch cov_type                              
@@ -40,7 +40,7 @@ end
 % ant_pair = na*(na-1)/2 ;
 
 % Physical parameters
-h = linspace(-6, 6, T)*pi/12;               % hour angle range of +/-  hours  5
+h = linspace(-hrs, hrs, T)*pi/12;               % hour angle range of +/-  hours  5
 dec = (pi/180)*(40);                        % Cas A is 56.4
 lat = (pi/180)*(38. + 59./60. + 48./3600.); % College Park
 % reference position of x0 in the x-y plane

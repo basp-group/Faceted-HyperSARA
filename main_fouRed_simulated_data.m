@@ -9,6 +9,8 @@ T = 200; % 1500
 hrs = 6;
 parallel_version = '';
 
+rng(2)
+
 addpath fouRed/
 addpath lib/
 addpath lib/generate_data/
@@ -36,6 +38,8 @@ end
 usingReduction = 1;
 usingReductionPar = 0;
 usingPrecondition = 1;
+usingBlocking = 1;
+usingCalibrationKernels = 1;
 normalize_data = 0;
 klargestpercent = 20;
 
@@ -191,7 +195,11 @@ percentage = 0.3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
 
 %% Generate or Load subsampling mask
 if usingReduction
-    Generate_fouRed_data
+    if usingCalibrationKernels
+        Generate_fouRed_data_calibration % just for testing purposes
+    else
+        Generate_fouRed_data
+    end
 else
     Generate_data_new
 end
