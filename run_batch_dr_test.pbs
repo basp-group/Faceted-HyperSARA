@@ -1,0 +1,33 @@
+#!/bin/bash -l
+
+#PBS -N DR_calib
+
+#### select resources
+#PBS -l select=1:ncpus=10
+#PBS -l walltime=72:00:00
+# #PBS -l place=scatter:excl
+#### Replace [budget code] below with your project code (e.g. t01)
+#PBS -A $PBS_JOBID
+#### redirect error & output files
+mkdir /lustre/home/sc004/pthouven/Dimensionality-reduced-hyper-SARA-sdwt/logs/
+#PBS -e /lustre/home/sc004/pthouven/Dimensionality-reduced-hyper-SARA-sdwt/logs/fhs_dr_$PBS_JOBID.err
+#PBS -o /lustre/home/sc004/pthouven/Dimensionality-reduced-hyper-SARA-sdwt/logs/fhs_dr_$PBS_JOBID.out
+
+#### load matlab module (setup environment)
+module load matlab/R2018a
+
+# Change to the directory that the job was submitted from
+cd $PBS_O_WORKDIR
+
+mkdir pref_$PBS_JOBID
+mkdir nufft_$PBS_JOBID
+cp -R lib/nufft/* nufft_$PBS_JOBID
+
+export MATLAB_PREFDIR=/lustre/home/sc004/pthouven/Dimensionality-reduced-hyper-SARA-sdwt/pref_$PBS_JOBID
+
+#### execute program
+matlab_wrapper -nosplash -nodisplay -nodesktop "main_fouRed_simulated_data" \
+                > logs/fhs_dr_${PBS_JOBID}.log
+
+rm -r pref_$PBS_JOBID
+rm -r nufft_$PBS_JOBID
