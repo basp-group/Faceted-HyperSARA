@@ -1,3 +1,5 @@
+%function main_fouRed_simulated_data(nufft_path)
+
 clear all
 close all
 clc
