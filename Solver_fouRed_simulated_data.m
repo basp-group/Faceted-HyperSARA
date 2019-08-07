@@ -138,6 +138,7 @@ if solve_HS
     aW_spmd = cell(Qc2, 1);
     W_spmd = cell(Qc2, 1);
     T_spmd = cell(Qc2, 1);
+    H_spmd = cell(Qc2, 1);
     
     for i = 1:Qc2
         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
@@ -146,8 +147,10 @@ if solve_HS
         aW_spmd{i} = aW(cell_c_chunks{i});
         W_spmd{i} = Wm(cell_c_chunks{i});
         T_spmd{i} = Ti(cell_c_chunks{i});
+        H_spmd{i} = H(cell_c_chunks{i});
     end
-    clear yT epsilont aW Wm Ti epsilons_t
+    
+    clear yT epsilont aW Wm Ti epsilons_t H
     % old solver
 %     [xsol,v0,v1,v2,g,weights0,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res] = ...
 %         pdfb_LRJS_Adapt_blocks_rwNL21_par_sing_precond_new_sim
@@ -161,7 +164,7 @@ if solve_HS
     
     [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
     facetHyperSARA_cst_overlap_weighted_dr(y_spmd, [Ny, Nx], ...
-    epsilon_spmd, A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+    epsilon_spmd, A, At, H_spmd, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
     wlt_basis, L, nlevel, cell_c_chunks, ch(end), d, window_type);
     
 %     [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...

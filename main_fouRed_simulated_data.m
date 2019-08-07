@@ -2,11 +2,11 @@ clear all
 close all
 clc
 
-flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512; %2048;
+flag_algo = 2; tot = 10; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512; %2048;
 
 Qc2 = 1;
 T = 200; % 1500
-hrs = 6;
+hrs = 7;
 parallel_version = '';
 
 rng(2)
@@ -34,12 +34,14 @@ if strcmp(parallel_version, 'spmd4_cst_weighted') || strcmp(parallel_version, 's
     nlevel = 4;
     d = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
 end
+d = 10;
+
 
 usingReduction = 1;
 usingReductionPar = 0;
 usingPrecondition = 1;
 usingBlocking = 1;
-usingCalibrationKernels = 0; % to be changed later on
+usingCalibrationKernels = 1; % to be changed later on
 normalize_data = 0;
 klargestpercent = 20;
 
@@ -189,7 +191,7 @@ end
 param_HSI.num_workers
 
 %% Generate or Load subsampling mask
-percentage = 0.3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
+percentage = 0.1; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
 
 %% TO BE MODIFIED FROM HERE
 
