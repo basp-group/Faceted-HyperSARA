@@ -2,9 +2,9 @@
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
 IFT2 = @(x) fftshift(ifft2(ifftshift(x)));
 
-param_fouRed.enable_klargestpercent = 1;
+param_fouRed.enable_klargestpercent = 0; % 1
 param_fouRed.klargestpercent = klargestpercent;
-param_fouRed.enable_estimatethreshold = 0;
+param_fouRed.enable_estimatethreshold = 1;
 param_fouRed.gamma = 3;             % By using threshold estimation, the optimal theshold reads as gamma * sigma / ||x||_2
 param_fouRed.diagthresholdepsilon = 1e-10; 
 param_fouRed.covmatfileexists = 0;
@@ -20,7 +20,7 @@ for i = 1:length(ch)
             if param_fouRed.enable_estimatethreshold
                 param_fouRed.x2 = norm(x0(:, :, i));
                 % param_fouRed.dirty2 = norm(Phi_t{i}(y{i})) / sqrt(numel(x0(:,:,i)));
-                param_fouRed.dirty2 = norm(operatorPhit(y{i}, G{i}', At),'fro'); % / sqrt(numel(x0(:,:,i)))
+                param_fouRed.dirty2 = norm(operatorPhit(y{i}{j}, G{i}{j}', At),'fro'); % / sqrt(numel(x0(:,:,i)))
                 if numel(sigma_noise_ch{i}{j}) == 1
                     param_fouRed.sigma_noise{i}{j} = sigma_noise_ch{i}{j};
                 else 
@@ -41,10 +41,10 @@ for i = 1:length(ch)
             elseif param_fouRed.enable_estimatethreshold
                 % Embed the noise
                 noise1 = param_fouRed.sigma_noise{i}{j} * (randn(size(G{i}{j}, 1),1) + 1j * randn(size(G{i}{j}, 1), 1));
-                rn = FT2(At(G{i}{j}'*noise1));  % Apply F Phi
-                % th = param_fouRed.gamma * std(rn(:)) / param_fouRed.x2;
+                rn_tmp = FT2(At(G{i}{j}'*noise1));  % Apply F Phi
+                th = param_fouRed.gamma * std(rn_tmp(:)) / param_fouRed.x2;
                 % th_dirty = param_fouRed.gamma * std(rn(:)) / param_fouRed.dirty2;
-                th_dirty = param_fouRed.gamma * std(rn(:)) / (dirty2 / max(d_mat(:)));
+                th_dirty = param_fouRed.gamma * std(rn_tmp(:)) / (param_fouRed.dirty2 / max(d_mat(:)));
                 fprintf('\nThe estimate threshold using ground truth is %e \n', th);
                 Wm{i}{j} = (d_mat >= th_dirty);
             end
@@ -89,10 +89,10 @@ for i = 1:length(ch)
         elseif param_fouRed.enable_estimatethreshold
             % Embed the noise
             noise1 = param_fouRed.sigma_noise * (randn(size(G{i}, 1),1) + 1j * randn(size(G{i}, 1), 1));
-            rn = FT2(At(G{i}'*noise1));  % Apply F Phi
-            % th = param_fouRed.gamma * std(rn(:)) / param_fouRed.x2;
+            rn_tmp = FT2(At(G{i}'*noise1));  % Apply F Phi
+            th = param_fouRed.gamma * std(rn_tmp(:)) / param_fouRed.x2;
             % th_dirty = param_fouRed.gamma * std(rn(:)) / param_fouRed.dirty2;
-            th_dirty = param_fouRed.gamma * std(rn(:)) / (dirty2 / max(d_mat(:)));
+            th_dirty = param_fouRed.gamma * std(rn_tmp(:)) / (param_fouRed.dirty2 / max(d_mat(:)));
             fprintf('\nThe estimate threshold using ground truth is %e \n', th);
             Mask{i} = (d_mat >= th_dirty);
         end

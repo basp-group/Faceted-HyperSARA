@@ -70,10 +70,15 @@ if generate_uv
     if ~ usingCalibrationKernels
         [u, v] = util_gen_sampling_pattern(sampling_pattern, sparam);
     else
+        % to be modified, load realistic uv-coverage
         dl = 1.1;
-        [u, v, na] = generate_uv_coverage(T, hrs, dl, 'vlaa');
+%         [u, v, na] = generate_uv_coverage(T, hrs, dl, 'vlaa');
+        load('data/test_DR.mat', 'uvw');
+        u = uvw(:,1);
+        v = uvw(:,2);
         u = {u(:)};
         v = {v(:)};
+        na = 27;
         M = na*(na-1)/2;
     end
     
@@ -85,26 +90,33 @@ else
     disp('coverage loaded successfully ;)')
 end
 
-% remove all the visibilities outside the range [-pi, pi]
-r = sqrt(u{1}.^2 + v{1}.^2);
-size(r(r>pi))
-bmax = max(r)
+% % remove all the visibilities outside the range [-pi, pi]
+% r = sqrt(u{1}.^2 + v{1}.^2);
+% size(r(r>pi))
+% bmax = max(r)
+% 
+% u1 = u{1};
+% v1 = v{1};
+% [mm] = find(r > pi);
+% u1(mm) = 0;
+% v1(mm) = 0;
+% 
+% u1 = u1(u1 ~= 0);
+% v1 = v1(v1 ~= 0);
+% 
+% r = sqrt(u1.^2 + v1.^2);
+% size(r(r>pi))
+% bmax = max(r)
+% 
+% u1 = u1/2;
+% v1 = v1/2;
 
-u1 = u{1};
-v1 = v{1};
-[mm] = find(r > pi);
-u1(mm) = 0;
-v1(mm) = 0;
+% rescale visibilities
+bmax = max(sqrt(u{1}.^2 + v{1}.^2));
 
-u1 = u1(u1 ~= 0);
-v1 = v1(v1 ~= 0);
-
-r = sqrt(u1.^2 + v1.^2);
-size(r(r>pi))
-bmax = max(r)
-
-u1 = u1/2;
-v1 = v1/2;
+% setting imaging params
+v1 = v{1}*pi/(bmax*dl); % dl = 1.1
+u1 = u{1}*pi/(bmax*dl);
 
 %scatter(u1,v1,'r.')
 

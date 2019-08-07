@@ -97,8 +97,8 @@ param_HSI.adapt_eps_rel_obj = 5e-4; % bound on the relative change of the soluti
 param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
 
 param_HSI.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
-param_HSI.reweight_alpha_ff = 0.5;
-param_HSI.total_reweights = 5; % -1 if you don't want reweighting
+param_HSI.reweight_alpha_ff = 0.9;
+param_HSI.total_reweights = -1;%30 % -1 if you don't want reweighting
 param_HSI.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
 
 param_HSI.use_reweight_steps = 1; % reweighting by fixed steps
@@ -121,14 +121,6 @@ param_HSI.precondition = usingPrecondition;
     
 %% L21 + Nuclear (facet-based version)
 if solve_HS
-    
-    param_HSI2 = param_HSI;
-    param_HSI2.nu2 = Anorm; % bound on the norm of the operator A*G
-    param_HSI.reweight_alpha_ff = 0.9;
-    param_HSI2.reweight_abs_of_max = 0.005;
-    param_HSI2.use_reweight_steps = 1;
-    param_HSI2.total_reweights = 30;
-    param_HSI2.use_reweight_eps = 0;
     
     % spectral tesselation (non-overlapping)
     rg_c = domain_decomposition(Qc2, ch(end));
@@ -159,17 +151,17 @@ if solve_HS
     % new solvers
 %     [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
 %         facetHyperSARA_dr(y_spmd, [Ny, Nx], epsilon_spmd, ...
-%         A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+%         A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI, X0, Qx, Qy, Qc2, ...
 %         wlt_basis, L, nlevel, cell_c_chunks, ch(end));
     
     [xsol,v0,v1,v2,weights0,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
     facetHyperSARA_cst_overlap_weighted_dr(y_spmd, [Ny, Nx], ...
-    epsilon_spmd, A, At, H_spmd, aW_spmd, T_spmd, W_spmd, param_HSI2, X0, Qx, Qy, Qc2, ...
+    epsilon_spmd, A, At, H_spmd, aW_spmd, T_spmd, W_spmd, param_HSI, X0, Qx, Qy, Qc2, ...
     wlt_basis, L, nlevel, cell_c_chunks, ch(end), d, window_type);
     
 %     [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] = ...
 %     facetHyperSARA_cst_overlap_weighted_dr_real_data(y_spmd, [Ny, Nx], ...
-%     epsilon_spmd, A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI2, Qx, Qy, Qc2, ...
+%     epsilon_spmd, A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI, Qx, Qy, Qc2, ...
 %     wlt_basis, L, nlevel, cell_c_chunks, ch(end), d, window_type);
     
     c = size(xsol,3);
