@@ -39,7 +39,7 @@ usingReduction = 1;
 usingReductionPar = 0;
 usingPrecondition = 1;
 usingBlocking = 1;
-usingCalibrationKernels = 1;
+usingCalibrationKernels = 0; % to be changed later on
 normalize_data = 0;
 klargestpercent = 20;
 

@@ -143,7 +143,7 @@ for i = ch
     fprintf('Initializing the NUFFT operator\n\n');
     %tstart = tic;
    
-    [A, At, Gw{i}, W{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW); 
+    [A, At, G{i}, W{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW); 
     %[A, At, G{i}, W{i}, Gw{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
 end
 %figure, scatter(uw{i},vw{i},'r.');

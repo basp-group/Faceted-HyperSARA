@@ -15,12 +15,12 @@ fprintf('\nDimensionality reduction...\n');
 
 for i = 1:length(ch)
     if usingBlocking
-        for j = 1: length(Gw{i})
-            H{i}{j} = Gw{i}{j}'*Gw{i}{j};
+        for j = 1: length(G{i})
+            H{i}{j} = G{i}{j}'*G{i}{j};
             if param_fouRed.enable_estimatethreshold
                 param_fouRed.x2 = norm(x0(:, :, i));
                 % param_fouRed.dirty2 = norm(Phi_t{i}(y{i})) / sqrt(numel(x0(:,:,i)));
-                param_fouRed.dirty2 = norm(operatorPhit(y{i}, Gw{i}', At),'fro'); % / sqrt(numel(x0(:,:,i)))
+                param_fouRed.dirty2 = norm(operatorPhit(y{i}, G{i}', At),'fro'); % / sqrt(numel(x0(:,:,i)))
                 if numel(sigma_noise_ch{i}{j}) == 1
                     param_fouRed.sigma_noise{i}{j} = sigma_noise_ch{i}{j};
                 else 
@@ -40,8 +40,8 @@ for i = 1:length(ch)
                 Wm{i}{j} = (d_mat >= prctile(d_mat,100-param_fouRed.klargestpercent));
             elseif param_fouRed.enable_estimatethreshold
                 % Embed the noise
-                noise1 = param_fouRed.sigma_noise{i}{j} * (randn(size(Gw{i}{j}, 1),1) + 1j * randn(size(Gw{i}{j}, 1), 1));
-                rn = FT2(At(Gw{i}{j}'*noise1));  % Apply F Phi
+                noise1 = param_fouRed.sigma_noise{i}{j} * (randn(size(G{i}{j}, 1),1) + 1j * randn(size(G{i}{j}, 1), 1));
+                rn = FT2(At(G{i}{j}'*noise1));  % Apply F Phi
                 % th = param_fouRed.gamma * std(rn(:)) / param_fouRed.x2;
                 % th_dirty = param_fouRed.gamma * std(rn(:)) / param_fouRed.dirty2;
                 th_dirty = param_fouRed.gamma * std(rn(:)) / (dirty2 / max(d_mat(:)));
@@ -54,20 +54,20 @@ for i = 1:length(ch)
             Ti{i}{j} = max(param_fouRed.diagthresholdepsilon, d_mat);  % This ensures that inverting the values will not explode in computation
             Ti{i}{j} = 1./sqrt(Ti{i}{j});
 
-            yT{i}{j} = dataReduce(y{i}{j}, Gw{i}{j}', At, Ti{i}{j}, Wm{i}{j});
-            rn{i}{j} = dataReduce(noise{i}{j}, Gw{i}{j}', At, Ti{i}{j}, Wm{i}{j});
+            yT{i}{j} = dataReduce(y{i}{j}, G{i}{j}', At, Ti{i}{j}, Wm{i}{j});
+            rn{i}{j} = dataReduce(noise{i}{j}, G{i}{j}', At, Ti{i}{j}, Wm{i}{j});
             
-            Gw{i}{j} = [];
+            G{i}{j} = [];
         end
     
     else
     
-        H{i} = Gw{i}'*Gw{i};
+        H{i} = G{i}'*G{i};
     
         if param_fouRed.enable_estimatethreshold
             param_fouRed.x2 = norm(x0(:, :, i));
             % param_fouRed.dirty2 = norm(Phi_t{i}(y{i})) / sqrt(numel(x0(:,:,i)));
-            param_fouRed.dirty2 = norm(operatorPhit(y{i}, Gw{i}', At), 'fro'); %/ sqrt(numel(x0(:,:,i))));
+            param_fouRed.dirty2 = norm(operatorPhit(y{i}, G{i}', At), 'fro'); %/ sqrt(numel(x0(:,:,i))));
             if numel(sigma_noise_ch{i}) == 1
                 param_fouRed.sigma_noise = sigma_noise_ch{i};
             else 
@@ -88,8 +88,8 @@ for i = 1:length(ch)
             Mask{i} = (d_mat >= prctile(d_mat,100-param_fouRed.klargestpercent));
         elseif param_fouRed.enable_estimatethreshold
             % Embed the noise
-            noise1 = param_fouRed.sigma_noise * (randn(size(Gw{i}, 1),1) + 1j * randn(size(Gw{i}, 1), 1));
-            rn = FT2(At(Gw{i}'*noise1));  % Apply F Phi
+            noise1 = param_fouRed.sigma_noise * (randn(size(G{i}, 1),1) + 1j * randn(size(G{i}, 1), 1));
+            rn = FT2(At(G{i}'*noise1));  % Apply F Phi
             % th = param_fouRed.gamma * std(rn(:)) / param_fouRed.x2;
             % th_dirty = param_fouRed.gamma * std(rn(:)) / param_fouRed.dirty2;
             th_dirty = param_fouRed.gamma * std(rn(:)) / (dirty2 / max(d_mat(:)));
@@ -108,9 +108,9 @@ for i = 1:length(ch)
 %     FIpsf{i} = @(x) serialise(FT2(operatorIpsf(x, A, At, H{i}, [oy*Ny, ox*Nx], W{i})));  % F * Ipsf, image -> vect
 %     FIpsf_t{i} = @(x) operatorIpsf(IFT2(reshape(x, [Ny, Nx])), A, At, H{i}, [Ny, Nx], W{i});  % Ipsf * F^T, vect -> image
    
-        yMat = dataReduce(y{i}, Gw{i}', At, Sigma{i}, Mask{i});
-        noiseMat = dataReduce(noise{i}, Gw{i}', At, Sigma{i}, Mask{i});
-        Gw{i} = [];
+        yMat = dataReduce(y{i}, G{i}', At, Sigma{i}, Mask{i});
+        noiseMat = dataReduce(noise{i}, G{i}', At, Sigma{i}, Mask{i});
+        G{i} = [];
         
         if usingReductionPar
             [yT{i}, rn{i}, Ti{i}, Wm{i}] = util_gen_sing_block_structure(yMat, noiseMat, Sigma{i}, Mask{i}, param_sing_block_structure);
@@ -131,6 +131,6 @@ for i = 1:length(ch)
     end    
 end
 
-clear covariancemat d_mat dirac2D PSF rn y yMat noise noiseMat Gw Sigma Mask;
+clear covariancemat d_mat dirac2D PSF rn y yMat noise noiseMat G Sigma Mask;
 
 fprintf('\nDimensionality reduction is finished\n');

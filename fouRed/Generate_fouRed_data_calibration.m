@@ -147,18 +147,18 @@ for i = 1:length(ch)
     %tstart = tic;
     if usingBlocking
         if usingCalibrationKernels
-            [A, At, Gw{i}, W{i}] = op_p_nufft_calib([v u], D, [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], S, nW);
+            [A, At, G{i}, W{i}] = op_p_nufft_calib([v u], D, [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], S, nW);
         else
-            [A, At, Gw{i}, W{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
+            [A, At, G{i}, W{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
         end
     else
         if usingCalibrationKernels
-            [A, At, Gw{i}, ~] = op_nufft_calib([vw{i} uw{i}], D, [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], S);
+            [A, At, G{i}, ~] = op_nufft_calib([vw{i} uw{i}], D, [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], S);
         else
-            [A, At, Gw{i}, ~] = op_nufft([vw{i} uw{i}], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
+            [A, At, G{i}, ~] = op_nufft([vw{i} uw{i}], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
         end 
     end
 end
 
 %% Free memory
-clear u v u1 v1 uw vw aWw nW nWw r antennas na mm bmax uvidx G Gw_a W b_l;
+clear u v u1 v1 uw vw aWw nW nWw r antennas na mm bmax uvidx Gw_a W b_l;

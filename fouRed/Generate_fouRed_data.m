@@ -106,19 +106,33 @@ for i = 1:length(ch)
     uw{i} = (f(i)/f(1)) * u1;
     vw{i} = (f(i)/f(1)) * v1;
 
-    [A, At, Gw{i}, ~] = op_nufft([vw{i} uw{i}], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
+%     [A, At, Gw{i}, ~] = op_nufft([vw{i} uw{i}], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
+% 
+%     % use the absolute values to speed up the search
+%     Gw_a = abs(Gw{i});
+% 
+%     b_l = length(uw{i});
+%     % check if eack line is entirely zero
+%     W{i} = Gw_a' * ones(b_l, 1) ~= 0;
+% 
+%     % store only what we need from G
+%     G{i} = Gw{i}(:, W{i});
 
-    % use the absolute values to speed up the search
-    Gw_a = abs(Gw{i});
-
-    b_l = length(uw{i});
-    % check if eack line is entirely zero
-    W{i} = Gw_a' * ones(b_l, 1) ~= 0;
-
-    % store only what we need from G
-    G{i} = Gw{i}(:, W{i});
-
+    %% compute uniform weights (sampling density) for the preconditioning
+    [aWw] = util_gen_preconditioning_matrix(uw{i}, vw{i}, param_precond);
+    
+    % set the weighting matrix, these are the natural weights for real data
+    nWw = ones(length(uw{i}), 1);
+    
+    % set the blocks structure
+    [u, v, ~, uvidx, aW{i}, nW] = util_gen_block_structure(uw{i}, vw{i}, aWw, nWw, param_block_structure);
+    
+    % measurement operator initialization
+    fprintf('Initializing the NUFFT operator\n\n');
+    
+    [A, At, G{i}, W{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
+    
 end
 
 %% Free memory
-clear u v u1 v1 uw vw aWw nW nWw r antennas na mm bmax uvidx G Gw_a W b_l;
+clear u v u1 v1 uw vw aWw nW nWw r antennas na mm bmax uvidx Gw_a W b_l;
