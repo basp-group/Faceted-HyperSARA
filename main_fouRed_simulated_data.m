@@ -43,6 +43,7 @@ usingPrecondition = 1;
 usingBlocking = 1;
 usingCalibrationKernels = 1; % to be changed later on
 normalize_data = 0;
+enable_klargestpercent = true;
 klargestpercent = 20;
 
 generate_groundtruth = 1; % Default 60 channels cube with line emissions

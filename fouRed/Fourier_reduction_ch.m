@@ -2,9 +2,9 @@
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
 IFT2 = @(x) fftshift(ifft2(ifftshift(x)));
 
-param_fouRed.enable_klargestpercent = 0; % 1
+param_fouRed.enable_klargestpercent = enable_klargestpercent; % 1
 param_fouRed.klargestpercent = klargestpercent;
-param_fouRed.enable_estimatethreshold = 1;
+param_fouRed.enable_estimatethreshold = ~enable_klargestpercent;
 param_fouRed.gamma = 3;             % By using threshold estimation, the optimal theshold reads as gamma * sigma / ||x||_2
 param_fouRed.diagthresholdepsilon = 1e-10; 
 param_fouRed.covmatfileexists = 0;
