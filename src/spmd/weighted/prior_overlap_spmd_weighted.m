@@ -1,9 +1,9 @@
-function [l21_norm, nuclear_norm] = prior_overlap_spmd_weighted(x_overlap, Iq, ...
-    offset, status_q, nlevel, wavelet, Ncoefs_q, dims_overlap_ref_q, ...
+function [l21_norm, nuclear_norm] = prior_overlap_spmd_weighted(x_overlap, ...
+    Iq, offset, status_q, nlevel, wavelet, Ncoefs_q, dims_overlap_ref_q, ...
     offsetLq, offsetRq, w, size_v1)
-%prior_overlap_spmd_cst3_weighted: compute the value of the faceted prior 
-% (l21 + nuclear norm) for a single facet. This version includes the
-% spatial correction of the faceted nuclear norm.
+%prior_overlap_spmd_weighted: compute the value of the faceted prior 
+% (l21 + nuclear norm) for a single facet. This version includes a
+% spatial correction for the faceted nuclear norm (tapering window).
 %-------------------------------------------------------------------------%
 %%
 % Input:
@@ -14,7 +14,8 @@ function [l21_norm, nuclear_norm] = prior_overlap_spmd_weighted(x_overlap, Iq, .
 % > offset                  offset to be used from one dictionary to
 %                           another (different overlap needed for each 
 %                           dictionary -> cropping) {nDictionaries}
-% > status_q                status of the current facet (vert. and hrz) ...
+% > status_q                status of the current facet (last or first 
+%                           facet along vert. or hrz. direction)
 % > nlevel                  depth of the wavelet decompositions
 % > wavelet                 name of the wavelet dictionaries
 % > Ncoefs_q                size of the wavelet decompositions at each
@@ -35,7 +36,7 @@ function [l21_norm, nuclear_norm] = prior_overlap_spmd_weighted(x_overlap, Iq, .
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %% compute facet nuclear norm
 c = size(x_overlap, 3);

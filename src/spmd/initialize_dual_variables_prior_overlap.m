@@ -7,7 +7,7 @@ function [v0, v1, weights0, weights1] = ...
 %%
 % Input:
 %
-% > Ncoefs              wideband facet [M, N, L]
+% > Ncoefs              number of wavelet coefficients at each scale
 % > dims                size of a non-overlapping facet [1, 2]
 % > dims_overlap_ref    dimension of a facet (with overlap) [1, 2]
 % > dirac_present       flag indicating whether the Dirac dictionary is
@@ -24,7 +24,7 @@ function [v0, v1, weights0, weights1] = ...
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 

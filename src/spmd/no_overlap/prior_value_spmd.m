@@ -15,7 +15,8 @@ function [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, crop, Iq, ...
 % > offset                  offset to be used from one dictionary to
 %                           another (different overlap needed for each 
 %                           dictionary -> cropping) {nDictionaries}
-% > status_q                status of the current facet (vert. and hrz) ...
+% > status_q                status of the current facet (last or first 
+%                           facet along vert. / hrz. direction)
 % > nlevel                  depth of the wavelet decompositions
 % > wavelet                 name of the wavelet dictionaries
 % > Ncoefs_q                size of the wavelet decompositions at each
@@ -33,7 +34,7 @@ function [l21_norm, nuclear_norm] = prior_value_spmd(x_overlap, crop, Iq, ...
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revisiion: [08/08/2019]
 %-------------------------------------------------------------------------%
 %% compute facet nuclear norm
 c = size(x_overlap, 3);

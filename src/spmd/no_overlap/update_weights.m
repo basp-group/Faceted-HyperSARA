@@ -16,7 +16,8 @@ function [weights1, weights0] = update_weights(x_overlap, size_v1, overlap, ...
 % > offset                  offset to be used from one dictionary to
 %                           another (different overlap needed for each 
 %                           dictionary -> cropping) {nDictionaries}
-% > status                  status of the current facet (vert. and hrz) ...
+% > status                  status of the current facet (last or first 
+%                           facet along vert. / hrz. direction)
 % > nlevel                  depth of the wavelet decompositions
 % > wavelet                 name of the wavelet dictionaries
 % > Ncoefs                  size of the wavelet decompositions at each
@@ -37,7 +38,7 @@ function [weights1, weights0] = update_weights(x_overlap, size_v1, overlap, ...
 % Motivation: for loops are slow in spmd if not encapsulated in a function.
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revision: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 

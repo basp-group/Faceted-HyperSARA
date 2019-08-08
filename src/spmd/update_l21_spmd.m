@@ -14,7 +14,8 @@ function [v1, g] = update_l21_spmd(v1, x_overlap, weights, beta1, Iq, dims_q,...
 % > x_overlap               overlapping image facet [M, N, L]
 % > weights                 weights to balance the effect of redundant
 %                           pixels due to the overlap between facets [M, N]
-% > beta1                   update step (mu / gamma1) [1]
+% > beta1                   ratio between regularization and convergence 
+%                           parameter (gamma1 / sigma1) [1]
 % > Iq                      starting index of the non-overlapping base 
 %                           facet [1, 2]
 % > dims_q                  dimensions of the non-overlapping base facet
@@ -24,7 +25,8 @@ function [v1, g] = update_l21_spmd(v1, x_overlap, weights, beta1, Iq, dims_q,...
 % > offset                  offset to be used from one dictionary to
 %                           another (different overlap needed for each 
 %                           dictionary -> cropping) {nDictionaries}
-% > status_q                status of the current facet (vert. and hrz) ...
+% > status_q                status of the current facet (last or first 
+%                           facet along vert. or hrz. direction)
 % > nlevel                  depth of the wavelet decompositions
 % > wavelet                 name of the wavelet dictionaries
 % > Ncoefs_q                size of the wavelet decompositions at each
@@ -44,7 +46,7 @@ function [v1, g] = update_l21_spmd(v1, x_overlap, weights, beta1, Iq, dims_q,...
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revision: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 

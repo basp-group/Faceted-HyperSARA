@@ -1,5 +1,5 @@
 function f = nuclear_norm(x)
-%nuclear_norm: compute the nuclear norm of the wideband matrix.
+%nuclear_norm: compute the nuclear norm of the wideband image.
 %-------------------------------------------------------------------------%
 %%
 % Input:
@@ -12,7 +12,7 @@ function f = nuclear_norm(x)
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 

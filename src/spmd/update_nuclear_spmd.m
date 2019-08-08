@@ -9,7 +9,7 @@ function [v0, g0] = update_nuclear_spmd(v0, xhat, weights0, beta0)
 %             [min(M*N, L), 1]
 % > xhat      auxiliary variable related to the wideband image [M, N, L]
 % > weights0  weights for the reweighting [min(M*N, L), 1]
-% > beta0     thresholding parameter (1 / gamma0) [1]
+% > beta0     thresholding parameter (gamma0/sigma0) [1]
 %
 % Output:
 %
@@ -20,7 +20,7 @@ function [v0, g0] = update_nuclear_spmd(v0, xhat, weights0, beta0)
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 

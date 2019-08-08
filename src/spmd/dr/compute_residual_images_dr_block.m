@@ -1,6 +1,6 @@
 function res = compute_residual_images_dr_block(x, y, T, A, At, H, W)
-%compute_residual_images_dr: compute the residual images for each channel 
-% of interest.
+%compute_residual_images_dr_block: compute the residual images for each 
+% channel of interest.
 %-------------------------------------------------------------------------%
 %%
 % Input:
@@ -12,7 +12,7 @@ function res = compute_residual_images_dr_block(x, y, T, A, At, H, W)
 % > A             measurement operator @[1]
 % > At            adjoint measurement operator @[1]
 % > H             holographic matrices G'*G {L}
-% > W             masking operators (selection Fourier plane) {L}{nblocks}
+% > W             Fourier masking operators (selection Fourier plane) {L}{nblocks}
 %
 % Output:
 %
