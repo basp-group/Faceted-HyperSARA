@@ -174,7 +174,7 @@ if solve_HS
     SNR_average = mean(psnrh)    
     
     mkdir('results/')
-    save(['results/results_hyperSARA_fouRed_', alg_version, '_', parallel_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
-    fitswrite(xsol,['results/x_hyperSARA_fouRed_', alg_version, '_', parallel_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), '.fits'])
+    save(['results/results_hyperSARA_fouRed_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), '.mat'],'-v7.3','xsol', 'sol', 'X0', 'SNR', 'SNR_average', 'res');
+    fitswrite(xsol,['results/x_hyperSARA_fouRed_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), '.fits'])
 
 end
