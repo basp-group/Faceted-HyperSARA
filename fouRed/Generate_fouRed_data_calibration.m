@@ -126,7 +126,7 @@ if usingCalibrationKernels
     S = 3;
     S2 = S^2;
     cs = floor(S2/2) + 1; % center of the spatial support
-    D = 1e-5*(randn(S2, na, T) + 1i*randn(S2, na, T))/sqrt(2);
+    D = 1e-3*(randn(S2, na, T) + 1i*randn(S2, na, T));
     D(cs, :) = 1;
 end
 

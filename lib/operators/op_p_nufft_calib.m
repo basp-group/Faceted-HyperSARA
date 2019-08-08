@@ -72,6 +72,7 @@ else
 
             % check if eack line is entirely zero
 %             W{q} = Gb_a' * ones(b_l, 1) ~= 0;
+            W{q} = any(Gb, 1).';
             
             % store only what we need from G
 %             G{q} = Gb(:, W{q});

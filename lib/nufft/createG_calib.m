@@ -39,20 +39,20 @@ T = size(D, 3);
 v = zeros(Q^2, M); % convolution values (stored in column for each pair)
 
 %% Perform 2D convolutions and gridding using D1 and D2 (to be possibly performed in parallel)
-% for t = 1:T
-%     q = 0; % global counter
-%     for alpha = 1:na-1
-%         for beta = alpha+1:na % modify the double loop to exclusively select the appropriate elements, apply nonzeros on W
-%             % 2D convolutions
-%             q = q+1;
-%             v(:,q) = reshape(conv2(rot90(reshape(D(:,alpha,t),[S,S]),2),reshape(conj(D(:,beta,t)),[S,S])), [Q^2,1]); % only select the appropriate entries...
-%         end
-%     end
-% end
+for t = 1:T
+    q = 0; % global counter
+    for alpha = 1:na-1
+        for beta = alpha+1:na % modify the double loop to exclusively select the appropriate elements, apply nonzeros on W
+            % 2D convolutions
+            q = q+1;
+            v(:,q) = reshape(conv2(rot90(reshape(D(:,alpha,t),[S,S]),2),reshape(conj(D(:,beta,t)),[S,S])), [Q^2,1]); % only select the appropriate entries...
+        end
+    end
+end
 
-% shortcut for testing purposes
-vt = reshape(conv2(rot90(reshape(D(:,1,1),[S,S]),2),reshape(conj(D(:,2,1)),[S,S])), [Q^2,1]);
-v = vt(:, ones(M, 1));
+% % shortcut for testing purposes
+% vt = reshape(conv2(rot90(reshape(D(:,1,1),[S,S]),2),reshape(conj(D(:,2,1)),[S,S])), [Q^2,1]);
+% v = vt(:, ones(M, 1));
 
 % Generate indices in the sparse G matrix
 if rem(J,2) > 0 % odd
