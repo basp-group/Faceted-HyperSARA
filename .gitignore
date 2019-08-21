@@ -8,3 +8,5 @@ irt*
 *.swo
 *.swp
 test*
+*.pbs
+real_data_dr/logs

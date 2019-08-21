@@ -618,7 +618,7 @@ for t = t_start : param.max_iter
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
     %% Display
-    if ~mod(t,100)
+    if ~mod(t,500)
         
         %% compute value of the priors in parallel
         spmd
@@ -657,8 +657,8 @@ for t = t_start : param.max_iter
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
         end
         
-%         fitswrite(x0, './x0.fits');
-%         fitswrite(xsol, './xsol.fits');
+        fitswrite(x0, ['./x0_it', num2str(t), '.fits']);
+        fitswrite(xsol, ['./xsol_it', num2str(t), '.fits']);
     end
     
     %% Global stopping criteria
