@@ -14,7 +14,7 @@ addpath src/spmd/dr/
 compute_Anorm = true;
 usingPrecondition = true;
 rw = -1;
-Qc2 = 1;
+Qc2 = 4;    % to see later
 
 param_real_data.image_size_Nx = 2560;
 param_real_data.image_size_Ny = 1536;
