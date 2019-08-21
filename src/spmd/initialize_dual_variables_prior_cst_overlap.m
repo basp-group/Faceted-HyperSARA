@@ -5,10 +5,10 @@ function [v0, v1, weights0, weights1] = initialize_dual_variables_prior_cst_over
 %%
 % Input:
 %
-% > Ncoefs              wideband facet [M, N, L]
+% > Ncoefs              number of wavelet coefficients at each scale 
 % > dims_o              dimension of a facet (with overlap) [1, 2]
 % > c                   number of spectral channels [1]
-% > nlevel              number of wavelet decompositions [1]
+% > nlevel              depth of decomposition [1]
 %
 % Output:
 %
@@ -19,7 +19,7 @@ function [v0, v1, weights0, weights1] = initialize_dual_variables_prior_cst_over
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 

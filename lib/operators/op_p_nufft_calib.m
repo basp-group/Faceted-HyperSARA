@@ -1,4 +1,4 @@
-function [A, At, G, W] = op_p_nufft(p, N, Nn, No, Ns, ww, param)
+function [A, At, G, W] = op_p_nufft_calib(p, D, N, Nn, No, Ns, S, ww, param)
 
 % Create the nonuniform gridding matrix and fft operators to be used for
 % parallel processing
@@ -41,7 +41,8 @@ if param.gen_only_fft_op
 else
     if ~param.use_nufft_blocks
         %% compute the overall gridding matrix and its associated kernels
-        [A, At, Gw, ~] = op_nufft(cell2mat(p), N, Nn, No, Ns);
+        %[A, At, Gw, ~] = op_nufft(cell2mat(p), N, Nn, No, Ns);
+        [A, At, Gw, ~] = op_nufft_calib(p, D, N, Nn, No, Ns, S);
 
         %% compute small gridding matrices associated with each parallel block
         G = cell(R, 1);
@@ -100,7 +101,8 @@ else
 
 
             %% compute the small gridding matrix and its associated kernels
-            [~, ~, Gb, ~] = op_nufft([p{q, 1} p{q, 2}], N, Nn, No, Ns);
+            %[~, ~, Gb, ~] = op_nufft([p{q, 1} p{q, 2}], N, Nn, No, Ns);
+            [~, ~, Gb, ~] = op_nufft_calib([p{q, 1} p{q, 2}], D, N, Nn, No, Ns, S);
 
             %% now trim the zero rows and store a mask in W
 

@@ -2,7 +2,8 @@ function [l21_norm, nuclear_norm] = prior_overlap_spmd_cst2(x_overlap, Iq, ...
     dims_q, offset, status_q, nlevel, wavelet, Ncoefs_q, dims_overlap_ref_q, ...
     offsetLq, offsetRq, crop)
 %prior_overlap_spmd_cst2: compute the value of the faceted prior (l21 + 
-% nuclear norm) for a single facet.
+% nuclear norm) for a single facet, assuming the faceted nuclear norm acts
+% on a larger overlap than faceted wavelet transforms.
 %-------------------------------------------------------------------------%
 %%
 % Input:
@@ -35,7 +36,7 @@ function [l21_norm, nuclear_norm] = prior_overlap_spmd_cst2(x_overlap, Iq, ...
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %% compute facet nuclear norm
 c = size(x_overlap, 3);

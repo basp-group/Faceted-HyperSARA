@@ -1,6 +1,6 @@
 function [v2, Ftx, proj, norm_res, global_norm_res, norm_epsilon] = update_data_fidelity_dr_block(v2, y, xhat, proj, A, At, H, T, W, pU, epsilon, ...
                      elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps, sigma22)
-%update_data_fidelity_dr: update step of the data fidelity term (with 
+%update_data_fidelity_dr_block: update step of the data fidelity term (with 
 % preconditioning -> projection onto an ellipsoid).
 %-------------------------------------------------------------------------%
 %%
@@ -17,13 +17,15 @@ function [v2, Ftx, proj, norm_res, global_norm_res, norm_epsilon] = update_data_
 % > v2                              data fidelity dual variable {L}{nblocks}[M, 1]
 % > y                               blocks of visibilities {L}{nblocks}[M, 1]
 % > xhat                            auxiliary image variable [N(1), N(2), L]
-% > proj                            ... {L}{nblocks}[M, 1]
+% > proj                            value of the projection at the previous
+%                                   global iteration, taken as a starting 
+%                                   point for the new projection step {L}{nblocks}[M, 1]
 % > A                               measurement operator @[1]
 % > At                              adjoint measurement operator @[1]
 % > H                               holographic matric G'*G {L}
 % > T                               pseudo singular values from the 
 %                                   reduction operator {L}{nblocks} (Sigma)
-% > W                               masking operator {L}{nblocks}
+% > W                               Fourier masking operator {L}{nblocks}
 % > pU                              preconditioning matrices {L}{nblocks}
 % > epsilon                         l2-ball radius {L}{nblocks}
 % > elipse_proj_max_iter            maximum number of iterations (projection)
@@ -46,7 +48,7 @@ function [v2, Ftx, proj, norm_res, global_norm_res, norm_epsilon] = update_data_
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %% 
 

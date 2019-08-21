@@ -19,7 +19,9 @@ function [v2, Ftx, proj, norm_res, global_norm_res, norm_epsilon] = ...
 % > v2                              data fidelity dual variable {L}{nblocks}[M, 1]
 % > y                               blocks of visibilities {L}{nblocks}[M, 1]
 % > xhat                            auxiliary image variable [N(1), N(2), L]
-% > proj                            ... {L}{nblocks}[M, 1]
+% > proj                            value of the projection at the previous
+%                                   global iteration, taken as a starting 
+%                                   point for the new projection step {L}{nblocks}[M, 1]
 % > A                               measurement operator @[1]
 % > At                              adjoint measurement operator @[1]
 % > G                               interpolation matrix
@@ -38,7 +40,7 @@ function [v2, Ftx, proj, norm_res, global_norm_res, norm_epsilon] = ...
 % < v2                              data fidelity dual variable {L}{nblocks}[M, 1]
 % < Ftx                             auxiliary variable for the update of
 %                                   the primal variable [N(1), N(2)]
-% < proj                            ... {L}{nblocks}[M, 1]
+% < proj                            result of the projection step  {L}{nblocks}[M, 1]
 % < norm_res                        norm of the residual {L}{nblocks}[1]    
 % < global_norm_res                 square global norm of the residual [1]
 % < norm_epsilon                    square global norm of epsilon [1]
@@ -46,7 +48,7 @@ function [v2, Ftx, proj, norm_res, global_norm_res, norm_epsilon] = ...
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%                         
              
@@ -62,7 +64,8 @@ for i = 1 : nChannels
     for j = 1 : length(G{i})
         r2 = G{i}{j} * Fx(W{i}{j});
         proj{i}{j} = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, ...
-            r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
+            r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, ...
+            elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
         v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2 - pU{i}{j} .* proj{i}{j};        
         u2 = G{i}{j}' * v2{i}{j};
         g2(W{i}{j}) = g2(W{i}{j}) + u2;

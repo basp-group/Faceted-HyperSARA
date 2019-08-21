@@ -5,7 +5,8 @@ function [v0, v1, weights0, weights1] = initialize_dual_variables_prior(Ncoefs, 
 %%
 % Input:
 %
-% > Ncoefs              wideband facet [M, N, L]
+% > Ncoefs              size of the wavelet decompositions at each
+%                       scale
 % > dims                size of a non-overlapping facet [1, 2]
 % > dirac_present       flag indicating whether the Dirac dictionary is
 %                       used in the sparsifying dictionary
@@ -21,7 +22,7 @@ function [v0, v1, weights0, weights1] = initialize_dual_variables_prior(Ncoefs, 
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 

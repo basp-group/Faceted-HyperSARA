@@ -1,6 +1,6 @@
 function [v1, weights1, s] = initialize_l21_serial(x, Psit, extension_mode, nlevel)
-%run_par_l21: update the dual variable related to the facet l21-norm
-% prior.
+%initialize_l21_serial: initalize the dual variables related to the 
+% l21-norm prior.
 %-------------------------------------------------------------------------%
 %%
 % Input:
@@ -21,13 +21,16 @@ function [v1, weights1, s] = initialize_l21_serial(x, Psit, extension_mode, nlev
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 
 [M, N, c] = size(x);
+% number of cofficients resulting from the 8 first Daubcehies wavelet
+% transforms
 [~, s] = n_wavelet_coefficients(2*(1:8)', [M, N], extension_mode, nlevel);
-s = s + M*N; % Dirac dictionary
+% add size from Dirac dictionary
+s = s + M*N;
 
 v1 = zeros(s, c);
 weights1 = ones(s, 1);

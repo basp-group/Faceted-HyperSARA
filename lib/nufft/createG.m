@@ -6,7 +6,7 @@ function [G, scale] = createG(om, J, N, K, nshift)
 % > J      : size of the gridding kernels
 % > N      : image size [1, 2]
 % > K      : size of the spatial Fourier space [1, 2] 
-% > nshift : number of time instants
+% > nshift : shift in Fourier space [1, 2]
 %
 % Output:
 % < G     : gridding matrix [M, prod(K)]

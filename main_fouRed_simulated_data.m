@@ -1,13 +1,17 @@
+%function main_fouRed_simulated_data(nufft_path)
+
 clear all
 close all
 clc
 
-flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512; %2048;
+flag_algo = 2; tot = 10; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 256; %2048;
 
 Qc2 = 1;
-T = 200; % 1500
+T = 1500; % 1500
 hrs = 6;
 parallel_version = '';
+
+rng(2)
 
 addpath fouRed/
 addpath lib/
@@ -26,17 +30,20 @@ addpath data/
 
 % select algorithm parameters
 window_type = 'triangular';
-bool_weights = true; % for the spmd4_new version (50% overlap version)
-
-if strcmp(parallel_version, 'spmd4_cst_weighted') || strcmp(parallel_version, 'spmd4_cst')
-    nlevel = 4;
-    d = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
-end
+% bool_weights = true; % for the spmd4_new version (50% overlap version)
+% if strcmp(parallel_version, 'spmd4_cst_weighted') || strcmp(parallel_version, 'spmd4_cst')
+%     nlevel = 4;
+%     d = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
+% end
+d = 20;
 
 usingReduction = 1;
 usingReductionPar = 0;
 usingPrecondition = 1;
+usingBlocking = 1;
+usingCalibrationKernels = 1; % to be changed later on
 normalize_data = 0;
+enable_klargestpercent = true;
 klargestpercent = 20;
 
 generate_groundtruth = 1; % Default 60 channels cube with line emissions
@@ -185,13 +192,17 @@ end
 param_HSI.num_workers
 
 %% Generate or Load subsampling mask
-percentage = 0.3; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
+percentage = 0.1; %[0.3 0.05 0.1 0.02 0.01 0.2]; % sampling rate
 
 %% TO BE MODIFIED FROM HERE
 
 %% Generate or Load subsampling mask
 if usingReduction
-    Generate_fouRed_data
+    if usingCalibrationKernels
+        Generate_fouRed_data_calibration % just for testing purposes
+    else
+        Generate_fouRed_data
+    end
 else
     Generate_data_new
 end

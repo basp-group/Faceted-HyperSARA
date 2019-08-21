@@ -98,6 +98,7 @@ if solve_HS
     aW_spmd = cell(Qc2, 1);
     W_spmd = cell(Qc2, 1);
     T_spmd = cell(Qc2, 1);
+    H_spmd = cell(Qc2, 1);
     
     for i = 1:Qc2
         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
@@ -106,8 +107,9 @@ if solve_HS
         aW_spmd{i} = aW(cell_c_chunks{i});
         W_spmd{i} = Wm(cell_c_chunks{i});
         T_spmd{i} = T(cell_c_chunks{i});
+        H_spmd{i} = H(cell_c_chunks{i});
     end
-    clear yT epsilon aW Wm T epsilon
+    clear yT epsilon aW Wm T epsilon H
     
     if  rw >= 0 
         load(['results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma) '_' num2str(rw) '.mat']);
@@ -134,7 +136,7 @@ if solve_HS
     mkdir('results/')
     [xsol,param_HSI,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
         facetHyperSARA_cst_overlap_weighted_dr_real_data(y_spmd, [Ny, Nx], ...
-        epsilon_spmd, A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI, Qx, Qy, Qc2, ...
+        epsilon_spmd, A, At, H_spmd, aW_spmd, T_spmd, W_spmd, param_HSI, Qx, Qy, Qc2, ...
         wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type);
     
     save(['results/results_hyperSARA_fouRed_', alg_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...

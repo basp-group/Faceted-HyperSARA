@@ -1,8 +1,8 @@
 function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, rel_fval,...
     norm_res, adapt_eps_tol_in, adapt_eps_tol_out, adapt_eps_steps, ...
     adapt_eps_rel_obj, adapt_eps_change_percentage)
-%update_epsilon: adaptive epsilon scheme (i.e., update of the l2-ball radii
-% epsilon, based on the technique introduced in [1]).
+%update_epsilon: adaptive epsilon scheme (i.e., update of the l2-ball
+% constraints of radius epsilon, based on the scheme introduced in [1]).
 %-------------------------------------------------------------------------%
 %%
 % Reference:
@@ -21,8 +21,12 @@ function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, rel_fval,...
 %                                   been updated {L}{nblocks}
 % > rel_fval                        relative variation of the solution [1]
 % > norm_res                        norm of the residual image {L}{nblocks}
-% > adapt_eps_tol_in                ...
-% > adapt_eps_tol_out               ...
+% > adapt_eps_tol_in                tolerance for the norm of the residual 
+%                                   (below the current value of epsilon,
+%                                    within the ball)
+% > adapt_eps_tol_out               tolerance for the norm of the residual 
+%                                   (above current value of epsilon, out of
+%                                    the ball)
 % > adapt_eps_steps                 number of steps between two consecutive
 %                                   updates [1]
 % > adapt_eps_rel_obj               relative variation of the objective
@@ -37,7 +41,7 @@ function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, rel_fval,...
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 

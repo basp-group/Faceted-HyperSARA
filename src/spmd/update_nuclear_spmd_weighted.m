@@ -1,7 +1,7 @@
 function [v0, g0] = update_nuclear_spmd_weighted(v0, xhat, w, weights0, beta0)
 %update_nuclear_spmd: update the dual variable realted to the nuclear norm
-% prior. This version includes the spatial correction of the faceted 
-% nuclear norm.
+% prior. This version includes a spatial correction for the faceted 
+% nuclear norm (tapering window).
 %-------------------------------------------------------------------------%
 %%
 % Input:
@@ -12,7 +12,7 @@ function [v0, g0] = update_nuclear_spmd_weighted(v0, xhat, w, weights0, beta0)
 % > w         spatial weights applied to the facet nuclear norm (same size 
 %             as xhat)
 % > weights0  weights for the reweighting [min(M*N, L), 1]
-% > beta0     thresholding parameter (1 / gamma0) [1]
+% > beta0     thresholding parameter (gamma0/sigma0) [1]
 %
 % Output:
 %

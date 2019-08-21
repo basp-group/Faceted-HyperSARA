@@ -3,7 +3,8 @@ function [weights1, weights0] = update_weights_overlap2_weighted(x_overlap, size
     offsetL, offsetR, reweight_alpha, crop_l21, crop_nuclear, w)
 %update_weights_overlap2_weighted: update the weights involved in the 
 % reweighting procedure applied to the faceted l21 and nuclear norms. This
-% version includes the spatial weighting correction for the nuclear norm.
+% version includes a spatial weighting correction for the nuclear norm
+% (tapering window).
 %-------------------------------------------------------------------------%
 %%
 % Input:
@@ -16,7 +17,8 @@ function [weights1, weights0] = update_weights_overlap2_weighted(x_overlap, size
 % > offset                  offset to be used from one dictionary to
 %                           another (different overlap needed for each 
 %                           dictionary -> cropping) {nDictionaries}
-% > status                  status of the current facet (vert. and hrz) ...
+% > status                  status of the current facet (last or first 
+%                           facet along vert. / hrz. direction)
 % > nlevel                  depth of the wavelet decompositions
 % > wavelet                 name of the wavelet dictionaries
 % > Ncoefs                  size of the wavelet decompositions at each
@@ -47,7 +49,7 @@ function [weights1, weights0] = update_weights_overlap2_weighted(x_overlap, size
 % Motivation: for loops are slow in spmd if not encapsulated in a function.
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 
