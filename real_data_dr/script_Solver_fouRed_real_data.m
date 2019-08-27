@@ -17,11 +17,11 @@ fprintf("gamma=%e\n", gamma)
 compute_Anorm = false;
 usingPrecondition = true;
 rw = -1;
-window_type = 'rectangular';
+window_type = 'triangular';
 
-Qx = 2;
-Qy = 1;
-Qc2 = 2;    % to see later
+Qx = 5;
+Qy = 3;
+Qc2 = 20;    % to see later
 
 d = 512;
 flag_algo = 2;
@@ -31,15 +31,12 @@ bool_weights = true; % for the spmd4_new version (50% overlap version)
 
 param_real_data.image_size_Nx = 2560;
 param_real_data.image_size_Ny = 1536;
-nSpw = 1;          % number of spectral channels per MS file
+nSpw = 16;          % number of spectral channels per MS file
 nChannels = 2*nSpw; % total number of "virtual" channels (i.e., after
 % concatenation) for the real dataset considered
 nBlocks = 2;        % number of data blocks (needs to be known beforehand,
 % quite restrictive here), change l.70 accordingly
 % klargestpercent = 20;
-extract_real_data = false;
-generate_eps_nnls = true;
-reduce_data = true;
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
 
 %% Config parameters
@@ -56,25 +53,27 @@ Ky = 8; % number of neighbours for nufft
 %% Load data
 for i = 1:nChannels 
     i
-%     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_yT=', num2str(i), '.mat'], 'yT');
-    tmp = load(['CYG_yT=', num2str(i), '.mat'], 'yT');
-    yT{i} = tmp.yT{1};
-%     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR=', num2str(i), '.mat'], 'H');
-    tmp = load(['CYG_DR=', num2str(i), '.mat'], 'H');
-    H{i} = tmp.H{1};
-%     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR=', num2str(i), '.mat'], 'T');
-    tmp = load(['CYG_DR=', num2str(i), '.mat'], 'T');
-    T{i} = tmp.T{1};
-%     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR=', num2str(i), '.mat'], 'aW');
-    tmp = load(['CYG_DR=', num2str(i), '.mat'], 'aW');
-    aW{i} = tmp.aW{1};
-%     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR=', num2str(i), '.mat'], 'Wm');
-    tmp = load(['CYG_DR=', num2str(i), '.mat'], 'Wm');
-    Wm{i} = tmp.Wm{1};
-%     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_epsilon=', num2str(i), '.mat'], 'epsilon');
-    tmp = load(['CYG_epsilon=', num2str(i), '.mat'], 'epsilon');
-    epsilon{i} = tmp.epsilon{1};
+    tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_yT=', num2str(i), '.mat'], 'yT');
+%     tmp = load(['CYG_yT=', num2str(i), '.mat'], 'yT');
+    yT{i,1} = tmp.yT{1,1};
+    tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR=', num2str(i), '.mat'], 'H');
+%     tmp = load(['CYG_DR=', num2str(i), '.mat'], 'H');
+    H{i,1} = tmp.H{1,1};
+    tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR=', num2str(i), '.mat'], 'T');
+%     tmp = load(['CYG_DR=', num2str(i), '.mat'], 'T');
+    T{i,1} = tmp.T{1,1};
+    tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR=', num2str(i), '.mat'], 'aW');
+%     tmp = load(['CYG_DR=', num2str(i), '.mat'], 'aW');
+    aW{i,1} = tmp.aW{1,1};
+    tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR=', num2str(i), '.mat'], 'Wm');
+%     tmp = load(['CYG_DR=', num2str(i), '.mat'], 'Wm');
+    Wm{i,1} = tmp.Wm{1,1};
+    tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_epsilon=', num2str(i), '.mat'], 'epsilon');
+%     tmp = load(['CYG_epsilon=', num2str(i), '.mat'], 'epsilon');
+    epsilon{i,1} = tmp.epsilon{1,1};
 end
+
+clear tmp
 
 %% Compute full measurement operator spectral norm
 if compute_Anorm
@@ -178,6 +177,7 @@ if solve_HS
         aW_spmd{i} = aW(cell_c_chunks{i});
         W_spmd{i} = Wm(cell_c_chunks{i});
         T_spmd{i} = T(cell_c_chunks{i});
+        H_spmd{i} = H(cell_c_chunks{i});
     end
     clear yT epsilon aW Wm T epsilon
     
@@ -204,9 +204,9 @@ if solve_HS
     
     % solvers
     mkdir('results/')
-    [xsol,param_HSaI,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
+    [xsol,param_HSI,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
         facetHyperSARA_cst_overlap_weighted_dr_real_data(y_spmd, [Ny, Nx], ...
-        epsilon_spmd, A, At, H, aW_spmd, T_spmd, W_spmd, param_HSI, Qx, Qy, Qc2, ...
+        epsilon_spmd, A, At, H_spmd, aW_spmd, T_spmd, W_spmd, param_HSI, Qx, Qy, Qc2, ...
         wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type);
     
     save(['results/results_hyperSARA_fouRed_', alg_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...

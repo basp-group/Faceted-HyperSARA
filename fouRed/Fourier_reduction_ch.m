@@ -32,7 +32,7 @@ for i = 1:length(ch)
             % fast way of matrix probing (using psf)
             dirac2D = zeros(Ny, Nx);
             dirac2D(ceil((Ny+1)/2), ceil((Nx+1)/2)) = 1;
-            PSF = operatorIpsf(dirac2D, A, At, H{i}{j}, [oy*Ny, ox*Nx]);
+            PSF = operatorIpsf(dirac2D, A, At, H{i}{j}, [oy*Ny, ox*Nx]);nn
             covariancemat = FT2(PSF);
             d_mat = abs(real(covariancemat(:)));
 

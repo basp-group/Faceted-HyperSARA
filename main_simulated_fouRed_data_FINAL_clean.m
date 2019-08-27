@@ -40,9 +40,10 @@ end
 
 usingReduction = 1;
 usingReductionPar = 0;
-usingBlocking = 0;
+usingBlocking = 1;
 usingPrecondition = 1;
 normalize_data = 0;
+enable_klargestpercent = 1;
 klargestpercent = 20;
 
 
