@@ -38,6 +38,8 @@ if strcmp(parallel_version, 'spmd4_cst_weighted') || strcmp(parallel_version, 's
     d = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
 end
 
+percentage = 0.3;
+
 usingReduction = 1;
 usingReductionPar = 0;
 usingBlocking = 1;

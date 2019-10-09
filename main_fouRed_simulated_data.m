@@ -37,6 +37,7 @@ window_type = 'triangular';
 % end
 d = 20;
 
+percentage = 0.3;
 usingReduction = 1;
 usingReductionPar = 0;
 usingPrecondition = 1;

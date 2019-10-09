@@ -703,34 +703,33 @@ for t = t_start : param.max_iter
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node       
         
         % Save parameters
-        epsilon = cell(K, 1);
-        for k = 1:K
-            param.init_v2{k} = v2_{Q+k};
-            param.init_proj{k} = proj_{Q+k};
-            param.init_t_block{k} = t_block{Q+k};
-            epsilon{k} = epsilonp{Q+k};
-        end
-        for q = 1:Q
-            param.init_v0{q} = v0_{q};
-            param.init_v1{q} = v1_{q};
-            param.init_weights0{q} = weights0_{q};
-            param.init_weights1{q} = weights1_{q};
-            param.init_xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-            param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
-        end
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t;
         
-        % Compute residual images (master node)
-        res = zeros(size(xsol));
-        for k = 1 : K
-            res(:,:,c_chunks{k}) = res_{Q+k};
-            res_{Q+k} = [];
-        end
-        
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+            % Retrieve variables from workers
+            % facet nodes
+            for q = 1:Q
+                param.init_v0{q} = v0_{q};
+                param.init_v1{q} = v1_{q};
+                param.init_weights0{q} = weights0_{q};
+                param.init_weights1{q} = weights1_{q};
+                param.init_xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+                param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
+            end
+            % data nodes
+            res = zeros(size(xsol));
+            epsilon = cell(K, 1);
+            for k = 1 : K
+                res(:,:,c_chunks{k}) = res_{Q+k};
+                res_{Q+k} = [];
+                param.init_v2{k} = v2_{Q+k};
+                param.init_proj{k} = proj_{Q+k};
+                param.init_t_block{k} = t_block{Q+k};
+                epsilon{k} = epsilonp{Q+k};
+            end
             mkdir('./results/')
             save(['./results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','param','res', 'epsilon');
         end 

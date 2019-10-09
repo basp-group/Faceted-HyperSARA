@@ -2,7 +2,7 @@ clear all;
 close all;
 clc;
 
-flag_algo = 2; tot = 20; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512;
+flag_algo = 2; tot = 5; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512;
 Qc2 = 1;
 T = 1500; % 1500, 3000
 hrs = 6;
@@ -31,6 +31,7 @@ addpath src/
 addpath src/spmd
 addpath src/spmd/weighted % standard no_overlap weighted: to be added depending on the configuration
 
+percentage = 0.3;
 seed = 1;
 rng(seed);
 
