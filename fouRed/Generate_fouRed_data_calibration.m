@@ -72,14 +72,14 @@ if generate_uv
     else
         % to be modified, load realistic uv-coverage
         dl = 1.1;
-%         [u, v, na] = generate_uv_coverage(T, hrs, dl, 'vlaa');
-        load('data/test_DR.mat', 'uvw');
-        u = uvw(:,1);
-        v = uvw(:,2);
+        [u, v, na] = generate_uv_coverage(T, hrs, dl, 'vlaa');
+%         load('data/test_DR.mat', 'uvw');
+%         u = uvw(:,1);
+%         v = uvw(:,2);
         u = {u(:)};
         v = {v(:)};
-        na = 27;
-        M = na*(na-1)/2;
+%         na = 27;
+%         M = na*(na-1)/2;
     end
     
     if save_data

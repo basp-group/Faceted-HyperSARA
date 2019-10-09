@@ -37,12 +37,11 @@ window_type = 'triangular';
 % end
 d = 20;
 
-percentage = 0.3;
 usingReduction = 1;
 usingReductionPar = 0;
 usingPrecondition = 1;
 usingBlocking = 1;
-usingCalibrationKernels = 1; % to be changed later on
+usingCalibrationKernels = 0; % to be changed later on
 normalize_data = 0;
 enable_klargestpercent = true;
 klargestpercent = 20;

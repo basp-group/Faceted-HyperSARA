@@ -7,7 +7,7 @@ param_l2_ball.sigma_ball = 2;
 
 for m = 1 : length(sigma_noise)
     if usingBlocking
-        [~, y, Nm, sigma_noise_ch, noise] = util_gen_measurements_block(x0, G, A, sigma_noise(m));                
+        [~, y, Nm, sigma_noise_ch, noise] = util_gen_measurements_block(x0, G, A, sigma_noise(m)); 
     else
 %     [y0, y, Nm, sigma_noise_ch, noise] = util_gen_measurements_noblock(x0, G, W, A, sigma_noise(m));
         [~, y, Nm, sigma_noise_ch, noise] = util_gen_measurements_noblock_new(x0, G, A, sigma_noise(m));

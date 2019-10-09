@@ -130,9 +130,9 @@ for i = 1:length(ch)
     % measurement operator initialization
     fprintf('Initializing the NUFFT operator\n\n');
     
-    [A, At, G{i}, W{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
+    [A, At, G{i}, W{i}] = op_p_nufft2([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
     
 end
 
 %% Free memory
-clear u v u1 v1 uw vw aWw nW nWw r antennas na mm bmax uvidx Gw_a W b_l;
+clear u v u1 v1 uw vw aWw nW nWw r antennas na mm bmax uvidx Gw_a b_l;

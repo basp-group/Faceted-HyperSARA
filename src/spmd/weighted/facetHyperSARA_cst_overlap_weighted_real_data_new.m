@@ -1,5 +1,6 @@
 function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
-    facetHyperSARA_cst_overlap_weighted_real_data_new(y, epsilon, A, At, pU, G, W, param, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name)
+    facetHyperSARA_cst_overlap_weighted_real_data_new(y, epsilon, A, At, pU, ...
+    G, W, param, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name)
 %facetHyperSARA_cst_overlap_weighted_real_data: faceted HyperSARA
 %
 % version for real data, with a fixed overlap for the faceted nuclear norm,
@@ -72,6 +73,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
 %               [1, 2]
 % > window_type type of apodization window affecting the faceted nuclear
 %               norm prior [string]
+% > init_file_name  name of a valid .mat file for initialization (for warm-restart)
 %
 %
 % Output:
@@ -465,7 +467,7 @@ else
         proj_{Q+k} = proj_tmp;
         t_block{Q+k} = t_block_;
     end
-    clear proj_tmp v2_tmp norm_res_tmp t_block_
+    clear proj_tmp v2_tmp t_block_
     fprintf('v2, proj, t_block initialized \n\n')
 end
 

@@ -1,4 +1,4 @@
-function [y0, y, Nm, sigma_noise, noise] = util_gen_measurements_block(x, G, A, input_sigma)
+function [y0, y, Nm, sigma_noise, noise] = util_gen_measurements_block(x, G, A, input_sigma) % W
 % generates the input data
 
 c = size(x,3);
@@ -6,7 +6,7 @@ y_full = [];
 for i = 1 : c
     Fx = A(x(:,:,i));
     for j = 1 : length(G{i})
-        y0{i}{j} = G{i}{j} * Fx;
+        y0{i}{j} = G{i}{j} * Fx; % Fx(W{i}{j})
         y_full = [y_full; y0{i}{j}];
     end
 end
