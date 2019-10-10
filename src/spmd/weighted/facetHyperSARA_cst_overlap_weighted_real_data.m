@@ -339,7 +339,9 @@ end
 
 if init_flag
     xsol = init_m.xsol;
-    fprintf('xsol uploaded \n\n')
+    param = init_m.param;
+    epsilon = init_m.epsilon;
+    fprintf('xsol, param and epsilon uploaded \n\n')
 else
     xsol = zeros(M,N,c);
     fprintf('xsol initialized \n\n')
