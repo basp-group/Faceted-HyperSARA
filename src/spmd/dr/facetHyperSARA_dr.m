@@ -1,6 +1,6 @@
 function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA_dr(y, imsize, epsilon, A, At, H, pU, ...
-    T, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, nChannels, init_file_name)
+    T, W, param, X0, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, init_file_name)
 % facetHyperSARA_dr: ...
 %
 % version with the same tessellation for both the facet nuclear and l21
@@ -70,7 +70,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 % > L           size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
 % > nlevel      decomposition depth [1]
 % > c_chunks    indices of the bands handled by each data node {K, 1}
-% > nChannels   total number of spectral channels [1]
+% > c   total number of spectral channels [1]
 %
 %
 % Output:
@@ -254,7 +254,7 @@ if init_flag
     xsol = init_m.xsol;
     fprintf('xsol uploaded \n\n')
 else
-    xsol = zeros(M,N,nChannels);
+    xsol = zeros(M,N,c);
     fprintf('xsol initialized \n\n')
 end
 
@@ -274,7 +274,7 @@ if init_flag
 else
     spmd
         if labindex <= Qp.Value
-            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_overlap(Ncoefs_q, dims_q, dims_overlap_ref_q, dirac_present, nChannels, nlevelp.Value);
+            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables_prior_overlap(Ncoefs_q, dims_q, dims_overlap_ref_q, dirac_present, c, nlevelp.Value);
         end
     end
     fprintf('v0, v1, weigths0, weights1 initialized \n\n')
@@ -417,7 +417,7 @@ if init_flag
 else
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-        g_q{q} = zeros([dims(q, :), nChannels]);
+        g_q{q} = zeros([dims(q, :), c]);
     end
     fprintf('g initialized \n\n')
 end
@@ -577,10 +577,10 @@ for t = t_start : param.max_iter
         for q = 1:Q
             xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
-        sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
+        sol = reshape(xsol(:),numel(xsol(:))/c,c);
         SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(nChannels,1);
-        for i = 1:nChannels
+        psnrh = zeros(c,1);
+        for i = 1:c
             psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
         end
         SNR_average = mean(psnrh);
@@ -629,10 +629,10 @@ for t = t_start : param.max_iter
         for q = 1:Q
             xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
-        sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
+        sol = reshape(xsol(:),numel(xsol(:))/c,c);
         SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(nChannels,1);
-        for i = 1:nChannels
+        psnrh = zeros(c,1);
+        for i = 1:c
             psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
         end
         SNR_average = mean(psnrh);
@@ -717,6 +717,11 @@ for t = t_start : param.max_iter
 end
 toc(start_loop)
 
+% Collect image facets back to the master
+for q = 1:Q
+    xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+end
+
 % [09/10/2019] Modification from previous version: return fewer parameters,
 % save through matfile to reduce memory footprint.
 % Calculate residual images
@@ -735,7 +740,7 @@ spmd
     end
 end
 
-m = matfile(['./results/facetHyperSARA_dr_co_weighted_' ...
+m = matfile(['./results/facetHyperSARA_dr_' ...
               num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
 m.param = param;
@@ -781,15 +786,9 @@ for k = 1:K
     epsilonp{Q+k} = [];
     m.norm_res(k,1) = norm_res(Q+k);
 end
-norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
-
-% Collect image facets back to the master
-for q = 1:Q
-    xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-    xsol_q{q} = [];
-end
 m.xsol = xsol;
 epsilon = m.epsilon; % see if necessary
+norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
 
 % Update param structure and save
 param.reweight_alpha = reweight_alpha;
@@ -797,6 +796,17 @@ param.init_reweight_step_count = reweight_step_count;
 param.init_reweight_last_iter_step = t;
 param.init_t_start = t;
 m.param = param;
+
+% SNR (computed only on the master node)
+sol = reshape(xsol(:),numel(xsol(:))/c,c);
+SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+psnrh = zeros(c,1);
+for i = 1:c
+    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+end
+SNR_average = mean(psnrh);
+m.SNR = SNR;
+m.SNR_average = SNR_average;
 clear m
 
 %Final log
@@ -806,15 +816,6 @@ for q = 1:Q
     l21 = l21 + l21_norm{q};
     nuclear = nuclear + nuclear_norm{q};
 end
-
-% SNR (computed only on the master node)
-sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
-SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-psnrh = zeros(nChannels,1);
-for i = 1:nChannels
-    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-end
-SNR_average = mean(psnrh);
 
 norm_epsilon_check = 0;
 norm_residual_check = 0;

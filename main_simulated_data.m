@@ -1,6 +1,7 @@
 clear all;
 close all;
 clc;
+format compact;
 
 flag_algo = 2; tot = 5; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512;
 Qc2 = 1;
@@ -30,6 +31,8 @@ addpath data/
 addpath src/
 addpath src/spmd
 addpath src/spmd/weighted % standard no_overlap weighted: to be added depending on the configuration
+addpath src/spmd/standard
+addpath src/spmd/no_overlap
 
 percentage = 0.3;
 seed = 1;

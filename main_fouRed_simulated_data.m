@@ -3,6 +3,7 @@
 clear all
 close all
 clc
+format compact
 
 flag_algo = 2; tot = 10; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 256; %2048;
 

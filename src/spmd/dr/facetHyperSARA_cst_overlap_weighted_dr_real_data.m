@@ -369,10 +369,10 @@ if init_flag
         v1_(q) = init_m.v1(q,1);
         weights0_(q) = init_m.weights0(q,1);
         weights1_(q) = init_m.weights1(q,1);
-        spmd
-            if labindex <= Qp.Value
-                max_dims = max(dims_overlap_ref_q, dims_oq);
-            end
+    end
+    spmd
+        if labindex <= Qp.Value
+            max_dims = max(dims_overlap_ref_q, dims_oq);
         end
     end
     fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
@@ -787,6 +787,11 @@ for t = t_start : param.max_iter
 end
 toc(start_loop)
 
+% Collect image facets back to the master
+for q = 1:Q
+    xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+end
+
 % [09/10/2019] Modification from previous version: return fewer parameters,
 % save through matfile to reduce memory footprint.
 % Calculate residual images
@@ -849,15 +854,9 @@ for k = 1:K
     epsilonp{Q+k} = [];
     m.norm_res(k,1) = norm_res(Q+k);
 end
-norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
-
-% Collect image facets back to the master
-for q = 1:Q
-    xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-    xsol_q{q} = [];
-end
 m.xsol = xsol;
 epsilon = m.epsilon; % see if necessary
+norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
 
 % Update param structure and save
 param.reweight_alpha = reweight_alpha;

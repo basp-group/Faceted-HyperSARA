@@ -1,28 +1,23 @@
-function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
-    facetHyperSARA_cst_overlap_weighted_dr(y, imsize, ...
-    epsilon, A, At, H, pU, T, W, param, X0, Qx, Qy, K, ...
-    wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name)
-%facetHyperSARA_cst_overlap_weighted_dr: faceted HyperSARA
+function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
+    facetHyperSARA_cst_overlap_weighted_real_data(y, epsilon, A, At, pU, G, W, param, Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type)
+%facetHyperSARA_cst_overlap_weighted_real_data: faceted HyperSARA
 %
-% version with a fixed overlap for the faceted nuclear norm, larger or 
-% smaller than the extension needed for the 2D segmented discrete wavelet 
-% transforms (sdwt2). Includes spatial weihting correction for the faceted
-% nuclear norm (triangular, hamming, piecewise_constant, no weights by
-% default). Leverages dimensionality redution (DR).
+% version for real data, with a fixed overlap for the faceted nuclear norm,
+% larger or smaller thanm the extension needed for the 2D segmented 
+% discrete wavelet transforms (sdwt2). Includes spatial weihting correction
+% for the faceted nuclear norm (triangular, hamming, piecewise_constant, 
+% no weights by default). Version for real data.
 %
 %-------------------------------------------------------------------------%
 %%
 % Input: 
 %
 % > y           blocks of visivilities {L}{nblocks_l}
-% > imsize      size of the wideband image [1, 2]
 % > epsilon     l2-ball norms {L}{nblocks_l}
 % > A           measurement operator
 % > At          adjoint of the measurement operator
-% > H           holographic matrices G'*G {L}{nblocks_l}
 % > pU          preconditioning matrices {L}{nblocks_l}
-% > T           pseudo singular values from the reduction operator 
-%               {L}{nblocks_l}
+% > G           gridding matrices {L}{nblocks_l}
 % > W           masks for selection of the blocks of visibilities
 % > param       algorithm parameters (struct)
 %
@@ -64,7 +59,6 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 %   > .adapt_eps_change_percentage  (0.5*(sqrt(5)-1)) weight of the update w.r.t the l2 norm of the residual data
 %
 %
-% > X0          ground truth wideband image [M*N, L]
 % > Qx          number of facets along dimension x [1]
 % > Qy          number of facets along dimension y [1]
 % > K           number of datab computing processes [1]
@@ -78,21 +72,12 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 %               [1, 2]
 % > window_type type of apodization window affecting the faceted nuclear
 %               norm prior [string]
-% > init_file_name  name of a valid .mat file for initialization (for warm-restart)
 %
 %
 % Output:
 %
 % < xsol        reconstructed wideband image [M*N, L]
-% < v0          dual variables associated with the nuclear norms {Q}
-% < v1          dual variables associated with the l21 norms {Q}
-% < v2          dual variables associated with the data fidelity terms {K}
-% < weights0    weights associated with the nuclear norm prior {Q}
-% < weights1    weights associated with the nuclear norm prior {Q}
-% < proj        projected 
-% < t_block     index of the last iteration where the weigths have been
-%               updated
-% < reweight_alpha  last value of the reweigthing parameter [1]
+% < param       updated algorithm parameters (for warm-restart)
 % < epsilon         updated value of th l2-ball radii {...}
 % < t               index of the last iteration step [1]
 % < rel_fval        relative variation
@@ -126,25 +111,24 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 %
 % min || X ||_* + lambda * ||Psit(X)||_2,1   s.t.  || Y - A(X) ||_2 <= epsilon and x>=0
 %
-% Author: Abdullah Abdulaziz
-% Modified by: P.-A. Thouvenin.
+% Author: P.-A. Thouvenin.
+% Adapted from codes by: Abdullah Abdulaziz.
 
 %% REMARKS
-% 1. Add switch for the type of window considered (just make sure the 
-% window does not reach 0).
+% ...
 %%
 
 % maxNumCompThreads(param.num_workers);
 
 % initialize monitoring variables (display active)
-SNR = 0;
-SNR_average = 0;
 norm_epsilon_check = Inf;
 norm_residual_check = 0;
 
 % size of the oversampled Fourier space (vectorized)
-M = imsize(1);
-N = imsize(2);
+No = size(W{1}{1}{1}, 1);
+
+% number of pixels (spatial dimensions)
+[M, N] = size(At(zeros(No, 1)));
 
 % define reference spatial facets (no overlap)
 Q = Qx*Qy;
@@ -165,8 +149,6 @@ clear rg_y rg_x;
 % instantiate auxiliary variables for sdwt2
 [~, ~, I_overlap_ref, dims_overlap_ref, I_overlap, dims_overlap, ...
     ~, ~, status, offset, offsetL, offsetR, Ncoefs, temLIdxs, temRIdxs] = generate_segdwt_indices([M, N], I, dims, nlevel, wavelet, L);
-id_dirac = find(ismember(wavelet, 'self'), 1);
-dirac_present = ~isempty(id_dirac);
 
 rg_yo = domain_decomposition_overlap2(Qy, M, d);
 rg_xo = domain_decomposition_overlap2(Qx, N, d);
@@ -348,16 +330,12 @@ clear XX YY xx yy Xq Yq V Wo
 %%-- end initialisation auxiliary variables sdwt2
 
 %Initializations.
-init_flag = isfile(init_file_name);
-if init_flag
-    init_m = matfile(init_file_name);
-end
-
-if init_flag
-    xsol = init_m.xsol;
+if isfield(param,'init_xsol')
+    xsol = param.init_xsol;
     fprintf('xsol uploaded \n\n')
 else
     xsol = zeros(M,N,c);
+    param.init_xsol = xsol;
     fprintf('xsol initialized \n\n')
 end
 
@@ -366,20 +344,24 @@ v0_ = Composite();
 weights0_ = Composite();
 v1_ = Composite();
 weights1_ = Composite();
-if init_flag
+if isfield(param,'init_v0') || isfield(param,'init_v1')
     for q = 1:Q
-        v0_(q) = init_m.v0(q,1);
-        v1_(q) = init_m.v1(q,1);
-        weights0_(q) = init_m.weights0(q,1);
-        weights1_(q) = init_m.weights1(q,1);
-    end
-    spmd
-        if labindex <= Qp.Value
-            max_dims = max(dims_overlap_ref_q, dims_oq);
+        v0_{q} = param.init_v0{q};
+        v1_{q} = param.init_v1{q};
+        weights0_{q} = param.init_weights0{q};
+        weights1_{q} = param.init_weights1{q};
+        spmd
+            if labindex <= Qp.Value
+                max_dims = max(dims_overlap_ref_q, dims_oq);
+            end
         end
     end
     fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
 else
+    param.init_v0 = cell(Q, 1);
+    param.init_v1 = cell(Q, 1);
+    param.init_weights0 = cell(Q, 1);
+    param.init_weights1 = cell(Q, 1);
     spmd
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
@@ -390,6 +372,8 @@ else
 end 
 
 %% Data node parameters
+A = afclean(A);
+At = afclean(At);
 elipse_proj_max_iter = parallel.pool.Constant(param.elipse_proj_max_iter);
 elipse_proj_min_iter = parallel.pool.Constant(param.elipse_proj_min_iter);
 elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
@@ -401,70 +385,56 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 
 Ap = Composite();
 Atp = Composite();
-Hp = Composite();
-xhat_i = Composite();
-Tp = Composite();
+x_hat_i = Composite();
+Gp = Composite();
 yp = Composite();
 pUp = Composite();
 Wp = Composite();
 epsilonp = Composite();
-
-% [09/10/2019] fixing bug in initialization of norm_res (warm-restart)
 norm_res = Composite();
-if init_flag
-    for k = 1:K
-        norm_res(Q+k) = init_m.norm_res(k,1);
-    end
-else
-    for k = 1:K
-        norm_res_tmp = cell(length(c_chunks{k}), 1);
-        for i = 1:length(c_chunks{k})
-            norm_res_tmp{i} = cell(length(y{k}{i}),1);
-            for j = 1 : length(y{k}{i})
-                norm_res_tmp{i}{j} = norm(y{k}{i}{j});
-            end
-        end
-        norm_res{Q+k} = norm_res_tmp;
-    end
-    clear norm_res_tmp
-end
-
 sz_y = cell(K, 1);
 n_blocks = cell(K, 1);
 for k = 1:K
+    norm_res_tmp = cell(length(c_chunks{k}), 1);
     sz_y{k} = cell(length(c_chunks{k}), 1);
     n_blocks{k} = cell(length(c_chunks{k}), 1);
     for i = 1:length(c_chunks{k})
+        norm_res_tmp{i} = cell(length(y{k}{i}),1);
         n_blocks{k}{i} = length(y{k}{i});
         for j = 1 : length(y{k}{i})
+            norm_res_tmp{i}{j} = norm(y{k}{i}{j});
             sz_y{k}{i}{j} = numel(y{k}{i}{j});
         end
     end
     yp{Q+k} = y{k};
     y{k} = [];
-    xhat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
+    x_hat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
     Ap{Q+k} = A;
     Atp{Q+k} = At;
-    Hp{Q+k} = H{k};
-    Tp{Q+k} = T{k};
-    T{k} = [];
+    Gp{Q+k} = G{k};
+    G{k} = [];
     Wp{Q+k} = W{k};
     pUp{Q+k} = pU{k};
     epsilonp{Q+k} = epsilon{k};
+    norm_res{Q+k} = norm_res_tmp;
 end
-clear epsilon pU W A At H y
+
+clear norm_res_tmp epsilon pU W G y
 
 v2_ = Composite();
 t_block = Composite();
 proj_ = Composite();
-if init_flag
+if isfield(param,'init_v2') % assume all the other related elements are also available in this case
     for k = 1:K
-        v2_(Q+k) = init_m.v2(k,1);
-        proj_(Q+k) = init_m.proj(k,1);
-        t_block(Q+k) = init_m.t_block(k,1);
+        v2_{Q+k} = param.init_v2{k};
+        proj_{Q+k} = param.init_proj{k};
+        t_block{Q+k} = param.init_t_block{k};
     end
     fprintf('v2, proj, t_block uploaded \n\n')
 else
+    param.init_v2 = cell(K, 1);
+    param.init_proj = cell(K, 1);
+    param.init_t_block = cell(K, 1);
     for k = 1:K
         v2_tmp = cell(length(c_chunks{k}), 1);
         t_block_ = cell(length(c_chunks{k}), 1);
@@ -484,8 +454,9 @@ else
         t_block{Q+k} = t_block_;
     end
     fprintf('v2, proj, t_block initialized \n\n')
-    clear proj_tmp v2_tmp t_block_
 end
+
+clear proj_tmp v2_tmp norm_res_tmp t_block_ G y
 
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
@@ -506,7 +477,6 @@ else
 end
 rw_counts = 1;
 
-
 %% Reweighting parameters
 
 reweight_alpha = param.reweight_alpha;
@@ -519,13 +489,14 @@ reweight_steps = param.reweight_steps;
 
 g_q = Composite();
 xsol_q = Composite();
-if init_flag
+if isfield(param,'init_g')
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-        g_q{q} = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        g_q{q} = param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
     end
     fprintf('g uploaded \n\n')
 else
+    param.init_g = zeros(size(xsol)); % 0 values...
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
         g_q{q} = zeros([dims(q, :), c]);
@@ -612,7 +583,7 @@ for t = t_start : param.max_iter
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
-            [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity_dr_block(v2_, yp, xhat_i, proj_, Ap, Atp, Hp, Tp, Wp, pUp, epsilonp, ...
+            [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             % send portions of g2 to the prior/primal nodes
             for q = 1:Qp.Value
@@ -639,8 +610,6 @@ for t = t_start : param.max_iter
         %% compute value of the priors in parallel
         spmd
             if labindex <= Qp.Value
-                % compute values for the prior terms
-                %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
                 [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3_weighted(x_overlap, Iq, ...
@@ -666,19 +635,6 @@ for t = t_start : param.max_iter
         end
         norm_epsilon_check = sqrt(norm_epsilon_check);
         norm_residual_check = sqrt(norm_residual_check);
-        
-        % SNR
-        % get xsol back from the workers
-        for q = 1:Q
-            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-        end
-        sol = reshape(xsol(:),numel(xsol(:))/c,c);
-        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(c,1);
-        for i = 1:c
-            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-        end
-        SNR_average = mean(psnrh);
         %% --
         
         % Log
@@ -686,7 +642,6 @@ for t = t_start : param.max_iter
             fprintf('Iter %i\n',t);
             fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-            fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
         
 %         fitswrite(x0, './x0.fits');
@@ -712,7 +667,8 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
-    if (param.step_flag && t>500) %rel_fval(t) < param.reweight_rel_obj)
+    if (param.step_flag && rel_fval(t) < param.reweight_rel_obj && ...
+        norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
@@ -722,23 +678,15 @@ for t = t_start : param.max_iter
             t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr)
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
-
-        % SNR
+        
         % get xsol back from the workers
         for q = 1:Q
             xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
-        sol = reshape(xsol(:),numel(xsol(:))/c,c);
-        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(c,1);
-        for i = 1:c
-            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-        end
-        SNR_average = mean(psnrh);
         
+        % update weights
         spmd
             if labindex <= Qp.Value
-                % update weights
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
@@ -749,57 +697,41 @@ for t = t_start : param.max_iter
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
             else
                 % compute residual image on the data nodes
-                res_ = compute_residual_images_dr_block(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp); % *_dr w/o data blocking
+                res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
             end
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node       
+        
+        % Save parameters
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t;
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
-            % Save parameters (matfile solution)
-            mkdir('./results/')
-            m = matfile(['./results/facetHyperSARA_dr_co_w_' ...
-                num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
-                'Writable', true);
-            m.param = param;
-            m.res = zeros(size(xsol));
-            m.g = zeros(size(xsol));
-            m.xsol = zeros(size(xsol));
-            m.epsilon = cell(K, 1);
-            m.v2 = cell(K, 1);
-            m.proj = cell(K, 1);
-            m.t_block = cell(K, 1);
-            m.norm_res = cell(K, 1);
-            m.v0 = cell(Q, 1);
-            m.v1 = cell(Q, 1);
-            m.weights0 = cell(Q, 1);
-            m.weights1 = cell(Q, 1);
             % Retrieve variables from workers
             % facet nodes
             for q = 1:Q
-                m.v0(q,1) = v0_(q);
-                m.v1(q,1) = v1_(q);
-                m.weights0(q,1) = weights0_(q);
-                m.weights1(q,1) = weights1_(q);
-                m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-                m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
+                param.init_v0{q} = v0_{q};
+                param.init_v1{q} = v1_{q};
+                param.init_weights0{q} = weights0_{q};
+                param.init_weights1{q} = weights1_{q};
+                param.init_xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+                param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
             end
             % data nodes
-            for k = 1:K
-                m.res(:,:,c_chunks{k}) = res_{Q+k};
+            res = zeros(size(xsol));
+            epsilon = cell(K, 1);
+            for k = 1 : K
+                res(:,:,c_chunks{k}) = res_{Q+k};
                 res_{Q+k} = [];
-                m.v2(k,1) = v2_(Q+k);
-                m.proj(k,1) = proj_(Q+k);
-                m.t_block(k,1) = t_block(Q+k);
-                m.epsilon(k,1) = epsilonp(Q+k);
-                m.norm_res(k,1) = norm_res(Q+k);
+                param.init_v2{k} = v2_{Q+k};
+                param.init_proj{k} = proj_{Q+k};
+                param.init_t_block{k} = t_block{Q+k};
+                epsilon{k} = epsilonp{Q+k};
             end
-            m.SNR = SNR;
-            m.SNR_average = SNR_average;
-            clear m
+            mkdir('./results/')
+            save(['./results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','param','res', 'epsilon');
         end 
         
         if (reweight_step_count >= param.total_reweights)
@@ -810,19 +742,32 @@ for t = t_start : param.max_iter
         
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
-        rw_counts = rw_counts + 1;        
+        rw_counts = rw_counts + 1;
+        
+        epsilon = [];
     end
 end
 toc(start_loop)
 
-% Collect image facets back to the master
+% Collect image back to the master
 for q = 1:Q
     xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
 end
 
-% [09/10/2019] Modification from previous version: return fewer parameters,
-% save through matfile to reduce memory footprint.
 % Calculate residual images
+res = zeros(size(xsol));
+spmd
+    if labindex > Qp.Value
+        res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
+    end
+end
+for k = 1 : K
+    res(:,:,c_chunks{k}) = res_{Q+k};
+end
+norm_res_out = norm(res(:));
+
+%Final log (merge this step with the computation of the residual image for
+% each frequency of interest)
 spmd
     if labindex <= Qp.Value
         x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
@@ -831,81 +776,39 @@ spmd
         [l21_norm, nuclear_norm] = prior_overlap_spmd_cst3_weighted(x_overlap, Iq, ...
             offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
-    else
-        res_ = compute_residual_images_dr_block(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp); % *_dr w/o data blocking
     end
 end
 
-m = matfile(['./results/facetHyperSARA_dr_co_w_' ...
-              num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
-              'Writable', true);
-m.param = param;
-m.res = zeros(size(xsol));
-m.g = zeros(size(xsol));
-m.xsol = zeros(size(xsol));
-m.epsilon = cell(K, 1);
-m.v2 = cell(K, 1);
-m.proj = cell(K, 1);
-m.t_block = cell(K, 1);
-m.norm_res = cell(K, 1);
-m.v0 = cell(Q, 1);
-m.v1 = cell(Q, 1);
-m.weights0 = cell(Q, 1);
-m.weights1 = cell(Q, 1);
-
-% Retrieve variables from workers
-% facet nodes
+epsilon = cell(K, 1);
+for k = 1:K
+    param.init_v2{k} = v2_{Q+k};
+    v2_{Q+k} = [];
+    param.init_proj{k} = proj_{Q+k};
+    proj_{Q+k} = [];
+    param.init_t_block{k} = t_block{Q+k};
+    t_block{Q+k} = [];
+    epsilon{k} = epsilonp{Q+k};
+    epsilonp{Q+k} = [];
+end
 for q = 1:Q
-    m.v0(q,1) = v0_(q);
+    param.init_v0{q} = v0_{q};
     v0_{q} = [];
-    m.v1(q,1) = v1_(q);
+    param.init_v1{q} = v1_{q}; 
     v1_{q} = [];
-    m.weights0(q,1) = weights0_(q);
+    param.init_weights0{q} = weights0_{q};
     weights0_{q} = [];
-    m.weights1(q,1) = weights1_(q);
+    param.init_weights1{q} = weights1_{q};
     weights1_{q} = [];
-    m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
+    param.init_xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+    xsol_q{q} = [];
+    param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
     g_q{q} = [];
 end
-
-% data nodes
-for k = 1:K
-    m.res(:,:,c_chunks{k}) = res_{Q+k};
-    res_{Q+k} = [];
-    m.v2(k,1) = v2_(Q+k);
-    v2_{Q+k} = [];
-    m.proj(k,1) = proj_(Q+k);
-    proj_{Q+k} = [];
-    m.t_block(k,1) = t_block(Q+k);
-    t_block{Q+k} = [];
-    m.epsilon(k,1) = epsilonp(Q+k);
-    epsilonp{Q+k} = [];
-    m.norm_res(k,1) = norm_res(Q+k);
-end
-epsilon = m.epsilon; % see if necessary
-m.xsol = xsol;
-norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
-
-% Update param structure and save
 param.reweight_alpha = reweight_alpha;
 param.init_reweight_step_count = reweight_step_count;
 param.init_reweight_last_iter_step = t;
 param.init_t_start = t;
-m.param = param;
 
-% SNR (computed only on the master node)
-sol = reshape(xsol(:),numel(xsol(:))/c,c);
-SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-psnrh = zeros(c,1);
-for i = 1:c
-    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-end
-SNR_average = mean(psnrh);
-m.SNR = SNR;
-m.SNR_average = SNR_average;
-clear m
-
-% Final log
 l21 = 0;
 nuclear = 0;
 for q = 1:Q
@@ -913,32 +816,21 @@ for q = 1:Q
     nuclear = nuclear + nuclear_norm{q};
 end
 
-norm_epsilon_check = 0;
-norm_residual_check = 0;
-for i = Q+1:Q+K
-    norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-    norm_residual_check = norm_residual_check + norm_residual_check_i{i};
-end
-norm_epsilon_check = sqrt(norm_epsilon_check);
-norm_residual_check = sqrt(norm_residual_check);
-
 if (param.verbose > 0)
     if (flag == 1)
         fprintf('Solution found\n');
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
         fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
-        fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     else
         fprintf('Maximum number of iterations reached\n');
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
         fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
-        fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
 end
 
-end_iter = end_iter(end_iter > 0);
-rel_fval = rel_fval(1:numel(end_iter));
+% end_iter = end_iter(end_iter > 0);
+% rel_fval = rel_fval(1:numel(end_iter));
 
 end
