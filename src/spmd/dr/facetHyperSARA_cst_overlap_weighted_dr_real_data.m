@@ -72,7 +72,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
 % > L           size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
 % > nlevel      decomposition depth [1]
 % > c_chunks    indices of the bands handled by each data node {K, 1}
-% > c           total number of specrtal channels [1]
+% > c           total number of spectral channels [1]
 % > d           size of the fixed overlap for the faceted nuclear norm 
 %               [1, 2]
 % > window_type type of apodization window affecting the faceted nuclear
@@ -344,7 +344,7 @@ end
 clear XX YY xx yy Xq Yq V Wo
 %%-- end initialisation auxiliary variables sdwt2
 
-%Initializations.
+% Initializations.
 init_flag = isfile(init_file_name);
 if init_flag
     init_m = matfile(init_file_name);
@@ -365,10 +365,10 @@ v1_ = Composite();
 weights1_ = Composite();
 if init_flag
     for q = 1:Q
-        v0_{q} = init_m.v0(q,1);
-        v1_{q} = init_m.v1(q,1);
-        weights0_{q} = init_m.weights0(q,1);
-        weights1_{q} = init_m.weights1(q,1);
+        v0_(q) = init_m.v0(q,1);
+        v1_(q) = init_m.v1(q,1);
+        weights0_(q) = init_m.weights0(q,1);
+        weights1_(q) = init_m.weights1(q,1);
         spmd
             if labindex <= Qp.Value
                 max_dims = max(dims_overlap_ref_q, dims_oq);
@@ -377,10 +377,6 @@ if init_flag
     end
     fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
 else
-    param.init_v0 = cell(Q, 1);
-    param.init_v1 = cell(Q, 1);
-    param.init_weights0 = cell(Q, 1);
-    param.init_weights1 = cell(Q, 1);
     spmd
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
@@ -403,7 +399,7 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 Ap = Composite();
 Atp = Composite();
 Hp = Composite();
-x_hat_i = Composite();
+xhat_i = Composite();
 Tp = Composite();
 yp = Composite();
 pUp = Composite();
@@ -443,7 +439,7 @@ for k = 1:K
     end
     yp{Q+k} = y{k};
     y{k} = [];
-    x_hat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
+    xhat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
     Ap{Q+k} = A;
     Atp{Q+k} = At;
     Hp{Q+k} = H{k};
@@ -460,9 +456,9 @@ t_block = Composite();
 proj_ = Composite();
 if init_flag
     for k = 1:K
-        v2_{Q+k} = init_m.v2{k};
-        proj_{Q+k} = init_m.proj{k};
-        t_block{Q+k} = init_m.t_block{k};
+        v2_(Q+k) = init_m.v2(k,1);
+        proj_(Q+k) = init_m.proj(k,1);
+        t_block(Q+k) = init_m.t_block(k,1);
     end
     fprintf('v2, proj, t_block uploaded \n\n')
 else
@@ -507,6 +503,7 @@ else
 end
 rw_counts = 1;
 
+
 %% Reweighting parameters
 
 reweight_alpha = param.reweight_alpha;
@@ -522,7 +519,7 @@ xsol_q = Composite();
 if init_flag
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-        g_q{q} = param.init_g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        g_q{q} = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
     end
     fprintf('g uploaded \n\n')
 else
@@ -713,9 +710,9 @@ for t = t_start : param.max_iter
             xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
         
-        % update weights
         spmd
             if labindex <= Qp.Value
+                % update weights
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
@@ -738,7 +735,7 @@ for t = t_start : param.max_iter
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
             mkdir('./results/')
-            m = matfile(['./results/result_HyperSARA_co_weighted_dr_' ...
+            m = matfile(['./results/facetHyperSARA_dr_co_w_real_' ...
                 num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
                 'Writable', true);
             m.param = param;
@@ -806,7 +803,7 @@ spmd
     end
 end
 
-m = matfile(['./results/result_HyperSARA_co_weighted_dr_' ...
+m = matfile(['./results/facetHyperSARA_dr_co_w_real' ...
               num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
 m.param = param;

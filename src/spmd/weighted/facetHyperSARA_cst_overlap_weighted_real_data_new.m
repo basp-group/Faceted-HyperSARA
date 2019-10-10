@@ -352,10 +352,10 @@ v1_ = Composite();
 weights1_ = Composite();
 if init_flag
     for q = 1:Q
-        v0_{q} = init_m.v0(q,1);
-        v1_{q} = init_m.v1(q,1);
-        weights0_{q} = init_m.weights0(q,1);
-        weights1_{q} = init_m.weights1(q,1);
+        v0_(q) = init_m.v0(q,1);
+        v1_(q) = init_m.v1(q,1);
+        weights0_(q) = init_m.weights0(q,1);
+        weights1_(q) = init_m.weights1(q,1);
         spmd
             if labindex <= Qp.Value
                 max_dims = max(dims_overlap_ref_q, dims_oq);
@@ -443,9 +443,9 @@ t_block = Composite();
 proj_ = Composite();
 if init_flag
     for k = 1:K
-        v2_{Q+k} = init_m.v2{k};
-        proj_{Q+k} = init_m.proj{k};
-        t_block{Q+k} = init_m.t_block{k};
+        v2_(Q+k) = init_m.v2(k,1);
+        proj_(Q+k) = init_m.proj(k,1);
+        t_block(Q+k) = init_m.t_block(k,1);
     end
     fprintf('v2, proj, t_block uploaded \n\n')
 else
