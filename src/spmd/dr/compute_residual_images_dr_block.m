@@ -34,13 +34,14 @@ for i = 1 : ci
     g2 = zeros(Ny*Nx,1);
     Fx0 = A(real(x(:,:,i)));
     for j = 1:length(H{i})
-        Fx = FT2(real(At(H{i}{j} * Fx0)));
+        dimH = sqrt(numel(H{i}{j}));
+        Fx = FT2(real(At(reshape(H{i}{j}, dimH, dimH) * Fx0)));
         Fx = Fx(:);
         res_f = y{i}{j} - T{i}{j} .* Fx(W{i}{j});
         u2 = T{i}{j} .* res_f;
         g2(W{i}{j}) = g2(W{i}{j}) + u2;
    
-        res(:,:,i) = res(:,:,i) + real(At(H{i}{j}*A(real(IFT2(reshape(g2, Ny, Nx))))));
+        res(:,:,i) = res(:,:,i) + real(At(reshape(H{i}{j}, dimH, dimH)*A(real(IFT2(reshape(g2, Ny, Nx))))));
     end
 end
 

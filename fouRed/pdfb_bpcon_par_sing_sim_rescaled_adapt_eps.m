@@ -271,16 +271,12 @@ reweight_alpha_ff = param.reweight_alpha_ff;
 % r2       - L2 part of criterion: r2 = T * A * sol
 % v2       - L2 dual variable
 
-count_eps_update = 0; %%##### AR
-for q = 1:R %%##### AR
-    t__{q}=1;%%##### AR
-end%%##### AR
+count_eps_update = 0;
+for q = 1:R
+    t__{q}=1;
+end
 
 for t = 1:param.max_iter
-% Uncomment if-loop below if we want to store intermediate results
-%     if ((mod(t,100) == 0) || (t < 100))
-%         fitswrite(fliplr(xsol),sprintf('%srec.iter%05d.fits', param.savepath, t));
-%     end
     
     tm = tic;
     
@@ -326,10 +322,15 @@ for t = 1:param.max_iter
         ns_p{q} = ns(W{q});
     end
     
+    residual_check_c = 0;
+    epsilon_check_c = 0;
+    residual_check_a = 0;
+    epsilon_check_a = 0;
+    
     % parallel for all R blocks
     for q = 1:R
         r2{q} = T{q} .* ns_p{q};
-        vy2{q} = v2{q} + r2{q} - y{q} - sc(v2{q} + r2{q} - y{q}, epsilont{q});
+        vy2{q} = v2{q} + r2{q} - y{q} - sc(v2{q} + r2{q} - y{q}, epsilon{q});
         v2{q} = v2{q} + lambda2 * (vy2{q} - v2{q});
         u2{q} = T{q} .* v2{q};
 
@@ -340,49 +341,37 @@ for t = 1:param.max_iter
         end
         % norm of residual
         norm2{q} = norm(r2{q} - y{q});
+        
+        if q == 1
+            residual_check_c = residual_check_c + norm2{q}^2;
+            epsilon_check_c = epsilon_check_c + power(epsilon{q},2);
+        else
+            residual_check_a = residual_check_a + norm2{q}^2;
+            epsilon_check_a = epsilon_check_a + power(epsilon{q},2);
+        end
     end
     
-     %%##### AR ADAPTIVE bound update on each block
-    if( param.use_adapt_bound_eps ==1) %%##### AR
+     %% ADAPTIVE bound update on each block
+    if( param.use_adapt_eps ==1) && t > param.adapt_eps_start
      for q = 1:R
-       if (norm2{q}<epsilonts{q}) && (norm2{q}> (1-param.adapt_bound_tol)*epsilont{q})
-        t__{q} = param.max_iter;
-       elseif   ((t>t__{q}+param.adapt_bound_steps) || (t__{q} == param.max_iter )) && ...
-               (norm2{q}< (1-param.adapt_bound_tol)*epsilont{q}) &&  ...
-               (rel_sol_norm_change <  param.adapt_bound_rel_obj)
+       if (norm2{q} < param.adapt_eps_tol_in * epsilon{q}) && (t > t__{q} + param.adapt_eps_steps) && ...
+               (rel_sol_norm_change <  param.adapt_eps_rel_obj)
            t__{q} = t;
-
-           epsilont{q} = (norm2{q} + epsilont{q})/2;
-           epsilonts{q}= 1.0001*epsilont{q};
-           epsilon = norm(cell2mat(epsilont));
-           epsilons= 1.0001*epsilon;
-           count_eps_update = count_eps_update +1;
-           disp (['#####     Updated  epsilon DOWN: ', num2str(epsilon)])
-           disp ''
-
+           epsilon{q} = norm2{q} + (-norm2{q} + epsilon{q}) * (1 - param.adapt_eps_change_percentage);
+           count_eps_update_down = count_eps_update_down +1;
+           fprintf ('Updated  epsilon DOWN: %e\t, residual: %e\t, Block: %i\n', epsilon{q}, norm2{q}, q); 
        end
 
-       if (norm2{q}>epsilonts{q}) 
-           if  (( (t>t__{q}+param.adapt_bound_steps) && (rel_sol_norm_change < param.adapt_bound_rel_obj)) || ...
-            ((t__{q} == param.max_iter ) && (rel_sol_norm_change <  param.adapt_bound_rel_obj))    ) ||...
-            ( t ==param.adapt_bound_start)
+       if (norm2{q} > param.adapt_eps_tol_out * epsilon{q}) && (t > t__{q} + param.adapt_eps_steps) && ...
+               (rel_sol_norm_change < param.adapt_bound_rel_obj)
            t__{q} = t;
-           disp ''
-           disp (['#####    Updated bound-', num2str(count_eps_update)])
-           epsilont{q} = (norm2{q} + epsilont{q})/2;
-           epsilonts{q}= 1.0001*epsilont{q};
-           epsilon = norm(cell2mat(epsilont));
-           epsilons= 1.0001*epsilon;
-           count_eps_update = count_eps_update +1;
-           disp(['#####     Updated  epsilon UP: ', num2str(epsilon)])
-           disp ''
-           end
+           epsilon{q} = norm2{q} + (norm2{q} - epsilon{q}) * param.adapt_eps_change_percentage;
+           count_eps_update_up = count_eps_update_up +1;
+           fprintf('Updated epsilon UP: %e\t, residual: %e\t, Block: %i\n', epsilon{q}, norm2{q}, q);
        end
      end
-
-   end
-%%##### AR ADAPTIVE bound update on each block
- 
+    end 
+    
     %% update the primal gradient
     g1 = zeros(size(xsol));
     g2 = zeros(size(xsol));
@@ -407,16 +396,13 @@ for t = 1:param.max_iter
         fprintf('Iter %i\n',t);
         fprintf(' L1 norm                       = %e\n', sum(cell2mat(norm1)));
         fprintf(' Residual                      = %e\n', norm(cell2mat(norm2)));
-        fprintf(' Global residual bound         = %e\n', epsilon);
-        fprintf(' Distributed residual L2 ball  = %e\n', norm(cell2mat(epsilont)));
-        fprintf(' Distributed residual L2 bound = %e\n', norm(cell2mat(epsilonts)));
+        fprintf(' Epsilon                       = %e\n', norm(cell2mat(epsilon)));
         fprintf(' Relative solution norm change = %e\n\n', rel_sol_norm_change);
         
         if (param.verbose >= 2)
             for q = 1:R
                 fprintf('   Residual %i                     = %e\n', q, norm2{q});
-                fprintf('   Residual L2 ball %i             = %e\n', q, epsilont{q});
-                fprintf('   Residual L2 bound %i            = %e\n\n', q, epsilonts{q});
+                fprintf('   Residual L2 ball %i             = %e\n', q, epsilon{q});
             end
         end
         
@@ -452,7 +438,7 @@ for t = 1:param.max_iter
     
     if (param.use_reweight_steps && t == reweight_steps(reweight_step_count)) || ...
         (param.use_reweight_eps && ...
-        norm(cell2mat(norm2)) <= norm(cell2mat(epsilonts)) && ...
+        norm(cell2mat(norm2)) <= norm(cell2mat(epsilon)) && ...
         param.reweight_min_steps_rel_obj < t - reweight_last_step_iter && ...
         rel_sol_norm_change < param.reweight_rel_obj)
     
@@ -476,14 +462,21 @@ for t = 1:param.max_iter
     
     
 
-    % global stopping criteria
-    if rel_sol_norm_change < param.rel_obj && ...
-            ((param.global_stop_bound && norm(cell2mat(norm2)) <= norm(cell2mat(epsilonts))) || ...
-            (~param.global_stop_bound && prod(cell2mat(norm2) <= cell2mat(epsilonts))))
+    %% global stopping criteria
+%     if rel_sol_norm_change < param.rel_obj && ...
+%             ((param.global_stop_bound && norm(cell2mat(norm2)) <= norm(cell2mat(epsilon))) || ...
+%             (~param.global_stop_bound && prod(cell2mat(norm2) <= cell2mat(epsilon))))
+%         flag = 1;
+%         
+%         break;
+%     end
+    
+     if (t > 1 && rel_sol_norm_change < param.rel_obj && reweight_step_count > param.total_reweights && ...
+            residual_check_c <= param.adapt_eps_tol_out*epsilon_check_c && residual_check_a <= param.adapt_eps_tol_out*epsilon_check_a)
         flag = 1;
-        
         break;
-    end
+     end
+    
 end
 
 
@@ -493,29 +486,23 @@ if (param.verbose > 0)
         fprintf('\nSolution found\n');
         fprintf(' L1 norm                       = %e\n', sum(cell2mat(norm1)));
         fprintf(' Residual                      = %e\n', norm(cell2mat(norm2)));
-        fprintf(' Global residual bound         = %e\n', epsilon);
-        fprintf(' Distributed residual L2 ball  = %e\n', norm(cell2mat(epsilont)));
-        fprintf(' Distributed residual L2 bound = %e\n', norm(cell2mat(epsilonts)));
+        fprintf(' Epsilon                       = %e\n', norm(cell2mat(epsilon)));
         fprintf(' Relative solution norm change = %e\n\n', rel_sol_norm_change);
         
         for q = 1:R
             fprintf('   Residual %i                     = %e\n', q, norm2{q});
-            fprintf('   Residual L2 ball %i             = %e\n', q, epsilont{q});
-            fprintf('   Residual L2 bound %i            = %e\n\n', q, epsilonts{q});
+            fprintf('   Residual L2 ball %i             = %e\n', q, epsilon{q});
         end
     else
         fprintf('\nMaximum number of iterations reached\n');
         fprintf(' L1 norm                       = %e\n', sum(cell2mat(norm1)));
         fprintf(' Residual                      = %e\n', norm(cell2mat(norm2)));
-        fprintf(' Global residual bound         = %e\n', epsilon);
-        fprintf(' Distributed residual L2 ball  = %e\n', norm(cell2mat(epsilont)));
-        fprintf(' Distributed residual L2 bound = %e\n', norm(cell2mat(epsilonts)));
+        fprintf(' Epsilon                       = %e\n', norm(cell2mat(epsilon)));
         fprintf(' Relative solution norm change = %e\n\n', rel_sol_norm_change);
         
         for q = 1:R
             fprintf('   Residual %i                     = %e\n', q, norm2{q});
-            fprintf('   Residual L2 ball %i             = %e\n', q, epsilont{q});
-            fprintf('   Residual L2 bound %i            = %e\n\n', q, epsilonts{q});
+            fprintf('   Residual L2 ball %i             = %e\n', q, epsilon{q});
         end
     end
 end

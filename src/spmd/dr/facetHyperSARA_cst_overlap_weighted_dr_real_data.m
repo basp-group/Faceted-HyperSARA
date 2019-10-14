@@ -657,7 +657,12 @@ for t = t_start : param.max_iter
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
         end
         
-        fitswrite(x0, ['./x0_it', num2str(t), '.fits']);
+        % Collect image back to the master
+        for q = 1:Q
+            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        end
+        
+%         fitswrite(x0, ['./x0_it', num2str(t), '.fits']);
         fitswrite(xsol, ['./xsol_it', num2str(t), '.fits']);
     end
     
@@ -743,10 +748,10 @@ for t = t_start : param.max_iter
             res_{Q+k} = [];
         end
         
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
-            mkdir('./results/')
-            save(['./results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','param','res', 'epsilon');
-        end 
+%         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+%             mkdir('./results/')
+%             save(['./results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','param','res', 'epsilon');
+%         end 
         
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;

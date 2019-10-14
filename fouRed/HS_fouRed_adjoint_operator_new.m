@@ -23,7 +23,8 @@ for ind = 1:c
             x1 = zeros(Ny * Nx, 1);
             x1(Mask{ind}{j}) = xtmp;
             x1 = reshape(x1, Ny, Nx);
-            y(:,:,ind) = y(:,:,ind) + At(H{ind}{j} * A(IFT2(x1)));
+            dimH = sqrt(numel(H{ind}{j}));
+            y(:,:,ind) = y(:,:,ind) + At(reshape(H{ind}{j}, dimH, dimH) * A(IFT2(x1)));
         end
     else
         if exist('aW', 'var')
@@ -37,7 +38,8 @@ for ind = 1:c
         x1 = zeros(Ny * Nx, 1);
         x1(cell2mat(Mask{ind})) = cell2mat(Sigma{ind}) .* xtmp(:);
         x1 = reshape(x1, Ny, Nx);
-        y(:,:,ind) = At(H{ind} * A(IFT2(x1)));
+        dimH = sqrt(numel(H{ind}));
+        y(:,:,ind) = At(reshape(H{ind}, dimH, dimH) * A(IFT2(x1)));
     end
 end
 

@@ -15,7 +15,7 @@ function [Psi, Psit] = op_p_sp_wlt_basis(basis, nlevel, Ny, Nx)
 
 
 %% sparsity operator definition
-dwtmode('zpd');
+dwtmode('per');
 % construct a sting to repesent the desired inline function
 
 Psit = cell(length(basis), 1);
