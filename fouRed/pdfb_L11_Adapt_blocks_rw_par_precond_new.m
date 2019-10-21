@@ -9,6 +9,8 @@ function [xsol,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,l
 % Useful functions for the projection
 % sc = @(z,eps) z*min(eps/norm(z(:)), 1); % scaling
 hardt = @(z) max(real(z), 0); %thresholding negative values
+%soft thresholding operator
+soft = @(z, T) sign(z) .* max(abs(z)-T, 0); 
 
 c = size(y,2);
 P = length(Psit);
@@ -25,9 +27,9 @@ if isfield(param,'init_xsol')
     xsol = param.init_xsol;
     fprintf('xsol uploaded \n\n')
 else
-    %xsol = zeros(M,N,c);
-    tmp = fitsread('solWB-mono-calib.fits');
-    xsol = tmp(:,:,ch);
+    xsol = zeros(M,N,c);
+%     tmp = fitsread('solWB-mono-calib.fits');
+%     xsol = tmp(:,:,ch);
     fprintf('xsol NOT uploaded \n\n')
 end
 
@@ -105,20 +107,20 @@ Ftx = zeros(size(xsol));
 
 
 % Initialise projection
-if isfield(param,'init_proj')
-    proj = param.init_proj;
-    fprintf('proj uploaded \n\n')
-else
-    for i = 1 : c
-        proj{i} = cell(length(G{i}),1);
-        Fx = A(xsol(:,:,i));
-        for j = 1 : length(G{i})
-            r2{i}{j} = G{i}{j} * Fx(W{i}{j});
-            [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
-        end
-    end
-    fprintf('proj NOT uploaded \n\n')
-end
+% if isfield(param,'init_proj')
+%     proj = param.init_proj;
+%     fprintf('proj uploaded \n\n')
+% else
+%     for i = 1 : c
+%         proj{i} = cell(length(G{i}),1);
+%         Fx = A(xsol(:,:,i));
+%         for j = 1 : length(G{i})
+%             r2{i}{j} = G{i}{j} * Fx(W{i}{j});
+%             [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+%         end
+%     end
+%     fprintf('proj NOT uploaded \n\n')
+% end
 
 
 if isfield(param,'init_t_block')
@@ -240,7 +242,7 @@ for t = t_start : param.max_iter
             epsilon_check(counter) = epsilon{i}{j};
             counter = counter + 1;
 
-        if j == 1 || j == 2
+        if j == 1
             residual_check_c = residual_check_c + norm_res{i}{j}^2;
             epsilon_check_c = epsilon_check_c + power(epsilon{i}{j},2);
         else
@@ -279,7 +281,7 @@ for t = t_start : param.max_iter
     l11(t) = sum(cell2mat(l11_cell));
     
     %% Display
-    if ~mod(t,50)
+    if ~mod(t,100)
         
         %SNR
         % SNR(t) = 20*log10(norm(XF(:))/norm(XF(:)-xsol(:)));
@@ -294,7 +296,7 @@ for t = t_start : param.max_iter
                fprintf(['eps_b' num2str(i) '= %e, res_b' num2str(i) '= %e\n'], epsilon_check(i), residual_check(i));
             end
         end
-        
+        fitswrite(xsol, ['xsol_it', num2str(t), '.fits']);
         %diary('erw_a06_L1_5e5_6b');
     end
     
@@ -351,8 +353,8 @@ for t = t_start : param.max_iter
     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
             (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
             residual_check_c <= param.adapt_eps_tol_out*epsilon_check_c && residual_check_a <= param.adapt_eps_tol_out*epsilon_check_a  && ...
-            t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr) || ...
-            (param.use_reweight_eps && t - reweight_last_step_iter > param.rw_tol)
+            t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr) 
+%         || (param.use_reweight_eps && t - reweight_last_step_iter > param.rw_tol)
         
         
         weights1_old = weights1;

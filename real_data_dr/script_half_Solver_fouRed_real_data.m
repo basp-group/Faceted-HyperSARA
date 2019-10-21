@@ -17,7 +17,7 @@ addpath ../src/spmd/weighted/
 fprintf("gamma=%e\n", gamma)
 disp(ch)
 
-compute_Anorm = true;
+compute_Anorm = false;
 usingPrecondition = false;
 rw = -1;
 window_type = 'triangular';
@@ -31,11 +31,11 @@ flag_algo = 2;
 parallel_version = 'spmd4_cst';
 bool_weights = true; % for the spmd4_new version (50% overlap version)
 
-param_real_data.image_size_Nx = 512; % 2560;
-param_real_data.image_size_Ny = 512; % 1536;
+param_real_data.image_size_Nx = 2560; % 2560;
+param_real_data.image_size_Ny = 1536; % 1536;
 nChannels = length(ch); % total number of "virtual" channels (i.e., after
 % concatenation) for the real dataset considered
-nBlocks = 1;        % number of data blocks (needs to be known beforehand,
+nBlocks = 2;        % number of data blocks (needs to be known beforehand,
 % quite restrictive here), change l.70 accordingly
 % klargestpercent = 20;
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
@@ -55,23 +55,27 @@ Ky = 8; % number of neighbours for nufft
 for i = 1:nChannels 
     ch(i)
 %     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_gam01_yT=', num2str(ch(i)), '.mat'], 'yT');
-    tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_yT=', num2str(i), '.mat'], 'yT');
+%     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_yT=', num2str(i), '.mat'], 'yT');
+    tmp = load(['./CYG_yT_A_C=', num2str(i), '.mat'], 'yT');
     yT{i,1} = tmp.yT{1,1};
 %     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_gam01_DR=', num2str(ch(i)), '.mat'], 'H');
-    tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
+%     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
+    tmp = load(['./CYG_DR_A_C=', num2str(i), '.mat']);
     H{i,1} = tmp.H{1,1};
     T{i,1} = tmp.T{1,1};
     aW{i,1} = tmp.aW{1,1};
     Wm{i,1} = tmp.Wm{1,1};
 %     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_gam01_epsilon=', num2str(ch(i)), '.mat'], 'epsilon');
-    tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_epsilon=', num2str(i), '.mat'], 'epsilon');
-    epsilon{i,1} = tmp.epsilon{1,1}{1};
+%     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_epsilon=', num2str(i), '.mat'], 'epsilon');
+    tmp = load(['./CYG_epsilon_A_C=', num2str(i), '.mat'], 'epsilon');
+    epsilon{i,1} = tmp.epsilon{1,1};
 end
-yT{1}(2) = [];
-H{1}(2) = [];
-T{1}(2) = [];
-aW{1}(2) = [];
-Wm{1}(2) = [];
+% yT{1}(1) = [];
+% H{1}(1) = [];
+% T{1}(1) = [];
+% aW{1}(1) = [];
+% Wm{1}(1) = [];
+% epsilon{1}(1) = [];
 
 clear tmp
 
@@ -87,7 +91,7 @@ if compute_Anorm
     Anorm = pow_method_op(F, Ft, [Ny Nx nChannels]);    
     save(['Anorm_dr_per_', num2str(ch(1)), '_', num2str(ch(end)),'.mat'],'-v7.3', 'Anorm');
 else
-    load(['Anorm_dr_per_', num2str(ch(1)), '_', num2str(ch(end)),'.mat']);
+    load(['Anorm_dr_0prec_per_', num2str(ch(1)), '_', num2str(ch(end)),'_A_C.mat']);
 end
 
 Anorm
@@ -231,7 +235,7 @@ elseif algo_version == 2
     param_pdfb.gamma = 1e-6; % convergence parameter L1 (soft th parameter)
     param_pdfb.tau = 0.49; % forward descent step size
     param_pdfb.rel_obj = 1e-6; % stopping criterion
-    param_pdfb.max_iter = 100; % max number of iterations
+    param_pdfb.max_iter = 1000; % max number of iterations
     param_pdfb.lambda0 = 1; % relaxation step for primal update
     param_pdfb.lambda1 = 1; % relaxation step for L1 dual update
     param_pdfb.lambda2 = 1; % relaxation step for L2 dual update

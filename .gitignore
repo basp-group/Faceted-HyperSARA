@@ -10,3 +10,4 @@ irt*
 test*
 *.pbs
 real_data_dr/logs
+*.fits

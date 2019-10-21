@@ -253,7 +253,7 @@ for t = 1:param.max_iter
     
     %% L1 prox update: dual variables update
     % parallel for all bases
-    for k = 1:P        
+    parfor k = 1:P        
         r1{k} = weights{k} .* Psit{k}(prev_xsol);
         vy1{k} = v1{k} + r1{k} - soft(v1{k} + r1{k}, gamma / sigma1(k));
         
@@ -326,7 +326,7 @@ for t = 1:param.max_iter
        end
 
        if (norm2{q} > param.adapt_eps_tol_out * epsilon{q}) && (t > t_block{q} + param.adapt_eps_steps) && ...
-               (rel_sol_norm_change < param.adapt_bound_rel_obj)
+               (rel_sol_norm_change < param.adapt_eps_rel_obj)
            t_block{q} = t;
            epsilon{q} = norm2{q} + (norm2{q} - epsilon{q}) * param.adapt_eps_change_percentage;
            count_eps_update_up = count_eps_update_up +1;
@@ -346,28 +346,37 @@ for t = 1:param.max_iter
     
     if reduction_version == 1
         uu = zeros(Ny*Nx, 1);
+        for q = 1:R
+            uu(W{q}) = sigma2(q) * u2{q};
+        end
+        g2 = real(At(reshape(H{1}, dimH, dimH) * A(real(IFT2(reshape(uu, Ny, Nx))))));
+
     elseif reduction_version == 2
         uu = zeros(Kd, 1);
+        for q = 1:R
+            tmp = zeros(Kd, 1);
+            tmp(W{q}) = u2{q};
+            uu = uu + sigma2(q) * reshape(H{q}, dimH, dimH) * tmp;
+        end
+        g2 = real(At(uu));
     end
     
-    for q = 1:R
-        uu(W{q}) = sigma2(q) * u2{q};
-    end
+    % for new blocking (over singular values)
 
-    if reduction_version == 1
-        g2 = g2 + real(At(reshape(H{1}, dimH, dimH) * A(real(IFT2(reshape(uu, Ny, Nx))))));
-    elseif reduction_version == 2
-        for q = 1:R
-            g2 = g2 + real(At(reshape(H{q}, dimH, dimH) * uu));
-        end
-    end
+%     if reduction_version == 1
+%         g2 = g2 + real(At(reshape(H{1}, dimH, dimH) * A(real(IFT2(reshape(uu, Ny, Nx))))));
+%     elseif reduction_version == 2
+%         for q = 1:R
+%             g2 = g2 + real(At(reshape(H{q}, dimH, dimH) * uu));
+%         end
+%     end
     
     end_iter(t) = toc(tm);
           
     %% stopping criterion and logs
  
     % log
-    if ~mod(t,10)
+    if ~mod(t,100)
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
             fprintf(' L1 norm                       = %e\n', sum(cell2mat(norm1)));
