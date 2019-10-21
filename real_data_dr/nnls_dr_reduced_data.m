@@ -1,4 +1,4 @@
-% function nnls_dr_reduced_data(chInd, reduction_version)
+function nnls_dr_reduced_data(chInd, reduction_version)
 chInd = 1;
 reduction_version = 2;
 fprintf('Channel number %d', chInd);
@@ -81,11 +81,11 @@ if param_block_structure.use_manual_partitioning == 1
 end
 
 % data files on cirrus
-% new_file_y = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_y.mat');
-% new_file_u = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_u.mat');
-% new_file_v = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_v.mat');
-% new_file_nW = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_nW.mat');
-% new_file_res = matfile(['/lustre/home/shared/sc004/nnls_real_data/CYG_2b_res_nnls=', num2str(chInd),'.mat']);
+new_file_y = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_y.mat');
+new_file_u = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_u.mat');
+new_file_v = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_v.mat');
+new_file_nW = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_nW.mat');
+new_file_res = matfile(['/lustre/home/shared/sc004/nnls_real_data/CYG_2b_res_nnls=', num2str(chInd),'.mat']);
 % data files on workstation
 % new_file_y = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_y.mat');
 % new_file_u = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_u.mat');
@@ -94,14 +94,15 @@ end
 % new_file_res = matfile(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_2b_res_nnls=', num2str(chInd),'.mat'])
 % new_file_res = matfile(['/home/basphw/mjiang/workspace/Git/Dimensionality-reduced-hyper-SARA-sdwt/real_data_dr/CYG_2b_res_nnls=', num2str(chInd),'.mat'])
 % data files in EPFL
-new_file_y = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_y.mat');
-new_file_u = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_u.mat');
-new_file_v = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_v.mat');
-new_file_nW = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_nW.mat');
-new_file_res = matfile(['/Users/ming/workspace/Git/res_nnls/CYG_2b_res_nnls=', num2str(chInd),'.mat']);
+% new_file_y = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_y.mat');
+% new_file_u = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_u.mat');
+% new_file_v = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_v.mat');
+% new_file_nW = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_nW.mat');
+% new_file_res = matfile(['/Users/ming/workspace/Git/res_nnls/CYG_2b_res_nnls=', num2str(chInd),'.mat']);
 
 %% Reduction 
-epsilon = cell(1, 1);
+% epsilon = cell(1, 1);
+epsilon_new = cell(1, 1);
 
 % define operators
 % parpool(6)
@@ -132,6 +133,7 @@ yTl = cell(numel(u_tmp), 1);
 Wm{1} = cell(numel(u_tmp), 1);
 aWl = cell(numel(u_tmp), 1);
 eps_ = cell(numel(u_tmp), 1);
+norm_res = cell(numel(u_tmp), 1);
 
 Hl = H{1};
 Wml = Wm{1};
@@ -142,12 +144,12 @@ diagthresholdepsilon = param_fouRed.diagthresholdepsilon;
 
 % parpool(nBlocks)
 for j = 1:nBlocks
-    if j == 0
-        Ny = 512;
-        Nx = 512;
-        v_tmp{j} = v_tmp{j} * 10;
-        u_tmp{j} = u_tmp{j} * 10;
-    end
+%     if j == 0
+%         Ny = 512;
+%         Nx = 512;
+%         v_tmp{j} = v_tmp{j} * 10;
+%         u_tmp{j} = u_tmp{j} * 10;
+%     end
     
 %     [A, At, ~, ~] = op_nufft([0 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
 %     load G_H_2560_1536.mat
@@ -210,8 +212,9 @@ for j = 1:nBlocks
         aWl{j} = 1;
         yTl{j} = dataReduce_degrid(y_tmp{j}, G{1}', Tl{j}, Wml{j});
         [~, norm_res{j}] = fb_dr_nnls(yTl{j}, A, At, Hl{j}, Tl{j}, Wml{j}, param_nnls);
-        reduced_res = dataReduce_degrid(res_tmp{j}, G{1}', Tl{j}, Wml{j});
-        eps_{j} = norm(reduced_res(:), 2);
+        fprintf('Block %d of channel %d, estimated epsilon: %f\n',j, chInd, norm_res{j})
+%         reduced_res = dataReduce_degrid(res_tmp{j}, G{1}', Tl{j}, Wml{j});
+%         eps_{j} = norm(reduced_res(:), 2);
     end
     
     Hl{j} = reshape(Hl{j}, numel(Hl{j}), 1);
@@ -221,18 +224,22 @@ T{1} = Tl;
 Wm{1} = Wml;
 aW{1} = aWl;
 yT{1} = yTl;
-H{1} = Hl;
-epsilon{1} = eps_;
+% H{1} = Hl;
+% epsilon{1} = eps_;
+epsilon_new{1} = norm_res;
 
 % % save on workstation
 % save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon');
 % save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');
 % save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(chInd), '.mat'],'-v7.3', 'H', 'T', 'aW', 'Wm');
+save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_G_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon_new');
+save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_G_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');
+save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_G_DR=', num2str(chInd), '.mat'],'-v7.3', 'T', 'aW', 'Wm');
 
 % % save in EPFL
-save(['./CYG_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon');
-save(['./CYG_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');
-save(['./CYG_DR=', num2str(chInd), '.mat'],'-v7.3', 'H', 'T', 'aW', 'Wm');
+% save(['./CYG_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon');
+% save(['./CYG_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');
+% save(['./CYG_DR=', num2str(chInd), '.mat'],'-v7.3', 'H', 'T', 'aW', 'Wm');
 
 % save on cirrus
 % save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_gam01_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon');
