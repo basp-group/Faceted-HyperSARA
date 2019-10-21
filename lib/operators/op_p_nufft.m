@@ -117,8 +117,8 @@ else
             W{q} = any(Gb, 1).';
 
             % store only what we need from G
-%            G{q} = Gb(:, W{q});
-             G{q} = Gb;
+%             G{q} = Gb(:, W{q});
+            G{q} = Gb;
 
             %% fill the whole Gw
             %Gw(b_st:b_st+b_l-1, :) = Gb;
