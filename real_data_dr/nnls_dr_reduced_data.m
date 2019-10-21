@@ -87,18 +87,18 @@ end
 % new_file_nW = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_nW.mat');
 % new_file_res = matfile(['/lustre/home/shared/sc004/nnls_real_data/CYG_2b_res_nnls=', num2str(chInd),'.mat']);
 % data files on workstation
-new_file_y = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_y.mat');
-new_file_u = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_u.mat');
-new_file_v = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_v.mat');
-new_file_nW = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_nW.mat');
-new_file_res = matfile(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_2b_res_nnls=', num2str(chInd),'.mat'])
+% new_file_y = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_y.mat');
+% new_file_u = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_u.mat');
+% new_file_v = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_v.mat');
+% new_file_nW = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_nW.mat');
+% new_file_res = matfile(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_2b_res_nnls=', num2str(chInd),'.mat'])
 % new_file_res = matfile(['/home/basphw/mjiang/workspace/Git/Dimensionality-reduced-hyper-SARA-sdwt/real_data_dr/CYG_2b_res_nnls=', num2str(chInd),'.mat'])
 % data files in EPFL
-% new_file_y = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_y.mat');
-% new_file_u = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_u.mat');
-% new_file_v = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_v.mat');
-% new_file_nW = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_nW.mat');
-% new_file_res = matfile(['/Users/ming/workspace/Git/res_nnls/CYG_2b_res_nnls=', num2str(chInd),'.mat']);
+new_file_y = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_y.mat');
+new_file_u = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_u.mat');
+new_file_v = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_v.mat');
+new_file_nW = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_nW.mat');
+new_file_res = matfile(['/Users/ming/workspace/Git/res_nnls/CYG_2b_res_nnls=', num2str(chInd),'.mat']);
 
 %% Reduction 
 epsilon = cell(1, 1);
@@ -209,9 +209,9 @@ for j = 1:nBlocks
 %         aWl{j} = real(dataReduce_degrid(aWw, G{1}', Tl{j}, Wml{j}));
         aWl{j} = 1;
         yTl{j} = dataReduce_degrid(y_tmp{j}, G{1}', Tl{j}, Wml{j});
-%         [sol, norm_res] = fb_dr_nnls(yTl{j}, A, At, Hl{1}, Tl{j}, Wml{j}, param_nnls);
+        [~, norm_res{j}] = fb_dr_nnls(yTl{j}, A, At, Hl{j}, Tl{j}, Wml{j}, param_nnls);
         reduced_res = dataReduce_degrid(res_tmp{j}, G{1}', Tl{j}, Wml{j});
-%         eps_{j} = norm(reduced_res(:), 2);
+        eps_{j} = norm(reduced_res(:), 2);
     end
     
     Hl{j} = reshape(Hl{j}, numel(Hl{j}), 1);
