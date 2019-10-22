@@ -232,10 +232,10 @@ elseif algo_version == 2
     param_pdfb.verbose = 1; % print log or not
     param_pdfb.nu1 = 1; % bound on the norm of the operator Psi
     param_pdfb.nu2 = Anorm; % bound on the norm of the operator A*G
-    param_pdfb.gamma = 1e-6; % convergence parameter L1 (soft th parameter)
+    param_pdfb.gamma = gamma; % convergence parameter L1 (soft th parameter)
     param_pdfb.tau = 0.49; % forward descent step size
     param_pdfb.rel_obj = 1e-6; % stopping criterion
-    param_pdfb.max_iter = 500; % max number of iterations
+    param_pdfb.max_iter = 10000; % max number of iterations
     param_pdfb.lambda0 = 1; % relaxation step for primal update
     param_pdfb.lambda1 = 1; % relaxation step for L1 dual update
     param_pdfb.lambda2 = 1; % relaxation step for L2 dual update
@@ -253,7 +253,7 @@ elseif algo_version == 2
     param_pdfb.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
     param_pdfb.adapt_eps_tol_out = 1.001; % tolerance outside the l2 ball
     param_pdfb.adapt_eps_steps = 100; % min num of iter between consecutive updates
-    param_pdfb.adapt_eps_rel_obj = 2.5e-3; % bound on the relative change of the solution
+    param_pdfb.adapt_eps_rel_obj = 1e-3; % bound on the relative change of the solution
     param_pdfb.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
 
     param_pdfb.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
@@ -262,8 +262,8 @@ elseif algo_version == 2
     param_pdfb.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
 
     param_pdfb.use_reweight_steps = 1; % reweighting by fixed steps
-    param_pdfb.reweight_step_size = 50; %300; % reweighting step size
-    param_pdfb.reweight_steps = [200: param_pdfb.reweight_step_size :10000];
+    param_pdfb.reweight_step_size = 300; % reweighting step size
+    param_pdfb.reweight_steps = [2000: param_pdfb.reweight_step_size :10000];
     param_pdfb.step_flag = 1;
 
     param_pdfb.use_reweight_eps = 1; % reweighting w.r.t the relative change of the solution

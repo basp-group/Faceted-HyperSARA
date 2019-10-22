@@ -223,6 +223,7 @@ gamma = param.gamma;
 
 reweight_alpha = param.reweight_alpha;
 reweight_alpha_ff = param.reweight_alpha_ff;
+reweight_abs_of_max = param.reweight_abs_of_max;
 
 %% main loop: sequential + simulated parallel
 % xsol     - current solution estimate
@@ -379,7 +380,7 @@ for t = 1:param.max_iter
     %% stopping criterion and logs
  
     % log
-    if ~mod(t,100)
+    if ~mod(t,500)
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
             fprintf(' L1 norm                       = %e\n', sum(cell2mat(norm1)));
@@ -431,16 +432,16 @@ for t = 1:param.max_iter
         param.reweight_min_steps_rel_obj < t - reweight_last_step_iter && t < param.reweight_max_reweight_itr)
     
         % parallel for all bases
-        for k = 1:P
+        parfor k = 1:P
             d_val = abs(Psit{k}(xsol));
             weights{k} = reweight_alpha ./ (reweight_alpha + d_val);
-            weights{k}(d_val > max(d_val) * param.reweight_abs_of_max) = 0;
+            weights{k}(d_val > max(d_val) * reweight_abs_of_max) = 0;
         end
 
         reweight_alpha = reweight_alpha_ff * reweight_alpha;
-        weights_mat = [weights{:}];
-        weights_mat = weights_mat(:);
-        sigma1(:) = 1/op_norm(@(x) weights_mat .* Psitw(x), @(x) Psiw(weights_mat .* x), [Ny, Nx], 1e-8, 200, 0);
+%         weights_mat = [weights{:}];
+%         weights_mat = weights_mat(:);
+%         sigma1(:) = 1/op_norm(@(x) weights_mat .* Psitw(x), @(x) Psiw(weights_mat .* x), [Ny, Nx], 1e-8, 200, 0);
         
         fprintf('\n\n\n\n\n\n\n Performed reweight no %d \n\n\n\n\n', reweight_step_count);
        
