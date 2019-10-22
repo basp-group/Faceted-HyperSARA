@@ -232,9 +232,6 @@ epsilon_new{1} = norm_res;
 % save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon');
 % save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');
 % save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(chInd), '.mat'],'-v7.3', 'H', 'T', 'aW', 'Wm');
-save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_G_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon_new');
-save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_G_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');
-save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_G_DR=', num2str(chInd), '.mat'],'-v7.3', 'T', 'aW', 'Wm');
 
 % % save in EPFL
 % save(['./CYG_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon');
@@ -245,3 +242,6 @@ save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_G_DR=', num2str(chInd), 
 % save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_gam01_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon');
 % save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_gam01_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');
 % save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_gam01_DR=', num2str(chInd), '.mat'],'-v7.3', 'H', 'T', 'aW', 'Wm');
+save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_G_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon_new');
+save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_G_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');
+save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_G_DR=', num2str(chInd), '.mat'],'-v7.3', 'T', 'aW', 'Wm');

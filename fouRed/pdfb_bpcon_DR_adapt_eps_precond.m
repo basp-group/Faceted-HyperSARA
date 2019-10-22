@@ -161,6 +161,9 @@ else
 end
 
 %% set up log variables
+count_eps_update_down = 0;
+count_eps_update_up = 0;
+
 L1_v = zeros(param.max_iter, 1);
 L2_v = zeros(param.max_iter, 1);
 L2_vp = zeros(param.max_iter, R);
