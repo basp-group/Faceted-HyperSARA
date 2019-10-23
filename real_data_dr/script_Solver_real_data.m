@@ -1,5 +1,5 @@
-% function script_Solver_real_data(chInd)
-chInd = 1;
+function script_Solver_real_data(gamma, chInd)
+% chInd = 1;
 addpath ../fouRed
 addpath ../lib/
 addpath ../lib/operators/
@@ -152,7 +152,7 @@ disp('Split L1 + wavelets')
 param_pdfb.verbose = 1; % print log or not
 param_pdfb.nu1 = 1; % bound on the norm of the operator Psi
 param_pdfb.nu2 = Anorm; % bound on the norm of the operator A*G
-param_pdfb.gamma = 1e-6; % convergence parameter L1 (soft th parameter)
+param_pdfb.gamma = gamma; % convergence parameter L1 (soft th parameter)
 param_pdfb.tau = 0.49; % forward descent step size
 param_pdfb.rel_obj = 1e-6; % stopping criterion
 param_pdfb.max_iter = 100; % max number of iterations
