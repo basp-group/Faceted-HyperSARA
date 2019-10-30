@@ -20,17 +20,19 @@ end
 % only extend the facet toward the left
 splits = round(linspace(0, N, nchunks + 1));
 
-rg = zeros(nchunks, 2);
-for q = 1:nchunks
-    if q > 1
-        id_start = (splits(q) + 1) - d;
-    else
-        id_start = (splits(q) + 1);
-    end
+% rg = zeros(nchunks, 2);
+% for q = 1:nchunks
+%     if q > 1
+%         id_start = (splits(q) + 1) - d;
+%     else
+%         id_start = (splits(q) + 1);
+%     end
+% 
+%     id_end = splits(q + 1);
+% 
+%     rg(q, :) = [id_start, id_end];
+% end
 
-    id_end = splits(q + 1);
-
-    rg(q, :) = [id_start, id_end];
-end
+rg = [vertcat(splits(1)+1, splits(2:end-1).'+1-d), splits(2:end).'];
 
 end

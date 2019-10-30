@@ -12,10 +12,10 @@ function rg = domain_decomposition(nchunks, N)
 %-------------------------------------------------------------------------%
 %%
 splits = round(linspace(0, N, nchunks + 1));
-rg = zeros(nchunks, 2);
-
-for q = 1:nchunks
-   rg(q, :) = [(splits(q) + 1), splits(q + 1)]; 
-end
+% rg = zeros(nchunks, 2);
+% for q = 1:nchunks
+%    rg(q, :) = [(splits(q) + 1), splits(q + 1)]; 
+% end
+rg = [splits(1:end-1).'+1, splits(2:end).'];
 
 end
