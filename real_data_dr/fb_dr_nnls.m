@@ -1,4 +1,4 @@
-function [sol,norm_res] = fb_dr_nnls(y, A, At, H, Sigma, Mask, param)
+function [sol,norm_res] = fb_dr_nnls(y, A, At, H, Sigma, Mask, param, reduction_version)
 % fb_nnls - Solve non negative least squares problem.
 %
 % The problem is solved using the forward-backward algorithm with

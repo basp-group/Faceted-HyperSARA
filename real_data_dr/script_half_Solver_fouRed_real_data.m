@@ -1,4 +1,4 @@
-function script_half_Solver_fouRed_real_data(gamma, ch, reduction_version, algo_version)
+function script_half_Solver_fouRed_real_data(gamma, ch, reduction_version, algo_version, realdatablocks)
 
 addpath ../fouRed
 addpath ../lib/
@@ -17,7 +17,7 @@ addpath ../src/spmd/weighted/
 fprintf("gamma=%e\n", gamma)
 disp(ch)
 
-compute_Anorm = true;
+compute_Anorm = false;
 usingPrecondition = false;
 rw = -1;
 window_type = 'triangular';
@@ -35,7 +35,7 @@ param_real_data.image_size_Nx = 2560; % 2560;
 param_real_data.image_size_Ny = 1536; % 1536;
 nChannels = length(ch); % total number of "virtual" channels (i.e., after
 % concatenation) for the real dataset considered
-nBlocks = 2;        % number of data blocks (needs to be known beforehand,
+nBlocks = 9;        % number of data blocks (needs to be known beforehand,
 % quite restrictive here), change l.70 accordingly
 % klargestpercent = 20;
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
@@ -54,13 +54,13 @@ Ky = 8; % number of neighbours for nufft
 %% Load data
 for i = 1:nChannels 
     ch(i)
-    tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_H=', num2str(ch(i)), '.mat']);
+%     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_H=', num2str(ch(i)), '.mat']);
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_yT=', num2str(i), '.mat'], 'yT');
-%     tmp = load(['./CYG_yT=', num2str(ch(i)), '.mat'], 'yT');
+    tmp = load(['./CYG_H_ind6=', num2str(ch(i)), '.mat']);
     H{i,1} = tmp.H{1,1};
-    tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR_th3=', num2str(ch(i)), '.mat']);
+%     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR_th3=', num2str(ch(i)), '.mat']);
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
-%     tmp = load(['./CYG_DR=', num2str(ch(i)), '.mat']);
+    tmp = load(['./CYG_DR_ind6=', num2str(ch(i)), '.mat']);
     yT{i,1} = tmp.yT{1,1};
     T{i,1} = tmp.T{1,1};
     aW{i,1} = tmp.aW{1,1};
@@ -89,9 +89,9 @@ if compute_Anorm
         Ft = afclean( @(y) HS_operatorGtPhi_t(y, H{1}, At, T{1}, Wm{1}, [Ny, Nx], [oy * Ny, ox * Nx]));
     end
     Anorm = pow_method_op(F, Ft, [Ny Nx nChannels]);    
-    save(['Anorm_dr_0prec_per_', num2str(ch(1)), '_', num2str(ch(end)),'_th3.mat'],'-v7.3', 'Anorm');
+    save(['Anorm_dr_0prec_ind6_per_', num2str(ch(1)), '_', num2str(ch(end)),'.mat'],'-v7.3', 'Anorm');
 else
-    load(['Anorm_dr_0prec_per_', num2str(ch(1)), '_', num2str(ch(end)),'.mat']);
+    load(['Anorm_dr_0prec_ind6_per_', num2str(ch(1)), '_', num2str(ch(end)),'.mat']);
 end
 
 Anorm
@@ -258,7 +258,7 @@ elseif algo_version == 2
 
     param_pdfb.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_pdfb.reweight_alpha_ff = 0.8;
-    param_pdfb.total_reweights = 40; % -1 if you don't want reweighting
+    param_pdfb.total_reweights = 30; % -1 if you don't want reweighting
     param_pdfb.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
 
     param_pdfb.use_reweight_steps = 1; % reweighting by fixed steps
@@ -273,9 +273,9 @@ elseif algo_version == 2
     
     % solvers
     mkdir('results/')
-    [xsol, t_block, epsilon, t, rel_fval, L1_v, L2_v, L2_vp, norm2, res, end_iter] = ...
+    [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = ...
         pdfb_bpcon_DR_adapt_eps_precond(yT{1}, [Ny, Nx], epsilon{1}, A, At, H{1}, aW{1}, T{1}, Wm{1}, ... 
-        Psi, Psit, Psiw, Psitw, param_pdfb, reduction_version);
+        Psi, Psit, param_pdfb, reduction_version, realdatablocks);
     
     save(['results/results_fouRed_th3_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', algo_version, '_gamma=', num2str(gamma),'.mat'], '-v7.3', ...
         'xsol', 'epsilon', 't', 'rel_fval', 'norm2', 'res', 'end_iter');

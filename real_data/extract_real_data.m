@@ -1,4 +1,6 @@
 %% real data generation
+extract_raw_data = false;
+ind = 6;
 %visibility_file_name = '/home/h019/aa16/S-band/CYG-S.mat';
 visibility_file_name = {'5','7'};
 configuration_file_name = {'C','A'};
@@ -53,7 +55,7 @@ if extract_raw_data % MODIFY READING HERE (MATFILE)
     
     save(['CYG_data_raw_ind=' num2str(ind) '.mat'],'-v7.3', 'y', 'uw', 'vw', 'nWw', 'f', 'time_', 'pos', 'pixel_size');
 else
-    load(['CYG_data_raw_ind=' num2str(ind) '.mat']);
+    load(['../../extract_real_data/CYG_data_raw_ind=' num2str(ind) '.mat']);
 end
 
 figure(1),
@@ -63,10 +65,11 @@ end
 
 
 %%
-ch = [1 : size(y,2)];
-for i = ch
+% ch = [1 : size(y,2)];
+ch = 32;
+for l = length(ch)
     
-    i
+    i = ch(l)
     
     %% compute weights
     [aWw] = util_gen_preconditioning_matrix(uw{i}, vw{i}, param_precond);
@@ -82,7 +85,7 @@ for i = ch
     end
     
     % set the blocks structure
-    [u, v, ~, uvidx, aW{i}, nW] = util_gen_block_structure(uw{i}, vw{i}, aWw, nWw{i}, param_block_structure); % CHANGE DEF. OF OPERATOR
+    [u, v, ~, uvidx, aW{l}, nW] = util_gen_block_structure(uw{i}, vw{i}, aWw, nWw{i}, param_block_structure); % CHANGE DEF. OF OPERATOR
     
     % measurement operator initialization
     fprintf('Initializing the NUFFT operator\n\n');
@@ -93,11 +96,11 @@ for i = ch
     %     end
     
     %[A, At, G{i}, W{i}, Gw{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
-    [A, At, G{i}, W{i}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
+    [A, At, G{l}, W{l}] = op_p_nufft([v u], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
     
-    yb{i} = cell(length(u),1);
+    yb{l} = cell(length(u),1);
     for j = 1 : length(u) 
-        yb{i}{j} = y{i}(uvidx{j});
+        yb{l}{j} = y{i}(uvidx{j});
     end
     
 end

@@ -1,23 +1,24 @@
-function [xsol, t_block, epsilon, t, rel_fval, L1_v, L2_v, L2_vp, norm2, res, end_iter] = pdfb_bpcon_DR_adapt_eps_precond(y, imsize, epsilon, A, At, H, pU, T, W, Psi, Psit, Psiw, Psitw, param, reduction_version)
+function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_bpcon_DR_adapt_eps_precond(y, imsize, epsilon, A, At, H, pU, T, W, Psi, Psit, param, reduction_version, realdatablocks)
 %xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter
 % Inputs:
 % y{:} - the visibility data
+% imsize - image size
 % epsilon - L2 bound
 % A - function handle, linear operator modeling the measurement process,
 %     FFT and zero padding 
-% At - the adjoint of Ae
+% At - the adjoint of A
+% H{:} - holographic matrix
+% pU{:} - pre-conditioning matrix
 % T{:} - selected "singular values" for Fourier reduction
 % W{:} - selection matrix for Fourier reduction
 % Psi - function handle, prior regularisation function
 % Psit - the adjoint of Psi
 % param - configuration parameters
 % reduction_version: 1. embedding operator F*Phi^t 2. embedding operator G^t 
+% realdatablocks (for real data only): 2. 2 blocks 9. 9 blocks
 % 
 % Outputs: 
 % xsol - final solution
-% L1_v - evolution of the L1 norm
-% L2_v - evolution of the L2 norm
-% L2_vp - evolution of the L2 norm per block
 % rel_fval - evolution of the relative solution variation
 %
 % Authors: Ming Jiang
@@ -34,7 +35,7 @@ Ny = imsize(1);
 Nx = imsize(2);
 
 % number of over-sampled pixels
-Kd = length(W{1});
+Kd = length(W{1});  % for reduction_version = 1, Kd = Nx*Ny, for reduction_version = 2, Kd = ox*Nx*oy*Ny
 
 %% optional input arguments
 if ~isfield(param, 'nu1')
@@ -75,7 +76,7 @@ else
 end
 if isfield(param, 'initv1')
     norm1 = cell(P, 1);
-    r1 = cell(P, 1);
+%     r1 = cell(P, 1);
     u1 = cell(P, 1);
     v1 = cell(P, 1);
     if iscell(param.initv1)
@@ -91,10 +92,10 @@ if isfield(param, 'initv1')
         % initial L1 descent step
         u1{k} = zeros(size(Psi{k}(v1{k})));
     end
-    vy1 = v1;
+%     vy1 = v1;
 else
     norm1 = cell(P, 1);
-    r1 = cell(P, 1);
+%     r1 = cell(P, 1);
     u1 = cell(P, 1);
     v1 = cell(P, 1);
     for k = 1:P
@@ -104,7 +105,7 @@ else
         % initial L1 descent step
         u1{k} = zeros(size(Psi{k}(v1{k})));
     end
-    vy1 = v1;
+%     vy1 = v1;
 end
 if isfield(param, 'initv2')
     norm2 = cell(R, 1);
@@ -143,20 +144,16 @@ end
 
 if isfield(param,'init_t_block')
     t_block = param.init_t_block;
-    t_start = param.init_t+1;
     reweight_last_step_iter = param.init_t;
     reweight_step_count = param.reweight_step_count+1;
-    rw_counts = 1;
     fprintf('t t_block uploaded \n\n')
 else
     t_block = cell(R, 1);
     for q = 1 : R
         t_block{q} = 0;
     end
-    t_start = 1;
     reweight_last_step_iter = 0;
     reweight_step_count = 0;
-    rw_counts = 1;
     fprintf('t t_block NOT uploaded \n\n')
 end
 
@@ -164,15 +161,13 @@ end
 count_eps_update_down = 0;
 count_eps_update_up = 0;
 
-L1_v = zeros(param.max_iter, 1);
-L2_v = zeros(param.max_iter, 1);
-L2_vp = zeros(param.max_iter, R);
+% L1_v = zeros(param.max_iter, 1);
+% L2_v = zeros(param.max_iter, 1);
+% L2_vp = zeros(param.max_iter, R);
 
 rel_fval = zeros(param.max_iter, 1);
 
 reweight_steps = param.reweight_steps;
-reweight_step_count = 1;
-reweight_last_step_iter = 1;
 
 % snr_v = zeros(param.max_iter, 1);
 
@@ -188,7 +183,6 @@ hardt = @(z) max(real(z), 0);
 
 %soft thresholding operator
 soft = @(z, T) sign(z) .* max(abs(z)-T, 0); 
-
 
 %% initialization
 
@@ -228,10 +222,6 @@ reweight_abs_of_max = param.reweight_abs_of_max;
 %% main loop: sequential + simulated parallel
 % xsol     - current solution estimate
 % prev_sol - previous solution estimate
-% r1       - L1 part of criterion: r1 = Psi' * sol
-% v1       - L1 dual variable
-% r2       - L2 part of criterion: r2 = T * A * sol
-% v2       - L2 dual variable
 
 util_create_pool(15);
 
@@ -257,15 +247,18 @@ for t = 1:param.max_iter
     
     %% L1 prox update: dual variables update
     % parallel for all bases
-    parfor k = 1:P        
-        r1{k} = weights{k} .* Psit{k}(prev_xsol);
-        vy1{k} = v1{k} + r1{k} - soft(v1{k} + r1{k}, gamma / sigma1(k));
-        
-        v1{k} = v1{k} + lambda1 * (vy1{k} - v1{k});
-        u1{k} = Psi{k}(weights{k} .* v1{k});
-        
-        % local L1 norm of current solution
-        norm1{k} = sum(abs(r1{k}));
+%     parfor k = 1:P        
+%         r1{k} = weights{k} .* Psit{k}(prev_xsol);
+%         vy1{k} = v1{k} + r1{k} - soft(v1{k} + r1{k}, gamma / sigma1(k));
+%         
+%         v1{k} = v1{k} + lambda1 * (vy1{k} - v1{k});
+%         u1{k} = Psi{k}(weights{k} .* v1{k});
+%         
+%         % local L1 norm of current solution
+%         norm1{k} = sum(abs(r1{k}));
+%     end
+    for k = 1:P
+        f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, prev_xsol, gamma, weights{k}, sigma1(k), lambda1);
     end
 
     
@@ -273,31 +266,23 @@ for t = 1:param.max_iter
     
     % non gridded measurements of curent solution 
     ns = A(prev_xsol);
-    
-    if reduction_version == 1
-        dimH = sqrt(numel(H{1}));
-        ns = FT2(real(At(reshape(H{1}, dimH, dimH) * ns)));
-        
-        % partial non gridded measurements for each node
-        ns_p = cell(R, 1);
 
-        % select parts to be sent to nodes
-        for q = 1:R
-            ns_p{q} = ns(W{q});
-        end
-    elseif reduction_version == 2
-        dimH = sqrt(numel(H{1}));
-    end
     res = cell(R, 1);
     
     % parallel for all R blocks
+    residual_check_c = 0;
+    epsilon_check_c = 0;
+    residual_check_a = 0;
+    epsilon_check_a = 0;
+    
     for q = 1:R
         if reduction_version == 1
-            r2{q} = T{q} .* ns_p{q};
+            tmp = FT2(real(At(H{q} * ns)));
+            tmp = tmp(:);
         elseif reduction_version == 2
-            tmp = reshape(H{q}, dimH, dimH) * ns;
-            r2{q} = T{q} .* tmp(W{q});
+            tmp = H{q} * ns;
         end
+        r2{q} = T{q} .* tmp(W{q});
         
         if param.use_proj_elipse_fb
 %             fprintf('Preconditioning step\n');
@@ -316,6 +301,34 @@ for t = 1:param.max_iter
         % norm of residual
         res{q} = r2{q} - y{q};
         norm2{q} = norm(res{q});
+        
+        if realdatablocks == 2
+            if q == 1
+                residual_check_c = norm2{q};
+                epsilon_check_c = epsilon{q};
+            else
+                residual_check_a = norm2{q};
+                epsilon_check_a = epsilon{q};
+            end
+            
+        elseif realdatablocks == 9
+            if q == 1 || q == 2
+                residual_check_c = residual_check_c + norm2{q}^2;
+                epsilon_check_c = epsilon_check_c + epsilon{q}^2;
+            else
+                residual_check_a = residual_check_a + norm2{q}^2;
+                epsilon_check_a = epsilon_check_a + epsilon{q}^2;
+            end
+        end
+        
+    end
+    
+    if realdatablocks == 9
+        epsilon_check_c = sqrt(epsilon_check_c);
+        residual_check_c = sqrt(residual_check_c);
+
+        epsilon_check_a = sqrt(epsilon_check_a);
+        residual_check_a = sqrt(residual_check_a);
     end
     
     %% ADAPTIVE bound update on each block
@@ -342,38 +355,30 @@ for t = 1:param.max_iter
 
     %% update the primal gradient
     g1 = zeros(size(xsol));
-    g2 = zeros(size(xsol));
+    
+%     for k = 1:P
+%         g1 = g1 + sigma1(k) * u1{k};
+%     end
     
     for k = 1:P
-        g1 = g1 + sigma1(k) * u1{k};
+        [idx, v1_, u1_, l1_] = fetchNext(f);
+        v1{idx} = v1_;
+        u1{idx} = u1_;
+        norm1{idx} = l1_;    
+        g1 = g1 + u1{idx};
     end
-    
-    if reduction_version == 1
-        uu = zeros(Ny*Nx, 1);
-        for q = 1:R
-            uu(W{q}) = sigma2(q) * u2{q};
-        end
-        g2 = real(At(reshape(H{1}, dimH, dimH) * A(real(IFT2(reshape(uu, Ny, Nx))))));
 
-    elseif reduction_version == 2
-        uu = zeros(Kd, 1);
-        for q = 1:R
-            tmp = zeros(Kd, 1);
-            tmp(W{q}) = u2{q};
-            uu = uu + sigma2(q) * reshape(H{q}, dimH, dimH) * tmp;
+    uu = zeros(Kd, 1);
+    for q = 1:R
+        tmp = zeros(Kd, 1);
+        tmp(W{q}) = u2{q};
+        if reduction_version == 1
+            uu = uu + sigma2(q) * H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+        elseif reduction_version == 2
+            uu = uu + sigma2(q) * H{q} * tmp;
         end
-        g2 = real(At(uu));
     end
-    
-    % for new blocking (over singular values)
-
-%     if reduction_version == 1
-%         g2 = g2 + real(At(reshape(H{1}, dimH, dimH) * A(real(IFT2(reshape(uu, Ny, Nx))))));
-%     elseif reduction_version == 2
-%         for q = 1:R
-%             g2 = g2 + real(At(reshape(H{q}, dimH, dimH) * uu));
-%         end
-%     end
+    g2 = real(At(uu));
     
     end_iter(t) = toc(tm);
           
@@ -406,11 +411,11 @@ for t = 1:param.max_iter
         end
     end
     if (param.verbose >= 0.5)
-        L1_v(t) = sum(cell2mat(norm1));
-        L2_v(t) = norm(cell2mat(norm2));
-        for q = 1:R
-            L2_vp(t, q) = norm2{q};
-        end
+%         L1_v(t) = sum(cell2mat(norm1));
+%         L2_v(t) = norm(cell2mat(norm2));
+%         for q = 1:R
+%             L2_vp(t, q) = norm2{q};
+%         end
         rel_fval(t) = rel_sol_norm_change;
 %         try 
 %             snr_v(t) = 20*log10(norm(param.im(:))/norm(param.im(:) - xsol(:)));
@@ -428,7 +433,7 @@ for t = 1:param.max_iter
     
     if (param.use_reweight_steps && t == reweight_steps(reweight_step_count) && t < param.reweight_max_reweight_itr) || ...
         (param.use_reweight_eps && rel_sol_norm_change < param.reweight_rel_obj && ...
-        norm2{1} <= param.adapt_eps_tol_out*epsilon{1} && norm2{2} <= param.adapt_eps_tol_out*epsilon{2} && ...
+        residual_check_c <= param.adapt_eps_tol_out*epsilon_check_c && residual_check_a <= param.adapt_eps_tol_out*epsilon_check_a && ...
         param.reweight_min_steps_rel_obj < t - reweight_last_step_iter && t < param.reweight_max_reweight_itr)
     
         % parallel for all bases
@@ -444,6 +449,7 @@ for t = 1:param.max_iter
 %         sigma1(:) = 1/op_norm(@(x) weights_mat .* Psitw(x), @(x) Psiw(weights_mat .* x), [Ny, Nx], 1e-8, 200, 0);
         
         fprintf('\n\n\n\n\n\n\n Performed reweight no %d \n\n\n\n\n', reweight_step_count);
+        fitswrite(xsol, ['xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '.fits']);
        
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
@@ -458,7 +464,7 @@ for t = 1:param.max_iter
 %     end
     
     if (t > 1 && rel_sol_norm_change < param.rel_obj && reweight_step_count > param.total_reweights && ...
-            res{1} <= param.adapt_eps_tol_out*norm2{1} && res{2} <= param.adapt_eps_tol_out*norm2{2})
+            residual_check_c <= param.adapt_eps_tol_out*epsilon_check_c && residual_check_a <= param.adapt_eps_tol_out*epsilon_check_a)
         flag = 1;
         break;
      end
@@ -498,11 +504,21 @@ xsol = hardt(xsol);
 
 % trim the log vectors to the size of the actual iterations performed
 if (param.verbose >= 0.5)
-    L1_v = L1_v(1:t);
-    L2_v = L2_v(1:t);
-    L2_vp = L2_vp(1:t, :);
+%     L1_v = L1_v(1:t);
+%     L2_v = L2_v(1:t);
+%     L2_vp = L2_vp(1:t, :);
     rel_fval = rel_fval(1:t);
 %     snr_v = snr_v(1:t);
 end
 
 end
+
+function [v1_, u1_, l1_] = run_par_waverec(v1_, Psit, Psi, prev_xsol, gamma, weights_, sigma1, lambda1)
+    r1_ = v1_ + Psit(prev_xsol);
+    vy1_ =  r1_ - sign(r1_) .* max(abs(r1_) - gamma * weights_/ sigma1, 0);
+    v1_ = v1_ + lambda1 * (vy1_ - v1_);
+    u1_ = Psi(v1_);
+    % local L11 norm of current solution
+    l1_ = norm(r1_(:),1);
+end
+
