@@ -1,7 +1,7 @@
 function y = HS_fouRed_forward_operator_new(x, A, At, H, Sigma, Mask, aW)
 % Phi' = Sigma * F * Phi^t * Phi = Sigma * F * A^t * H * A
 
-FT2 = @(x) fftshift(fft2(ifftshift(x)));
+FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
 
 % Parameters
 [Ny, Nx, c] = size(x);

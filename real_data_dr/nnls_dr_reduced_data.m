@@ -19,7 +19,7 @@ param_real_data.image_size_Ny = 1536;
 nBlocks = realdatablocks;        % number of data blocks (needs to be known beforehand,
 % quite restrictive here), change l.70 accordingly
 klargestpercent = 20;
-FT2 = @(x) fftshift(fft2(ifftshift(x)));
+FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
 
 %% Config parameters
 Nx = param_real_data.image_size_Nx;

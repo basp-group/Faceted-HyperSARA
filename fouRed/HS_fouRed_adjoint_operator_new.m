@@ -1,7 +1,7 @@
 function y = HS_fouRed_adjoint_operator_new(x, A, At, H, Sigma, Mask, N, aW)
 % Phi'^t = Phi^t * Phi * F^t * Sigma = A^t * H * A * F^t * Sigma
 
-IFT2 = @(x) fftshift(ifft2(ifftshift(x)));
+IFT2 = @(x) fftshift(ifft2(ifftshift(x))) * sqrt(numel(x));
 
 % Parameters
 [~, c] = size(x);

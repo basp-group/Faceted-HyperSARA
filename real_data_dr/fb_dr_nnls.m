@@ -7,8 +7,8 @@ function [sol,norm_res] = fb_dr_nnls(y, A, At, H, Sigma, Mask, param, reduction_
 % 
 % Author: Ming Jiang
 %
-FT2 = @(x) fftshift(fft2(ifftshift(x)));
-IFT2 = @(x) fftshift(ifft2(ifftshift(x)));
+FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
+IFT2 = @(x) fftshift(ifft2(ifftshift(x))) * sqrt(numel(x));
 
 if nargin == 7
     reduction_version = 2;

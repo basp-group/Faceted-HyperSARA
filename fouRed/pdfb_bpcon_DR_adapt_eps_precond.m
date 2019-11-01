@@ -23,8 +23,8 @@ function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_bpco
 %
 % Authors: Ming Jiang
 
-FT2 = @(x) fftshift(fft2(ifftshift(x)));
-IFT2 = @(x) fftshift(ifft2(ifftshift(x)));
+FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
+IFT2 = @(x) fftshift(ifft2(ifftshift(x))) * sqrt(numel(x));
 
 % number of nodes
 R = length(H);
