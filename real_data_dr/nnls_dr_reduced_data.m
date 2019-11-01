@@ -48,7 +48,7 @@ fprintf('Enable k-largest percentage: %d\n', param_fouRed.enable_klargestpercent
 fprintf('Enable automatic threshold: %d\n', param_fouRed.enable_estimatethreshold);
 %% parameter NNLS
 param_nnls.verbose = 2;       % print log or not
-param_nnls.rel_obj = 1e-6;    % stopping criterion
+param_nnls.rel_obj = 1e-10;    % stopping criterion
 param_nnls.max_iter = 200;     % max number of iterations 1000
 param_nnls.sol_steps = [inf]; % saves images at the given iterations
 param_nnls.beta = 1;
@@ -225,13 +225,13 @@ epsilon{1} = norm_res;
 % save(['./CYG_DR_9b=', num2str(chInd), '.mat'],'-v7.3', 'yT', 'T', 'aW', 'Wm', 'epsilon');
 
 % save on cirrus
-Hfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_H_', num2str(realdatablocks), 'b_ind6=', num2str(chInd)];
+Hfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_H_cal_', num2str(realdatablocks), 'b_ind6=', num2str(chInd), '.mat'];
 if ~isfile(Hfilename)
     save(Hfilename, '-v7.3', 'H')
 end
-DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_', num2str(realdatablocks), 'b_ind6_fouRed',...
+DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
     num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(chInd), '.mat'];
-if ~isfile(Hfilename)
+if ~isfile(DRfilename)
     save(DRfilename, '-v7.3', 'yT', 'T', 'aW', 'Wm', 'epsilon');
 end
 fprintf('Dimensionality reduction and epsilon estimation are finished\n')

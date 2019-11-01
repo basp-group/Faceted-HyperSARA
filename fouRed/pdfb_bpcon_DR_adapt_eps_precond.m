@@ -152,8 +152,8 @@ else
     for q = 1 : R
         t_block{q} = 0;
     end
-    reweight_last_step_iter = 0;
-    reweight_step_count = 0;
+    reweight_last_step_iter = 1;
+    reweight_step_count = 1;
     fprintf('t t_block NOT uploaded \n\n')
 end
 

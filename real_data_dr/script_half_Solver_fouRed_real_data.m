@@ -14,10 +14,12 @@ addpath ../src/spmd/
 addpath ../src/spmd/dr/
 addpath ../src/spmd/weighted/
 
-fprintf("gamma=%e\n", gamma)
-disp(ch)
+fprintf("Regularization parameter=%e\n", gamma);
+fprintf('Channel number %d\n', ch);
+fprintf('Reduction version %d\n', reduction_version);
+fprintf('Data blocks: %d\n', realdatablocks);
 
-compute_Anorm = false;
+compute_Anorm = true;
 usingPrecondition = false;
 rw = -1;
 window_type = 'triangular';
@@ -38,12 +40,10 @@ nChannels = length(ch); % total number of "virtual" channels (i.e., after
 nBlocks = realdatablocks;        % number of data blocks (needs to be known beforehand,
 % quite restrictive here), change l.70 accordingly
 % klargestpercent = 20;
-FT2 = @(x) fftshift(fft2(ifftshift(x)));
 
 %% Config parameters
 Nx = param_real_data.image_size_Nx;
 Ny = param_real_data.image_size_Ny;
-N = Nx * Ny;
 ox = 2; % oversampling factors for nufft
 oy = 2; % oversampling factors for nufft
 Kx = 8; % number of neighbours for nufft
@@ -54,11 +54,11 @@ Ky = 8; % number of neighbours for nufft
 %% Load data
 for i = 1:nChannels 
     ch(i)
-    tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_H_', num2str(realdatablocks), 'b_ind6=', num2str(ch(i)), '.mat']);
+    tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_H_cal_', num2str(realdatablocks), 'b_ind6=', num2str(ch(i)), '.mat']);
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_yT=', num2str(i), '.mat'], 'yT');
 %     tmp = load(['./CYG_H_ind6=', num2str(ch(i)), '.mat']);
     H{i,1} = tmp.H{1,1};
-    tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_', num2str(realdatablocks), 'b_ind6_fouRed',...
+    tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat']);
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
 %     tmp = load(['./CYG_DR_ind6=', num2str(ch(i)), '.mat']);
@@ -81,6 +81,14 @@ end
 clear tmp
 
 %% Compute full measurement operator spectral norm
+Anormfile = ['Anorm_dr_0prec_ind6_per_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(realdatablocks), 'b_fouRed',...
+        num2str(reduction_version), '_th', num2str(fouRed_gamma), '.mat'];
+if isfile(Anormfile)
+    compute_Anorm = false;
+else
+    compute_Anorm = true;
+end
+
 if compute_Anorm
     if reduction_version == 1
         F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, T, Wm, aW));
@@ -90,11 +98,9 @@ if compute_Anorm
         Ft = afclean( @(y) HS_operatorGtPhi_t(y, H{1}, At, T{1}, Wm{1}, [Ny, Nx], [oy * Ny, ox * Nx]));
     end
     Anorm = pow_method_op(F, Ft, [Ny Nx nChannels]);    
-    save(['Anorm_dr_0prec_ind6_per_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(realdatablocks), 'b_fouRed',...
-        num2str(reduction_version), '_th', num2str(fouRed_gamma), '.mat'],'-v7.3', 'Anorm');
+    save(Anormfile,'-v7.3', 'Anorm');
 else
-    load(['Anorm_dr_0prec_ind6_per_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(realdatablocks), 'b_fouRed',...
-        num2str(reduction_version), '_th', num2str(fouRed_gamma), '.mat']);
+    load(Anormfile);
 end
 
 Anorm
