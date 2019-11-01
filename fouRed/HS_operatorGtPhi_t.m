@@ -51,8 +51,7 @@ if iscell(H)
         end
         x1 = zeros(Kd(1) * Kd(2), 1);
         x1(Mask{j}) = Sigma{j} .* xtmp(:);
-        dimH = sqrt(numel(H{j}));
-        y = y + real(At(reshape(H{j}, dimH, dimH) * x1));
+        y = y + real(At(H{j} * x1));
     end
 else
     if exist('aW', 'var')
@@ -62,8 +61,7 @@ else
     end
     x1 = zeros(Kd(1) * Kd(2), 1);
     x1(cell2mat(Mask)) = cell2mat(Sigma) .* xtmp(:);
-    dimH = sqrt(numel(H));
-    y = real(At(reshape(H, dimH, dimH) * x1));
+    y = real(At(H * x1));
 end
 
 end

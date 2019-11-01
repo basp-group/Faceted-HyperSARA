@@ -7,8 +7,19 @@ function [sol,norm_res] = fb_dr_nnls(y, A, At, H, Sigma, Mask, param, reduction_
 % 
 % Author: Ming Jiang
 %
+FT2 = @(x) fftshift(fft2(ifftshift(x)));
+IFT2 = @(x) fftshift(ifft2(ifftshift(x)));
 
-No = size(Mask, 1);
+if nargin == 7
+    reduction_version = 2;
+end
+
+if reduction_version == 1
+    [Ny, Nx] = size(At(zeros(size(H, 1), 1)));
+end
+
+No = size(Mask, 1); % if reduction_version = 1, No = Nx*Ny
+                    % if reduction_version = 2, No = ox*Nx*oy*Ny
 
 % Optional input arguments
 if ~isfield(param, 'verbose'), param.verbose = 1; end
@@ -19,16 +30,29 @@ if ~isfield(param, 'max_iter'), param.max_iter = 200; end
 % Initialization
 if isfield(param,'initsol')
     xhat = param.initsol;
-    HFx = H * A(xhat);
+    if reduction_version == 1
+        HFx = FT2(At(H * A(xhat)));
+        HFx = HFx(:);
+    elseif reduction_version == 2
+        HFx = H * A(xhat);
+    end
     res = y - Sigma .* HFx(Mask);
     g2 = zeros(No,1);
     g2(Mask) = g2(Mask) + Sigma .* res;
-    grad = At(H * g2);
+    if reduction_version == 1
+        grad = At(H * A(real(IFT2(reshape(g2, Ny, Nx)))));
+    elseif reduction_version == 2
+        grad = At(H * g2);
+    end
     prev_obj = 0.5*norm(res(:))^2;
 else
     g2 = zeros(No,1);
     g2(Mask) = g2(Mask) + Sigma .* y;
-    grad = At(H * g2);
+    if reduction_version == 1
+        grad = At(H * A(real(IFT2(reshape(g2, Ny, Nx)))));
+    elseif reduction_version == 2
+        grad = At(H * g2);
+    end
     xhat = zeros(size(grad));
     prev_obj = 0.5*norm(y(:))^2;
 end
@@ -57,8 +81,13 @@ while 1
         fprintf('Iteration %i:\n', iter);
     end
     
-    %Step size computation    
-    HFx = H * A(grad);
+    %Step size computation 
+    if reduction_version == 1
+        HFx = FT2(At(H * A(grad)));
+        HFx = HFx(:);
+    elseif reduction_version == 2
+        HFx = H * A(grad);
+    end
     res = Sigma .* HFx(Mask);
     mu = param.beta * norm(grad(:))^2/norm(res(:))^2;
     
@@ -72,7 +101,12 @@ while 1
     %Stepsize check
     q = qfval + real((xhat(:)-sol(:))'*grad(:))...
         + 0.5/mu*norm(sol(:)-xhat(:))^2;
-    HFx = H * A(sol);
+    if reduction_version == 1
+        HFx = FT2(At(H * A(sol)));
+        HFx = HFx(:);
+    elseif reduction_version == 2
+        HFx = H * A(sol);
+    end
     res = y - Sigma .* HFx(Mask);
     norm_res = norm(res);
     curr_obj = 0.5*norm(res(:))^2;
@@ -95,7 +129,12 @@ while 1
         %New stepsize check
         q = qfval + real((sol(:)-xhat(:))'*grad(:))...
             + 0.5/mu*norm(sol(:)-xhat(:))^2;
-        HFx = H * A(sol);
+        if reduction_version == 1
+            HFx = FT2(At(H * A(sol)));
+            HFx = HFx(:);
+        elseif reduction_version == 2
+            HFx = H * A(sol);
+        end
         res = y - Sigma .* HFx(Mask);
         norm_res = norm(res);
         curr_obj = 0.5*norm(res(:))^2;  
@@ -142,13 +181,22 @@ while 1
     xhat = sol + (told-1)/t * (sol - prev_sol);
     
     % Gradient computation
-    HFx = H * A(xhat);
+    if reduction_version == 1
+        HFx = FT2(At(H * A(xhat)));
+        HFx = HFx(:);
+    elseif reduction_version == 2
+        HFx = H * A(xhat);
+    end
     res = y - Sigma .* HFx(Mask);
     norm_res = norm(res);
     
     g2 = zeros(No,1);
     g2(Mask) = g2(Mask) + Sigma .* res;
-    grad = At(H * g2);
+    if reduction_version == 1
+        grad = At(H * A(real(IFT2(reshape(g2, Ny, Nx)))));
+    elseif reduction_version == 2
+        grad = At(H * g2);
+    end
 
     % Update variables
     iter = iter + 1;

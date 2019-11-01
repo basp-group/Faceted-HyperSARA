@@ -12,8 +12,7 @@ for ind = 1:c
     
     if iscell(H{ind})
         for j = 1:length(H{ind})
-            dimH = sqrt(numel(H{ind}{j}));
-            x2 = reshape(H{ind}{j}, dimH, dimH) * x1;
+            x2 = H{ind}{j} * x1;
             xtmp = FT2(real(At(x2)));
             xtmp = xtmp(:);
             xtmp = Sigma{ind}{j} .* xtmp(Mask{ind}{j});
@@ -24,8 +23,7 @@ for ind = 1:c
             end
         end
     else    
-        dimH = sqrt(numel(H{ind}));
-        x2 = reshape(H{ind}, dimH, dimH) * x1;
+        x2 = H{ind} * x1;
         xtmp = FT2(real(At(x2)));
         xtmp = xtmp(:);
         xtmp = cell2mat(Sigma{ind}) .* xtmp(cell2mat(Mask{ind}));

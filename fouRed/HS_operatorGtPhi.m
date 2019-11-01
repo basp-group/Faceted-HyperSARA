@@ -36,8 +36,7 @@ x1 = A(x);
 
 if iscell(H)
     for j = 1:length(H)
-        dimH = sqrt(numel(H{j}));
-        x2 = reshape(H{j}, dimH, dimH) * x1;
+        x2 = H{j} * x1;
         xtmp = Sigma{j} .* x2(Mask{j});
         if exist('aW', 'var')
             y{j} =  sqrt(aW{j}) .* xtmp;
@@ -46,8 +45,7 @@ if iscell(H)
         end
     end
 else    
-    dimH = sqrt(numel(H));
-    x2 = reshape(H, dimH, dimH) * x1;
+    x2 = H * x1;
     xtmp = cell2mat(Sigma) .* x2(cell2mat(Mask));
     if exist('aW', 'var')
         y =  sqrt(cell2mat(aW)) .* xtmp;

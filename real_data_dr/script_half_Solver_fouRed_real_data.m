@@ -1,4 +1,4 @@
-function script_half_Solver_fouRed_real_data(gamma, ch, reduction_version, algo_version, realdatablocks)
+function script_half_Solver_fouRed_real_data(gamma, ch, reduction_version, algo_version, realdatablocks, fouRed_gamma)
 
 addpath ../fouRed
 addpath ../lib/
@@ -54,13 +54,14 @@ Ky = 8; % number of neighbours for nufft
 %% Load data
 for i = 1:nChannels 
     ch(i)
-%     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_H=', num2str(ch(i)), '.mat']);
+    tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_H_', num2str(realdatablocks), 'b_ind6=', num2str(ch(i)), '.mat']);
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_yT=', num2str(i), '.mat'], 'yT');
-    tmp = load(['./CYG_H_ind6=', num2str(ch(i)), '.mat']);
+%     tmp = load(['./CYG_H_ind6=', num2str(ch(i)), '.mat']);
     H{i,1} = tmp.H{1,1};
-%     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_DR_th3=', num2str(ch(i)), '.mat']);
+    tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_', num2str(realdatablocks), 'b_ind6_fouRed',...
+        num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat']);
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
-    tmp = load(['./CYG_DR_ind6=', num2str(ch(i)), '.mat']);
+%     tmp = load(['./CYG_DR_ind6=', num2str(ch(i)), '.mat']);
     yT{i,1} = tmp.yT{1,1};
     T{i,1} = tmp.T{1,1};
     aW{i,1} = tmp.aW{1,1};
@@ -89,9 +90,11 @@ if compute_Anorm
         Ft = afclean( @(y) HS_operatorGtPhi_t(y, H{1}, At, T{1}, Wm{1}, [Ny, Nx], [oy * Ny, ox * Nx]));
     end
     Anorm = pow_method_op(F, Ft, [Ny Nx nChannels]);    
-    save(['Anorm_dr_0prec_ind6_per_', num2str(ch(1)), '_', num2str(ch(end)),'.mat'],'-v7.3', 'Anorm');
+    save(['Anorm_dr_0prec_ind6_per_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(realdatablocks), 'b_fouRed',...
+        num2str(reduction_version), '_th', num2str(fouRed_gamma), '.mat'],'-v7.3', 'Anorm');
 else
-    load(['Anorm_dr_0prec_ind6_per_', num2str(ch(1)), '_', num2str(ch(end)),'.mat']);
+    load(['Anorm_dr_0prec_ind6_per_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(realdatablocks), 'b_fouRed',...
+        num2str(reduction_version), '_th', num2str(fouRed_gamma), '.mat']);
 end
 
 Anorm
@@ -273,11 +276,12 @@ elseif algo_version == 2
     
     % solvers
     mkdir('results/')
-    [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = ...
+    [xsol, ~, epsilon, t, rel_fval, norm2, res, end_iter] = ...
         pdfb_bpcon_DR_adapt_eps_precond(yT{1}, [Ny, Nx], epsilon{1}, A, At, H{1}, aW{1}, T{1}, Wm{1}, ... 
-        Psi, Psit, param_pdfb, reduction_version, realdatablocks);
+        Psi, Psit, param_pdfb, reduction_version, realdatablocks, fouRed_gamma);
     
-    save(['results/results_fouRed_th3_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', algo_version, '_gamma=', num2str(gamma),'.mat'], '-v7.3', ...
+    save(['results/results_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', algo_version, '_gamma=', num2str(gamma),...
+        '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.mat'], '-v7.3', ...
         'xsol', 'epsilon', 't', 'rel_fval', 'norm2', 'res', 'end_iter');
     
 end
