@@ -35,7 +35,7 @@ param_real_data.image_size_Nx = 2560; % 2560;
 param_real_data.image_size_Ny = 1536; % 1536;
 nChannels = length(ch); % total number of "virtual" channels (i.e., after
 % concatenation) for the real dataset considered
-nBlocks = 9;        % number of data blocks (needs to be known beforehand,
+nBlocks = realdatablocks;        % number of data blocks (needs to be known beforehand,
 % quite restrictive here), change l.70 accordingly
 % klargestpercent = 20;
 FT2 = @(x) fftshift(fft2(ifftshift(x)));

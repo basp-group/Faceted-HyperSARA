@@ -16,7 +16,7 @@ param_real_data.image_size_Ny = 1536;
 % nSpw = 16;          % number of spectral channels per MS file
 % nChannels = 1*nSpw; % total number of "virtual" channels (i.e., after
 % % concatenation) for the real dataset considered
-nBlocks = 9;        % number of data blocks (needs to be known beforehand,
+nBlocks = realdatablocks;        % number of data blocks (needs to be known beforehand,
 % quite restrictive here), change l.70 accordingly
 klargestpercent = 20;
 FT2 = @(x) fftshift(fft2(ifftshift(x)));
@@ -195,7 +195,7 @@ for j = 1:nBlocks
     if reduction_version == 1
 %         aWl{j} = 1./Tl{j};
         aWl{j} = 1;
-        yTl{j} = dataReduce(y_tmp{j}, G_tmp{1}', At, Tl{j}, Wml{j});
+        yTl{j} = dataReduce(y_tmp{j}, G_tmp{j}', At, Tl{j}, Wml{j});
     elseif reduction_version == 2
         aWl{j} = 1;
 %         yTl{j} = dataReduce_degrid(y_tmp{j}, G{1}', Tl{j}, Wml{j});
