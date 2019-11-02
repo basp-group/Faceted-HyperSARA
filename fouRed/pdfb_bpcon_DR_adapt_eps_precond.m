@@ -373,7 +373,8 @@ for t = 1:param.max_iter
         tmp = zeros(Kd, 1);
         tmp(W{q}) = u2{q};
         if reduction_version == 1
-            uu = uu + sigma2(q) * H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+            tmp1 = real(IFT2(reshape(tmp, Ny, Nx)));
+            uu = uu + sigma2(q) * H{q} * A(tmp1(:));
         elseif reduction_version == 2
             uu = uu + sigma2(q) * H{q} * tmp;
         end
