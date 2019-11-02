@@ -35,7 +35,7 @@ Ny = imsize(1);
 Nx = imsize(2);
 
 % number of over-sampled pixels
-Kd = length(W{1});  % for reduction_version = 1, Kd = Nx*Ny, for reduction_version = 2, Kd = ox*Nx*oy*Ny
+Kd = size(H{1}, 1);
 
 %% optional input arguments
 if ~isfield(param, 'nu1')
@@ -370,11 +370,10 @@ for t = 1:param.max_iter
 
     uu = zeros(Kd, 1);
     for q = 1:R
-        tmp = zeros(Kd, 1);
+        tmp = zeros(size(W{q}));
         tmp(W{q}) = u2{q};
         if reduction_version == 1
-            tmp1 = real(IFT2(reshape(tmp, Ny, Nx)));
-            uu = uu + sigma2(q) * H{q} * A(tmp1(:));
+            uu = uu + sigma2(q) * H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
         elseif reduction_version == 2
             uu = uu + sigma2(q) * H{q} * tmp;
         end
