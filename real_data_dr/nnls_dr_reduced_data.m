@@ -143,6 +143,7 @@ if param_fouRed.enable_estimatethreshold
     if ~isfield(param_fouRed, 'gamma') 
         param_fouRed.gamma = 3; 
     end
+    fprintf('Threshold level: %d sigma\n', param_fouRed.gamma);
     p = normcdf([-param_fouRed.gamma param_fouRed.gamma]);
     prob = p(2) - p(1);
 end
