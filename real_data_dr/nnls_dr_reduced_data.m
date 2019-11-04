@@ -140,7 +140,7 @@ Wml = Wm{1};
 Tl = T{1};
 
 if param_fouRed.enable_estimatethreshold
-    if ~isfield('param_fouRed', 'gamma') 
+    if ~isfield(param_fouRed, 'gamma') 
         param_fouRed.gamma = 3; 
     end
     p = normcdf([-param_fouRed.gamma param_fouRed.gamma]);
