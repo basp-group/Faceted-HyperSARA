@@ -400,7 +400,7 @@ for t = 1:param.max_iter
                 end
             end
         end
-        fitswrite(xsol, ['xsol_it', num2str(t), '_', num2str(realdatablocks),...
+        fitswrite(xsol, ['xsol_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
             'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.fits']);
     end
     fprintf('Time for iteration %i: %3.3f\n',t, end_iter(t));
@@ -450,7 +450,7 @@ for t = 1:param.max_iter
 %         sigma1(:) = 1/op_norm(@(x) weights_mat .* Psitw(x), @(x) Psiw(weights_mat .* x), [Ny, Nx], 1e-8, 200, 0);
         
         fprintf('\n\n\n\n\n\n\n Performed reweight no %d \n\n\n\n\n', reweight_step_count);
-        fitswrite(xsol, ['xsol_it', num2str(t), '_reweight', num2str(reweight_step_count),...
+        fitswrite(xsol, ['xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
             '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.fits']);
        
         reweight_step_count = reweight_step_count + 1;
