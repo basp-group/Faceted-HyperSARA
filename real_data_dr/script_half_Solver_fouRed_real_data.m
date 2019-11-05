@@ -59,7 +59,7 @@ for i = 1:nChannels
 %     tmp = load(['./CYG_H_ind6=', num2str(ch(i)), '.mat']);
     H{i,1} = tmp.H{1,1};
     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
-        num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat']);
+        num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'yT', 'T', 'aW', 'Wm');
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
 %     tmp = load(['./CYG_DR_ind6=', num2str(ch(i)), '.mat']);
     yT{i,1} = tmp.yT{1,1};
@@ -69,6 +69,8 @@ for i = 1:nChannels
 %     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_gam01_epsilon=', num2str(ch(i)), '.mat'], 'epsilon');
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_epsilon=', num2str(i), '.mat'], 'epsilon');
 %     tmp = load(['./CYG_epsilon=', num2str(ch(i)), '.mat'], 'epsilon');
+    tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_eps_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
+        num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'epsilon');
     epsilon{i,1} = tmp.epsilon{1,1};
 end
 % yT{1}(1) = [];
@@ -238,7 +240,7 @@ if algo_version == 1
 elseif algo_version == 2
     disp('Split L1 + wavelets')
     % %% PDFB parameter structure sent to the algorithm
-    param_pdfb.verbose = 1; % print log or not
+    param_pdfb.verbose = 2; % print log or not
     param_pdfb.nu1 = 1; % bound on the norm of the operator Psi
     param_pdfb.nu2 = Anorm; % bound on the norm of the operator A*G
     param_pdfb.gamma = gamma; % convergence parameter L1 (soft th parameter)
@@ -257,7 +259,7 @@ elseif algo_version == 2
     param_pdfb.elipse_proj_min_iter = 1;
     param_pdfb.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid
     
-    param_pdfb.use_adapt_eps = 1; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
+    param_pdfb.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_pdfb.adapt_eps_start = 300; % minimum num of iter before stating adjustment
     param_pdfb.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
     param_pdfb.adapt_eps_tol_out = 1.001; % tolerance outside the l2 ball
@@ -270,7 +272,7 @@ elseif algo_version == 2
     param_pdfb.total_reweights = 30; % -1 if you don't want reweighting
     param_pdfb.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
 
-    param_pdfb.use_reweight_steps = 1; % reweighting by fixed steps
+    param_pdfb.use_reweight_steps = 0; % reweighting by fixed steps
     param_pdfb.reweight_step_size = 300; % reweighting step size
     param_pdfb.reweight_steps = [2000: param_pdfb.reweight_step_size :10000];
     param_pdfb.step_flag = 1;
