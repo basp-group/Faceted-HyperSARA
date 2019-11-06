@@ -198,7 +198,9 @@ for j = 1:nBlocks
     if reduction_version == 1
 %         aWl{j} = 1./Tl{j};
         aWl{j} = 1;
-        yTl{j} = dataReduce(y_tmp{j}, G_tmp{j}', At, Tl{j}, Wml{j});
+%         yTl{j} = dataReduce(y_tmp{j}, G_tmp{j}', At, Tl{j}, Wml{j});
+        resRed = dataReduce(res_tmp{j}, G_tmp{j}', At, Tl{j}, Wml{j});       % !!! for calibrated data
+        norm_res{j} = norm(resRed);
     elseif reduction_version == 2
         aWl{j} = 1;
 %         yTl{j} = dataReduce_degrid(y_tmp{j}, G{1}', Tl{j}, Wml{j});
