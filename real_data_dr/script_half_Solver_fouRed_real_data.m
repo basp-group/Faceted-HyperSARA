@@ -56,21 +56,28 @@ for i = 1:nChannels
     ch(i)
     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_H_cal_', num2str(realdatablocks), 'b_ind6=', num2str(ch(i)), '.mat']);
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_yT=', num2str(i), '.mat'], 'yT');
-%     tmp = load(['./CYG_H_ind6=', num2str(ch(i)), '.mat']);
+%     tmp = load(['../../extract_real_data/CYG_H_cal_', num2str(realdatablocks), 'b_ind6=', num2str(ch(i)), '.mat']);
     H{i,1} = tmp.H{1,1};
     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'yT', 'T', 'aW', 'Wm');
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
-%     tmp = load(['./CYG_DR_ind6=', num2str(ch(i)), '.mat']);
+%     tmp = load(['../../extract_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
+%         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'yT', 'T', 'aW', 'Wm');
     yT{i,1} = tmp.yT{1,1};
     T{i,1} = tmp.T{1,1};
     aW{i,1} = tmp.aW{1,1};
     Wm{i,1} = tmp.Wm{1,1};
+    if reduction_version == 2
+        for j = 1:length(H{i,1})
+            H{i,1}{j} = H{i,1}{j}(Wm{i,1}{j}, :);
+        end
+    end
 %     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_gam01_epsilon=', num2str(ch(i)), '.mat'], 'epsilon');
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_epsilon=', num2str(i), '.mat'], 'epsilon');
-%     tmp = load(['./CYG_epsilon=', num2str(ch(i)), '.mat'], 'epsilon');
     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_eps_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'epsilon');
+%     tmp = load(['../../extract_real_data/CYG_eps_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
+%         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'epsilon');
     epsilon{i,1} = tmp.epsilon{1,1};
 end
 % yT{1}(1) = [];
@@ -232,7 +239,7 @@ if algo_version == 1
         epsilon_spmd, A, At, H_spmd, aW_spmd, T_spmd, W_spmd, param_HSI, Qx, Qy, Qc2, ...
         wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type);
     
-    save(['results/results_hyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', algo_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
+    save(['results/results_hyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
         '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma),'.mat'], '-v7.3', ...
         'xsol', 'param_HSI', 'epsilon', 't', 'rel_fval', 'nuclear', 'l21', ...
         'norm_res', 'res', 'end_iter');
@@ -267,10 +274,10 @@ elseif algo_version == 2
     param_pdfb.adapt_eps_rel_obj = 1e-3; % bound on the relative change of the solution
     param_pdfb.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
 
-    param_pdfb.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+    param_pdfb.reweight_alpha = (0.8)^20; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_pdfb.reweight_alpha_ff = 0.8;
     param_pdfb.total_reweights = 30; % -1 if you don't want reweighting
-    param_pdfb.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
+    param_pdfb.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
 
     param_pdfb.use_reweight_steps = 0; % reweighting by fixed steps
     param_pdfb.reweight_step_size = 300; % reweighting step size
@@ -288,7 +295,7 @@ elseif algo_version == 2
         pdfb_bpcon_DR_adapt_eps_precond(yT{1}, [Ny, Nx], epsilon{1}, A, At, H{1}, aW{1}, T{1}, Wm{1}, ... 
         Psi, Psit, param_pdfb, reduction_version, realdatablocks, fouRed_gamma);
     
-    save(['results/results_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', algo_version, '_gamma=', num2str(gamma),...
+    save(['results/results_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_gamma=', num2str(gamma),...
         '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.mat'], '-v7.3', ...
         'xsol', 'epsilon', 't', 'rel_fval', 'norm2', 'res', 'end_iter');
     

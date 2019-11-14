@@ -35,7 +35,7 @@ Ny = imsize(1);
 Nx = imsize(2);
 
 % number of over-sampled pixels
-Kd = size(H{1}, 1);
+Kd = size(H{1}, 2);
 
 %% optional input arguments
 if ~isfield(param, 'nu1')
@@ -244,7 +244,7 @@ for t = 1:param.max_iter
     end
     
     prev_xsol = 2*ysol - prev_xsol;
-    
+
     %% L1 prox update: dual variables update
     % parallel for all bases
 %     parfor k = 1:P        
@@ -261,7 +261,6 @@ for t = 1:param.max_iter
         f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, prev_xsol, gamma, weights{k}, sigma1(k), lambda1);
     end
 
-    
     %% L2 ball projection update: dual variables update
     
     % non gridded measurements of curent solution 
@@ -274,15 +273,15 @@ for t = 1:param.max_iter
     epsilon_check_c = 0;
     residual_check_a = 0;
     epsilon_check_a = 0;
-    
+
     for q = 1:R
         if reduction_version == 1
             tmp = FT2(real(At(H{q} * ns)));
             tmp = tmp(:);
+            r2{q} = T{q} .* tmp(W{q});
         elseif reduction_version == 2
-            tmp = H{q} * ns;
+            r2{q} = T{q} .* (H{q} * ns);
         end
-        r2{q} = T{q} .* tmp(W{q});
         
         if param.use_proj_elipse_fb
 %             fprintf('Preconditioning step\n');
@@ -293,8 +292,7 @@ for t = 1:param.max_iter
             vy2{q} = v2{q} + pU{q} .* r2{q} - pU{q} .* proj{q};
         else
             vy2{q} = v2{q} + r2{q} - y{q} - sc(v2{q} + r2{q} - y{q}, epsilon{q});
-        end          
-
+        end
         v2{q} = v2{q} + lambda2 * (vy2{q} - v2{q});
         u2{q} = T{q} .* v2{q};
 
@@ -354,6 +352,7 @@ for t = 1:param.max_iter
 
 
     %% update the primal gradient
+%     g1 = sparse(Ny, Nx);
     g1 = zeros(size(xsol));
     
 %     for k = 1:P
@@ -367,15 +366,15 @@ for t = 1:param.max_iter
         norm1{idx} = l1_;    
         g1 = g1 + u1{idx};
     end
-
+    
     uu = zeros(Kd, 1);
     for q = 1:R
-        tmp = zeros(size(W{q}));
-        tmp(W{q}) = u2{q};
         if reduction_version == 1
-            uu = uu + sigma2(q) * H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+            tmp = zeros(size(W{q}));
+            tmp(W{q}) = u2{q};
+            uu = uu + sigma2(q) * (H{q} * A(real(IFT2(reshape(tmp, Ny, Nx)))));
         elseif reduction_version == 2
-            uu = uu + sigma2(q) * H{q} * tmp;
+            uu = uu + sigma2(q) * (H{q}' * u2{q});
         end
     end
     g2 = real(At(uu));
@@ -471,7 +470,6 @@ for t = 1:param.max_iter
         break;
      end
 end
-
 toc(start_loop)
 
 % final log
