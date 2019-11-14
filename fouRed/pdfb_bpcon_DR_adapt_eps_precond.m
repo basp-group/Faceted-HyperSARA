@@ -38,35 +38,31 @@ Nx = imsize(2);
 Kd = size(H{1}, 2);
 
 %% optional input arguments
-if ~isfield(param, 'nu1')
-    param.nu1 = ones(P, 1);
-else
-    if numel(param.nu1) == 1
-        param.nu1 = ones(P, 1) * param.nu1;
-    end
-end
+% if ~isfield(param, 'nu1')
+%     param.nu1 = ones(P, 1);
+% else
+%     if numel(param.nu1) == 1
+%         param.nu1 = ones(P, 1) * param.nu1;
+%     end
+% end
 
-if numel(param.nu2) == 1
-    param.nu2 = ones(R, 1) * param.nu2;
-end
+% if numel(param.nu2) == 1
+%     param.nu2 = ones(R, 1) * param.nu2;
+% end
 % end
 if ~isfield(param, 'sigma1'), param.sigma1 = 1./param.nu1; end
 if ~isfield(param, 'sigma2'), param.sigma2 = 1./param.nu2; end
 if ~isfield(param, 'gamma'), param.gamma = 1e-3; end
 if ~isfield(param, 'tau'), param.tau = 0.49; end
-if ~isfield(param, 'weights')
-    param.weights = cell(P, 1);
-    for k = 1:P
-        param.weights{k} = ones(Nx * Ny, 1);
-    end
+if isfield(param,'init_weights')
+    weights = param.init_weights;
+    fprintf('weights uploaded \n\n')
 else
-    if ~iscell(param.weights)
-        weights = param.weights;
-        param.weights = cell(P, 1);
-        for k = 1:P
-            param.weights{k} = weights;
-        end
+    weights = cell(P, 1);
+    for k = 1:P
+        weights{k} = ones(Nx * Ny,1);
     end
+    fprintf('weights NOT uploaded \n\n')
 end
 if isfield(param, 'initsol')
     xsol = param.initsol;
@@ -207,7 +203,7 @@ lambda1 = param.lambda1;
 lambda2 = param.lambda2;
 
 % weights
-weights = param.weights;
+% weights = param.weights;
 
 % omega sizes
 omega1 = param.omega1;
@@ -249,7 +245,7 @@ for t = 1:param.max_iter
     % parallel for all bases
 %     parfor k = 1:P        
 %         r1{k} = weights{k} .* Psit{k}(prev_xsol);
-%         vy1{k} = v1{k} + r1{k} - soft(v1{k} + r1{k}, gamma / sigma1(k));
+%         vy1{k} = v1{k} + r1{k} - soft(v1{k} + r1{k}, gamma / sigma1);
 %         
 %         v1{k} = v1{k} + lambda1 * (vy1{k} - v1{k});
 %         u1{k} = Psi{k}(weights{k} .* v1{k});
@@ -258,7 +254,7 @@ for t = 1:param.max_iter
 %         norm1{k} = sum(abs(r1{k}));
 %     end
     for k = 1:P
-        f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, prev_xsol, gamma, weights{k}, sigma1(k), lambda1);
+        f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, prev_xsol, gamma, weights{k}, sigma1, lambda1);
     end
 
     %% L2 ball projection update: dual variables update
@@ -356,7 +352,7 @@ for t = 1:param.max_iter
     g1 = zeros(size(xsol));
     
 %     for k = 1:P
-%         g1 = g1 + sigma1(k) * u1{k};
+%         g1 = g1 + sigma1 * u1{k};
 %     end
     
     for k = 1:P
@@ -372,12 +368,12 @@ for t = 1:param.max_iter
         if reduction_version == 1
             tmp = zeros(size(W{q}));
             tmp(W{q}) = u2{q};
-            uu = uu + sigma2(q) * (H{q} * A(real(IFT2(reshape(tmp, Ny, Nx)))));
+            uu = uu + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
         elseif reduction_version == 2
-            uu = uu + sigma2(q) * (H{q}' * u2{q});
+            uu = uu + H{q}' * u2{q};
         end
     end
-    g2 = real(At(uu));
+    g2 = real(At(sigma2 * uu));
     
     end_iter(t) = toc(tm);
           
@@ -446,7 +442,7 @@ for t = 1:param.max_iter
         reweight_alpha = reweight_alpha_ff * reweight_alpha;
 %         weights_mat = [weights{:}];
 %         weights_mat = weights_mat(:);
-%         sigma1(:) = 1/op_norm(@(x) weights_mat .* Psitw(x), @(x) Psiw(weights_mat .* x), [Ny, Nx], 1e-8, 200, 0);
+%         sigma1 = 1/op_norm(@(x) weights_mat .* Psitw(x), @(x) Psiw(weights_mat .* x), [Ny, Nx], 1e-8, 200, 0);
         
         fprintf('\n\n\n\n\n\n\n Performed reweight no %d \n\n\n\n\n', reweight_step_count);
         fitswrite(xsol, ['xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...

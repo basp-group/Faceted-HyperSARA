@@ -80,12 +80,6 @@ for i = 1:nChannels
 %         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'epsilon');
     epsilon{i,1} = tmp.epsilon{1,1};
 end
-% yT{1}(1) = [];
-% H{1}(1) = [];
-% T{1}(1) = [];
-% aW{1}(1) = [];
-% Wm{1}(1) = [];
-% epsilon{1}(1) = [];
 
 clear tmp
 
