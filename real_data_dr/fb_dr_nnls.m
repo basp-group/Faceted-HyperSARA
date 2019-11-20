@@ -1,11 +1,15 @@
-function [sol,norm_res] = fb_dr_nnls(y, A, At, H, Sigma, Mask, param, reduction_version)
-% fb_nnls - Solve non negative least squares problem.
+function [sol,norm_res] = fb_dr_nnls(y, A, At, H, W, Sigma, Mask, param, reduction_version)
+% fb_dr_nnls - Solve non negative least squares problem for reduced data
+% case
 %
 % The problem is solved using the forward-backward algorithm with
 % FISTA-like acceleration
 % 
+% ! Attention: H is the reduced holographic matrix by removing unnecessary
+% rows
 % 
-% Author: Ming Jiang
+% Author: Ming Jiang, E-mail: ming.jiang@epfl.ch
+% Adapted from fb_nnls.m, Author: Rafael Carrillo, E-mail: carrillo.rafael@epfl.ch
 %
 FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
 IFT2 = @(x) fftshift(ifft2(ifftshift(x))) * sqrt(numel(x));
@@ -18,8 +22,18 @@ if reduction_version == 1
     [Ny, Nx] = size(At(zeros(size(H, 1), 1)));
 end
 
-No = size(Mask, 1); % if reduction_version = 1, No = Nx*Ny
-                    % if reduction_version = 2, No = ox*Nx*oy*Ny
+% For DR with G^t, use cheaper H
+% if reduction_version == 2
+%     HRed = H(Mask, :);
+%     clear H
+%     H = HRed;
+% end
+
+% Variable flagW for the case where W is present
+flagW = 0;
+if ~isempty(W)
+    flagW = 1;
+end
 
 % Optional input arguments
 if ~isfield(param, 'verbose'), param.verbose = 1; end
@@ -27,34 +41,59 @@ if ~isfield(param, 'rel_obj'), param.rel_obj = 1e-4; end
 if ~isfield(param, 'max_iter'), param.max_iter = 200; end
 
 
-% Initialization
+% Initialization of residual
 if isfield(param,'initsol')
     xhat = param.initsol;
     if reduction_version == 1
-        HFx = FT2(At(H * A(xhat)));
+        if flagW
+            Fx = A(xhat);
+            tmp = zeros(size(W));
+            tmp(W) = H * Fx(W);
+            HFx = FT2(real(At(tmp)));
+        else
+            HFx = FT2(real(At(H * A(xhat))));
+        end
         HFx = HFx(:);
+        HFx = HFx(Mask);
     elseif reduction_version == 2
-        HFx = H * A(xhat);
+        if flagW
+            Fx = A(xhat);
+            HFx = H * Fx(W);
+        else
+            HFx = H * A(xhat);
+        end
     end
-    res = y - Sigma .* HFx(Mask);
-    g2 = zeros(No,1);
-    g2(Mask) = g2(Mask) + Sigma .* res;
-    if reduction_version == 1
-        grad = At(H * A(real(IFT2(reshape(g2, Ny, Nx)))));
-    elseif reduction_version == 2
-        grad = At(H * g2);
-    end
-    prev_obj = 0.5*norm(res(:))^2;
+    res = y - Sigma .* HFx;
 else
-    g2 = zeros(No,1);
-    g2(Mask) = g2(Mask) + Sigma .* y;
-    if reduction_version == 1
-        grad = At(H * A(real(IFT2(reshape(g2, Ny, Nx)))));
-    elseif reduction_version == 2
-        grad = At(H * g2);
+    res = y;
+end
+    
+% Initialization of grad    
+if reduction_version == 1
+    g2 = zeros(size(Mask));
+    g2(Mask) = Sigma .* res;
+    if flagW
+        Fx = A(real(IFT2(reshape(g2, Ny, Nx))));
+        tmp = zeros(size(W));
+        tmp(W) = H * Fx(W);
+        grad = real(At(H * tmp));
+    else
+        grad = real(At(H * A(real(IFT2(reshape(g2, Ny, Nx))))));
     end
+elseif reduction_version == 2
+    if flagW
+        tmp = zeros(size(W));
+        tmp(W) = H' * (Sigma .* res);
+        grad = real(At(tmp));
+    else
+        grad = real(At(H' * (Sigma .* res)));
+    end
+end
+prev_obj = 0.5*norm(res(:))^2;
+
+% Initialization of xhat 
+if ~isfield(param,'initsol')
     xhat = zeros(size(grad));
-    prev_obj = 0.5*norm(y(:))^2;
 end
 
 iter = 1; 
@@ -83,12 +122,26 @@ while 1
     
     %Step size computation 
     if reduction_version == 1
-        HFx = FT2(At(H * A(grad)));
+        if flagW
+            Fx = A(grad);
+            tmp = zeros(size(W));
+            tmp(W) = H * Fx(W);
+            HFx = FT2(real(At(tmp)));
+        else
+            HFx = FT2(real(At(H * A(grad))));
+        end
         HFx = HFx(:);
+        HFx = HFx(Mask);
     elseif reduction_version == 2
-        HFx = H * A(grad);
+        if flagW
+            Fx = A(grad);
+            HFx = H * Fx(W);
+        else
+            HFx = H * A(grad);
+        end
     end
-    res = Sigma .* HFx(Mask);
+    res = Sigma .* HFx;
+    
     mu = param.beta * norm(grad(:))^2/norm(res(:))^2;
     
     %Gradient descend step
@@ -102,12 +155,25 @@ while 1
     q = qfval + real((xhat(:)-sol(:))'*grad(:))...
         + 0.5/mu*norm(sol(:)-xhat(:))^2;
     if reduction_version == 1
-        HFx = FT2(At(H * A(sol)));
+        if flagW
+            Fx = A(sol);
+            tmp = zeros(size(W));
+            tmp(W) = H * Fx(W);
+            HFx = FT2(real(At(tmp)));
+        else
+            HFx = FT2(real(At(H * A(sol))));
+        end
         HFx = HFx(:);
+        HFx = HFx(Mask);
     elseif reduction_version == 2
-        HFx = H * A(sol);
+        if flagW
+            Fx = A(sol);
+            HFx = H * Fx(W);
+        else
+            HFx = H * A(sol);
+        end
     end
-    res = y - Sigma .* HFx(Mask);
+    res = y - Sigma .* HFx;
     norm_res = norm(res);
     curr_obj = 0.5*norm(res(:))^2;
     
@@ -130,12 +196,25 @@ while 1
         q = qfval + real((sol(:)-xhat(:))'*grad(:))...
             + 0.5/mu*norm(sol(:)-xhat(:))^2;
         if reduction_version == 1
-            HFx = FT2(At(H * A(sol)));
+            if flagW
+                Fx = A(sol);
+                tmp = zeros(size(W));
+                tmp(W) = H * Fx(W);
+                HFx = FT2(real(At(tmp)));
+            else
+                HFx = FT2(real(At(H * A(sol))));
+            end
             HFx = HFx(:);
+            HFx = HFx(Mask);
         elseif reduction_version == 2
-            HFx = H * A(sol);
+            if flagW
+                Fx = A(sol);
+                HFx = H * Fx(W);
+            else
+                HFx = H * A(sol);
+            end
         end
-        res = y - Sigma .* HFx(Mask);
+        res = y - Sigma .* HFx;
         norm_res = norm(res);
         curr_obj = 0.5*norm(res(:))^2;  
     end
@@ -182,20 +261,46 @@ while 1
     
     % Gradient computation
     if reduction_version == 1
-        HFx = FT2(At(H * A(xhat)));
+        if flagW
+            Fx = A(xhat);
+            tmp = zeros(size(W));
+            tmp(W) = H * Fx(W);
+            HFx = FT2(real(At(tmp)));
+        else
+            HFx = FT2(real(At(H * A(xhat))));
+        end
         HFx = HFx(:);
+        HFx = HFx(Mask);
     elseif reduction_version == 2
-        HFx = H * A(xhat);
+        if flagW
+            Fx = A(xhat);
+            HFx = H * Fx(W);
+        else
+            HFx = H * A(xhat);
+        end
     end
-    res = y - Sigma .* HFx(Mask);
+    res = y - Sigma .* HFx;
     norm_res = norm(res);
     
-    g2 = zeros(No,1);
-    g2(Mask) = g2(Mask) + Sigma .* res;
     if reduction_version == 1
-        grad = At(H * A(real(IFT2(reshape(g2, Ny, Nx)))));
+        g2 = zeros(size(Mask));
+        g2(Mask) = Sigma .* res;
+        if flagW
+            Fx = A(real(IFT2(reshape(g2, Ny, Nx))));
+            tmp = zeros(size(W));
+            tmp(W) = H * Fx(W);
+            grad = real(At(H * tmp));
+        else
+            grad = real(At(H * A(real(IFT2(reshape(g2, Ny, Nx))))));
+        end
     elseif reduction_version == 2
-        grad = At(H * g2);
+        if flagW
+            tmp = zeros(size(W));
+            tmp(W) = H' * (Sigma .* res);
+            grad = real(At(tmp));
+        else
+            grad = real(At(H' * (Sigma .* res)));
+        end
     end
 
     % Update variables

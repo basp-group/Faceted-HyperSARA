@@ -35,7 +35,7 @@ Ny = imsize(1);
 Nx = imsize(2);
 
 % number of over-sampled pixels
-Kd = size(H{1}, 2);
+No = size(H{1}, 2);
 
 %% optional input arguments
 % if ~isfield(param, 'nu1')
@@ -162,6 +162,8 @@ count_eps_update_up = 0;
 % L2_vp = zeros(param.max_iter, R);
 
 rel_fval = zeros(param.max_iter, 1);
+norm_conv = zeros(param.max_iter, 1);
+xstar = param.xstar;
 
 reweight_steps = param.reweight_steps;
 
@@ -363,7 +365,7 @@ for t = 1:param.max_iter
         g1 = g1 + u1{idx};
     end
     
-    uu = zeros(Kd, 1);
+    uu = zeros(No, 1);
     for q = 1:R
         if reduction_version == 1
             tmp = zeros(size(W{q}));
@@ -395,10 +397,12 @@ for t = 1:param.max_iter
                 end
             end
         end
-        fitswrite(xsol, ['xsol_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+        fitswrite(xsol, ['xsol_prec2_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
             'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.fits']);
     end
-    fprintf('Time for iteration %i: %3.3f\n',t, end_iter(t));
+    fprintf('Time for iteration %i: %3.3f, ',t, end_iter(t));
+    norm_conv(t) = norm(xsol(:) - xstar(:));
+    fprintf('convergence metric: %f\n', norm_conv(t));
     
     if (param.verbose <= 0.5)
         fprintf('.\n');fprintf('\b');
@@ -467,7 +471,7 @@ for t = 1:param.max_iter
      end
 end
 toc(start_loop)
-
+save('norm_conv_dr_precond2.mat', '-v7.3', 'norm_conv')
 % final log
 if (param.verbose > 0)
     if (flag == 1)

@@ -96,9 +96,10 @@ end
 % new_file_u = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_u.mat');
 % new_file_v = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_v.mat');
 % new_file_nW = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_nW.mat');
-% load('/Users/ming/workspace/Git/extract_real_data/CYG_data_raw_ind=6.mat', 'y', 'uw', 'vw', 'nWw')
-load(['/lustre/home/shared/sc004/cyg_data_sub/CYG_data_cal_', num2str(realdatablocks), 'b_ch32_ind=6.mat'], 'yb', 'G')
-load(['/lustre/home/shared/sc004/cyg_data_sub/res_', num2str(realdatablocks), 'b_ch32_ind=6.mat'], 'res')
+load(['/Users/ming/workspace/Git/extract_real_data/CYG_data_cal_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'yb', 'G', 'W')
+load(['/Users/ming/workspace/Git/extract_real_data/res_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'res')
+% load(['/lustre/home/shared/sc004/cyg_data_sub/CYG_data_cal_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'yb', 'G', 'W')
+% load(['/lustre/home/shared/sc004/cyg_data_sub/res_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'res')
 %% Reduction 
 epsilon = cell(1, 1);
 
@@ -109,7 +110,7 @@ epsilon = cell(1, 1);
 % instantiate variables for DR
 H = cell(1, 1);  % holographic matrices
 yT = cell(1, 1); % reduced data
-T = cell(1, 1);  % preconditioning matrix (inverse of singular values)
+T = cell(1, 1);  % normalization (inverse of singular values)
 Wm = cell(1, 1); % mask DR
 aW = cell(1, 1); % preconditioner
 
@@ -128,13 +129,14 @@ y_tmp = yb{1};
 % v_tmp = vw;
 % nW_tmp = nWw;
 G_tmp = G{1};
+W_tmp = W{1};
 res_tmp = res{1};
 
 H{1} = cell(numel(y_tmp), 1);
-T{1} = cell(numel(y_tmp), 1);
 yTl = cell(numel(y_tmp), 1);
-Wm{1} = cell(numel(y_tmp), 1);
+T{1} = cell(numel(y_tmp), 1);
 aWl = cell(numel(y_tmp), 1);
+Wm{1} = cell(numel(y_tmp), 1);
 norm_res = cell(numel(y_tmp), 1);
 
 Hl = H{1};
@@ -150,7 +152,7 @@ if param_fouRed.enable_estimatethreshold
     prob = p(2) - p(1);
 end
 
-diagthresholdepsilon = param_fouRed.diagthresholdepsilon;
+precision = 1e-16;
 
 % parpool(nBlocks)
 for j = 1:nBlocks
@@ -160,6 +162,8 @@ for j = 1:nBlocks
 %     [A, At, G, ~] = op_p_nufft([v_tmp(j) u_tmp(j)], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW_tmp(j));
 
     Hl{j} = (G_tmp{j}')*G_tmp{j}; % progressively write to disk? (possibly huge...)
+    peak = max(max(abs(Hl{j})));
+    Hl{j} = Hl{j} .* (abs(Hl{j}) > peak * precision);
     
     if reduction_version == 1    
     %     fast matrix probing (using psf)
@@ -173,8 +177,7 @@ for j = 1:nBlocks
     end
     
     if param_fouRed.enable_klargestpercent
-        th = 0;
-        Mask = (d_mat > th);
+        Mask = (d_mat > param_fouRed.gamma);
 %         Mask = (d_mat >= prctile(d_mat,100-param_fouRed.klargestpercent));
     elseif param_fouRed.enable_estimatethreshold
     %     estimate threshold
@@ -190,34 +193,35 @@ for j = 1:nBlocks
     fprintf('Block %d of channel %d, %f%% of data are kept, threshold=%f\n', j, chInd, percentage, th);
     
     d_mat = d_mat(Mask);
+    Hl{j} = Hl{j}(Mask,:);
 
-    Tl{j} = max(diagthresholdepsilon, d_mat);  % ensures that inverting the values will not explode in computation
+    Tl{j} = d_mat;
+%     Tl{j} = max(diagthresholdepsilon, d_mat);  % ensures that inverting the values will not explode in computation
     Tl{j} = 1./sqrt(Tl{j});
     Wml{j} = Mask;
     
     if reduction_version == 1
-%         aWl{j} = 1./Tl{j};
         aWl{j} = 1;
-%         yTl{j} = dataReduce(y_tmp{j}, G_tmp{j}', At, Tl{j}, Wml{j});
-        resRed = dataReduce(res_tmp{j}, G_tmp{j}', At, Tl{j}, Wml{j});       % !!! for calibrated data
+        yTl{j} = dataReduce(y_tmp{j}, G_tmp{j}', W_tmp{j}, At, Tl{j}, Wml{j});
+        resRed = dataReduce(res_tmp{j}, G_tmp{j}', W_tmp{j}, At, Tl{j}, Wml{j});       % !!! for calibrated data, residuals are known
         norm_res{j} = norm(resRed);
     elseif reduction_version == 2
         aWl{j} = 1;
-%         yTl{j} = dataReduce_degrid(y_tmp{j}, G{1}', Tl{j}, Wml{j});
-%         yTl{j} = dataReduce_degrid(y_tmp{j}, G_tmp{j}', Tl{j}, Wml{j});
-        resRed = dataReduce_degrid(res_tmp{j}, G_tmp{j}', Tl{j}, Wml{j});       % !!! for calibrated data
+        Gt = G_tmp{j}';
+        yTl{j} = Tl{j}.*(Gt(Wml{j},:) * y_tmp{j});
+        resRed = Tl{j}.*(Gt(Wml{j},:) * res_tmp{j});        % !!! for calibrated data, residuals are known
         norm_res{j} = norm(resRed);
     end
     
-%     [~, norm_res{j}] = fb_dr_nnls(yTl{j}, A, At, Hl{j}, Tl{j}, Wml{j}, param_nnls, reduction_version);
+%     [~, norm_res{j}] = fb_dr_nnls(yTl{j}, A, At, Hl{j}, W_tmp{j}, Tl{j}, Wml{j}, param_nnls, reduction_version);
     fprintf('Block %d of channel %d, estimated epsilon: %f\n',j, chInd, norm_res{j})
 
 end
-% T{1} = Tl;
-% Wm{1} = Wml;
-% aW{1} = aWl;
-% yT{1} = yTl;
-% H{1} = Hl;
+H{1} = Hl;
+yT{1} = yTl;
+T{1} = Tl;
+aW{1} = aWl;
+Wm{1} = Wml;
 epsilon{1} = norm_res;
 
 % % save on workstation
@@ -234,18 +238,18 @@ epsilon{1} = norm_res;
 % save on cirrus
 % Hfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_H_cal_', num2str(realdatablocks), 'b_ind6=', num2str(chInd), '.mat'];
 % if ~isfile(Hfilename)
-%     save(Hfilename, '-v7.3', 'H')
+%     save(Hfilename, '-v7.3', 'H', 'W')
 % end
-% DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
-%     num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(chInd), '.mat'];
-% if ~isfile(DRfilename)
-%     save(DRfilename, '-v7.3', 'yT', 'T', 'aW', 'Wm', 'epsilon');
-% end
-Epsfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_eps_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
+DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
     num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(chInd), '.mat'];
-if ~isfile(Epsfilename)
-    save(Epsfilename, '-v7.3', 'epsilon');
+if ~isfile(DRfilename)
+    save(DRfilename, '-v7.3', 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
 end
+% Epsfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_eps_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
+%     num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(chInd), '.mat'];
+% if ~isfile(Epsfilename)
+%     save(Epsfilename, '-v7.3', 'epsilon');
+% end
 fprintf('Dimensionality reduction and epsilon estimation are finished\n')
 % save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_G_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon_new');
 % save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_G_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');

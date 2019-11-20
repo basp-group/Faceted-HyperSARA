@@ -1,10 +1,10 @@
-function y = dataReduce(x, Gt, At, Sigma, Mask, No, W)
+function y = dataReduce(x, Gt, W, At, Sigma, Mask)
 % the embeddding operator R = \sigma * S * F * Phi^T
 % Complex -> Complex
 FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
 x1 = Gt * x;
-if exist('No', 'var') && exist('W', 'var')
-    tmp = zeros(No(1) * No(2), 1);
+if ~isempty(W)
+    tmp = zeros(size(W));
     tmp(W) = x1;
     x1 = tmp;
 end

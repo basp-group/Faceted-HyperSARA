@@ -1,56 +1,45 @@
-function y = HS_operatorGtPhi(x, H, A, Sigma, Mask, aW)
+function y = HS_operatorGtPhi(x, H, W, A, Sigma, aW)
 % New reduced measurement operator: Sigma * S * H * A
 % Real -> Complex
+% ! Attention: H is a reduced holographic matrix by removing unnecessary
+% rows
 
-% Parameters
-% c = size(x, 3);
+c = size(x, 3);
 
-% for ind = 1:c
-%     x1 = A(real(x(:,:,ind)));
-%     
-%     if iscell(H{ind})
-%         for j = 1:length(H{ind})
-%             dimH = sqrt(numel(H{ind}{j}));
-%             x2 = reshape(H{ind}{j}, dimH, dimH) * x1;
-%             xtmp = Sigma{ind}{j} .* x2(Mask{ind}{j});
-%             if exist('aW', 'var')
-%                 y{ind}{j} =  sqrt(aW{ind}{j}) .* xtmp;
-%             else
-%                 y{ind}{j} =  xtmp;
-%             end
-%         end
-%     else    
-%         dimH = sqrt(numel(H{ind}));
-%         x2 = reshape(H{ind}, dimH, dimH) * x1;
-%         xtmp = cell2mat(Sigma{ind}) .* x2(cell2mat(Mask{ind}));
-%         if exist('aW', 'var')
-%             y(:,ind) =  sqrt(cell2mat(aW{ind})) .* xtmp;
-%         else
-%             y(:,ind) =  xtmp;
-%         end
-%     end
-%     
-% end
+% Variable flagW for the case where W is present
+flagW = 0;
+if ~isempty(W)
+    flagW = 1;
+end
 
-x1 = A(x);
-
-if iscell(H)
-    for j = 1:length(H)
-        x2 = H{j} * x1;
-        xtmp = Sigma{j} .* x2(Mask{j});
-        if exist('aW', 'var')
-            y{j} =  sqrt(aW{j}) .* xtmp;
-        else
-            y{j} =  xtmp;
+for ind = 1:c
+    x1 = A(real(x(:,:,ind)));
+    if iscell(H{ind})
+        for j = 1:length(H{ind})
+            if flagW
+                x2 = H{ind}{j} * x1(W{ind}{j});
+            else
+                x2 = H{ind}{j} * x1;
+            end
+            xtmp = Sigma{ind}{j} .* x2;
+            if exist('aW', 'var')
+                y{ind}{j} =  sqrt(aW{ind}{j}) .* xtmp;
+            else
+                y{ind}{j} =  xtmp;
+            end
         end
-    end
-else    
-    x2 = H * x1;
-    xtmp = cell2mat(Sigma) .* x2(cell2mat(Mask));
-    if exist('aW', 'var')
-        y =  sqrt(cell2mat(aW)) .* xtmp;
     else
-        y =  xtmp;
+        if flagW
+            x2 = H{ind} * x1(W{ind});
+        else
+            x2 = H{ind} * x1;
+        end
+        xtmp = Sigma{ind} .* x2;
+        if exist('aW', 'var')
+            y{ind} =  sqrt(aW{ind}) .* xtmp;
+        else
+            y{ind} =  xtmp;
+        end
     end
 end
 

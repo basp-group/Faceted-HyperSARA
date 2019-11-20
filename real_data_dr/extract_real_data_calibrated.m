@@ -1,3 +1,8 @@
+addpath ../lib/utils/
+addpath ../fouRed/
+addpath ../lib/operators
+addpath ../lib/nufft
+
 %% real data generation
 extract_raw_data = false;
 ind = 6;
@@ -56,7 +61,7 @@ if extract_raw_data
     
     save(['CYG_data_raw_ind=' num2str(ind) '.mat'],'-v7.3', 'y', 'uw', 'vw', 'nWw', 'f', 'time_', 'pos', 'pixel_size');
 else
-    load(['/lustre/home/shared/sc004/real_data_dr/CYG_data_raw_ind=' num2str(ind) '.mat']);
+    load(['/lustre/home/shared/sc004/CYG_data_raw_ind=' num2str(ind) '.mat']);
 end
 
 figure(1),
@@ -68,10 +73,10 @@ end
 %%
 % ch = [1 : size(y,2)];
 %ch = [1 : 16];
-ch = 32;
+ch = [1:32];
 ii = 1;
 
-for l = length(ch)
+for l = 1:length(ch)
     
     i = ch(l)
     
@@ -84,8 +89,9 @@ for l = length(ch)
         param_block.snapshot = 0;
         param_block.pos = pos{i};
         out_block = util_time_based_block_sp_ar(uw{i},time_{i},param_block);
-        partition = out_block.partition
-        param_block_structure.partition = partition;
+        partition = out_block.partition;
+        partition1 = [sum(partition(1:2)) sum(partition(3:end))]
+        param_block_structure.partition = partition1;
     end
     
     % set the blocks structure
@@ -126,19 +132,23 @@ for l = length(ch)
         G{ii}{j} = G{ii}{j}(:, W{ii}{j});
         y_est{ii}{j} = y_est_full(uvidx{j}); 
         yb{ii}{j} = y{i}(uvidx{j});
-        eps_b{ii}{j} = norm(yb{ii}{j} - y_est{ii}{j});
+%         eps_b{ii}{j} = norm(yb{ii}{j} - y_est{ii}{j});
+        res{ii}{j} = yb{ii}{j} - y_est{ii}{j};
     end
     clear Gw y_est_full y_est;
 
-    ii = ii + 1;
+%     ii = ii + 1;
+    
+    save(['/lustre/home/shared/sc004/cyg_data_sub/res_2b_ch', num2str(i),'_ind=' num2str(ind) '.mat'],'-v7.3', 'res');
+    save(['/lustre/home/shared/sc004/cyg_data_sub/CYG_data_cal_2b_ch', num2str(i),'_ind=', num2str(ind),'.mat'],'-v7.3', 'G', 'W', 'aW', 'yb');
 end
-save(['eps_ind=' num2str(ind) '.mat'],'-v7.3', 'eps_b');
+% save(['res_ind=' num2str(ind) '.mat'],'-v7.3', 'res');
 
 %% Save data
-if save_data
-    save('CYG_data.mat','-v7.3', 'G', 'W', 'aW', 'yb');
+% if save_data
+%     save('CYG_data_cal_2b_ch32_ind=6.mat','-v7.3', 'G', 'aW', 'yb');
 %     save('CYG_y.mat','-v7.3', 'y');
-end
+% end
 
 %%
 % if save_full_operator && exist('Gw','var')
