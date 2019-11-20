@@ -270,79 +270,84 @@ for t = t_start : param.max_iter
 %     v1 = r1 - (l2_soft .* r1);
     
     %% L2 ball projection update
+    [v2, g2, proj, norm_res, norm_residual_check_c, norm_epsilon_check_c, norm_residual_check_a, norm_epsilon_check_a]...
+                = update_data_fidelity_dr_block_new(v2, y, xhat, proj, A, At, H, W, T, Wm, pU, epsilon, ...
+                elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps, sigma22, precondition, reduction_version, realdatablocks); % *_dr version when no blocking
+
+    
 %     counter = 1;
-    norm_residual_check_c = 0;
-    norm_epsilon_check_c = 0;
-    norm_residual_check_a = 0;
-    norm_epsilon_check_a = 0;
-    for i = 1 : c
-        Fx = A(xhat(:,:,i));
-        g2 = zeros(No,1);
-        for j = 1 : R
-            if reduction_version == 1
-                if flagW
-                    tmp = FT2(real(At(H{i}{j} * Fx(W{i}{j}))));
-                else
-                    tmp = FT2(real(At(H{i}{j} * Fx)));
-                end
-                tmp = tmp(:);
-                r2{i}{j} = T{i}{j} .* tmp(Wm{i}{j});
-            elseif reduction_version == 2
-                if flagW
-                    r2{i}{j} = T{i}{j} .* (H{i}{j} * Fx(W{i}{j}));
-                else
-                    r2{i}{j} = T{i}{j} .* (H{i}{j} * Fx);
-                end
-            end
-          
-            if precondition
-                [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
-                v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
-            else
-                v2{i}{j} = v2{i}{j} + r2{i}{j} - y{i}{j} - sc(v2{i}{j} + r2{i}{j} - y{i}{j}, epsilon{i}{j});
-            end
-            if reduction_version == 1
-                tmp = zeros(size(Wm{i}{j}));
-                tmp(Wm{i}{j}) = T{i}{j} .* v2{i}{j};
-                if flagW
-                    g2(W{i}{j}) = g2(W{i}{j}) + H{i}{j} * A(real(IFT2(reshape(tmp, Ny, Nx))));
-                else
-                    g2 = g2 + H{i}{j} * A(real(IFT2(reshape(tmp, Ny, Nx))));
-                end
-            elseif reduction_version == 2
-                if flagW
-                    g2(W{i}{j}) = g2(W{i}{j}) + H{i}{j}' * (T{i}{j} .* v2{i}{j});
-                else
-                    g2 = g2 + H{i}{j}' * (T{i}{j} .* v2{i}{j});
-                end
-            end
-            
-            % norm of residual
-            norm_res{i}{j} = norm(r2{i}{j} - y{i}{j});
-%             residual_check(counter) = norm_res{i}{j};
-%             epsilon_check(counter) = epsilon{i}{j};
-%             counter = counter + 1;
-            
-            % Only for real data
-            if (realdatablocks == 2 && j == 1) || (realdatablocks == 9 && (j == 1 || j == 2))
-                norm_residual_check_c = norm_residual_check_c + norm_res{i}{j}^2;
-                norm_epsilon_check_c = norm_epsilon_check_c + epsilon{i}{j}^2;
-            else
-                norm_residual_check_a = norm_residual_check_a + norm_res{i}{j}^2;
-                norm_epsilon_check_a = norm_epsilon_check_a + epsilon{i}{j}^2;
-            end
-        end
-        Ftx(:,:,i) = real(At(g2));
-    end
-    
-    % Only for real data
-    norm_epsilon_check_c = sqrt(norm_epsilon_check_c);
-    norm_residual_check_c = sqrt(norm_residual_check_c);
-    norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
-    norm_residual_check_a = sqrt(norm_residual_check_a);
-    
-    % Free memory
-    g2=[]; Fx=[];
+%     norm_residual_check_c = 0;
+%     norm_epsilon_check_c = 0;
+%     norm_residual_check_a = 0;
+%     norm_epsilon_check_a = 0;
+%     for i = 1 : c
+%         Fx = A(xhat(:,:,i));
+%         g2 = zeros(No,1);
+%         for j = 1 : R
+%             if reduction_version == 1
+%                 if flagW
+%                     tmp = FT2(real(At(H{i}{j} * Fx(W{i}{j}))));
+%                 else
+%                     tmp = FT2(real(At(H{i}{j} * Fx)));
+%                 end
+%                 tmp = tmp(:);
+%                 r2{i}{j} = T{i}{j} .* tmp(Wm{i}{j});
+%             elseif reduction_version == 2
+%                 if flagW
+%                     r2{i}{j} = T{i}{j} .* (H{i}{j} * Fx(W{i}{j}));
+%                 else
+%                     r2{i}{j} = T{i}{j} .* (H{i}{j} * Fx);
+%                 end
+%             end
+%           
+%             if precondition
+%                 [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+%                 v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
+%             else
+%                 v2{i}{j} = v2{i}{j} + r2{i}{j} - y{i}{j} - sc(v2{i}{j} + r2{i}{j} - y{i}{j}, epsilon{i}{j});
+%             end
+%             if reduction_version == 1
+%                 tmp = zeros(size(Wm{i}{j}));
+%                 tmp(Wm{i}{j}) = T{i}{j} .* v2{i}{j};
+%                 if flagW
+%                     g2(W{i}{j}) = g2(W{i}{j}) + H{i}{j} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+%                 else
+%                     g2 = g2 + H{i}{j} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+%                 end
+%             elseif reduction_version == 2
+%                 if flagW
+%                     g2(W{i}{j}) = g2(W{i}{j}) + H{i}{j}' * (T{i}{j} .* v2{i}{j});
+%                 else
+%                     g2 = g2 + H{i}{j}' * (T{i}{j} .* v2{i}{j});
+%                 end
+%             end
+%             
+%             % norm of residual
+%             norm_res{i}{j} = norm(r2{i}{j} - y{i}{j});
+% %             residual_check(counter) = norm_res{i}{j};
+% %             epsilon_check(counter) = epsilon{i}{j};
+% %             counter = counter + 1;
+%             
+%             % Only for real data
+%             if (realdatablocks == 2 && j == 1) || (realdatablocks == 9 && (j == 1 || j == 2))
+%                 norm_residual_check_c = norm_residual_check_c + norm_res{i}{j}^2;
+%                 norm_epsilon_check_c = norm_epsilon_check_c + epsilon{i}{j}^2;
+%             else
+%                 norm_residual_check_a = norm_residual_check_a + norm_res{i}{j}^2;
+%                 norm_epsilon_check_a = norm_epsilon_check_a + epsilon{i}{j}^2;
+%             end
+%         end
+%         Ftx(:,:,i) = real(At(g2));
+%     end
+%     
+%     % Only for real data
+%     norm_epsilon_check_c = sqrt(norm_epsilon_check_c);
+%     norm_residual_check_c = sqrt(norm_residual_check_c);
+%     norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
+%     norm_residual_check_a = sqrt(norm_residual_check_a);
+%     
+%     % Free memory
+%     g2=[]; Fx=[];
     
     %% Update primal gradient
     g0 = reshape(v0,M,N,c); 
@@ -356,7 +361,7 @@ for t = t_start : param.max_iter
         g1 = g1 + u1{idx};
     end
     
-    g = sigma00*g0 + sigma11*g1 + sigma22*Ftx;
+    g = sigma00*g0 + sigma11*g1 + g2;
     
     end_iter(t) = toc(start_iter); 
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
