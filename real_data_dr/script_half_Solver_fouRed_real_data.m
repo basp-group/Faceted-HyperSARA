@@ -26,7 +26,7 @@ window_type = 'triangular';
 
 Qx = 5;
 Qy = 3;
-Qc2 = 1;    % to see later
+Qc2 = 2;    % to see later
 
 d = 512;
 flag_algo = algo_version;
@@ -59,11 +59,11 @@ for i = 1:nChannels
 %     tmp = load(['../../extract_real_data/CYG_H_cal_', num2str(realdatablocks), 'b_ind6=', num2str(ch(i)), '.mat']);
 %     H{i,1} = tmp.H{1,1};
 %     W{i,1} = tmp.W{1,1};
-    tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
-        num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
-%     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
-%     tmp = load(['../../extract_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
+%     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
 %         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
+%     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
+    tmp = load(['../../extract_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
+        num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
     H{i,1} = tmp.H{1,1};
     W{i,1} = tmp.W{1,1};
     yT{i,1} = tmp.yT{1,1};
@@ -196,69 +196,71 @@ if algo_version == 1
     param_HSI.precondition = usingPrecondition;
     param_HSI.rw_tol = 5000;
     
-    mkdir('results/')
-    
-    [xsol,~,~,~,~,~,~,~,~,~,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] =...
-        hyperSARA_DR_precond(yT, epsilon, A, At, H, W, aW, T, Wm, Psi, Psit,...
-        param_HSI, reduction_version, realdatablocks, fouRed_gamma);
-    
-    save(['results/results_hyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_gamma=', num2str(gamma),...
-        '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.mat'], '-v7.3', ...
-        'xsol', 'param_HSI', 'epsilon', 't', 'rel_fval', 'nuclear', 'l21', 'norm_res', 'res', 'end_iter');
+%     mkdir('results/')
+%     
+%     [xsol,~,~,~,~,~,~,~,~,~,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] =...
+%         hyperSARA_DR_precond(yT, epsilon, A, At, H, W, aW, T, Wm, Psi, Psit,...
+%         param_HSI, reduction_version, realdatablocks, fouRed_gamma);
+%     
+%     save(['results/results_hyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_gamma=', num2str(gamma),...
+%         '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.mat'], '-v7.3', ...
+%         'xsol', 'param_HSI', 'epsilon', 't', 'rel_fval', 'nuclear', 'l21', 'norm_res', 'res', 'end_iter');
 
     
-%     % spectral tesselation (non-overlapping)
-%     rg_c = domain_decomposition(Qc2, nChannels); % to be modified
-%     cell_c_chunks = cell(Qc2, 1);
-%     y_spmd = cell(Qc2, 1);
-%     epsilon_spmd = cell(Qc2, 1);
-%     aW_spmd = cell(Qc2, 1);
-%     W_spmd = cell(Qc2, 1);
-%     T_spmd = cell(Qc2, 1);
-%     
-%     for i = 1:Qc2
-%         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
-%         y_spmd{i} = yT(cell_c_chunks{i});
-%         epsilon_spmd{i} = epsilon(cell_c_chunks{i});
-%         aW_spmd{i} = aW(cell_c_chunks{i});
-%         W_spmd{i} = Wm(cell_c_chunks{i});
-%         T_spmd{i} = T(cell_c_chunks{i});
-%         H_spmd{i} = H(cell_c_chunks{i});
-%     end
-%     clear yT epsilon aW Wm T epsilon
-%     
-%     if  rw >= 0 
-%         load(['results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma) '_' num2str(rw) '.mat']);
-%         
-%         epsilon_spmd = epsilon;
-%         param_HSI.init_xsol = param.init_xsol;
-%         param_HSI.init_g = param.init_g;
-%         param_HSI.init_v0 = param.init_v0;
-%         param_HSI.init_v1 = param.init_v1;
-%         param_HSI.init_weights0 = param.init_weights0;
-%         param_HSI.init_weights1 = param.init_weights1;
-%         param_HSI.init_v2 = param.init_v2;
-%         param_HSI.init_proj = param.init_proj;
-%         param_HSI.init_t_block = param.init_t_block;
-%         param_HSI.init_t_start = param.init_t_start+1;
-%         param_HSI.reweight_alpha = param.reweight_alpha;
-%         param_HSI.init_reweight_step_count = param.init_reweight_step_count;
-%         param_HSI.init_reweight_last_iter_step = param.init_reweight_last_iter_step;
-%         param_HSI.reweight_steps = (param_HSI.init_t_start+param_HSI.reweight_step_size: param_HSI.reweight_step_size :param_HSI.max_iter+(2*param_HSI.reweight_step_size));
-%         param_HSI.step_flag = 0;
-%     end
-%     
-%     % solvers
-%     mkdir('results/')
-%     [xsol,param_HSI,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
-%         facetHyperSARA_cst_overlap_weighted_dr_real_data(y_spmd, [Ny, Nx], ...
-%         epsilon_spmd, A, At, H_spmd, aW_spmd, T_spmd, W_spmd, param_HSI, Qx, Qy, Qc2, ...
-%         wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type);
-%     
-%     save(['results/results_hyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-%         '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma),'.mat'], '-v7.3', ...
-%         'xsol', 'param_HSI', 'epsilon', 't', 'rel_fval', 'nuclear', 'l21', ...
-%         'norm_res', 'res', 'end_iter');
+    % spectral tesselation (non-overlapping)
+    rg_c = domain_decomposition(Qc2, nChannels); % to be modified
+    cell_c_chunks = cell(Qc2, 1);
+    y_spmd = cell(Qc2, 1);
+    epsilon_spmd = cell(Qc2, 1);
+    aW_spmd = cell(Qc2, 1);
+    Wm_spmd = cell(Qc2, 1);
+    T_spmd = cell(Qc2, 1);
+    H_spmd = cell(Qc2, 1);
+    W_spmd = cell(Qc2, 1);
+    
+    for i = 1:Qc2
+        cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+        y_spmd{i} = yT(cell_c_chunks{i});
+        epsilon_spmd{i} = epsilon(cell_c_chunks{i});
+        aW_spmd{i} = aW(cell_c_chunks{i});
+        Wm_spmd{i} = Wm(cell_c_chunks{i});
+        T_spmd{i} = T(cell_c_chunks{i});
+        H_spmd{i} = H(cell_c_chunks{i});
+        W_spmd{i} = W(cell_c_chunks{i});
+    end
+    clear yT epsilon aW Wm T epsilon
+    
+    if  rw >= 0 
+        load(['results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma) '_' num2str(rw) '.mat']);
+        
+        epsilon_spmd = epsilon;
+        param_HSI.init_xsol = param.init_xsol;
+        param_HSI.init_g = param.init_g;
+        param_HSI.init_v0 = param.init_v0;
+        param_HSI.init_v1 = param.init_v1;
+        param_HSI.init_weights0 = param.init_weights0;
+        param_HSI.init_weights1 = param.init_weights1;
+        param_HSI.init_v2 = param.init_v2;
+        param_HSI.init_proj = param.init_proj;
+        param_HSI.init_t_block = param.init_t_block;
+        param_HSI.init_t_start = param.init_t_start+1;
+        param_HSI.reweight_alpha = param.reweight_alpha;
+        param_HSI.init_reweight_step_count = param.init_reweight_step_count;
+        param_HSI.init_reweight_last_iter_step = param.init_reweight_last_iter_step;
+        param_HSI.reweight_steps = (param_HSI.init_t_start+param_HSI.reweight_step_size: param_HSI.reweight_step_size :param_HSI.max_iter+(2*param_HSI.reweight_step_size));
+        param_HSI.step_flag = 0;
+    end
+    
+    % solvers
+    mkdir('results/')
+    [xsol,param_HSI,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
+        facetHyperSARA_DR_precond(y_spmd, epsilon_spmd, A, At, H_spmd, W_spmd, aW_spmd, T_spmd, Wm_spmd, param_HSI, Qx, Qy, Qc2, ...
+        wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, '', reduction_version, realdatablocks, fouRed_gamma);
+    
+    save(['results/results_hyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
+        '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma),'.mat'], '-v7.3', ...
+        'xsol', 'param_HSI', 'epsilon', 't', 'rel_fval', 'nuclear', 'l21', ...
+        'norm_res_out', 'end_iter');
 
 elseif algo_version == 2
     disp('Split L1 + wavelets')
