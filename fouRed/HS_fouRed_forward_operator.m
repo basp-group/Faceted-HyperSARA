@@ -1,9 +1,11 @@
-function y = HS_fouRed_forward_operator_new(x, A, At, H, W, Sigma, Mask, aW)
+function y = HS_fouRed_forward_operator(x, A, At, H, W, Sigma, Mask, aW)
 % Phi' = Sigma * F * Phi^t * Phi = Sigma * F * A^t * H * A
 % Real -> Complex
 % ! Attention: H is a self-adjoint complete holographic matrix, or the 
 % number of rows is equal to oversampled image size.
-
+%
+% Author: Ming Jiang, E-mail: ming.jiang@epfl.ch
+%
 FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
 
 c = size(x, 3);

@@ -1,6 +1,9 @@
 function y = dataReduce(x, Gt, W, At, Sigma, Mask)
 % the embeddding operator R = \sigma * S * F * Phi^T
 % Complex -> Complex
+%
+% Author: Ming Jiang, E-mail: ming.jiang@epfl.ch
+%
 FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
 x1 = Gt * x;
 if ~isempty(W)

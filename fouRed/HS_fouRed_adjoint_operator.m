@@ -1,9 +1,11 @@
-function y = HS_fouRed_adjoint_operator_new(x, A, At, H, W, Sigma, Mask, aW)
+function y = HS_fouRed_adjoint_operator(x, A, At, H, W, Sigma, Mask, aW)
 % Phi'^t = Phi^t * Phi * F^t * Sigma = A^t * H * A * F^t * Sigma
 % Complex -> Real
 % ! Attention: H is a self-adjoint complete holographic matrix, or the 
 % number of rows is equal to oversampled image size.
-
+%
+% Author: Ming Jiang, E-mail: ming.jiang@epfl.ch
+%
 IFT2 = @(x) fftshift(ifft2(ifftshift(x))) * sqrt(numel(x));
 
 % Parameters

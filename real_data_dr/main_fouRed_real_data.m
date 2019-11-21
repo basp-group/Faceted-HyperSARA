@@ -3,7 +3,7 @@ close all
 clc
 
 %% Paramters
-chInd = 32;
+chInd = 32; %1:32
 reduction_version = 2; % 1 for F\Phi^t, 2 for G^t
 realdatablocks = 2;
 enable_klargestpercent = false;
@@ -15,15 +15,15 @@ algo_version = 2; % 1 for facet HyperSARA with DR, 2 for SARA with DR
 
 %% Extract / load real data (includes Fourier reduction and NNLS)
 if reduction_version
-    nnls_dr_reduced_data(chInd, reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma)
+    nnls_dr_real_data(chInd, reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma)
     fprintf('Reduction finished\n');
 end
 
 %% Compute MAP estimator
 if solve_minimization 
     if reduction_version
-        script_Solver_fouRed_real_data(gamma, chInd, reduction_version, algo_version, realdatablocks, fouRed_gamma)
+        func_solver_fouRed_real_data(gamma, chInd, reduction_version, algo_version, realdatablocks, fouRed_gamma)
     else
-        script_Solver_real_data(gamma, chInd)
+        func_solver_real_data(gamma, chInd)
     end
 end

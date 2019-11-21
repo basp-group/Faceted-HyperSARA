@@ -1,4 +1,4 @@
-function nnls_dr_reduced_data(chInd, reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma)
+function nnls_dr_real_data(chInd, reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma)
 % chInd = 1;
 % reduction_version = 2;
 fprintf('Channel number %d\n', chInd);
@@ -53,35 +53,7 @@ param_nnls.max_iter = 200;     % max number of iterations 1000
 param_nnls.sol_steps = [inf]; % saves images at the given iterations
 param_nnls.beta = 1;
 
-%% Block structure
-regenerate_block_structure = 1;
-
-param_block_structure.use_density_partitioning = 0;
-param_block_structure.density_partitioning_no = 1;
-
-param_block_structure.use_uniform_partitioning = 0;
-param_block_structure.uniform_partitioning_no = 4;
-
-param_block_structure.use_equal_partitioning = 0;
-param_block_structure.equal_partitioning_no = 1;
-
-param_block_structure.use_manual_frequency_partitioning = 0;
-% sparam.fpartition = [pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-% sparam.fpartition = [0, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-% sparam.fpartition = [-0.25*pi, 0, 0.25*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-% sparam.fpartition = [-64/256*pi, 0, 64/256*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-param_block_structure.fpartition = [icdf('norm', 0.25, 0, pi/4), 0, icdf('norm', 0.75, 0, pi/4), pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-% sparam.fpartition = [-0.3*pi, -0.15*pi, 0, 0.15*pi, 0.3*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-% sparam.fpartition = [-0.35*pi, -0.25*pi, -0.15*pi, 0, 0.15*pi, 0.25*pi, 0.35*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-
-param_block_structure.use_manual_partitioning = 0;
-
-if param_block_structure.use_manual_partitioning == 1
-    param_block.size = 90000; % to be changed (make sure nBlocks in the end...)
-    param_block.snapshot = 0;
-end
-
-% data files on cirrus
+%% data files on cirrus
 % new_file_y = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_y.mat');
 % new_file_u = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_u.mat');
 % new_file_v = matfile('/lustre/home/shared/sc004/cyg_data_2b_dr/CYG_2b_v.mat');

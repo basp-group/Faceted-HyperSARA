@@ -1,4 +1,4 @@
-function script_Solver_fouRed_real_data(gamma, ch, reduction_version, algo_version, realdatablocks, fouRed_gamma)
+function func_solver_fouRed_real_data(gamma, ch, reduction_version, algo_version, realdatablocks, fouRed_gamma)
 
 addpath ../fouRed
 addpath ../lib/
@@ -101,8 +101,8 @@ end
 
 if compute_Anorm
     if reduction_version == 1
-        F = afclean( @(x) HS_fouRed_forward_operator_new(x, A, At, H, W, T, Wm, aW));
-        Ft = afclean( @(y) HS_fouRed_adjoint_operator_new(y, A, At, H, W, T, Wm, aW));
+        F = afclean( @(x) HS_fouRed_forward_operator(x, A, At, H, W, T, Wm, aW));
+        Ft = afclean( @(y) HS_fouRed_adjoint_operator(y, A, At, H, W, T, Wm, aW));
     elseif reduction_version == 2
         F = afclean( @(x) HS_operatorGtPhi(x, H, W, A, T, aW));
         Ft = afclean( @(y) HS_operatorGtPhi_t(y, H, W, At, T, aW));
@@ -195,7 +195,7 @@ if algo_version == 1
     
 %     mkdir('results/')
 %     
-%     [xsol,~,~,~,~,~,~,~,~,~,epsilon,t,rel_fval,nuclear,l21,norm_res,res,end_iter] =...
+%     [xsol, ~, ~, ~, ~, ~, ~, ~, ~, ~, epsilon, t, rel_fval, nuclear, l21, norm_res, res, end_iter] =...
 %         hyperSARA_DR_precond(yT, epsilon, A, At, H, W, aW, T, Wm, Psi, Psit,...
 %         param_HSI, reduction_version, realdatablocks, fouRed_gamma);
 %     
@@ -250,7 +250,7 @@ if algo_version == 1
     
     % solvers
     mkdir('results/')
-    [xsol,param_HSI,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
+    [xsol, param_HSI, epsilon, t, rel_fval, nuclear, l21, norm_res_out, end_iter] = ...
         facetHyperSARA_DR_precond(y_spmd, epsilon_spmd, A, At, H_spmd, W_spmd, aW_spmd, T_spmd, Wm_spmd, param_HSI, Qx, Qy, Qc2, ...
         wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, '', reduction_version, realdatablocks, fouRed_gamma);
     
@@ -308,7 +308,7 @@ elseif algo_version == 2
     % solvers
     mkdir('results/')
     [xsol, ~, epsilon, t, rel_fval, norm2, res, end_iter] = ...
-        pdfb_bpcon_DR_adapt_eps_precond(yT{1}, [Ny, Nx], epsilon{1}, A, At, H{1}, aW{1}, T{1}, Wm{1}, ... 
+        pdfb_DR_precond(yT{1}, epsilon{1}, A, At, H{1}, aW{1}, T{1}, Wm{1}, ... 
         Psi, Psit, param_pdfb, reduction_version, realdatablocks, fouRed_gamma);
     
     save(['results/results_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_gamma=', num2str(gamma),...

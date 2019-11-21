@@ -3,7 +3,9 @@ function y = HS_operatorGtPhi_t(x, H, W, At, Sigma, aW)
 % Complex -> Real
 % ! Attention: H is a reduced holographic matrix by removing unnecessary
 % rows
-
+%
+% Author: Ming Jiang, E-mail: ming.jiang@epfl.ch
+%
 if iscell(x)
     c = length(x);
 else

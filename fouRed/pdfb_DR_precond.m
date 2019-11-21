@@ -1,4 +1,4 @@
-function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_DR_precond(y, imsize, epsilon, A, At, H, pU, T, W, Psi, Psit, param, reduction_version, realdatablocks, fouRed_gamma)
+function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_DR_precond(y, epsilon, A, At, H, pU, T, W, Psi, Psit, param, reduction_version, realdatablocks, fouRed_gamma)
 %xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter
 % Inputs:
 % y{:} - the visibility data
@@ -21,7 +21,8 @@ function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_DR_p
 % xsol - final solution
 % rel_fval - evolution of the relative solution variation
 %
-% Authors: Ming Jiang
+% Author: Ming Jiang, E-mail: ming.jiang@epfl.ch
+%
 
 FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
 IFT2 = @(x) fftshift(ifft2(ifftshift(x))) * sqrt(numel(x));
@@ -30,12 +31,11 @@ IFT2 = @(x) fftshift(ifft2(ifftshift(x))) * sqrt(numel(x));
 R = length(H);
 P = length(Psit);
 
-% number of pixels
-Ny = imsize(1);
-Nx = imsize(2);
-
 % number of over-sampled pixels
 No = size(H{1}, 2);
+
+% number of pixels (spatial dimensions)
+[Ny, Nx] = size(At(zeros(No, 1)));
 
 %% optional input arguments
 % if ~isfield(param, 'nu1')
