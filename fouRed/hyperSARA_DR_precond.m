@@ -272,7 +272,7 @@ for t = t_start : param.max_iter
     %% L2 ball projection update
     [v2, g2, proj, norm_res, norm_residual_check_c, norm_epsilon_check_c, norm_residual_check_a, norm_epsilon_check_a]...
                 = update_data_fidelity_dr_block_new(v2, y, xhat, proj, A, At, H, W, T, Wm, pU, epsilon, ...
-                elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps, sigma22, precondition, reduction_version, realdatablocks); % *_dr version when no blocking
+                param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps, sigma22, precondition, reduction_version, realdatablocks); % *_dr version when no blocking
 
     
 %     counter = 1;

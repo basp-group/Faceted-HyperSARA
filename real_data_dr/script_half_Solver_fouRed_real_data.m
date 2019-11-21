@@ -195,6 +195,7 @@ if algo_version == 1
     param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid
     param_HSI.precondition = usingPrecondition;
     param_HSI.rw_tol = 5000;
+    param_HSI.ind = 6;
     
 %     mkdir('results/')
 %     

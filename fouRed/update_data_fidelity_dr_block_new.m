@@ -100,10 +100,10 @@ for i = 1 : ci
             end
             tmp = tmp(:);
             r2 = T{i}{j} .* tmp(Wm{i}{j});
-        elseif reduction_version == 2
+        elseif reduction_version == 2             
             if flagW
                 r2 = T{i}{j} .* (H{i}{j} * Fx(W{i}{j}));
-            else
+            else                
                 r2 = T{i}{j} .* (H{i}{j} * Fx);
             end
         end
@@ -132,7 +132,7 @@ for i = 1 : ci
         end
 
         % norm of residual
-        norm_res{i}{j} = norm(r2{i}{j} - y{i}{j});
+        norm_res{i}{j} = norm(r2 - y{i}{j});
 
         % Only for real data
         if (realdatablocks == 2 && j == 1) || (realdatablocks == 9 && (j == 1 || j == 2))

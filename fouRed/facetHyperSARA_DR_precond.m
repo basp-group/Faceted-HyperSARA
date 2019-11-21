@@ -469,7 +469,7 @@ for k = 1:K
     Ap{Q+k} = A;
     Atp{Q+k} = At;
     Hp{Q+k} = H{k};
-    if ~flagW
+    if flagW
         Wp{Q+k} = W{k};
     end
     Tp{Q+k} = T{k};
@@ -478,10 +478,10 @@ for k = 1:K
     pUp{Q+k} = pU{k};
     epsilonp{Q+k} = epsilon{k};
 end
-if flagW
+if ~flagW
     Wp = [];
 end
-clear epsilon pU Wm A At H W y
+clear epsilon pU Wm A At H W y T
 
 v2_ = Composite();
 t_block = Composite();
@@ -587,7 +587,6 @@ else
 end
 
 start_loop = tic;
-
 for t = t_start : param.max_iter
     
     %fprintf('Iter %i\n',t);
