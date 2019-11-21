@@ -203,14 +203,13 @@ end
 
 % total number of workers (Q: facets workers, K: data workers)
 numworkers = Q + K;
-cirrus_cluster = parcluster('local');
+cirrus_cluster = parcluster('cirrus R2019a');
 cirrus_cluster.NumWorkers = numworkers;
 cirrus_cluster.NumThreads = 1;
 ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
 if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
     exit(1);
 end
-
 parpool(cirrus_cluster, numworkers);
 
 % define parallel constants (known by each worker)

@@ -26,7 +26,7 @@ window_type = 'triangular';
 
 Qx = 5;
 Qy = 3;
-Qc2 = 2;    % to see later
+Qc2 = 32;    % to see later
 
 d = 512;
 flag_algo = algo_version;
