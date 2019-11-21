@@ -59,11 +59,11 @@ for i = 1:nChannels
 %     tmp = load(['../../extract_real_data/CYG_H_cal_', num2str(realdatablocks), 'b_ind6=', num2str(ch(i)), '.mat']);
 %     H{i,1} = tmp.H{1,1};
 %     W{i,1} = tmp.W{1,1};
-%     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
-%         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
-%     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
-    tmp = load(['../../extract_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
+    tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
+%     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
+%     tmp = load(['../../extract_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
+%         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
     H{i,1} = tmp.H{1,1};
     W{i,1} = tmp.W{1,1};
     yT{i,1} = tmp.yT{1,1};

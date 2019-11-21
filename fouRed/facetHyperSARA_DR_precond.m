@@ -718,11 +718,11 @@ for t = t_start : param.max_iter
             end
         end
         
-        fitswrite(xsol, ['facethyper_xsol_it', num2str(t), '_gamma', num2str(param.gamma), '_', num2str(realdatablocks),...
+        for q = 1:Q
+            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        end
+        fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_gamma', num2str(param.gamma), '_', num2str(realdatablocks),...
             'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.fits']);
-        
-%         fitswrite(x0, ['./x0_it', num2str(t), '.fits']);
-%         fitswrite(xsol, ['./xsol_it', num2str(t), '.fits']);
     end
     
     %% Global stopping criteria
