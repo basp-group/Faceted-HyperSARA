@@ -1,4 +1,4 @@
-function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_bpcon_DR_adapt_eps_precond(y, imsize, epsilon, A, At, H, pU, T, W, Psi, Psit, param, reduction_version, realdatablocks, fouRed_gamma)
+function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_DR_precond(y, imsize, epsilon, A, At, H, pU, T, W, Psi, Psit, param, reduction_version, realdatablocks, fouRed_gamma)
 %xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter
 % Inputs:
 % y{:} - the visibility data

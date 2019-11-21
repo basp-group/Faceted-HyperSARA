@@ -1,38 +1,65 @@
-function y = HS_fouRed_adjoint_operator(x, A, At, H, Sigma, Mask, N, No, W, aW)
+function y = HS_fouRed_adjoint_operator_new(x, A, At, H, W, Sigma, Mask, aW)
 % Phi'^t = Phi^t * Phi * F^t * Sigma = A^t * H * A * F^t * Sigma
+% Complex -> Real
+% ! Attention: H is a self-adjoint complete holographic matrix, or the 
+% number of rows is equal to oversampled image size.
 
-IFT2 = @(x) fftshift(ifft2(ifftshift(x)));
+IFT2 = @(x) fftshift(ifft2(ifftshift(x))) * sqrt(numel(x));
 
 % Parameters
-[~, c] = size(x);
-Ny = N(1);
-Nx = N(2);
-if exist('No', 'var')
-    Noy = No(1);
-    Nox = No(2);
+if iscell(x)
+    c = length(x);
+else
+    [~, c] = size(x);
 end
-%
+
+% Variable flagW for the case where W is present
+flagW = 0;
+if ~isempty(W)
+    flagW = 1;
+end
+
+if flagW
+    No = size(W{1}{1}, 1);
+else
+    No = size(H{1}{1}, 2);
+end
+[Ny, Nx] = size(At(zeros(No, 1)));
+
 for ind = 1:c
-    if exist('aW', 'var')
-        xtmp = sqrt(cell2mat(aW{ind})) .* x(:,ind);
+    if iscell(H{ind})
+        x1 = zeros(No, 1);
+        for j = 1:length(H{ind})
+            if exist('aW', 'var')
+                xtmp = sqrt(aW{ind}{j}) .* x{ind}{j};
+            else
+                xtmp = x{ind}{j};
+            end
+            xtmp = Sigma{ind}{j} .* xtmp(:);
+            tmp = zeros(size(Mask{ind}{j}));
+            tmp(Mask{ind}{j}) = xtmp;
+            if flagW
+                x1(W{ind}{j}) = x1(W{ind}{j}) + H{ind}{j} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+            else
+                x1 = x1 + H{ind}{j} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+            end
+        end
     else
-        xtmp = x(:,ind);
-%         y(:,:,ind) = Bt{ind}(sqrt(cell2mat(aW{ind})) .* x(:,ind));
-%     else
-%         y(:,:,ind) = Bt{ind}(x(:,ind));
+        if exist('aW', 'var')
+            xtmp = sqrt(aW{ind}) .* x{ind};
+        else
+            xtmp = x{ind};
+        end
+        tmp = zeros(size(Mask{ind}));
+        tmp(Mask{ind}) = Sigma{ind} .* xtmp(:);
+        if flagW
+            x1 = zeros(No, 1);
+            x1(W{ind}) = x1(W{ind}) + H{ind} * A(real(IFT2(reshape(tmp, Ny, Nx)))); 
+        else
+            x1 = H{ind} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+        end
     end
-    x1 = zeros(Ny * Nx, 1);
-    x1(Mask{ind}) = Sigma{ind} .* xtmp(:);
-    x1 = reshape(x1, Ny, Nx);
-    x1 = A(IFT2(x1));
-    if exist('No', 'var') && exist('W', 'var')
-        tmp = H{ind} * x1(W{ind});
-        x2 = zeros(Noy*Nox,1);
-        x2(W{ind}) = tmp;
-    else
-        x2 = H{ind} * x1;
-    end
-    y(:,:,ind) = At(x2);
+    y(:,:,ind) = real(At(x1));
 end
 
 end
