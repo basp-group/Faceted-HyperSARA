@@ -1,13 +1,11 @@
-function y = HS_fouRed_forward_operator(x, A, At, H, W, Sigma, Mask, aW)
-% Phi' = Sigma * F * Phi^t * Phi = Sigma * F * A^t * H * A
+function y = HS_operatorGtPhi(x, H, W, A, Sigma, aW)
+% New reduced measurement operator: Sigma * S * H * A
 % Real -> Complex
-% ! Attention: H is a self-adjoint complete holographic matrix, or the 
-% number of rows is equal to oversampled image size.
+% ! Attention: H is a reduced holographic matrix by removing unnecessary
+% rows
 %
 % Author: Ming Jiang, E-mail: ming.jiang@epfl.ch
 %
-FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
-
 c = size(x, 3);
 
 % Variable flagW for the case where W is present
@@ -18,7 +16,6 @@ end
 
 for ind = 1:c
     x1 = A(real(x(:,:,ind)));
-    
     if iscell(H{ind})
         for j = 1:length(H{ind})
             if flagW
@@ -26,31 +23,26 @@ for ind = 1:c
             else
                 x2 = H{ind}{j} * x1;
             end
-            xtmp = FT2(real(At(x2)));
-            xtmp = xtmp(:);
-            xtmp = Sigma{ind}{j} .* xtmp(Mask{ind}{j});
+            xtmp = Sigma{ind}{j} .* x2;
             if exist('aW', 'var')
                 y{ind}{j} =  sqrt(aW{ind}{j}) .* xtmp;
             else
                 y{ind}{j} =  xtmp;
             end
         end
-    else    
+    else
         if flagW
             x2 = H{ind} * x1(W{ind});
         else
             x2 = H{ind} * x1;
         end
-        xtmp = FT2(real(At(x2)));
-        xtmp = xtmp(:);
-        xtmp = Sigma{ind} .* xtmp(Mask{ind});
+        xtmp = Sigma{ind} .* x2;
         if exist('aW', 'var')
             y{ind} =  sqrt(aW{ind}) .* xtmp;
         else
             y{ind} =  xtmp;
         end
     end
-    
 end
 
 end
