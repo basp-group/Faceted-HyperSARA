@@ -236,10 +236,11 @@ end
 
 % Main loop. Sequential.
 %maxNumCompThreads(12);
+delete(gcp('nocreate'));
 util_create_pool(12);
 
 start_loop = tic;
-
+profile on
 for t = t_start : param.max_iter
     
     start_iter = tic;
@@ -533,7 +534,9 @@ for t = t_start : param.max_iter
     
     %toc;
 end
+profile off
 end_loop = toc(start_loop)
+profsave(profile('info'),'HyperSARA_DR_profile_results')
 
 % Calculate residual images:
 for i = 1 : c

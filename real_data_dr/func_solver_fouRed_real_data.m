@@ -1,5 +1,14 @@
 function func_solver_fouRed_real_data(gamma, ch, reduction_version, algo_version, realdatablocks, fouRed_gamma)
 
+diaryFname = ['diary_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(realdatablocks), 'b_fouRed',...
+        num2str(reduction_version), '_algo', num2str(algo_version), '_th', num2str(fouRed_gamma), '.mat'];
+    
+if exist(diaryFname, 'file')
+    delete(diaryFname)
+end
+
+diary(diaryFname)
+
 addpath ../fouRed
 addpath ../lib/
 addpath ../lib/operators/
@@ -161,7 +170,7 @@ if algo_version == 1
     param_HSI.gamma0 = 1e-2;
     param_HSI.gamma = gamma;  %convergence parameter L1 (soft th parameter)
     param_HSI.rel_obj = 1e-10; % stopping criterion
-    param_HSI.max_iter = 100; % max number of iterations
+    param_HSI.max_iter = 10; % max number of iterations
 
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 300; % minimum num of iter before stating adjustment
@@ -254,7 +263,7 @@ if algo_version == 1
         facetHyperSARA_DR_precond(y_spmd, epsilon_spmd, A, At, H_spmd, W_spmd, aW_spmd, T_spmd, Wm_spmd, param_HSI, Qx, Qy, Qc2, ...
         wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, '', reduction_version, realdatablocks, fouRed_gamma);
     
-    save(['results/results_hyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
+    save(['results/results_facethyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
         '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma),'.mat'], '-v7.3', ...
         'xsol', 'param_HSI', 'epsilon', 't', 'rel_fval', 'nuclear', 'l21', ...
         'norm_res_out', 'end_iter');
@@ -316,4 +325,5 @@ elseif algo_version == 2
         'xsol', 'epsilon', 't', 'rel_fval', 'norm2', 'res', 'end_iter');
     
 end
+diary off
 end

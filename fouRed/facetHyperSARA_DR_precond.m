@@ -202,8 +202,9 @@ for qx = 1:Qx
 end
 
 % total number of workers (Q: facets workers, K: data workers)
+delete(gcp('nocreate'));
 numworkers = Q + K;
-cirrus_cluster = parcluster('local');
+cirrus_cluster = parcluster('cirrus R2019a');
 cirrus_cluster.NumWorkers = numworkers;
 cirrus_cluster.NumThreads = 1;
 ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
@@ -586,6 +587,7 @@ else
 end
 
 start_loop = tic;
+profile on
 for t = t_start : param.max_iter
     
     %fprintf('Iter %i\n',t);
@@ -839,7 +841,9 @@ for t = t_start : param.max_iter
         rw_counts = rw_counts + 1;
     end
 end
+profile off
 toc(start_loop)
+profsave(profile('info'),'FacetHyperSARA_DR_profile_results')
 
 % Collect image facets back to the master
 for q = 1:Q
@@ -970,5 +974,5 @@ end
 
 % end_iter = end_iter(end_iter > 0);
 % rel_fval = rel_fval(1:numel(end_iter));
-
+delete(gcp('nocreate'));
 end
