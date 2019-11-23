@@ -1,4 +1,4 @@
-function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
+function [xsol,param,epsilon,t,rel_fval,nuclear,l21,end_iter] = ...
     facetHyperSARA_DR_precond(y, epsilon, A, At, H, W, pU, T, Wm, param, ...
     Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name, ...
     reduction_version, realdatablocks, fouRed_gamma)
@@ -658,7 +658,7 @@ for t = t_start : param.max_iter
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
     %% Display
-    if ~mod(t,25)
+    if ~mod(t,5)
         
         %% compute value of the priors in parallel
         spmd
@@ -788,47 +788,47 @@ for t = t_start : param.max_iter
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t;
         
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
-            % Save parameters (matfile solution)
-            mkdir('./results/')
-            m = matfile(['./results/facetHyperSARA_dr_co_w_real_' ...
-                num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
-                'Writable', true);
-            m.param = param;
-            m.res = zeros(size(xsol));
-            m.g = zeros(size(xsol));
-            m.xsol = zeros(size(xsol));
-            m.epsilon = cell(K, 1);
-            m.v2 = cell(K, 1);
-            m.proj = cell(K, 1);
-            m.t_block = cell(K, 1);
-            m.norm_res = cell(K, 1);
-            m.v0 = cell(Q, 1);
-            m.v1 = cell(Q, 1);
-            m.weights0 = cell(Q, 1);
-            m.weights1 = cell(Q, 1);
-            % Retrieve variables from workers
-            % facet nodes
-            for q = 1:Q
-                m.v0(q,1) = v0_(q);
-                m.v1(q,1) = v1_(q);
-                m.weights0(q,1) = weights0_(q);
-                m.weights1(q,1) = weights1_(q);
-                m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-                m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
-            end
-            % data nodes
-            for k = 1:K
-                m.res(:,:,c_chunks{k}) = res_{Q+k};
-                res_{Q+k} = [];
-                m.v2(k,1) = v2_(Q+k);
-                m.proj(k,1) = proj_(Q+k);
-                m.t_block(k,1) = t_block(Q+k);
-                m.epsilon(k,1) = epsilonp(Q+k);
-                m.norm_res(k,1) = norm_res(Q+k);
-            end
-            clear m
-        end 
+%         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+%             % Save parameters (matfile solution)
+%             mkdir('./results/')
+%             m = matfile(['./results/facetHyperSARA_dr_co_w_real_' ...
+%                 num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+%                 'Writable', true);
+%             m.param = param;
+%             m.res = zeros(size(xsol));
+%             m.g = zeros(size(xsol));
+%             m.xsol = zeros(size(xsol));
+%             m.epsilon = cell(K, 1);
+%             m.v2 = cell(K, 1);
+%             m.proj = cell(K, 1);
+%             m.t_block = cell(K, 1);
+%             m.norm_res = cell(K, 1);
+%             m.v0 = cell(Q, 1);
+%             m.v1 = cell(Q, 1);
+%             m.weights0 = cell(Q, 1);
+%             m.weights1 = cell(Q, 1);
+%             % Retrieve variables from workers
+%             % facet nodes
+%             for q = 1:Q
+%                 m.v0(q,1) = v0_(q);
+%                 m.v1(q,1) = v1_(q);
+%                 m.weights0(q,1) = weights0_(q);
+%                 m.weights1(q,1) = weights1_(q);
+%                 m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+%                 m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
+%             end
+%             % data nodes
+%             for k = 1:K
+%                 m.res(:,:,c_chunks{k}) = res_{Q+k};
+%                 res_{Q+k} = [];
+%                 m.v2(k,1) = v2_(Q+k);
+%                 m.proj(k,1) = proj_(Q+k);
+%                 m.t_block(k,1) = t_block(Q+k);
+%                 m.epsilon(k,1) = epsilonp(Q+k);
+%                 m.norm_res(k,1) = norm_res(Q+k);
+%             end
+%             clear m
+%         end 
         
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;
@@ -866,63 +866,63 @@ spmd
     end
 end
 
-m = matfile(['./results/facetHyperSARA_dr_co_w_real' ...
-              num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
-              'Writable', true);
-m.param = param;
-m.res = zeros(size(xsol));
-m.g = zeros(size(xsol));
-m.xsol = zeros(size(xsol));
-m.epsilon = cell(K, 1);
-m.v2 = cell(K, 1);
-m.proj = cell(K, 1);
-m.t_block = cell(K, 1);
-m.norm_res = cell(K, 1);
-m.v0 = cell(Q, 1);
-m.v1 = cell(Q, 1);
-m.weights0 = cell(Q, 1);
-m.weights1 = cell(Q, 1);
-
-% Retrieve variables from workers
-% facet nodes
-for q = 1:Q
-    m.v0(q,1) = v0_(q);
-    v0_{q} = [];
-    m.v1(q,1) = v1_(q);
-    v1_{q} = [];
-    m.weights0(q,1) = weights0_(q);
-    weights0_{q} = [];
-    m.weights1(q,1) = weights1_(q);
-    weights1_{q} = [];
-    m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
-    g_q{q} = [];
-end
-
-% data nodes
-for k = 1:K
-    m.res(:,:,c_chunks{k}) = res_{Q+k};
-    res_{Q+k} = [];
-    m.v2(k,1) = v2_(Q+k);
-    v2_{Q+k} = [];
-    m.proj(k,1) = proj_(Q+k);
-    proj_{Q+k} = [];
-    m.t_block(k,1) = t_block(Q+k);
-    t_block{Q+k} = [];
-    m.epsilon(k,1) = epsilonp(Q+k);
-    epsilonp{Q+k} = [];
-    m.norm_res(k,1) = norm_res(Q+k);
-end
-m.xsol = xsol;
-epsilon = m.epsilon; % see if necessary
-norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
-
-% Update param structure and save
-param.reweight_alpha = reweight_alpha;
-param.init_reweight_step_count = reweight_step_count;
-param.init_reweight_last_iter_step = t;
-param.init_t_start = t;
-m.param = param;
-clear m
+% m = matfile(['./results/facetHyperSARA_dr_co_w_real' ...
+%               num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+%               'Writable', true);
+% m.param = param;
+% m.res = zeros(size(xsol));
+% m.g = zeros(size(xsol));
+% m.xsol = zeros(size(xsol));
+% m.epsilon = cell(K, 1);
+% m.v2 = cell(K, 1);
+% m.proj = cell(K, 1);
+% m.t_block = cell(K, 1);
+% m.norm_res = cell(K, 1);
+% m.v0 = cell(Q, 1);
+% m.v1 = cell(Q, 1);
+% m.weights0 = cell(Q, 1);
+% m.weights1 = cell(Q, 1);
+% 
+% % Retrieve variables from workers
+% % facet nodes
+% for q = 1:Q
+%     m.v0(q,1) = v0_(q);
+%     v0_{q} = [];
+%     m.v1(q,1) = v1_(q);
+%     v1_{q} = [];
+%     m.weights0(q,1) = weights0_(q);
+%     weights0_{q} = [];
+%     m.weights1(q,1) = weights1_(q);
+%     weights1_{q} = [];
+%     m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
+%     g_q{q} = [];
+% end
+% 
+% % data nodes
+% for k = 1:K
+%     m.res(:,:,c_chunks{k}) = res_{Q+k};
+%     res_{Q+k} = [];
+%     m.v2(k,1) = v2_(Q+k);
+%     v2_{Q+k} = [];
+%     m.proj(k,1) = proj_(Q+k);
+%     proj_{Q+k} = [];
+%     m.t_block(k,1) = t_block(Q+k);
+%     t_block{Q+k} = [];
+%     m.epsilon(k,1) = epsilonp(Q+k);
+%     epsilonp{Q+k} = [];
+%     m.norm_res(k,1) = norm_res(Q+k);
+% end
+% m.xsol = xsol;
+% epsilon = m.epsilon; % see if necessary
+% norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
+% 
+% % Update param structure and save
+% param.reweight_alpha = reweight_alpha;
+% param.init_reweight_step_count = reweight_step_count;
+% param.init_reweight_last_iter_step = t;
+% param.init_t_start = t;
+% m.param = param;
+% clear m
 
 % Final log
 l21 = 0;

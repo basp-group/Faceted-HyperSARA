@@ -1,12 +1,12 @@
 function func_solver_fouRed_real_data(gamma, ch, reduction_version, algo_version, realdatablocks, fouRed_gamma)
 
 diaryFname = ['diary_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(realdatablocks), 'b_fouRed',...
-        num2str(reduction_version), '_algo', num2str(algo_version), '_th', num2str(fouRed_gamma), '.mat'];
+        num2str(reduction_version), '_algo', num2str(algo_version), '_th', num2str(fouRed_gamma), '.txt'];
     
 if exist(diaryFname, 'file')
     delete(diaryFname)
 end
-
+diary on
 diary(diaryFname)
 
 addpath ../fouRed
@@ -259,14 +259,14 @@ if algo_version == 1
     
     % solvers
     mkdir('results/')
-    [xsol, param_HSI, epsilon, t, rel_fval, nuclear, l21, norm_res_out, end_iter] = ...
+    [xsol, param_HSI, epsilon, t, rel_fval, nuclear, l21, end_iter] = ...
         facetHyperSARA_DR_precond(y_spmd, epsilon_spmd, A, At, H_spmd, W_spmd, aW_spmd, T_spmd, Wm_spmd, param_HSI, Qx, Qy, Qc2, ...
         wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, '', reduction_version, realdatablocks, fouRed_gamma);
     
     save(['results/results_facethyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
         '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma),'.mat'], '-v7.3', ...
         'xsol', 'param_HSI', 'epsilon', 't', 'rel_fval', 'nuclear', 'l21', ...
-        'norm_res_out', 'end_iter');
+        'end_iter');
 
 elseif algo_version == 2
     disp('Split L1 + wavelets')
