@@ -132,7 +132,7 @@ for i = 1 : ci
         end
 
         % norm of residual
-        norm2 = sum(power(r2 - y{i}{j}, 2));     % faster than built-in norm
+        norm2 = sum(power(abs(r2 - y{i}{j}), 2));     % faster than built-in norm
         norm_res{i}{j} = sqrt(norm2);
 
         % Only for real data
