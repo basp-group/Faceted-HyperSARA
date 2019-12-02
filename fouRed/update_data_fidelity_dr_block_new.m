@@ -132,14 +132,15 @@ for i = 1 : ci
         end
 
         % norm of residual
-        norm_res{i}{j} = norm(r2 - y{i}{j});
+        norm2 = sum(power(r2 - y{i}{j}, 2));     % faster than built-in norm
+        norm_res{i}{j} = sqrt(norm2);
 
         % Only for real data
         if (realdatablocks == 2 && j == 1) || (realdatablocks == 9 && (j == 1 || j == 2))
-            norm_residual_check_c = norm_residual_check_c + norm_res{i}{j}^2;
+            norm_residual_check_c = norm_residual_check_c + norm2;
             norm_epsilon_check_c = norm_epsilon_check_c + epsilon{i}{j}^2;
         else
-            norm_residual_check_a = norm_residual_check_a + norm_res{i}{j}^2;
+            norm_residual_check_a = norm_residual_check_a + norm2;
             norm_epsilon_check_a = norm_epsilon_check_a + epsilon{i}{j}^2;
         end
     end

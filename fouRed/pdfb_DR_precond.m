@@ -1,4 +1,4 @@
-function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_DR_precond(y, epsilon, A, At, H, pU, T, W, Psi, Psit, param, reduction_version, realdatablocks, fouRed_gamma)
+function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_DR_precond(y, epsilon, A, At, H, W, pU, T, Wm, Psi, Psit, param, reduction_version, realdatablocks, fouRed_gamma)
 %xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter
 % Inputs:
 % y{:} - the visibility data
@@ -31,8 +31,18 @@ IFT2 = @(x) fftshift(ifft2(ifftshift(x))) * sqrt(numel(x));
 R = length(H);
 P = length(Psit);
 
+% Variable flag for the case where W is present
+flagW = 0;
+if ~isempty(W)
+    flagW = 1;
+end
+
 % number of over-sampled pixels
-No = size(H{1}, 2);
+if flagW
+    No = size(W{1}, 1);
+else
+    No = size(H{1}, 2);
+end
 
 % number of pixels (spatial dimensions)
 [Ny, Nx] = size(At(zeros(No, 1)));
@@ -162,8 +172,8 @@ count_eps_update_up = 0;
 % L2_vp = zeros(param.max_iter, R);
 
 rel_fval = zeros(param.max_iter, 1);
-norm_conv = zeros(param.max_iter, 1);
-xstar = param.xstar;
+% norm_conv = zeros(param.max_iter, 1);
+% xstar = param.xstar;
 
 reweight_steps = param.reweight_steps;
 
@@ -272,13 +282,21 @@ for t = 1:param.max_iter
     residual_check_a = 0;
     epsilon_check_a = 0;
 
-    for q = 1:R
+    for q = 1:R        
         if reduction_version == 1
-            tmp = FT2(real(At(H{q} * ns)));
+            if flagW
+                tmp = FT2(real(At(H{q} * ns(W{q}))));
+            else
+                tmp = FT2(real(At(H{q} * ns)));
+            end
             tmp = tmp(:);
-            r2{q} = T{q} .* tmp(W{q});
+            r2{q} = T{q} .* tmp(Wm{q});
         elseif reduction_version == 2
-            r2{q} = T{q} .* (H{q} * ns);
+            if flagW
+                r2{q} = T{q} .* (H{q} * ns(W{q}));
+            else
+                r2{q} = T{q} .* (H{q} * ns);
+            end
         end
         
         if param.use_proj_elipse_fb
@@ -368,11 +386,19 @@ for t = 1:param.max_iter
     uu = zeros(No, 1);
     for q = 1:R
         if reduction_version == 1
-            tmp = zeros(size(W{q}));
-            tmp(W{q}) = u2{q};
-            uu = uu + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+            tmp = zeros(size(Wm{q}));
+            tmp(Wm{q}) = u2{q};
+            if flagW
+                uu(W{q}) = uu(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+            else
+                uu = uu + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+            end                
         elseif reduction_version == 2
-            uu = uu + H{q}' * u2{q};
+            if flagW
+                uu(W{q}) = uu(W{q}) + H{q}' * u2{q};
+            else
+                uu = uu + H{q}' * u2{q};
+            end
         end
     end
     g2 = real(At(sigma2 * uu));
@@ -397,12 +423,14 @@ for t = 1:param.max_iter
                 end
             end
         end
-        fitswrite(xsol, ['xsol_prec2_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+        fitswrite(xsol, ['xsol_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
             'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.fits']);
+        save(['conv_dr_prec_it', num2str(t), '_gamma', num2str(gamma)...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
     end
-    fprintf('Time for iteration %i: %3.3f, ',t, end_iter(t));
-    norm_conv(t) = norm(xsol(:) - xstar(:));
-    fprintf('convergence metric: %f\n', norm_conv(t));
+    fprintf('Time for iteration %i: %3.3f, \n',t, end_iter(t));
+%     norm_conv(t) = norm(xsol(:) - xstar(:));
+%     fprintf('convergence metric: %f\n', norm_conv(t));
     
     if (param.verbose <= 0.5)
         fprintf('.\n');fprintf('\b');
@@ -449,8 +477,10 @@ for t = 1:param.max_iter
 %         sigma1 = 1/op_norm(@(x) weights_mat .* Psitw(x), @(x) Psiw(weights_mat .* x), [Ny, Nx], 1e-8, 200, 0);
         
         fprintf('\n\n\n\n\n\n\n Performed reweight no %d \n\n\n\n\n', reweight_step_count);
-        fitswrite(xsol, ['xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
+        fitswrite(xsol, ['xsol_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
             '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.fits']);
+        save(['conv_dr_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
        
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
@@ -471,7 +501,8 @@ for t = 1:param.max_iter
      end
 end
 toc(start_loop)
-save('norm_conv_dr_precond2.mat', '-v7.3', 'norm_conv')
+save('conv_dr_prec_final.mat', '-v7.3', 'rel_fval', 'end_iter')
+
 % final log
 if (param.verbose > 0)
     if (flag == 1)

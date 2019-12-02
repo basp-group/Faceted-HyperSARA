@@ -68,10 +68,10 @@ param_nnls.beta = 1;
 % new_file_u = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_u.mat');
 % new_file_v = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_v.mat');
 % new_file_nW = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_nW.mat');
-load(['/Users/ming/workspace/Git/extract_real_data/CYG_data_cal_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'yb', 'G', 'W')
-load(['/Users/ming/workspace/Git/extract_real_data/res_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'res')
-% load(['/lustre/home/shared/sc004/cyg_data_sub/CYG_data_cal_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'yb', 'G', 'W')
-% load(['/lustre/home/shared/sc004/cyg_data_sub/res_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'res')
+% load(['/Users/ming/workspace/Git/extract_real_data/CYG_data_cal_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'yb', 'G', 'W')
+% load(['/Users/ming/workspace/Git/extract_real_data/res_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'res')
+load(['/lustre/home/shared/sc004/cyg_data_sub/CYG_data_cal_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'yb', 'G', 'W')
+load(['/lustre/home/shared/sc004/cyg_data_sub/res_', num2str(realdatablocks), 'b_ch', num2str(chInd),'_ind=6.mat'], 'res')
 %% Reduction 
 epsilon = cell(1, 1);
 
@@ -117,11 +117,12 @@ Tl = T{1};
 
 if param_fouRed.enable_estimatethreshold
     if ~isfield(param_fouRed, 'gamma') 
-        param_fouRed.gamma = 3; 
+        param_fouRed.gamma = 30; 
     end
-    fprintf('Threshold level: %d sigma\n', param_fouRed.gamma);
-    p = normcdf([-param_fouRed.gamma param_fouRed.gamma]);
-    prob = p(2) - p(1);
+    fprintf('Threshold level: %d percentile\n', param_fouRed.gamma);
+%     p = normcdf([-param_fouRed.gamma param_fouRed.gamma]);
+%     prob = p(2) - p(1);
+    prob = 1 - param_fouRed.gamma/100;
 end
 
 precision = 1e-16;
@@ -213,7 +214,7 @@ epsilon{1} = norm_res;
 %     save(Hfilename, '-v7.3', 'H', 'W')
 % end
 DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
-    num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(chInd), '.mat'];
+    num2str(reduction_version), '_perc', num2str(fouRed_gamma),'=', num2str(chInd), '.mat'];
 if ~isfile(DRfilename)
     save(DRfilename, '-v7.3', 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
 end

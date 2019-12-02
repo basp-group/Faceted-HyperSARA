@@ -1,12 +1,11 @@
 function func_solver_fouRed_real_data(gamma, ch, reduction_version, algo_version, realdatablocks, fouRed_gamma)
 
 diaryFname = ['diary_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(realdatablocks), 'b_fouRed',...
-        num2str(reduction_version), '_algo', num2str(algo_version), '_th', num2str(fouRed_gamma), '.txt'];
+        num2str(reduction_version), '_algo', num2str(algo_version), '_perc', num2str(fouRed_gamma), '.txt'];
     
 if exist(diaryFname, 'file')
     delete(diaryFname)
 end
-diary on
 diary(diaryFname)
 
 addpath ../fouRed
@@ -27,6 +26,7 @@ fprintf("Regularization parameter=%e\n", gamma);
 fprintf('Channel number %d\n', ch);
 fprintf('Reduction version %d\n', reduction_version);
 fprintf('Data blocks: %d\n', realdatablocks);
+fprintf('Reduction level: %f percentile\n', fouRed_gamma);
 
 % compute_Anorm = true;
 usingPrecondition = true;
@@ -35,7 +35,7 @@ window_type = 'triangular';
 
 Qx = 5;
 Qy = 3;
-Qc2 = 32;    % to see later
+Qc2 = 4;    % to see later
 
 d = 512;
 flag_algo = algo_version;
@@ -69,7 +69,7 @@ for i = 1:nChannels
 %     H{i,1} = tmp.H{1,1};
 %     W{i,1} = tmp.W{1,1};
     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
-        num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
+        num2str(reduction_version), '_perc', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(i), '.mat']);
 %     tmp = load(['../../extract_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
 %         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
@@ -90,7 +90,7 @@ for i = 1:nChannels
     end
 %     tmp = load(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_gam01_epsilon=', num2str(ch(i)), '.mat'], 'epsilon');
 %     tmp = load(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_epsilon=', num2str(i), '.mat'], 'epsilon');
-%     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_eps_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
+%     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/old/CYG_eps_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
 %         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'epsilon');
 %     tmp = load(['../../extract_real_data/CYG_eps_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
 %         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'epsilon');
@@ -101,7 +101,7 @@ clear tmp
 
 %% Compute full measurement operator spectral norm
 Anormfile = ['Anorm_dr_prec_ind6_per_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(realdatablocks), 'b_fouRed',...
-        num2str(reduction_version), '_th', num2str(fouRed_gamma), '.mat'];
+        num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.mat'];
 if isfile(Anormfile)
     compute_Anorm = false;
 else
@@ -170,12 +170,12 @@ if algo_version == 1
     param_HSI.gamma0 = 1e-2;
     param_HSI.gamma = gamma;  %convergence parameter L1 (soft th parameter)
     param_HSI.rel_obj = 1e-10; % stopping criterion
-    param_HSI.max_iter = 10; % max number of iterations
+    param_HSI.max_iter = 10000; % max number of iterations
 
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 300; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
-    param_HSI.adapt_eps_tol_out = 1.001; % tolerance outside the l2 ball
+    param_HSI.adapt_eps_tol_out = 1.005; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
     param_HSI.adapt_eps_rel_obj = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
@@ -214,7 +214,7 @@ if algo_version == 1
 
     
     % spectral tesselation (non-overlapping)
-    rg_c = domain_decomposition(Qc2, nChannels); % to be modified
+    rg_c = domain_decomposition(Qc2, nChannels/2); % to be modified % only for data reduction
     cell_c_chunks = cell(Qc2, 1);
     y_spmd = cell(Qc2, 1);
     epsilon_spmd = cell(Qc2, 1);
@@ -225,7 +225,8 @@ if algo_version == 1
     W_spmd = cell(Qc2, 1);
     
     for i = 1:Qc2
-        cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+%         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+        cell_c_chunks{i} = [rg_c(i, 1):rg_c(i, 2), nChannels-rg_c(i, 2)+1:nChannels-rg_c(i, 1)+1];   % only for data reduction
         y_spmd{i} = yT(cell_c_chunks{i});
         epsilon_spmd{i} = epsilon(cell_c_chunks{i});
         aW_spmd{i} = aW(cell_c_chunks{i});
@@ -259,14 +260,13 @@ if algo_version == 1
     
     % solvers
     mkdir('results/')
-    [xsol, param_HSI, epsilon, t, rel_fval, nuclear, l21, end_iter] = ...
+    [xsol, param_HSI, t, rel_fval, nuclear, l21, norm_res_out,res, end_iter] = ...
         facetHyperSARA_DR_precond(y_spmd, epsilon_spmd, A, At, H_spmd, W_spmd, aW_spmd, T_spmd, Wm_spmd, param_HSI, Qx, Qy, Qc2, ...
         wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, '', reduction_version, realdatablocks, fouRed_gamma);
     
     save(['results/results_facethyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-        '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma),'.mat'], '-v7.3', ...
-        'xsol', 'param_HSI', 'epsilon', 't', 'rel_fval', 'nuclear', 'l21', ...
-        'end_iter');
+        '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma),'.mat'], '-v7.3', ...
+        'xsol', 'param_HSI', 't', 'rel_fval', 'nuclear', 'l21', 'norm_res_out', 'res', 'end_iter');
 
 elseif algo_version == 2
     disp('Split L1 + wavelets')
@@ -276,8 +276,8 @@ elseif algo_version == 2
     param_pdfb.nu2 = Anorm; % bound on the norm of the operator A*G
     param_pdfb.gamma = gamma; % convergence parameter L1 (soft th parameter)
     param_pdfb.tau = 0.49; % forward descent step size
-    param_pdfb.rel_obj = 1e-6; % stopping criterion
-    param_pdfb.max_iter = 5000; % max number of iterations
+    param_pdfb.rel_obj = 1e-10; % stopping criterion
+    param_pdfb.max_iter = 10000; % max number of iterations
     param_pdfb.lambda0 = 1; % relaxation step for primal update
     param_pdfb.lambda1 = 1; % relaxation step for L1 dual update
     param_pdfb.lambda2 = 1; % relaxation step for L2 dual update
@@ -305,19 +305,20 @@ elseif algo_version == 2
 
     param_pdfb.use_reweight_steps = 0; % reweighting by fixed steps
     param_pdfb.reweight_step_size = 300; % reweighting step size
-    param_pdfb.reweight_steps = [2000: param_pdfb.reweight_step_size :10000];
+    param_pdfb.reweight_steps = [5000: param_pdfb.reweight_step_size :10000];
     param_pdfb.step_flag = 1;
 
-    param_pdfb.use_reweight_eps = 0; % reweighting w.r.t the relative change of the solution
+    param_pdfb.use_reweight_eps = 1; % reweighting w.r.t the relative change of the solution
     param_pdfb.reweight_max_reweight_itr = param_pdfb.max_iter - param_pdfb.reweight_step_size;
     param_pdfb.reweight_rel_obj = 1e-4; % criterion for performing reweighting
     param_pdfb.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
     
-    param_pdfb.xstar = fitsread('xsol_it5523_reweight15_gamma1e-05_2b_fouRed2_th1.fits');
+    param_pdfb.rw_tol = 5000;
+    
     % solvers
     mkdir('results/')
     [xsol, ~, epsilon, t, rel_fval, norm2, res, end_iter] = ...
-        pdfb_DR_precond(yT{1}, epsilon{1}, A, At, H{1}, aW{1}, T{1}, Wm{1}, ... 
+        pdfb_DR_precond(yT{1}, epsilon{1}, A, At, H{1}, W{1}, aW{1}, T{1}, Wm{1}, ... 
         Psi, Psit, param_pdfb, reduction_version, realdatablocks, fouRed_gamma);
     
     save(['results/results_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_gamma=', num2str(gamma),...

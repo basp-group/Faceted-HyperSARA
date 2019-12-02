@@ -26,7 +26,7 @@ param_real_data.image_size_Nx = 2560; % 2560;
 param_real_data.image_size_Ny = 1536; % 1536;
 nChannels = 1; % total number of "virtual" channels (i.e., after
 % concatenation) for the real dataset considered
-nBlocks = 9;        % number of data blocks (needs to be known beforehand,
+nBlocks = 2;        % number of data blocks (needs to be known beforehand,
 % quite restrictive here), change l.70 accordingly
 % klargestpercent = 20;
 
@@ -74,8 +74,8 @@ param_block_structure.use_manual_partitioning = 1;
 % new_file_y = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_data_cal_9b_ch32_ind=6.mat');
 % new_file_res = matfile('/Users/ming/workspace/Git/extract_real_data/res_9b_ch32_ind=6.mat');
 % data files on cirrus
-new_file_y = matfile('/lustre/home/shared/sc004/cyg_data_sub/CYG_data_cal_9b_ch32_ind=6.mat');
-new_file_res = matfile('/lustre/home/shared/sc004/cyg_data_sub/res_9b_ch32_ind=6.mat');
+new_file_y = matfile('/lustre/home/shared/sc004/cyg_data_sub/old/CYG_data_cal_2b_ch32_ind=6.mat');
+new_file_res = matfile('/lustre/home/shared/sc004/cyg_data_sub/old/res_2b_ch32_ind=6.mat');
 % yb = new_file_y.y(chInd,1);
 yb = new_file_y.yb(1,1);
 G = new_file_y.G(1,1);
@@ -122,9 +122,9 @@ if compute_Anorm
     F = afclean( @(x) HS_forward_operator_precond_G(x, G, A, aW));
     Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, At, aW, Ny, Nx));
     Anorm = pow_method_op(F, Ft, [Ny Nx length(chInd)]);   
-    save(['Anorm_per_', num2str(chInd), '.mat'],'-v7.3', 'Anorm');
+    save(['Anorm_2b_per_', num2str(chInd), '.mat'],'-v7.3', 'Anorm');
 else
-    load(['Anorm_per_', num2str(chInd), '.mat']);
+    load(['Anorm_2b_per_', num2str(chInd), '.mat']);
 end
 
 Anorm
@@ -163,13 +163,13 @@ end
 
 disp('Split L1 + wavelets')
 % %% PDFB parameter structure sent to the algorithm
-param_pdfb.verbose = 1; % print log or not
+param_pdfb.verbose = 2; % print log or not
 param_pdfb.nu1 = 1; % bound on the norm of the operator Psi
 param_pdfb.nu2 = Anorm; % bound on the norm of the operator A*G
 param_pdfb.gamma = gamma; % convergence parameter L1 (soft th parameter)
 param_pdfb.tau = 0.49; % forward descent step size
-param_pdfb.rel_obj = 5e-6; % stopping criterion
-param_pdfb.max_iter = 5000; % max number of iterations
+param_pdfb.rel_obj = 1e-10; % stopping criterion
+param_pdfb.max_iter = 10000; % max number of iterations
 param_pdfb.lambda0 = 1; % relaxation step for primal update
 param_pdfb.lambda1 = 1; % relaxation step for L1 dual update
 param_pdfb.lambda2 = 1; % relaxation step for L2 dual update
@@ -178,7 +178,7 @@ param_pdfb.omega2 = 1;
 param_pdfb.sol_steps = [inf]; % saves images at the given iterations
 
 param_pdfb.use_proj_elipse_fb = logical(usingPrecondition);
-param_pdfb.elipse_proj_max_iter = 200;
+param_pdfb.elipse_proj_max_iter = 20;
 param_pdfb.elipse_proj_min_iter = 1;
 param_pdfb.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid
 
@@ -190,22 +190,24 @@ param_pdfb.adapt_eps_steps = 100; % min num of iter between consecutive updates
 param_pdfb.adapt_eps_rel_obj = 5e-4; % bound on the relative change of the solution
 param_pdfb.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
 
-param_pdfb.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+param_pdfb.reweight_alpha = (0.8)^20; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
 param_pdfb.reweight_alpha_ff = 0.8;
-param_pdfb.total_reweights = 40; % -1 if you don't want reweighting
-param_pdfb.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
+param_pdfb.total_reweights = 30; % -1 if you don't want reweighting
+param_pdfb.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
 
 param_pdfb.use_reweight_steps = 0; % reweighting by fixed steps
 param_pdfb.reweight_step_size = 300; % reweighting step size
 param_pdfb.reweight_steps = [5000: param_pdfb.reweight_step_size :10000];
 param_pdfb.step_flag = 1;
 
-param_pdfb.use_reweight_eps = 0; % reweighting w.r.t the relative change of the solution
+param_pdfb.use_reweight_eps = 1; % reweighting w.r.t the relative change of the solution
 param_pdfb.reweight_max_reweight_itr = param_pdfb.max_iter - param_pdfb.reweight_step_size;
 param_pdfb.reweight_rel_obj = 1e-4; % criterion for performing reweighting
 param_pdfb.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
 
-param_pdfb.xstar = fitsread('xsol_sara_ch32_calibrated_5e-6_15rw.fits');
+param_pdfb.rw_tol = 5000;
+
+% param_pdfb.xstar = fitsread('xsol_sara_ch32_calibrated_5e-6_15rw.fits');
 % solvers
 mkdir('results/')
 [xsol,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,l11,norm_res,res] = ...

@@ -1,4 +1,4 @@
-function [xsol,param,epsilon,t,rel_fval,nuclear,l21,end_iter] = ...
+function [xsol,param,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
     facetHyperSARA_DR_precond(y, epsilon, A, At, H, W, pU, T, Wm, param, ...
     Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name, ...
     reduction_version, realdatablocks, fouRed_gamma)
@@ -587,7 +587,7 @@ else
 end
 
 start_loop = tic;
-profile on
+% profile on
 for t = t_start : param.max_iter
     
     %fprintf('Iter %i\n',t);
@@ -605,6 +605,7 @@ for t = t_start : param.max_iter
                 labSend(xhat_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
             end
             
+%             facet_update_t = tic;
             % update ghost cells (versions of xhat with overlap)
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
@@ -622,26 +623,36 @@ for t = t_start : param.max_iter
             
             % compute g_ for the final update term
             g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
+%             fprintf('Iter = %i, Lab index = %i, facet node Time = %e\n',t,labindex,toc(facet_update_t));
             
             % retrieve portions of g2 from the data nodes
             for i = 1:Kp.Value
                 g_q(:,:,c_chunksp.Value{i}) = g_q(:,:,c_chunksp.Value{i}) + labReceive(Qp.Value+i);
-            end
+            end            
         else
             % data nodes (Q+1:Q+K) (no data blocking, just frequency for
             % the moment)
             % retrieve xhat_i from the prior/primal nodes
+%             retrieve_xhat_t = tic;
             for q = 1:Qp.Value
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
+%             fprintf('Iter = %i, Lab index = %i, retrieve_xhat_t Time = %e\n',t,labindex,toc(retrieve_xhat_t));
+            
+%             update_data_t = tic;
             [v2_, g2, proj_, norm_res, norm_residual_check_ic, norm_epsilon_check_ic, norm_residual_check_ia, norm_epsilon_check_ia]...
                 = update_data_fidelity_dr_block_new(v2_, yp, xhat_i, proj_, Ap, Atp, Hp, Wp, Tp, Wmp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value, precondition, reduction_version, realdatablocks); % *_dr version when no blocking
+%             fprintf('Iter = %i, Lab index = %i, update_data_t Time = %e\n',t,labindex,toc(update_data_t));
+            
             % send portions of g2 to the prior/primal nodes
+%             send_g2_t = tic;
             for q = 1:Qp.Value
                 labSend(g2(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
             end
+%             fprintf('Iter = %i, Lab index = %i, send_g2_t Time = %e\n',t,labindex,toc(send_g2_t));
+%             fprintf('Iter = %i, Lab index = %i, data node Time = %e\n',t,labindex,toc(retrieve_xhat_t));
         end
     end
     
@@ -653,12 +664,19 @@ for t = t_start : param.max_iter
         rel_x = rel_x + rel_x_q{q};
         norm_x = norm_x + norm_x_q{q};
     end
-    rel_fval(t) = sqrt(rel_x/norm_x);
+    
+    % solution relative change
+    if (norm_x == 0)
+        rel_fval(t) = 1;
+    else
+        rel_fval(t) = sqrt(rel_x/norm_x);
+    end
+    
     end_iter(t) = toc(start_iter);
-    fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
+    fprintf('Iter = %i, Time = %e, Rel_error = %e\n',t,end_iter(t),rel_fval(t));
     
     %% Display
-    if ~mod(t,5)
+    if ~mod(t,500)
         
         %% compute value of the priors in parallel
         spmd
@@ -710,20 +728,36 @@ for t = t_start : param.max_iter
             fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
             fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
             fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
-            for i = 1 : length(eps_ch_c)
-                fprintf(['eps_ch_c' num2str(i) '= %e, res_ch_c' num2str(i) '= %e\n'], eps_ch_c(i), res_ch_c(i));
-            end
-            
-            for i = 1 : length(eps_ch_a)
-                fprintf(['eps_ch_a' num2str(i) '= %e, res_ch_a' num2str(i) '= %e\n'], eps_ch_a(i), res_ch_a(i));
-            end
+%             for i = 1 : length(eps_ch_c)
+%                 fprintf(['eps_ch_c' num2str(i) '= %e, res_ch_c' num2str(i) '= %e\n'], eps_ch_c(i), res_ch_c(i));
+%             end
+%             
+%             for i = 1 : length(eps_ch_a)
+%                 fprintf(['eps_ch_a' num2str(i) '= %e, res_ch_a' num2str(i) '= %e\n'], eps_ch_a(i), res_ch_a(i));
+%             end
         end
         
         for q = 1:Q
             xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
         fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_gamma', num2str(param.gamma), '_', num2str(realdatablocks),...
-            'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.fits']);
+            'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.fits']);
+        
+        % Calculate residual images
+        res = zeros(size(xsol));
+        spmd
+            if labindex > Qp.Value
+                res_ = compute_residual_images_dr_block_new(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp, Wmp, reduction_version);
+            end
+        end
+        for k = 1 : K
+            res(:,:,c_chunks{k}) = res_{Q+k};
+        end
+        fitswrite(res, ['results/facethyper_res_it', num2str(t), '_gamma', num2str(param.gamma), '_', num2str(realdatablocks),...
+            'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.fits']);
+        
+        save(['results/facethyper_conv_it', num2str(t), '_gamma', num2str(param.gamma), '_', num2str(realdatablocks),... 
+            'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.mat'], '-v7.3', 'rel_fval', 'end_iter')
     end
     
     %% Global stopping criteria
@@ -830,20 +864,34 @@ for t = t_start : param.max_iter
 %             clear m
 %         end 
         
+        res = zeros(size(xsol));
+        for k = 1 : K
+            res(:,:,c_chunks{k}) = res_{Q+k};
+        end
+        
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;
             fprintf('\n\n No more reweights \n\n');
             break;
         end
         
+        fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma)...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.fits']);
+        
+        fitswrite(res, ['results/facethyper_res_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma)...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.fits']);
+        
+        save(['results/facethyper_conv_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma)...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.mat'], '-v7.3', 'rel_fval', 'end_iter')
+        
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
         rw_counts = rw_counts + 1;
     end
 end
-profile off
+% profile off
 toc(start_loop)
-profsave(profile('info'),'FacetHyperSARA_DR_profile_results')
+% profsave(profile('info'),'FacetHyperSARA_DR_profile_results')
 
 % Collect image facets back to the master
 for q = 1:Q
@@ -865,6 +913,13 @@ spmd
         res_ = compute_residual_images_dr_block_new(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp, Wmp, reduction_version); % *_dr w/o data blocking
     end
 end
+
+% Calculate residual images
+res = zeros(size(xsol));
+for k = 1 : K
+    res(:,:,c_chunks{k}) = res_{Q+k};
+end
+norm_res_out = sqrt(sum(res(:).^2));
 
 % m = matfile(['./results/facetHyperSARA_dr_co_w_real' ...
 %               num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
