@@ -1,14 +1,27 @@
+# system files
+*.DS_Store
+._*
+
+# MATLAB
 *.m~
 *.asv
-*.DS_Store
 *.mat
-._*
-main_fouRed/WB_new
-result*
-irt*
+
+# data/log/remote jobs
 *.swo
 *.swp
-test*
 *.pbs
-real_data_dr/logs
 *.fits
+result*
+real_data_dr/logs
+
+# project directories
+main_fouRed/WB_new
+irt*
+test*
+
+# docs
+docs/_*
+
+# editor
+.vscode*
