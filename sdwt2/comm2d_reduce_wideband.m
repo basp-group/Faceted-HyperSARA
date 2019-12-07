@@ -1,21 +1,21 @@
 function x_overlap = comm2d_reduce_wideband(x_overlap, overlap_q, Qy, Qx, Qc)
-% comm2d_update_reduce: perform additive reduction of the duplicated area 
-% (overlap regions, referred to as ghost cells) in a 2D image tessellation
-% (2D communication grid).
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Reduce overlapping borders between contiguous facets (2D).
 %
-% > x_overlap             spatial facet considered (with ghost cells)
-% > overlap_q             size of the left and top facet extensions 
-%                         (ghost cells) [2 ,1] 
-% > Qy                    number of spatial facets along the y axis [1]
-% > Qx                    number of spatial facets along the x axis [1]
-% > Qc                    number of spectral facets, along the z axis [1]
+% Additive reduction of the duplicated area (overlap regions) for a 2D 
+% image tessellation (2D communication grid).
 %
-% Output:
+% Args:
+%     x_overlap (array_like): spatial facet considered (with ghost cells)
+%     overlap_q (array_like): size of the left and top facet extensions (ghost 
+%                         cells) [2 ,1] 
+%     Qy (int): number of spatial facets along the y axis
+%     Qx (int): number of spatial facets along the x axis
+%     Qc (int): number of spectral facets, along the z axis
 %
-% < x_overlap             updated spatial facet
+% Returns:
+%     x_overlap (array_like): updated spatial facet
+%
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
@@ -55,7 +55,8 @@ if qy > 1
         % NW communication (qy-1, qx-1) -> q = (qx-2)*Qy + qy-1
         dest_diag = get_index(i, (qx-2)*Qy + qy-1);
         data_diag = x_overlap(1:overlap_q(1), 1:overlap_q(2), :); 
-        % another set of variables overlap_q will be needed for the update of the ghost cells (adjoint communicationss)
+        % another set of variables overlap_q will be needed for the update 
+        % of the ghost cells (adjoint communications)
     end
 end
 

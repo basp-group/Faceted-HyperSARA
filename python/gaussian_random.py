@@ -2,6 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def fftIndgen(n):
+    """
+    fftIndgen [summary]
+    
+    [extended_summary]
+    
+    Args:
+        n ([type]): [description]
+    
+    Returns:
+        [type]: [description]
+    """    
     a = np.arange(0, n//2)
     b = np.arange(1, n//2+1)
     b = b[::-1]
@@ -10,6 +21,18 @@ def fftIndgen(n):
 
 
 def gaussian_random_field(Pk=lambda k: k**(-3.0), size=100):
+    """
+    gaussian_random_field [summary]
+    
+    [extended_summary]
+    
+    Args:
+        Pk ([type], optional): [description]. Defaults to lambdak:k**(-3.0).
+        size (int, optional): [description]. Defaults to 100.
+    
+    Returns:
+        [type]: [description]
+    """    
     def Pk2(kx, ky):
         if kx == 0 and ky == 0:
             return 0.0

@@ -11,9 +11,11 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import sys
-sys.path.insert(0, os.path.abspath('..'))
+# import sys
+# sys.path.insert(0, os.path.abspath('.'))
 
+# matlab source code
+matlab_src_dir = os.path.abspath('..')
 
 # -- Project information -----------------------------------------------------
 

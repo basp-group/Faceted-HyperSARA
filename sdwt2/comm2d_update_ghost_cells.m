@@ -1,25 +1,27 @@
-function x_overlap = comm2d_update_ghost_cells(x_overlap, overlap_q, overlap_g_south_east, overlap_g_south, overlap_g_east, Qy, Qx)
-% comm2d_update_ghost_cells: update the ghost cells (overlap regions) in a 
-% 2D image tessellation (2D communication grid).
-%-------------------------------------------------------------------------%
-%%
-% Input:
+function x_overlap = comm2d_update_ghost_cells(x_overlap, overlap_q, ...
+                     overlap_g_south_east, overlap_g_south, ...
+                     overlap_g_east, Qy, Qx)
+% Update facet overlap (2D image tessellation and communication grid).
 %
-% > x_overlap             spatial facet considered (with ghost cells)
-% > overlap_q             size of the left and top facet extensions 
-%                         (ghost cells) [2 ,1] 
-% > overlap_g_south_east  size of the ghost cells for the south-east
-%                         neighbour [2, 1]
-% > overlap_g_south       size of the ghost cells for the southern
-%                         neighbour [2, 1]
-% > overlap_g_east        size of the ghost cells for the eastern
-%                         neighbour [2, 1]
-% > Qy                    number of spatial facets along the y axis [1]
-% > Qx                    number of spatial facets along the x axis [1]
+% Update the overlapping regions between contiguous facets based on a 2D 
+% image tessellation (2D communication grid).
 %
-% Output:
+% Args:
+%     x_overlap (array_like): spatial facet considered (with overlap)
+%     overlap_q (array_like): size of the left and top facet extensions [2 ,1] 
+%     overlap_g_south_east (array_like): size of the overlap for the 
+%                                        south-east neighbour [2, 1]
+%     overlap_g_south (array_like): size of the overlap for the northern 
+%                                   neighbour [2, 1]
+%     overlap_g_east (array_like): size of the overlap for the eastern 
+%                                  neighbour [2, 1]
+%     Qy (int): number of spatial facets along the y axis
+%     Qx (int): number of spatial facets along the x axis
 %
-% < x_overlap             updated spatial facet
+% Returns:
+%     x_overlap (array_like): spatial facet with updated borders.
+%
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
