@@ -1,14 +1,17 @@
 function rg = interleaved_facets(nchunks, N)
-% Tessellates 1:L into subsets of interleaved indices, each containing
-% approximately the same number of indices (downsampling of 1:N)
-%-------------------------------------------------------------------------%
-%%
-% Input: 
-% > nchunks  number of output segments [1]
-% > N        total number of indices [1]
+% Tessellates 1:N into interleaved subsets (subsampling).
 %
-% Output:
-% < rg       first/last index of each segment [nchunks, 2]
+% Tessellates 1:N into subsets of interleaved indices, each containing
+% approximately the same number of indices (downsampling of 1:N)
+%
+% Args:
+%     nchunks (int): number of output segments.
+%     N (int): total number of indices.
+%
+% Returns:
+%     rg (array_like): first/last index of each segment [nchunks, 2].
+% 
+
 %-------------------------------------------------------------------------%
 %%
 if nchunks > N

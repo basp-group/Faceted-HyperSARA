@@ -1,26 +1,28 @@
 function SPsitLx = sdwt2_sara(x_overlap, I, offset, status, J, wavelet, Ncoefs)
-% Forward operator to compute the contribution of the SARA prior relative
-% to a single facet.
-%%
-%-------------------------------------------------------------------------%
-% Input:
+% Facet SARA operator.
 %
-% > x_overlap  redundant image facet 
-% > I          starting index of the facet (without overlap) [1, 2] 
-% > dims       facet dimension (without overlap) [1, 2]
-% > offset     offset to be considered for each dictionary w.r.t. the 
-%              largest overlapping facet x_overlap [M, 1]
-% > status     indicates whether the facet is the first (or the last)
-%              along each dimension [1, 2]
-% > J          number of decomposition levels considered
-% > wavelet    name of the wavelets considered {1, M}
-% > Ncoefs     number of wavelet coefficients for each scale, corresponding
-%              to each dictionary involved in the transform [M*(J+1), 1]
+% Forward operator to compute the contribution of the SARA prior for a 
+% single input facet.
 %
-% Output:
+% Args:
+%     x_overlap (array_like): image facet (with overlap).
+%     I (array_like): starting index of the facet (without overlap) [1, 2].
+%     offset (array_like): offset to be considered for each dictionary 
+%                          w.r.t. the largest overlapping facet x_overlap 
+%                          [M, 1].
+%     status (array_like): indicates whether the facet is the first (or the
+%                          last) along each dimension [1, 2].
+%     J (int): number of decomposition levels considered.
+%     wavelet (cell{string}): name of the wavelet dictiionaries considered 
+%                             {1, M}.
+%     Ncoefs (array_like): number of wavelet coefficients for each scale, 
+%                          corresponding to each dictionary involved in the
+%                          transform [M*(J+1), 1].
 %
-% < SPsitLx    resulting wavelet coefficients [write details on the order 
-%              of the coefficients inside the vector]
+% Returns:
+%     SPsitLx (array_like): wavelet coefficients.
+%
+
 %-------------------------------------------------------------------------%
 %%
 % Debug: 

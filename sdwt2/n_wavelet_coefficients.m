@@ -1,14 +1,24 @@
 function [dims, s] = n_wavelet_coefficients(m, N, extension_mode, nlevel)
+% Determine total number of wavelet coefficients when decomposing an image.
+%
 % Determine the number of wavelet coefficients resulting from a 
 % decomposition by a filter of length m [1, 2] (2D).
+%
+% Args:
+%     m (array_like): length of the filters considered [K, 1] (1 per type of 
+%                     dictionary)
+%     N (array_like): image dimension [1, 2]
+%     extension_mode (string: type of boundary extension ('per', 'zpd', 'sym')
+%     nlevel (int): number of decomposition level
+%
+% Returns:
+%     dims (array_like): number of wavelet coefficients generated for each 
+%                        scale [nlevel+1, 2, K]
+%     s (int): total number of wavelet coefficients
+%
+    
 %-------------------------------------------------------------------------%
-% Input:
-% > m               size of the considered filters [K, 1] (1 per type of 
-%                   dictionary)
-% > N               image dimension [1, 2]
-% > extension_mode  type of boundary extension ('per', 'zpd', 'sym')
-% > nlevel          number of decomposition level
-%-------------------------------------------------------------------------%
+%%
 % Reference:
 % Discrete wavelet transform of finite signals: detailed study of the
 % algorithm, P. Rajmic, Z. Prusa, Initernational Journal of Wavelets,

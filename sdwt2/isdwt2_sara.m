@@ -1,28 +1,34 @@
 function PsiSty = isdwt2_sara(SPsitLx, I, dims, I_overlap, dims_overlap, Ncoefs, J, wavelet, left_offset, right_offset)
+
+def isdwt2_sara(SPsitLx, I, dims, I_overlap, dims_overlap, Ncoefs, J, wavelet, left_offset, right_offset):
+% Inverse facet SARA operator.
+%
 % Inverse operator to compute the contribution of the SARA prior to a 
 % single facet.
-%-------------------------------------------------------------------------%
-%%
-% Input:
 %
-% > SPsitLx          wavelet coefficients obtained from the facet of
-%                    interest
-% > I                starting index of the facet (without overlap) [1,2]
-% > dims             facet dimension (without overlap) [1,2]
-% > dims_overlap     dimension of the extended image facets (overlap) [M,2]
-% > Ncoefs           dimension of the wavelet facets for each decomposition
-%                    level, for each dictionary [M(J+1),2]
-%                    {from level 1 to J}
-% > J                number of decomposition levels considered
-% > wavelet          name of the wavelet dictionary considered {M,1}
-% > left_offset      number of coefficients to be cropped from the left of
-%                    the reconstructed facet [M,2]
-% > right_offset     number of coefficients to be cropped from the right of
-%                    the reconstructed facet [M,2]
+% Args:
+%     SPsitLx (array_like): wavelet coefficients obtained from the facet of
+%                           interest.
+%     I (array_like): starting index of the facet (without overlap) [1,2].
+%     dims (array_like): facet dimension (without overlap) [1,2].
+%     I_overlap (array_like): starting index of the facet (including 
+%                             overlap) [1,2].
+%     dims_overlap (array_like): dimension of the extended image facets 
+%                                (including overlap) [M,2].
+%     Ncoefs (array_like): dimension of the wavelet facets for each level 
+%                          of the decomposition level, for each dictionary 
+%                          [M(J+1),2] {from level 1 to J}.
+%     J ([type]): number of decomposition levels considered.
+%     wavelet (cell): name of the wavelet dictionaries considered {M,1}.
+%     left_offset (array_like): number of coefficients to be cropped from 
+%                               the left of the reconstructed facet [M,2].
+%     right_offset (array_like): number of coefficients to be cropped from 
+%                                the right of the reconstructed facet [M,2].
 %
-% Output:
+% Returns:
+%     SPsitLx (array_like): inverse transform of the input matrix.
 %
-% < PsiSty  inverse transform
+    
 %
 %-------------------------------------------------------------------------%
 %%

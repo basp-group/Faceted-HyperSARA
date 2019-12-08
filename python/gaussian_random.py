@@ -3,16 +3,13 @@ import matplotlib.pyplot as plt
 
 def fftIndgen(n):
     """
-    fftIndgen [summary]
+    [summary]
     
     [extended_summary]
     
     Args:
         n ([type]): [description]
-    
-    Returns:
-        [type]: [description]
-    """    
+    """     
     a = np.arange(0, n//2)
     b = np.arange(1, n//2+1)
     b = b[::-1]

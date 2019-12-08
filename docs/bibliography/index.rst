@@ -3,7 +3,7 @@
 Bibliography
 ============
 
-See :cite:`1987:nelson` for an introduction to non-standard analysis.
+.. See :cite:`1987:nelson` for an introduction to non-standard analysis.
 
 .. bibliography:: biblio.bib
 	:encoding: latin

@@ -5,15 +5,15 @@ function x_overlap = comm2d_reduce_wideband(x_overlap, overlap_q, Qy, Qx, Qc)
 % image tessellation (2D communication grid).
 %
 % Args:
-%     x_overlap (array_like): spatial facet considered (with ghost cells)
+%     x_overlap (array_like): spatial facet considered (with ghost cells).
 %     overlap_q (array_like): size of the left and top facet extensions (ghost 
-%                         cells) [2 ,1] 
-%     Qy (int): number of spatial facets along the y axis
-%     Qx (int): number of spatial facets along the x axis
-%     Qc (int): number of spectral facets, along the z axis
+%                         cells) [2 ,1].
+%     Qy (int): number of spatial facets along the y axis.
+%     Qx (int): number of spatial facets along the x axis.
+%     Qc (int): number of spectral facets, along the z axis.
 %
 % Returns:
-%     x_overlap (array_like): updated spatial facet
+%     x_overlap (array_like): updated spatial facet.
 %
 
 %-------------------------------------------------------------------------%

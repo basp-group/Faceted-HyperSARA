@@ -1,50 +1,51 @@
 function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, rel_fval,...
     norm_res, adapt_eps_tol_in, adapt_eps_tol_out, adapt_eps_steps, ...
     adapt_eps_rel_obj, adapt_eps_change_percentage)
-%update_epsilon: adaptive epsilon scheme (i.e., update of the l2-ball
-% constraints of radius epsilon, based on the scheme introduced in [1]).
+% Adaptive update of the l2-ball constraint.
+%
+% Update of the l2-ball constraints of radius epsilon (adaptive 
+% :math:`\varepsilon`), based on the scheme introduced in :cite:`Dabbech2018`).
+%
+% Args:
+%     epsilon (cell): l2-ball radii {L}{nblocks}.
+%     t (int): current iteration index.
+%     t_block (cell): last iteration at which each block has
+%                     been updated {L}{nblocks}.
+%     rel_fval (double): relative variation of the solution.
+%     norm_res (cell): norm of the residual image {L}{nblocks}.
+%     adapt_eps_tol_in (double): tolerance for the norm of the residual 
+%                                (below the current value of epsilon,
+%                                within the ball).
+%     adapt_eps_tol_out (double): tolerance for the norm of the residual 
+%                                 (above current value of epsilon, out of
+%                                 the ball).
+%     adapt_eps_steps (double): number of steps between two consecutive
+%                               updates.
+%     adapt_eps_rel_obj (double): relative variation of the objective
+%                                 function
+%     adapt_eps_change_percentage (double): update factor for epsilon.
+%
+% Returns:
+%     epsilon (cell): updated l2-ball radii {L}{nblocks}.
+%     t_block (cell): last iteration at which each block has been updated 
+%                     {L}{nblocks}.
+%
+
 %-------------------------------------------------------------------------%
 %%
 % Reference:
 %
 % [1] Dabbech, A. and Onose, A. and Abdulaziz, A. and Perley, R. A. and 
-% Smirnov, O. M. and Wiaux, Y.Cygnus A Super-Resolved via Convex 
+% Smirnov, O. M. and Wiaux, Y. Cygnus A Super-Resolved via Convex 
 % Optimization from VLA Data, Mon. Not. R. Astron. Soc., 476(3), 
 % pp. 2853-2866
-%-------------------------------------------------------------------------%
-%%
-% Input:
 %
-% > epsilon                         l2-ball radii {L}{nblocks}
-% > t                               current iteration index [1]
-% > t_block                         last iteration at which each block has
-%                                   been updated {L}{nblocks}
-% > rel_fval                        relative variation of the solution [1]
-% > norm_res                        norm of the residual image {L}{nblocks}
-% > adapt_eps_tol_in                tolerance for the norm of the residual 
-%                                   (below the current value of epsilon,
-%                                    within the ball)
-% > adapt_eps_tol_out               tolerance for the norm of the residual 
-%                                   (above current value of epsilon, out of
-%                                    the ball)
-% > adapt_eps_steps                 number of steps between two consecutive
-%                                   updates [1]
-% > adapt_eps_rel_obj               relative variation of the objective
-%                                   function [1]
-% > adapt_eps_change_percentage     update factor for epsilon [1]
-%
-% Output:
-%
-% < epsilon                         updated l2-ball radii {L}{nblocks}
-% < t_block                         last iteration at which each block has
-%                                   been updated {L}{nblocks}
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
-
 nChannels = length(epsilon);
 
 for i = 1 : nChannels

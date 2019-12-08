@@ -7,16 +7,16 @@ function x_overlap = comm2d_update_ghost_cells(x_overlap, overlap_q, ...
 % image tessellation (2D communication grid).
 %
 % Args:
-%     x_overlap (array_like): spatial facet considered (with overlap)
-%     overlap_q (array_like): size of the left and top facet extensions [2 ,1] 
+%     x_overlap (array_like): spatial facet considered (with overlap).
+%     overlap_q (array_like): size of the left and top facet extensions [2 ,1].
 %     overlap_g_south_east (array_like): size of the overlap for the 
-%                                        south-east neighbour [2, 1]
+%                                        south-east neighbour [2, 1].
 %     overlap_g_south (array_like): size of the overlap for the northern 
-%                                   neighbour [2, 1]
+%                                   neighbour [2, 1].
 %     overlap_g_east (array_like): size of the overlap for the eastern 
-%                                  neighbour [2, 1]
-%     Qy (int): number of spatial facets along the y axis
-%     Qx (int): number of spatial facets along the x axis
+%                                  neighbour [2, 1].
+%     Qy (int): number of spatial facets along the y axis.
+%     Qx (int): number of spatial facets along the x axis.
 %
 % Returns:
 %     x_overlap (array_like): spatial facet with updated borders.

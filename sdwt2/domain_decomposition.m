@@ -1,14 +1,17 @@
 function rg = domain_decomposition(nchunks, N)
-% Tessellates 1:N into non-overlapping subsets, each containing
-% approximately the same number of indices.
-%-------------------------------------------------------------------------%
-%%
-% Input: 
-% > nchunks  number of output segments [1]
-% > N        total number of indices [1]
+% Tessellates 1:N into non-overlapping subsets.
 %
-% Output:
-% < rg       first/last index of each segment [nchunks, 2]
+% Tessellates 1:N into non-overlapping subsets, each containing
+% approximately the same number of indices (overlap from the left).
+%
+% Args:
+%     nchunks (int): number of output segments.
+%     N (int): total number of indices.
+%
+% Returns:
+%     rg (array_like): first/last index of each segment [nchunks, 2].
+% 
+
 %-------------------------------------------------------------------------%
 %%
 splits = round(linspace(0, N, nchunks + 1));

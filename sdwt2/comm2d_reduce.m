@@ -5,14 +5,14 @@ function x_overlap = comm2d_reduce(x_overlap, overlap_q, Qy, Qx)
 % image tessellation (2D communication grid).
 %
 % Args:
-%     x_overlap (array_like): spatial facet considered (with ghost cells)
+%     x_overlap (array_like): spatial facet considered (with ghost cells).
 %     overlap_q (array_like): size of the left and top facet extensions (ghost 
-%                         cells) [2 ,1] 
-%     Qy (int): number of spatial facets along the y axis
-%     Qx (int): number of spatial facets along the x axis
+%                         cells) [2 ,1].
+%     Qy (int): number of spatial facets along the y axis.
+%     Qx (int): number of spatial facets along the x axis.
 %
 % Returns:
-%     x_overlap (array_like): updated spatial facet
+%     x_overlap (array_like): updated spatial facet.
 %
 
 %-------------------------------------------------------------------------%

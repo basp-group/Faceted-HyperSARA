@@ -1,20 +1,24 @@
 function [dims_PsitLx_crop, Ncoefs, Ij] = compute_size(I, dims, J, status, L)
+% Compute the number of wavelet coefficients generated for a facet.
 %
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Compute the number of wavelet coefficients generated for one facet by the
+% faceted wavelet transform described in :cite:`Prusa2012`.
 %
-% > I       facet start index [1, 2]
-% > J       number of decomposition levels
-% > status  status of the facet (first/last) (1, 2) (-1, 0, 1) for (first, none, last)
-% > m       filter length
+% Args:
+%     I (array_like): facet start index [1, 2].
+%     dims (array_like): dimension of the current facet (w/o overlap) .
+%     J (int): number of decomposition levels.
+%     status (array_like): status of the facet (first/last) [1, 2] 
+%                          value {-1, 0, 1} for (first, none, last).
+%     L (int): filter length (wavelet decomposition).
 %
-% Output:
+% Returns:
+%     dims_PsitLx_crop (array_like): dimension of the wavelet coefficients 
+%                                    (J+1, 2).
+%     Ncoefs (array_like): number of valid coefficients (J+1, 2).
+%     Ij (array_like): ... (J+1, 2).
 %
-% < dims_PsitLx  dimension of the wavelet coefficients (J+1, 2)
-% < Ncoefs       number of valid coefficients (J+1, 2)
-% < Ij           ... (J+1, 2)
-%
+
 %-------------------------------------------------------------------------%
 %%
 % dim = length(I);
