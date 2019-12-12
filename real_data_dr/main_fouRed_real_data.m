@@ -15,7 +15,9 @@ algo_version = 2; % 1 for facet HyperSARA with DR, 2 for SARA with DR
 
 %% Extract / load real data (includes Fourier reduction and NNLS)
 if reduction_version
-    func_nnls_dr_real_data(chInd, reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma)
+    for j = 1:length(chInd)
+        func_nnls_dr_real_data(chInd(j), reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma)
+    end
     fprintf('Reduction finished\n');
 end
 

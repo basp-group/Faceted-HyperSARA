@@ -380,9 +380,11 @@ if init_flag
     epsilon = init_m.epsilon;
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
-    xsol = zeros(M,N,c);
+    xsol = fitsread('/lustre/home/shared/sc004/solWB-mono-calib.fits');   % specificlly for calibrated real data
+%     xsol = zeros(M,N,c);
     fprintf('xsol initialized \n\n')
 end
+
 % Primal / prior nodes (l21/nuclear norm dual variables)
 v0_ = Composite();
 weights0_ = Composite();
@@ -559,6 +561,20 @@ else
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
         g_q{q} = zeros([dims(q, :), c]);
     end
+    % update weights [P.-A.: not really needed, even if taking the results
+    % from Arwa]
+    spmd
+        if labindex <= Qp.Value
+            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
+            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+            x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            
+            [weights1_, weights0_] = update_weights_overlap2_weighted(x_overlap, size(v1_), ...
+                Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
+                Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
+                reweight_alphap, crop_l21, crop_nuclear, w);
+        end
+    end
     fprintf('g initialized \n\n')
 end
 
@@ -728,19 +744,19 @@ for t = t_start : param.max_iter
             fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
             fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
             fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
-%             for i = 1 : length(eps_ch_c)
-%                 fprintf(['eps_ch_c' num2str(i) '= %e, res_ch_c' num2str(i) '= %e\n'], eps_ch_c(i), res_ch_c(i));
-%             end
-%             
-%             for i = 1 : length(eps_ch_a)
-%                 fprintf(['eps_ch_a' num2str(i) '= %e, res_ch_a' num2str(i) '= %e\n'], eps_ch_a(i), res_ch_a(i));
-%             end
+            for i = 1 : length(eps_ch_c)
+                fprintf(['eps_ch_c' num2str(i) '= %e, res_ch_c' num2str(i) '= %e\n'], eps_ch_c(i), res_ch_c(i));
+            end
+            
+            for i = 1 : length(eps_ch_a)
+                fprintf(['eps_ch_a' num2str(i) '= %e, res_ch_a' num2str(i) '= %e\n'], eps_ch_a(i), res_ch_a(i));
+            end
         end
         
         for q = 1:Q
             xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
-        fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_gamma', num2str(param.gamma), '_', num2str(realdatablocks),...
+        fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), '_', num2str(realdatablocks),...
             'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.fits']);
         
         % Calculate residual images
@@ -753,10 +769,10 @@ for t = t_start : param.max_iter
         for k = 1 : K
             res(:,:,c_chunks{k}) = res_{Q+k};
         end
-        fitswrite(res, ['results/facethyper_res_it', num2str(t), '_gamma', num2str(param.gamma), '_', num2str(realdatablocks),...
+        fitswrite(res, ['results/facethyper_res_it', num2str(t), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), '_', num2str(realdatablocks),...
             'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.fits']);
         
-        save(['results/facethyper_conv_it', num2str(t), '_gamma', num2str(param.gamma), '_', num2str(realdatablocks),... 
+        save(['results/facethyper_conv_it', num2str(t), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), '_', num2str(realdatablocks),... 
             'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.mat'], '-v7.3', 'rel_fval', 'end_iter')
     end
     
@@ -875,13 +891,13 @@ for t = t_start : param.max_iter
             break;
         end
         
-        fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma)...
+        fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), ...
             '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.fits']);
         
-        fitswrite(res, ['results/facethyper_res_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma)...
+        fitswrite(res, ['results/facethyper_res_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), ...
             '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.fits']);
         
-        save(['results/facethyper_conv_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma)...
+        save(['results/facethyper_conv_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0),...
             '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma), '.mat'], '-v7.3', 'rel_fval', 'end_iter')
         
         reweight_step_count = reweight_step_count + 1;

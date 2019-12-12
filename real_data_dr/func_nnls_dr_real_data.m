@@ -11,23 +11,17 @@ addpath ../lib/operators
 addpath ../lib/nufft
 % addpath ../data_mnras_dr
 
-param_real_data.image_size_Nx = 2560;
-param_real_data.image_size_Ny = 1536;
-% nSpw = 16;          % number of spectral channels per MS file
-% nChannels = 1*nSpw; % total number of "virtual" channels (i.e., after
-% % concatenation) for the real dataset considered
-nBlocks = realdatablocks;        % number of data blocks (needs to be known beforehand,
-% quite restrictive here), change l.70 accordingly
-klargestpercent = 20;
+Nx = 2560;
+Ny = 1536;
+nBlocks = realdatablocks;        % number of data blocks for real data
+% klargestpercent = 20;
 FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
 
 %% Config parameters
-Nx = param_real_data.image_size_Nx;
-Ny = param_real_data.image_size_Ny;
 ox = 2; % oversampling factors for nufft
 oy = 2; % oversampling factors for nufft
-Kx = 8; % number of neighbours for nufft
-Ky = 8; % number of neighbours for nufft
+Kx = 7; % number of neighbours for nufft
+Ky = 7; % number of neighbours for nufft
 
 % %% Preconditioning parameters
 % param_precond.N = N;       % number of pixels in the image
@@ -38,9 +32,8 @@ Ky = 8; % number of neighbours for nufft
 
 %% Fourier reduction parameters
 param_fouRed.enable_klargestpercent = enable_klargestpercent;
-param_fouRed.klargestpercent = klargestpercent;
 param_fouRed.enable_estimatethreshold = ~enable_klargestpercent;
-param_fouRed.gamma = fouRed_gamma;             % By using threshold estimation, the optimal theshold reads as gamma * sigma / ||x||_2
+param_fouRed.gamma = fouRed_gamma;  % reduction parameter
 param_fouRed.diagthresholdepsilon = 0;
 param_fouRed.fastCov = 1;
 
@@ -102,24 +95,27 @@ y_tmp = yb{1};
 % nW_tmp = nWw;
 G_tmp = G{1};
 W_tmp = W{1};
-res_tmp = res{1};
+res_tmp = res{1};       % precomputed residuals for calibrated data
 
 H{1} = cell(numel(y_tmp), 1);
-yTl = cell(numel(y_tmp), 1);
+yT{1} = cell(numel(y_tmp), 1);
 T{1} = cell(numel(y_tmp), 1);
-aWl = cell(numel(y_tmp), 1);
 Wm{1} = cell(numel(y_tmp), 1);
+aW{1} = cell(numel(y_tmp), 1);
 norm_res = cell(numel(y_tmp), 1);
+% sing{1} = cell(numel(y_tmp), 1);
 
 Hl = H{1};
-Wml = Wm{1};
+yTl = yT{1};
 Tl = T{1};
+Wml = Wm{1};
+aWl = aW{1};
 
 if param_fouRed.enable_estimatethreshold
     if ~isfield(param_fouRed, 'gamma') 
         param_fouRed.gamma = 30; 
     end
-    fprintf('Threshold level: %d percentile\n', param_fouRed.gamma);
+    fprintf('Threshold level: remove %d percentile\n', param_fouRed.gamma);
 %     p = normcdf([-param_fouRed.gamma param_fouRed.gamma]);
 %     prob = p(2) - p(1);
     prob = 1 - param_fouRed.gamma/100;
@@ -127,10 +123,9 @@ end
 
 precision = 1e-16;
 
-% parpool(nBlocks)
+nb_raw = 0;
+nb_red = 0;
 for j = 1:nBlocks
-    
-%     load G_H_2560_1536.mat
     
 %     [A, At, G, ~] = op_p_nufft([v_tmp(j) u_tmp(j)], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW_tmp(j));
 
@@ -160,10 +155,15 @@ for j = 1:nBlocks
         th_energy = d_mat_sum * (1 - prob); % threshold according to the k-sigma rule
         th = d_mat_sort(find(d_mat_sort_cumsum >= th_energy, 1, 'first'));
         Mask = (d_mat >= th);
+        ind_nz = d_mat > 0;       % non-zero singular values
     end
     
-    percentage = sum(Mask(:)) / numel(Mask) * 100;
-    fprintf('Block %d of channel %d, %f%% of data are kept, threshold=%f\n', j, chInd, percentage, th);
+    kept = sum(Mask(:));
+    total = numel(Mask);
+    percentage = kept / total * 100;
+    nb_red = nb_red + kept;
+    nb_raw = nb_raw + numel(y_tmp{j});
+    fprintf('Block %d of channel %d: %d non-zero singular values, %d over %d, or %f%% of data are kept, threshold=%f\n', j, chInd, sum(ind_nz), kept, total, percentage, th);
     
     d_mat = d_mat(Mask);
     Hl{j} = Hl{j}(Mask,:);
@@ -190,12 +190,17 @@ for j = 1:nBlocks
     fprintf('Block %d of channel %d, estimated epsilon: %f\n',j, chInd, norm_res{j})
 
 end
+fprintf('Raw data size: %d, reduced data size: %d\n', nb_raw, nb_red)
+fprintf('H memory: \n')
+whos Hl
+
 H{1} = Hl;
 yT{1} = yTl;
 T{1} = Tl;
 aW{1} = aWl;
 Wm{1} = Wml;
 epsilon{1} = norm_res;
+% sing{1} = singl;
 
 % % save on workstation
 % save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon');
@@ -212,6 +217,10 @@ epsilon{1} = norm_res;
 % Hfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_H_cal_', num2str(realdatablocks), 'b_ind6=', num2str(chInd), '.mat'];
 % if ~isfile(Hfilename)
 %     save(Hfilename, '-v7.3', 'H', 'W')
+% end
+% SVfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_SV_cal_', num2str(realdatablocks), 'b_ind6=', num2str(chInd), '.mat'];
+% if ~isfile(SVfilename)
+%     save(SVfilename, '-v7.3', 'sing');
 % end
 DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
     num2str(reduction_version), '_perc', num2str(fouRed_gamma),'=', num2str(chInd), '.mat'];

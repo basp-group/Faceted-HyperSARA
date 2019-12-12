@@ -1,4 +1,4 @@
-function func_solver_fouRed_real_data(gamma, ch, reduction_version, algo_version, realdatablocks, fouRed_gamma)
+function func_solver_fouRed_real_data(gamma0, gamma, ch, reduction_version, algo_version, realdatablocks, fouRed_gamma)
 
 diaryFname = ['diary_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(realdatablocks), 'b_fouRed',...
         num2str(reduction_version), '_algo', num2str(algo_version), '_perc', num2str(fouRed_gamma), '.txt'];
@@ -22,6 +22,7 @@ addpath ../src/spmd/
 addpath ../src/spmd/dr/
 addpath ../src/spmd/weighted/
 
+fprintf("Nuclear norm parameter=%e\n", gamma0);
 fprintf("Regularization parameter=%e\n", gamma);
 fprintf('Channel number %d\n', ch);
 fprintf('Reduction version %d\n', reduction_version);
@@ -39,8 +40,8 @@ Qc2 = 4;    % to see later
 
 d = 512;
 flag_algo = algo_version;
-parallel_version = 'spmd4_cst';
-bool_weights = true; % for the spmd4_new version (50% overlap version)
+% parallel_version = 'spmd4_cst';
+% bool_weights = true; % for the spmd4_new version (50% overlap version)
 
 param_real_data.image_size_Nx = 2560; % 2560;
 param_real_data.image_size_Ny = 1536; % 1536;
@@ -55,8 +56,8 @@ Nx = param_real_data.image_size_Nx;
 Ny = param_real_data.image_size_Ny;
 ox = 2; % oversampling factors for nufft
 oy = 2; % oversampling factors for nufft
-Kx = 8; % number of neighbours for nufft
-Ky = 8; % number of neighbours for nufft
+Kx = 7; % number of neighbours for nufft
+Ky = 7; % number of neighbours for nufft
 
 [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
 
@@ -167,7 +168,7 @@ if algo_version == 1
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
-    param_HSI.gamma0 = 1e-2;
+    param_HSI.gamma0 = gamma0;
     param_HSI.gamma = gamma;  %convergence parameter L1 (soft th parameter)
     param_HSI.rel_obj = 1e-10; % stopping criterion
     param_HSI.max_iter = 10000; % max number of iterations
@@ -180,7 +181,7 @@ if algo_version == 1
     param_HSI.adapt_eps_rel_obj = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
 
-    param_HSI.reweight_alpha = (0.8)^20; 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+    param_HSI.reweight_alpha = (0.8)^20; %1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_HSI.reweight_alpha_ff = 0.8;
     param_HSI.total_reweights = 50; % -1 if you don't want reweighting
     param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
@@ -265,7 +266,7 @@ if algo_version == 1
         wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, '', reduction_version, realdatablocks, fouRed_gamma);
     
     save(['results/results_facethyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)),'_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-        '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma),'.mat'], '-v7.3', ...
+        '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma), '_gamma0=', num2str(gamma0), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_perc', num2str(fouRed_gamma),'.mat'], '-v7.3', ...
         'xsol', 'param_HSI', 't', 'rel_fval', 'nuclear', 'l21', 'norm_res_out', 'res', 'end_iter');
 
 elseif algo_version == 2
