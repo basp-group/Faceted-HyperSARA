@@ -1,6 +1,4 @@
 function PsiSty = isdwt2_sara(SPsitLx, I, dims, I_overlap, dims_overlap, Ncoefs, J, wavelet, left_offset, right_offset)
-
-def isdwt2_sara(SPsitLx, I, dims, I_overlap, dims_overlap, Ncoefs, J, wavelet, left_offset, right_offset):
 % Inverse facet SARA operator.
 %
 % Inverse operator to compute the contribution of the SARA prior to a 
