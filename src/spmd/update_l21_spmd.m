@@ -3,46 +3,43 @@ function [v1, g] = update_l21_spmd(v1, x_overlap, weights, beta1, Iq, dims_q,...
                                   status_q, nlevel, wavelet, Ncoefs_q, ...
                                   temLIdxs_q, temRIdxs_q, offsetLq, ...
                                   offsetRq, dims_overlap_ref_q)
-%update_l21_spmd: update the dual variable realted to the facet l21-norm
-% prior.
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Update the dual variable associated with the facet l21-norm prior.
 %
-% > v1                      dual variable associated with the facet l21-
-%                           norm [s, L]
-% > x_overlap               overlapping image facet [M, N, L]
-% > weights                 weights to balance the effect of redundant
-%                           pixels due to the overlap between facets [M, N]
-% > beta1                   ratio between regularization and convergence 
-%                           parameter (gamma1 / sigma1) [1]
-% > Iq                      starting index of the non-overlapping base 
-%                           facet [1, 2]
-% > dims_q                  dimensions of the non-overlapping base facet
-%                           [1, 2]
-% > I_overlap_q             starting index of the facet [1, 2]
-% > dims_overlap_q          dimensions of the facet [1, 2]
-% > offset                  offset to be used from one dictionary to
-%                           another (different overlap needed for each 
-%                           dictionary -> cropping) {nDictionaries}
-% > status_q                status of the current facet (last or first 
-%                           facet along vert. or hrz. direction)
-% > nlevel                  depth of the wavelet decompositions
-% > wavelet                 name of the wavelet dictionaries
-% > Ncoefs_q                size of the wavelet decompositions at each
-%                           scale
-% > temLIdxs_q              amount of cropping from the "left" [1, 2]
-% > temRIdxs_q              amount of cropping from the "right" [1, 2]
-% > offsetLq                amount of zero-pading from the "left" [1, 2]
-% > offsetRq                amout of zero-padding from the "right" [1, 2]
-% > dims_overlap_ref_q      dimension of the facet [1, 2]    
+% Update a facet dual variable associated with the l21-norm prior.
 %
-% Output:
+% Args:
+%     v1 (array_like): dual variable associated with the facet l21-norm 
+%                      [s, L].
+%     x_overlap (array_like): overlapping image facet [M, N, L].
+%     weights (array_like): weights to balance the effect of redundant pixels 
+%                           due to the overlap between facets [M, N].
+%     beta1 (double): ratio between regularization and convergence 
+%                     parameter (gamma1 / sigma1).                   
+%     Iq (array_like): starting index of the non-overlapping base facet [1, 2].
+%     dims_q (array_like): dimensions of the non-overlapping base facet [1, 2].
+%     I_overlap_q (array_like): starting index of the facet [1, 2].
+%     dims_overlap_q (array_like): dimensions of the facet [1, 2].
+%     offset (cell): offset to be used from one dictionary to another 
+%                    (different overlap needed for each dictionary -> 
+%                    cropping) {nDictionaries}.
+%     status_q (array_like): status of the current facet (last or first 
+%                        facet along vert. or hrz. direction) [ndict, 2].
+%     nlevel (int): depth of the wavelet decompositions.
+%     wavelet (cell): name of the wavelet dictionaries {ndict}.
+%     Ncoefs_q ([type]): size of the wavelet decompositions at each
+%                        scale.
+%     temLIdxs_q (array_like): amount of cropping from the "left" [1, 2].
+%     temRIdxs_q (array_like): amount of cropping from the "rights" [1, 2].
+%     offsetLq (array_like): amount of zero-pading from the "left" [1, 2].
+%     offsetRq (array_like): amount of zero-pading from the "right" [1, 2].
+%     dims_overlap_ref_q (array_like): dimension of the facet [1, 2].
 %
-% < v1                      dual variable associated with the l21-norm 
-%                           prior [s, L]
-% < g                       auxiliary variable for the update of the primal
-%                           variable [M, N, L]
+% Returns:
+%     v1 (array_like): dual variable associated with the l21-norm prior 
+%                      [s, L].
+%     g (array_like): auxiliary variable for the update of the primal 
+%                     variable [M, N, L].
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

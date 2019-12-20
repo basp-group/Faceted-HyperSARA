@@ -1,29 +1,30 @@
 function [v0, g0] = update_nuclear_spmd_weighted(v0, xhat, w, weights0, beta0)
-%update_nuclear_spmd: update the dual variable realted to the nuclear norm
-% prior. This version includes a spatial correction for the faceted 
-% nuclear norm (tapering window).
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Update the dual variable related to the weighted nuclear norm prior.
 %
-% > v0        dual variable associated with the nuclear norm prior 
-%             [min(M*N, L), 1]
-% > xhat      auxiliary variable related to the wideband image [M, N, L]
-% > w         spatial weights applied to the facet nuclear norm (same size 
-%             as xhat)
-% > weights0  weights for the reweighting [min(M*N, L), 1]
-% > beta0     thresholding parameter (gamma0/sigma0) [1]
+% Update step for the facet dual variable related to the nuclear norm 
+% prior over a given facet. This version includes a spatial correction for 
+% the faceted nuclear norm (tapering window).
 %
-% Output:
+% Args:
+%     v0 (array_like): dual variable associated with the nuclear norm prior 
+%                      [min(M*N, L), 1].
+%     xhat (array_like): auxiliary variable related to the wideband image 
+%                        [M, N, L].
+%     w (array_like): spatial weights applied to the facet nuclear norm 
+%                     [M, N, L].
+%     weights0 (array_like): weights for the reweighting [min(M*N, L), 1].
+%     beta0 (double): thresholding parameter (gamma0/sigma0). 
 %
-% < v0        dual variable associated with the nuclear norm prior 
-%             [min(M*N, L), 1]
-% < g0        auxiliary variable for the update of the primal variable 
-%             [M, N, L]
+% Returns:
+%     v0 (array_like): dual variable associated with the nuclear norm prior 
+%                      [min(M*N, L), 1].
+%     g0 (array_like): auxiliary variable for the update of the primal 
+%                      variable [M, N, L].
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% [../../2019]
+% [08/08/2019]
 %-------------------------------------------------------------------------%
 %%
 

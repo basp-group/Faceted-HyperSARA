@@ -1,21 +1,21 @@
 function [v0, v1, weights0, weights1] = initialize_dual_variables_prior_cst_overlap(Ncoefs, dims_o, c, nlevel)
-%initialize_dual_variables_prior_cst_overlap: initialize all the dual 
-% variables for a given facet (nuclear and l21 norms).
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Initialize dual variables (constant overlap).
 %
-% > Ncoefs              number of wavelet coefficients at each scale 
-% > dims_o              dimension of a facet (with overlap) [1, 2]
-% > c                   number of spectral channels [1]
-% > nlevel              depth of decomposition [1]
+% Initialize all the dual variables for a given facet (nuclear and l21 
+% norms).
 %
-% Output:
+% Args:
+%     Ncoefs (array_like): number of wavelet coefficients at each scale.
+%     dims_o (array_like): dimension of a facet (with overlap) [1, 2].
+%     c (int): number of spectral channels.
+%     nlevel (int): depth of decomposition.
 %
-% < v0                  dual variable associated with the nuclear norm
-% < v1                  dual variable associated with the l21-norm
-% < weights0            weigths associated with the nuclear norm
-% < weights1            weigths ssociated with the l21-norm
+% Returns:
+%     v0 (array_like): dual variable associated with the nuclear norm.
+%     v1 (array_like): dual variable associated with the l21-norm.
+%     weights0 (array_like): weigths associated with the nuclear norm.
+%     weights1 (array_like): weigths ssociated with the l21-norm.
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

@@ -2,8 +2,40 @@ function [v2, Ftx, proj, norm_res, global_norm_res, norm_epsilon] = ...
     update_data_fidelity(v2, y, xhat, proj, A, At, G, W, pU, epsilon, ...
                          elipse_proj_max_iter, elipse_proj_min_iter, ...
                          elipse_proj_eps, sigma22)
-%update_data_fidelity: update step of the data fidelity term (with 
-% preconditioning -> projection onto an ellipsoid).
+% Update the data fidelity term in the preconditioned primal-dual algorithm.
+%
+% Update the data fidelity terms owned by each worked involved in the group
+% of data nodes (with preconditioning -> projection onto an ellipsoid).
+%
+% Args:
+%     v2 (cell): data fidelity dual variable {L}{nblocks}[M, 1].
+%     y (cell): blocks of visibilities {L}{nblocks}[M, 1].
+%     xhat (array_like): auxiliary image variable [N(1), N(2), L].
+%     proj (cell): value of the projection at the previous global 
+%                    iteration, taken as a starting {L}{nblocks}[M, 1].
+%     A (lambda): measurement operator @[1].
+%     At (lambda): adjoint measurement operator @[1].
+%     G (cell): blocked interpolation matrix {L}{nblocks}.
+%     W (cell): blocked masking operator {L}{nblocks}.
+%     pU (cell): preconditioning matrices {L}{nblocks}.
+%     epsilon (cell): l2-ball constraints {L}{nblocks}[1].
+%     elipse_proj_max_iter (int): maximum number of iterations 
+%                                 (projection onto ellipsoid).
+%     elipse_proj_min_iter (int): minimum number of iterations 
+%                                 (projection onto ellipsoid).
+%     elipse_proj_eps (int): stopping criterion for the projection.
+%     sigma22 ([type]): step-size for the update of the dual variable 
+%                       (tau*sigma2)
+%
+% Returns:
+%     v2 (cell): data fidelity dual variable {L}{nblocks}[M, 1].
+%     Ftx (array_like) : auxiliary variable for the update of the primal 
+%                        variable [N(1), N(2)].
+%     proj (cell): result of the projection step  {L}{nblocks}[M, 1].
+%     norm_res (cell): norm of the residual {L}{nblocks}[1].    
+%     global_norm_res (double): square global norm of the residual.
+%     norm_epsilon (double): square global norm of epsilon.
+
 %-------------------------------------------------------------------------%
 %%
 % Reference:
@@ -12,39 +44,6 @@ function [v2, Ftx, proj, norm_res, global_norm_res, norm_epsilon] = ...
 % Smirnov, O. M. and Wiaux, Y.Cygnus A Super-Resolved via Convex 
 % Optimization from VLA Data, Mon. Not. R. Astron. Soc., 476(3), 
 % pp. 2853-2866
-%-------------------------------------------------------------------------%
-%%
-% Input:
-%
-% > v2                              data fidelity dual variable {L}{nblocks}[M, 1]
-% > y                               blocks of visibilities {L}{nblocks}[M, 1]
-% > xhat                            auxiliary image variable [N(1), N(2), L]
-% > proj                            value of the projection at the previous
-%                                   global iteration, taken as a starting 
-%                                   point for the new projection step {L}{nblocks}[M, 1]
-% > A                               measurement operator @[1]
-% > At                              adjoint measurement operator @[1]
-% > G                               interpolation matrix
-% > W                               masking operator {L}{nblocks}
-% > pU                              preconditioning matrices {L}{nblocks}
-% > epsilon                         l2-ball radius {L}{nblocks}
-% > elipse_proj_max_iter            maximum number of iterations (projection)
-%                                   [1]
-% > elipse_proj_min_iter            minimum number of iterations (projection)
-%                                   [1]
-% > elipse_proj_eps                 stopping criterion for the projection [1]
-% > sigma22                         update step for the dual variable (tau*sigma2)
-%
-% Output:
-%
-% < v2                              data fidelity dual variable {L}{nblocks}[M, 1]
-% < Ftx                             auxiliary variable for the update of
-%                                   the primal variable [N(1), N(2)]
-% < proj                            result of the projection step  {L}{nblocks}[M, 1]
-% < norm_res                        norm of the residual {L}{nblocks}[1]    
-% < global_norm_res                 square global norm of the residual [1]
-% < norm_epsilon                    square global norm of epsilon [1]
-%
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

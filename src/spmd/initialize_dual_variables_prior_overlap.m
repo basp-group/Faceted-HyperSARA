@@ -1,26 +1,27 @@
 function [v0, v1, weights0, weights1] = ...
     initialize_dual_variables_prior_overlap(Ncoefs, dims, dims_overlap_ref,...
                                             dirac_present, c, nlevel)
-%initialize_dual_variables_prior_overlap: initialize all the dual variables
-% for a given facet (nuclear and l21 norms).
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Initialize dual variables.
 %
-% > Ncoefs              number of wavelet coefficients at each scale
-% > dims                size of a non-overlapping facet [1, 2]
-% > dims_overlap_ref    dimension of a facet (with overlap) [1, 2]
-% > dirac_present       flag indicating whether the Dirac dictionary is
-%                       used in the sparsifying dictionary
-% > c                   number of spectral channels [1]
-% > nlevel              number of wavelet decompositions [1]
+% Initialize all the dual variables for a given facet (nuclear and l21 
+% norms).
 %
-% Output:
+% Args:
+%     Ncoefs (array_like): number of wavelet coefficients at each scale.
+%     dims(array_like): size of a facet [1, 2].
+%     dims_overlap_ref (array_like): dimension of a facet (with overlap) 
+%                                    [1, 2].
+%     dirac_present (bool): flag indicating whether the Dirac dictionary is
+%                           used in the sparsifying dictionary.
+%     c (int): number of spectral channels.
+%     nlevel (int): depth of decomposition.
 %
-% < v0                  dual variable associated with the nuclear norm
-% < v1                  dual variable associated with the l21-norm
-% < weights0            weigths associated with the nuclear norm
-% < weights1            weigths ssociated with the l21-norm
+% Returns:
+%     v0 (array_like): dual variable associated with the nuclear norm.
+%     v1 (array_like): dual variable associated with the l21-norm.
+%     weights0 (array_like): weigths associated with the nuclear norm.
+%     weights1 (array_like): weigths ssociated with the l21-norm.
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

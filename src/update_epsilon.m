@@ -54,7 +54,8 @@ for i = 1 : nChannels
             if t > t_block{i}{j} + adapt_eps_steps && rel_fval < adapt_eps_rel_obj
                 epsilon{i}{j} = norm_res{i}{j} + (-norm_res{i}{j} + epsilon{i}{j}) * (1 - adapt_eps_change_percentage);
                 t_block{i}{j} = t;
-                fprintf('Updated  epsilon DOWN: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
+                fprintf('Updated  epsilon DOWN: %e\t, residual: %e\t, ...
+                Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
             end
         end
         
@@ -62,7 +63,8 @@ for i = 1 : nChannels
             if t > t_block{i}{j} + adapt_eps_steps && rel_fval < adapt_eps_rel_obj
                 epsilon{i}{j} = epsilon{i}{j} + (norm_res{i}{j} - epsilon{i}{j}) * adapt_eps_change_percentage;
                 t_block{i}{j} = t;
-                fprintf('Updated  epsilon UP: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
+                fprintf('Updated  epsilon UP: %e\t, residual: %e\t, ...
+                Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
             end
         end
     end

@@ -6,7 +6,8 @@ function SPsitLx = sdwt2(imApprox, status, wavelet, J, Ncoefs)
 % > x_overlap   overlapping facet extracted from the full image
 % > I           start indices of the non-overlapping facets
 % > dims        dimension of the underlying non-overlapping facet
-% > status      status of the facet considered along each dimension (first: -1, last: 1, none: 0, or both: NaN) )
+% > status      status of the facet considered along each dimension 
+%               (first: -1, last: 1, none: 0, or both: NaN) )
 % > J           depth of the decomposition
 %
 % Ouput:
@@ -20,7 +21,8 @@ function SPsitLx = sdwt2(imApprox, status, wavelet, J, Ncoefs)
 [lo, hi] = wfilters(wavelet, 'd'); % decomposition filters
 % Ncoefs = zeros(J+1,2);
 
-% calculating numbers of coefficients in each subband in each dimension [P.-A.] (i.e., h, d, v, a)
+% calculating numbers of coefficients in each subband in each dimension 
+% [P.-A.] (i.e., h, d, v, a)
 LoDim = length(lo);
 % Snp1   = dims + I;
 sBool = ((status > 0) + isnan(status)); % [first and last] or [last]

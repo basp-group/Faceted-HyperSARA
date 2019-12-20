@@ -6,8 +6,8 @@ function x_overlap = comm2d_reduce(x_overlap, overlap_q, Qy, Qx)
 %
 % Args:
 %     x_overlap (array_like): spatial facet considered (with ghost cells).
-%     overlap_q (array_like): size of the left and top facet extensions (ghost 
-%                         cells) [2 ,1].
+%     overlap_q (array_like): size of the left and top facet extensions 
+%     (ghost cells) [2 ,1].
 %     Qy (int): number of spatial facets along the y axis.
 %     Qx (int): number of spatial facets along the x axis.
 %

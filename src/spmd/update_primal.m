@@ -1,18 +1,21 @@
 function [xsol, xhat, rel_x, norm_x] = update_primal(xsol, g)
-%update_primal: update wideband image (primal variable).
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Update the wideband facet (primal variable).
 %
-% > xsol      wideband facet [M, N, L]
-% > g         auxiliary variable related to the wideband facet [M, N, L]
+% Update step for the primal variable in the preconditioned primal-dual 
+% algorithm.
 %
-% Output:
+% Args:
+%     xsol (array_like): wideband facet [M, N, L].
+%     g (array_like): auxiliary variable related to the wideband facet 
+%                     [M, N, L].
 %
-% < xsol      wideband facet [M, N, L]
-% < xhat      auxiliary variable related to the wideband facet [M, N, L]
-% < rel_x     square of the relative variation [1]
-% < norm_x    square Euclidean norm of xsol [1] 
+% Returns:
+%     xsol (array_like): updated wideband facet [M, N, L].
+%     xhat (array_like): auxiliary variable related to the wideband facet 
+%                        [M, N, L]
+%     rel_x (double): relative variation squared
+%     norm_x (double): squared Euclidean norm of xsol
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

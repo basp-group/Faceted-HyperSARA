@@ -1,18 +1,20 @@
 function f = l21_norm_sara(x, Psit, s)
-%l21_norm_sara: compute the l21-norm of the coeeficients after applying 
-% the sparsifying dictionary \Psi^\dag to each channel of the wideband 
-% image.
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Compute the l21-norm of the wavelet cofficients associated with the SARA 
+% dictionary.
 %
-% > x     wideband image cube [N(1), N(2), L]
-% > Psit  SARA dictionary @[1]
-% > s     number of wavelet coefficients (per channel) [1]
+% Compute :math:`\Vert \boldsymbol{\Psi}^\dag \mathbf{X} \Vert_{2,1}` for 
+% an input wideband image :math:`\mathbf{X} \in \mathbb{R}^{N\times L}`, 
+% with :math:`\boldsymbol{\Psi}^\dag` the SARA dictionary :cite:`Carrillo2012`.
 %
-% Output:
+% Args:
+%       x (array_like): wideband image cube [N(1), N(2), L].
+%       Psit (lambda): SARA dictionary @[1]
+%       s (int): number of wavelet coefficients (per channel) [1]
 %
-% < f     l21-norm [1]
+% Returns:
+%       f (double): value of :math:`\Vert \boldsymbol{\Psi}^\dag \mathbf{X} 
+%                  \Vert_{2,1}`
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

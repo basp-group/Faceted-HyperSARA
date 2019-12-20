@@ -1,14 +1,15 @@
 function f = nuclear_norm(x)
-%nuclear_norm: compute the nuclear norm of the wideband image.
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Compute the nuclear norm of a wideband image.
 %
-% > x  wideband image cube [N(1), N(2), L]
+% Compute :math:`\Vert \mathbf{X} \Vert_* \in 
+% \mathbb{R}^{N \times L}`.
 %
-% Output:
+% Args:
+%       x (array_like): wideband image cube [N(1), N(2), L].
 %
-% < f  value of the nuclear norm [1]
+% Returns:
+%     f (double): nuclear norm of the wideband image.
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
