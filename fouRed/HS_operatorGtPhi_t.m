@@ -55,4 +55,35 @@ for ind = 1:c
     y(:,:,ind) = real(At(x1));
 end
 
+% spmd
+%     if iscell(H)
+%         x1 = zeros(No, 1);
+%         for j = 1:length(H)
+%             if exist('aW', 'var')
+%                 xtmp = sqrt(aW{j}) .* x{j};
+%             else
+%                 xtmp = x{j};
+%             end
+%             if flagW
+%                 x1(W{j}) = x1(W{j}) + H{j}' * (Sigma{j} .* xtmp(:));
+%             else
+%                 x1 = x1 + H{j}' * (Sigma{j} .* xtmp(:));
+%             end
+%         end
+%     else
+%         if exist('aW', 'var')
+%             xtmp = sqrt(aW) .* x;
+%         else
+%             xtmp = x;
+%         end
+%         if flagW
+%             x1 = zeros(size(W));
+%             x1(W) = H' * (Sigma .* xtmp(:));
+%         else
+%             x1 = H' * (Sigma .* xtmp(:));
+%         end
+%     end
+%     y = real(At(x1));
+% end
+
 end

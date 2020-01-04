@@ -1,6 +1,6 @@
 function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, rel_fval,...
     norm_res, adapt_eps_tol_in, adapt_eps_tol_out, adapt_eps_steps, ...
-    adapt_eps_rel_obj, adapt_eps_change_percentage)
+    adapt_eps_rel_obj, adapt_eps_change_percentage, l2_upper_bound)
 % Adaptive update of the l2-ball constraint.
 %
 % Update of the l2-ball constraints of radius epsilon (adaptive 
@@ -54,17 +54,21 @@ for i = 1 : nChannels
             if t > t_block{i}{j} + adapt_eps_steps && rel_fval < adapt_eps_rel_obj
                 epsilon{i}{j} = norm_res{i}{j} + (-norm_res{i}{j} + epsilon{i}{j}) * (1 - adapt_eps_change_percentage);
                 t_block{i}{j} = t;
-                fprintf('Updated  epsilon DOWN: %e\t, residual: %e\t, ...
-                Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
+                fprintf('Updated  epsilon DOWN: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
             end
         end
         
         if  norm_res{i}{j} > adapt_eps_tol_out * epsilon{i}{j}
             if t > t_block{i}{j} + adapt_eps_steps && rel_fval < adapt_eps_rel_obj
-                epsilon{i}{j} = epsilon{i}{j} + (norm_res{i}{j} - epsilon{i}{j}) * adapt_eps_change_percentage;
+                target_eps = epsilon{i}{j} + (norm_res{i}{j} - epsilon{i}{j}) * adapt_eps_change_percentage;
+                if target_eps > l2_upper_bound{i}{j}
+                    epsilon{i}{j} = l2_upper_bound{i}{j};
+                else
+                   epsilon{i}{j} = target_eps;
+                end
+%                 epsilon{i}{j} = epsilon{i}{j} + (norm_res{i}{j} - epsilon{i}{j}) * adapt_eps_change_percentage;
                 t_block{i}{j} = t;
-                fprintf('Updated  epsilon UP: %e\t, residual: %e\t, ...
-                Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
+                fprintf('Updated  epsilon UP: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
             end
         end
     end

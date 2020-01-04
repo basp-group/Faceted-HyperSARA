@@ -45,4 +45,35 @@ for ind = 1:c
     end
 end
 
+% spmd
+%     x1 = A(real(x));
+%     if iscell(H)
+%         for j = 1:length(H)
+%             if flagW
+%                 x2 = H{j} * x1(W{j});
+%             else
+%                 x2 = H{j} * x1;
+%             end
+%             xtmp = Sigma{j} .* x2;
+%             if exist('aW', 'var')
+%                 y{j} =  sqrt(aW{j}) .* xtmp;
+%             else
+%                 y{j} =  xtmp;
+%             end
+%         end
+%     else
+%         if flagW
+%             x2 = H * x1(W);
+%         else
+%             x2 = H * x1;
+%         end
+%         xtmp = Sigma .* x2;
+%         if exist('aW', 'var')
+%             y =  sqrt(aW) .* xtmp;
+%         else
+%             y =  xtmp;
+%         end
+%     end
+% end
+
 end

@@ -1,4 +1,4 @@
-function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_DR_precond(y, epsilon, A, At, H, W, pU, T, Wm, Psi, Psit, param, reduction_version, realdatablocks, fouRed_gamma)
+function [xsol, t_block, epsilon, t, rel_fval, norm2, res, end_iter] = pdfb_DR_precond(y, epsilon, A, At, H, W, pU, T, Wm, Psi, Psit, param, reduction_version, realdatablocks, fouRed_gamma, typeStr)
 %xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter
 % Inputs:
 % y{:} - the visibility data
@@ -47,6 +47,7 @@ end
 % number of pixels (spatial dimensions)
 [Ny, Nx] = size(At(zeros(No, 1)));
 
+fprintf('rw_tol: %i \n\n', param.rw_tol)
 %% optional input arguments
 % if ~isfield(param, 'nu1')
 %     param.nu1 = ones(P, 1);
@@ -76,9 +77,11 @@ else
 end
 if isfield(param, 'initsol')
     xsol = param.initsol;
+    fprintf('xsol uploaded \n\n')
 else
     % start from zero solution
     xsol = zeros(Ny, Nx);
+    fprintf('xsol NOT uploaded \n\n')
 end
 if isfield(param, 'initv1')
     norm1 = cell(P, 1);
@@ -99,6 +102,7 @@ if isfield(param, 'initv1')
         u1{k} = zeros(size(Psi{k}(v1{k})));
     end
 %     vy1 = v1;
+    fprintf('v1 uploaded \n\n')
 else
     norm1 = cell(P, 1);
 %     r1 = cell(P, 1);
@@ -112,6 +116,7 @@ else
         u1{k} = zeros(size(Psi{k}(v1{k})));
     end
 %     vy1 = v1;
+    fprintf('v1 NOT uploaded \n\n')
 end
 if isfield(param, 'initv2')
     norm2 = cell(R, 1);
@@ -134,6 +139,7 @@ if isfield(param, 'initv2')
         u2{q} = zeros(size(T{q}, 1), 1);
     end
     vy2 = v2;
+    fprintf('v2 uploaded \n\n')
 else
     norm2 = cell(R, 1);
     r2 = cell(R, 1);
@@ -146,6 +152,7 @@ else
         u2{q} = zeros(size(T{q}, 2), 1);
     end
     vy2 = v2;
+    fprintf('v2 NOT uploaded \n\n')
 end
 
 if isfield(param,'init_t_block')
@@ -159,7 +166,7 @@ else
         t_block{q} = 0;
     end
     reweight_last_step_iter = 1;
-    reweight_step_count = 1;
+    reweight_step_count = 0;
     fprintf('t t_block NOT uploaded \n\n')
 end
 
@@ -227,11 +234,18 @@ reweight_alpha = param.reweight_alpha;
 reweight_alpha_ff = param.reweight_alpha_ff;
 reweight_abs_of_max = param.reweight_abs_of_max;
 
+A = afclean(A);
+At = afclean(At);
+for k = 1 : P
+    Psi{k} = afclean(Psi{k});
+    Psit{k} = afclean(Psit{k});
+end
+
 %% main loop: sequential + simulated parallel
 % xsol     - current solution estimate
 % prev_sol - previous solution estimate
 
-util_create_pool(15);
+util_create_pool(P+1);
 
 start_loop = tic;
 
@@ -251,6 +265,7 @@ for t = 1:param.max_iter
         rel_sol_norm_change = norm(xsol(:) - prev_xsol(:))/norm_prevsol;
     end
     
+    rel_fval(t) = rel_sol_norm_change;
     prev_xsol = 2*ysol - prev_xsol;
 
     %% L1 prox update: dual variables update
@@ -313,7 +328,7 @@ for t = 1:param.max_iter
         u2{q} = T{q} .* v2{q};
 
         % norm of residual
-        res{q} = r2{q} - y{q};
+        res{q} = y{q} - r2{q};
         norm2{q} = norm(res{q});
         
         if realdatablocks == 2
@@ -359,7 +374,13 @@ for t = 1:param.max_iter
        if (norm2{q} > param.adapt_eps_tol_out * epsilon{q}) && (t > t_block{q} + param.adapt_eps_steps) && ...
                (rel_sol_norm_change < param.adapt_eps_rel_obj)
            t_block{q} = t;
-           epsilon{q} = norm2{q} + (norm2{q} - epsilon{q}) * param.adapt_eps_change_percentage;
+           target_eps = norm2{q} + (norm2{q} - epsilon{q}) * param.adapt_eps_change_percentage;
+           if target_eps > param.l2_upper_bound{q}
+               epsilon{q} = param.l2_upper_bound{q};
+           else
+               epsilon{q} = target_eps;
+           end
+%            epsilon{q} = norm2{q} + (norm2{q} - epsilon{q}) * param.adapt_eps_change_percentage;
            count_eps_update_up = count_eps_update_up +1;
            fprintf('Updated epsilon UP: %e\t, residual: %e\t, Block: %i\n', epsilon{q}, norm2{q}, q);
        end
@@ -419,16 +440,40 @@ for t = 1:param.max_iter
             if (param.verbose >= 2)
                 for q = 1:R
                     fprintf('   Residual %i                     = %e\n', q, norm2{q});
-                    fprintf('   Residual L2 ball %i             = %e\n', q, epsilon{q});
+                    fprintf('   Epsilon %i             = %e\n', q, epsilon{q});
                 end
             end
         end
-        fitswrite(xsol, ['xsol_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
-            'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.fits']);
-        save(['conv_dr_prec_it', num2str(t), '_gamma', num2str(gamma)...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
+        
+        % Calculate residual image
+        g_f2 = zeros(No, 1);
+        for q = 1 : R
+            if reduction_version == 1   % H is self-adjoint in this case
+                tmp = zeros(size(Wm{q}));
+                tmp(Wm{q}) = T{q} .* res{q};
+                if flagW
+                    g_f2(W{q}) = g_f2(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+                else
+                    g_f2 = g_f2 + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+                end
+            elseif reduction_version == 2
+                if flagW
+                    g_f2(W{q}) = g_f2(W{q}) + H{q}' * (T{q} .* res{q});
+                else
+                    g_f2 = g_f2 + H{q}' * (T{q} .* res{q});
+                end
+            end
+        end
+        res_im = real(At(g_f2));
+            
+        fitswrite(xsol, ['results/xsol_ch32_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+            'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
+        fitswrite(res_im, ['results/res_ch32_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+            'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
+        save(['results/conv_dr_ch32_prec_it', num2str(t), '_gamma', num2str(gamma)...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
     end
-    fprintf('Time for iteration %i: %3.3f, \n',t, end_iter(t));
+    fprintf('Time for iteration %i: %3.3f, Rel_error = %e \n',t, end_iter(t), rel_fval(t));
 %     norm_conv(t) = norm(xsol(:) - xstar(:));
 %     fprintf('convergence metric: %f\n', norm_conv(t));
     
@@ -438,19 +483,19 @@ for t = 1:param.max_iter
             fprintf('\n');
         end
     end
-    if (param.verbose >= 0.5)
+%     if (param.verbose >= 0.5)
 %         L1_v(t) = sum(cell2mat(norm1));
 %         L2_v(t) = norm(cell2mat(norm2));
 %         for q = 1:R
 %             L2_vp(t, q) = norm2{q};
 %         end
-        rel_fval(t) = rel_sol_norm_change;
+        
 %         try 
 %             snr_v(t) = 20*log10(norm(param.im(:))/norm(param.im(:) - xsol(:)));
 %         catch
 %             snr_v(t) = 0;
 %         end
-    end
+%     end
     
     if (param.step_flag && (norm(cell2mat(norm2)) <= param.adapt_eps_tol_out*norm(cell2mat(epsilon))) && ...
        rel_fval(t) < param.reweight_rel_obj && t > 300)
@@ -459,10 +504,27 @@ for t = 1:param.max_iter
     end
     
     
-    if (param.use_reweight_steps && t == reweight_steps(reweight_step_count) && t < param.reweight_max_reweight_itr) || ...
+    if (param.use_reweight_steps && t == reweight_steps(reweight_step_count+1) && t < param.reweight_max_reweight_itr) || ...
         (param.use_reweight_eps && rel_sol_norm_change < param.reweight_rel_obj && ...
         residual_check_c <= param.adapt_eps_tol_out*epsilon_check_c && residual_check_a <= param.adapt_eps_tol_out*epsilon_check_a && ...
-        param.reweight_min_steps_rel_obj < t - reweight_last_step_iter && t < param.reweight_max_reweight_itr)
+        param.reweight_min_steps_rel_obj < t - reweight_last_step_iter && t < param.reweight_max_reweight_itr) || ...
+        (param.use_reweight_eps && t - reweight_last_step_iter > param.rw_tol)
+    
+        fprintf('\n\n\n\n\n\n\n Performed reweight no %d \n\n\n\n\n', reweight_step_count);
+        if (param.verbose >= 1)
+            fprintf('Iter %i\n',t);
+            fprintf(' L1 norm                       = %e\n', sum(cell2mat(norm1)));
+            fprintf(' Residual                      = %e\n', norm(cell2mat(norm2)));
+            fprintf(' Epsilon                       = %e\n', norm(cell2mat(epsilon)));
+            fprintf(' Relative solution norm change = %e\n\n', rel_sol_norm_change);
+
+            if (param.verbose >= 2)
+                for q = 1:R
+                    fprintf('   Residual %i                     = %e\n', q, norm2{q});
+                    fprintf('   Epsilon %i             = %e\n', q, epsilon{q});
+                end
+            end
+        end
     
         % parallel for all bases
         parfor k = 1:P
@@ -476,14 +538,42 @@ for t = 1:param.max_iter
 %         weights_mat = weights_mat(:);
 %         sigma1 = 1/op_norm(@(x) weights_mat .* Psitw(x), @(x) Psiw(weights_mat .* x), [Ny, Nx], 1e-8, 200, 0);
         
-        fprintf('\n\n\n\n\n\n\n Performed reweight no %d \n\n\n\n\n', reweight_step_count);
-        fitswrite(xsol, ['xsol_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma), '.fits']);
-        save(['conv_dr_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_th', num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
+        % Calculate residual image
+        g_f2 = zeros(No, 1);
+        for q = 1 : R
+            if reduction_version == 1   % H is self-adjoint in this case
+                tmp = zeros(size(Wm{q}));
+                tmp(Wm{q}) = T{q} .* res{q};
+                if flagW
+                    g_f2(W{q}) = g_f2(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+                else
+                    g_f2 = g_f2 + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+                end
+            elseif reduction_version == 2
+                if flagW
+                    g_f2(W{q}) = g_f2(W{q}) + H{q}' * (T{q} .* res{q});
+                else
+                    g_f2 = g_f2 + H{q}' * (T{q} .* res{q});
+                end
+            end
+        end
+        res_im = real(At(g_f2));
+        
+        fitswrite(xsol, ['results/xsol_ch32_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
+        fitswrite(res_im, ['results/res_ch32_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
+        save(['results/conv_dr_ch32_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
        
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
+        
+        if (reweight_step_count > param.total_reweights)
+            param.reweight_max_reweight_itr = t+1;
+            fprintf('\n\n No more reweights \n\n');
+            break;
+        end
     end
 
     %% global stopping criteria
@@ -501,7 +591,6 @@ for t = 1:param.max_iter
      end
 end
 toc(start_loop)
-save('conv_dr_prec_final.mat', '-v7.3', 'rel_fval', 'end_iter')
 
 % final log
 if (param.verbose > 0)
@@ -514,7 +603,7 @@ if (param.verbose > 0)
         
         for q = 1:R
             fprintf('   Residual %i                     = %e\n', q, norm2{q});
-            fprintf('   Residual L2 ball %i             = %e\n', q, epsilon{q});
+            fprintf('   Epsilon %i             = %e\n', q, epsilon{q});
         end
     else
         fprintf('\nMaximum number of iterations reached\n');
@@ -525,7 +614,7 @@ if (param.verbose > 0)
         
         for q = 1:R
             fprintf('   Residual %i                     = %e\n', q, norm2{q});
-            fprintf('   Residual L2 ball %i             = %e\n', q, epsilon{q});
+            fprintf('   Epsilon %i             = %e\n', q, epsilon{q});
         end
     end
 end
