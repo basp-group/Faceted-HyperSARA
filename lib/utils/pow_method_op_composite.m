@@ -45,9 +45,8 @@ while (cond >= epsilon && n < nmax)
     end
     
     cond = sqrt(squared_norm_diff{Q+1}) / norm_x{Q+1};
-    n = n+1 ;
-    
-    display(['norm it n=' num2str(n) ' norm=' num2str(norm(xnew(:)))])
+    n = n+1 ;   
+    display(['norm it n=' num2str(n) ' norm=' num2str(norm_x{Q+1})])
 end
 
 val = norm_x{Q+1}; % output not normalised
