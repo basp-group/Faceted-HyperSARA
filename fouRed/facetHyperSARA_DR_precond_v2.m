@@ -1,5 +1,5 @@
 function [xsol,param,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
-    facetHyperSARA_DR_precond_v2(y, epsilon, Ap, Atp, Hp, Wp, pUp, Tp, Wmp, param, ...
+    facetHyperSARA_DR_precond_v2(yp, epsilon, Ap, Atp, Hp, Wp, pUp, Tp, Wmp, param, ...
     Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name, ...
     reduction_version, realdatablocks, fouRed_gamma, typeStr, M, N)
 %facetHyperSARA_cst_overlap_weighted_dr_real_data: faceted HyperSARA
@@ -401,10 +401,10 @@ end
 if init_flag
     spmd
         if labindex <= Qp.Value
-            v0_ = init_m.v0(labindex,1);
-            v1_ = init_m.v1(labindex,1);
-            weights0_ = init_m.weights0(labindex,1);
-            weights1_ = init_m.weights1(labindex,1);
+            v0_ = cell2mat(init_m.v0(labindex,1)); % needed to index into cells
+            v1_ = cell2mat(init_m.v1(labindex,1));
+            weights0_ = cell2mat(init_m.weights0(labindex,1));
+            weights1_ = cell2mat(init_m.weights1(labindex,1));
             max_dims = max(dims_overlap_ref_q, dims_oq);
         end
     end
@@ -444,38 +444,38 @@ l2_upper_bound = Composite();
 % [09/10/2019] fixing bug in initialization of norm_res (warm-restart)
 if init_flag
     spmd
-        if labindex > Qp.Value
+        if labindex > Qp.Value % assume K worker for the data, Q for the facets
             k = labindex-Qp.Value;
-            norm_res = init_m.norm_res(k,1);
-            v2_ = init_m.v2(k,1);
-            proj_ = init_m.proj(k,1);
-            t_block = init_m.t_block(k,1);
+            norm_res = cell2mat(init_m.norm_res(k,1));
+            v2_ = cell2mat(init_m.v2(k,1));
+            proj_ = cell2mat(init_m.proj(k,1));
+            t_block = cell2mat(init_m.t_block(k,1));
             
         end
     end
 else
     spmd
         if labindex > Qp.Value
-            norm_res = cell(length(y), 1);
-            for i = 1:length(y)
-                norm_res{i} = cell(length(y{i}),1);
-                for j = 1 : length(y{i})
-                    norm_res{i}{j} = norm(y{i}{j});
+            norm_res = cell(length(yp), 1);
+            for i = 1:length(yp)
+                norm_res{i} = cell(length(yp{i}),1);
+                for j = 1 : length(yp{i})
+                    norm_res{i}{j} = norm(yp{i}{j});
                 end
             end
             
-            % check if viable indexing on composite variables
-            v2_ = cell(length(y), 1);
-            t_block_ = cell(length(y), 1);
-            proj_ = cell(length(y), 1);
-            for i = 1:length(y)
-                v2_{i} = cell(length(y{i}),1);
-                t_block_{i} = cell(length(y{i}),1);
-                proj_{i} = cell(length(y{i}),1);
-                for j = 1 : length(y{i})
-                    v2_{i}{j} = zeros(length(y{i}{j}) ,1);
+            % check if acceptable indexing on composite variables
+            v2_ = cell(length(yp), 1);
+            t_block_ = cell(length(yp), 1);
+            proj_ = cell(length(yp), 1);
+            for i = 1:length(yp)
+                v2_{i} = cell(length(yp{i}),1);
+                t_block_{i} = cell(length(yp{i}),1);
+                proj_{i} = cell(length(yp{i}),1);
+                for j = 1 : length(yp{i})
+                    v2_{i}{j} = zeros(length(yp{i}{j}) ,1);
                     t_block_{i}{j} = 0;
-                    proj_{i}{j} = zeros(length(y{i}{j}), 1);
+                    proj_{i}{j} = zeros(length(yp{i}{j}), 1);
                 end
             end
         end
@@ -800,9 +800,11 @@ for t = t_start : param.max_iter
                 res_ = compute_residual_images_dr_block_new(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp, Wmp, reduction_version);
             end
         end
+        %% -- TO BE CHANGED
         for k = 1 : K
             res(:,:,c_chunks{k}) = res_{Q+k};
         end
+        %% --
         fitswrite(res, ['results/facethyper_res_it', num2str(t), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), '_', num2str(realdatablocks),...
             'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
         
@@ -872,6 +874,7 @@ for t = t_start : param.max_iter
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t;
         
+        %% -- CHANGED -- %%
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
             mkdir('./results/')
@@ -893,30 +896,39 @@ for t = t_start : param.max_iter
             m.weights1 = cell(Q, 1);
             % Retrieve variables from workers
             % facet nodes
-            for q = 1:Q
-                m.v0(q,1) = v0_(q);
-                m.v1(q,1) = v1_(q);
-                m.weights0(q,1) = weights0_(q);
-                m.weights1(q,1) = weights1_(q);
-                m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-                m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
-            end
-            % data nodes
-            for k = 1:K
-                m.res(:,:,c_chunks{k}) = res_{Q+k};
-                res_{Q+k} = [];
-                m.v2(k,1) = v2_(Q+k);
-                m.proj(k,1) = proj_(Q+k);
-                m.t_block(k,1) = t_block(Q+k);
-                m.epsilon(k,1) = epsilonp(Q+k);
-                m.norm_res(k,1) = norm_res(Q+k);
+            spmd
+               % indexing for g and xsol to be verified
+               if labindex <= Qp.Value 
+                   % facet nodes
+                   q = labindex;
+                   m.v0(labindex, 1) = {v0_};
+                   m.v1(labindex, 1) = {v1_};
+                   m.weights0(labindex, 1) = {weights0_};
+                   m.weights1(labindex, 1) = {weights1_};
+                   m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q;
+                   m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q;
+               else
+                   % data nodes
+                   k = labindex - Qp.Value;
+                   m.res(:,:,c_chunksp) = res_;
+                   m.v2(k,1) = {v2_};
+                   m.proj(k,1) = {proj_};
+                   m.t_block(k,1) = {t_block};
+                   m.epsilon(k,1) = {epsilonp};
+                   m.norm_res(k,1) = {norm_res};
+               end
+                
             end
             clear m
         end 
         
+        % [P.-A.] is it really necessary ? ask Ming...
         res = zeros(size(xsol));
         for k = 1 : K
             res(:,:,c_chunks{k}) = res_{Q+k};
+        end 
+        for q = 1:Q
+            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
         
         if (reweight_step_count >= param.total_reweights)
@@ -965,6 +977,8 @@ spmd
 end
 
 % Calculate residual images
+
+%% -- TO BE CHANGED --
 res = zeros(size(xsol));
 for k = 1 : K
     res(:,:,c_chunks{k}) = res_{Q+k};
