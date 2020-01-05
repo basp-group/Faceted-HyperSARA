@@ -1,4 +1,4 @@
-function [xsol,param,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
+function [xsol,param,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
     facetHyperSARA_DR_precond_v2(yp, epsilon, Ap, Atp, Hp, Wp, pUp, Tp, Wmp, param, ...
     Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name, ...
     reduction_version, realdatablocks, fouRed_gamma, typeStr, M, N)
@@ -135,24 +135,30 @@ function [xsol,param,t,rel_fval,nuclear,l21,norm_res_out,res,end_iter] = ...
 % Author: P.-A. Thouvenin.
 % Adapted from codes by: Abdullah Abdulaziz.
 
-%% REMARKS
-% Assumption: the following variables are assumed to be distributed prior
+%% REMARKS: [05/01/2020]
+% 1. Assumption: the following variables are assumed to be distributed prior
 % to entering the function:
 % y, A, At, H, W, pU, T, Wm -> yp, Ap, Atp, Hp, Wp, pUp, Tp, Wmp
+%
+% 2. Remark: restucture sdwt2 functions (determine portions to be loaded 
+% directly on each worker, load information usign spmd instructions)
+%
+% 3.[P.-A.] is it really necessary to have both res and xsol on the master 
+% node? Ask Ming. (see l. 944--950)
 %%
 
 % maxNumCompThreads(param.num_workers);
 
 % Variable flag for the case where W is present
 flagW = 0;
-if ~isempty(Wp) % TO BE CHECKED
+if ~isempty(Wp)
     flagW = 1;
 end
 
 % initialize monitoring variables (display active)
 norm_epsilon_check_c = Inf;
 norm_residual_check_c = 0;
-
+ 
 norm_epsilon_check_a = Inf;
 norm_residual_check_a = 0;
 
@@ -388,7 +394,7 @@ end
 if init_flag
     xsol = init_m.xsol;
     param = init_m.param;
-    epsilon = init_m.epsilon;
+    epsilon = init_m.epsilon; % to be changed (use spmd?)
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
 %     xsol = fitsread('/lustre/home/shared/sc004/solWB-mono-calib.fits');   % specificlly for calibrated real data
@@ -449,8 +455,7 @@ if init_flag
             norm_res = cell2mat(init_m.norm_res(k,1));
             v2_ = cell2mat(init_m.v2(k,1));
             proj_ = cell2mat(init_m.proj(k,1));
-            t_block = cell2mat(init_m.t_block(k,1));
-            
+            t_block = cell2mat(init_m.t_block(k,1));      
         end
     end
 else
@@ -482,6 +487,7 @@ else
     end
 end
 
+% TO BE MODIFIED FOR CONSISTENCY REASONS
 % sz_y = cell(K, 1);
 % n_blocks = cell(K, 1);
 for k = 1:K
@@ -514,9 +520,9 @@ for k = 1:K
     epsilon{k} = [];
     l2_upper_bound{Q+k} = param.l2_upper_bound{k};
 end
-if ~flagW
-    Wp = [];
-end
+% if ~flagW
+%     W = [];
+% end
 clear epsilon pU Wm A At H W y T
 
 % v2_ = Composite();
@@ -585,20 +591,32 @@ reweight_steps = param.reweight_steps;
 g_q = Composite();
 xsol_q = Composite();
 if init_flag
-    for q = 1:Q
-        xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-        g_q{q} = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+%     for q = 1:Q
+%         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+%         g_q{q} = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+%     end
+    spmd
+       if labindex <= Qp.Value 
+           q = labindex;
+           xsol_q = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+           g_q = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+       end
     end
+    
     fprintf('g uploaded \n\n')
 else
-    for q = 1:Q
-        xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-        g_q{q} = zeros([dims(q, :), c]);
-    end
+%     for q = 1:Q
+%         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+%         g_q{q} = zeros([dims(q, :), c]);
+%     end
     % update weights [P.-A.: not really needed, even if taking the results
     % from Arwa]
     spmd
         if labindex <= Qp.Value
+            q = labindex;
+            xsol_q = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+            g_q = zeros([dims(q, :), c]);
+            
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
@@ -644,7 +662,7 @@ for t = t_start : param.max_iter
     start_iter = tic;
     
     spmd
-        if labindex <= Q
+        if labindex <= Qp.Value
             % primal/prior nodes (1:Q)
             
             % update primal variable
@@ -800,7 +818,7 @@ for t = t_start : param.max_iter
                 res_ = compute_residual_images_dr_block_new(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp, Wmp, reduction_version);
             end
         end
-        %% -- TO BE CHANGED
+        %% -- TO BE CHANGED (see if necessary to have the full res_ on the master node)
         for k = 1 : K
             res(:,:,c_chunks{k}) = res_{Q+k};
         end
@@ -922,7 +940,7 @@ for t = t_start : param.max_iter
             clear m
         end 
         
-        % [P.-A.] is it really necessary ? ask Ming...
+        % [05/01/2020] [P.-A.] is it really necessary to have both res and xsol on the mater node? ask Ming...
         res = zeros(size(xsol));
         for k = 1 : K
             res(:,:,c_chunks{k}) = res_{Q+k};
@@ -979,11 +997,19 @@ end
 % Calculate residual images
 
 %% -- TO BE CHANGED --
-res = zeros(size(xsol));
-for k = 1 : K
-    res(:,:,c_chunks{k}) = res_{Q+k};
+% res = zeros(size(xsol));
+% for k = 1 : K
+%     res(:,:,c_chunks{k}) = res_{Q+k};
+% end
+% norm_res_out = sqrt(sum(res(:).^2));
+
+spmd
+   if labindex > Qp.Value
+       norm_res_tmp = sqrt(sum((abs(res_(:)).^2)));
+       norm_res_tmp = gplus(norm_res_tmp, Qp.Value+1);
+   end
 end
-norm_res_out = sqrt(sum(res(:).^2));
+norm_res_out = norm_res_tmp{Q+1};
 
 % m = matfile(['./results/facetHyperSARA_dr_co_w_real' ...
 %               num2str(param.ind(1)), '_', num2str(param.ind(end)), '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
