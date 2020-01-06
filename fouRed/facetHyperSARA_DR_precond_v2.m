@@ -452,10 +452,14 @@ if init_flag
     spmd
         if labindex > Qp.Value % assume K worker for the data, Q for the facets
             k = labindex-Qp.Value;
-            norm_res = cell2mat(init_m.norm_res(k,1));
-            v2_ = cell2mat(init_m.v2(k,1));
-            proj_ = cell2mat(init_m.proj(k,1));
-            t_block = cell2mat(init_m.t_block(k,1));      
+            norm_res = init_m.norm_res(k,1);
+            norm_res = norm_res{1,1};
+            v2_ = init_m.v2(k,1);
+            v2_ = v2_{1,1};
+            proj_ = init_m.proj(k,1);
+            proj_ = proj_{1,1};
+            t_block = init_m.t_block(k,1);      
+            t_block = t_block{1,1};
         end
     end
 else
