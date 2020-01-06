@@ -518,7 +518,11 @@ for k = 1:K
 %     pU{k} = [];
     epsilonp{Q+k} = epsilon{k};
     epsilon{k} = [];
-    l2_upper_bound{Q+k} = param.l2_upper_bound{k};
+    if param.use_adapt_eps
+        l2_upper_bound{Q+k} = param.l2_upper_bound{k};
+    else
+        l2_upper_bound{Q+k} = [];
+    end
 end
 % if ~flagW
 %     W = [];

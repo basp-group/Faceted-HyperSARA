@@ -1,4 +1,4 @@
-function val = pow_method_op_composite(A, At, Q, K, nchannel_per_worker, im_size)
+function val = pow_method_op_composite(Hp, Wp, Ap, Atp, Tp, aWp, Q, K, nchannel_per_worker, im_size)
 %Computes the maximum eigen value of the compund 
 %operator AtA
 %
@@ -32,7 +32,9 @@ end
 while (cond >= epsilon && n < nmax)
     spmd
         if labindex > Q 
-           xnew = At(A(x/norm_x)); % input normalised
+%            xnew = At(A(x/norm_x)); % input normalised
+           xtmp = HS_operatorGtPhi(x/norm_x, Hp, Wp, Ap, Tp, aWp);
+           xnew = HS_operatorGtPhi_t(xtmp, Hp, Wp, Atp, Tp, aWp);
                     
            squared_norm_diff = norm(xnew(:) - x(:))^2;
            squared_norm_diff = gplus(squared_norm_diff, Q+1); % needed only on one worker

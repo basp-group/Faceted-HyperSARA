@@ -472,7 +472,6 @@ for k = 1:K
     xhat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
     Ap{Q+k} = A;
     Atp{Q+k} = At;
-    k
     Hp{Q+k} = H{k};
     H{k} = [];
     if flagW
@@ -630,7 +629,7 @@ for t = t_start : param.max_iter
                 labSend(xhat_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
             end
             
-            facet_update_t = tic;
+%             facet_update_t = tic;
             % update ghost cells (versions of xhat with overlap)
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
@@ -648,7 +647,7 @@ for t = t_start : param.max_iter
             
             % compute g_ for the final update term
             g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
-            fprintf('Iter = %i, Lab index = %i, facet node Time = %e\n',t,labindex,toc(facet_update_t));
+%             fprintf('Iter = %i, Lab index = %i, facet node Time = %e\n',t,labindex,toc(facet_update_t));
             
             % retrieve portions of g2 from the data nodes
             for i = 1:Kp.Value
@@ -665,11 +664,11 @@ for t = t_start : param.max_iter
             end
 %             fprintf('Iter = %i, Lab index = %i, retrieve_xhat_t Time = %e\n',t,labindex,toc(retrieve_xhat_t));
             
-            update_data_t = tic;
+%             update_data_t = tic;
             [v2_, g2, proj_, norm_res, norm_residual_check_ic, norm_epsilon_check_ic, norm_residual_check_ia, norm_epsilon_check_ia]...
                 = update_data_fidelity_dr_block_new(v2_, yp, xhat_i, proj_, Ap, Atp, Hp, Wp, Tp, Wmp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value, precondition, reduction_version, realdatablocks); % *_dr version when no blocking
-            fprintf('Iter = %i, Lab index = %i, update_data_t Time = %e\n',t,labindex,toc(update_data_t));
+%             fprintf('Iter = %i, Lab index = %i, update_data_t Time = %e\n',t,labindex,toc(update_data_t));
             
             % send portions of g2 to the prior/primal nodes
 %             send_g2_t = tic;
@@ -847,11 +846,31 @@ for t = t_start : param.max_iter
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t;
         
+        res = zeros(size(xsol));
+        for k = 1 : K
+            res(:,:,c_chunks{k}) = res_{Q+k};
+        end
+        
+        if (reweight_step_count >= param.total_reweights)
+            param.reweight_max_reweight_itr = t+1;
+            fprintf('\n\n No more reweights \n\n');
+            break;
+        end
+        
+        fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), ...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
+        
+        fitswrite(res, ['results/facethyper_res_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), ...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
+        
+        save(['results/facethyper_conv_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0),...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.mat'], '-v7.3', 'rel_fval', 'end_iter')
+        
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
             mkdir('./results/')
             m = matfile(['./results/facetHyperSARA_dr_co_w_real_' ...
-                num2str(param.ind(1)), '_', num2str(param.ind(end)), '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+                num2str(param.ind(1)), '_', num2str(param.ind(end)), '_' num2str(param.gamma) '_' num2str(reweight_step_count) '_adpteps', num2str(param.use_adapt_eps), '.mat'], ...
                 'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
@@ -888,26 +907,6 @@ for t = t_start : param.max_iter
             end
             clear m
         end 
-        
-        res = zeros(size(xsol));
-        for k = 1 : K
-            res(:,:,c_chunks{k}) = res_{Q+k};
-        end
-        
-        if (reweight_step_count >= param.total_reweights)
-            param.reweight_max_reweight_itr = t+1;
-            fprintf('\n\n No more reweights \n\n');
-            break;
-        end
-        
-        fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), ...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
-        
-        fitswrite(res, ['results/facethyper_res_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), ...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
-        
-        save(['results/facethyper_conv_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0),...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.mat'], '-v7.3', 'rel_fval', 'end_iter')
         
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;

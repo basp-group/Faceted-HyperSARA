@@ -1,4 +1,4 @@
-function func_solver_fouRed_real_data(gamma0, gamma, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag)
+function func_solver_fouRed_real_data(datadir, gamma0, gamma, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag)
 
 if fouRed_type == 1
     typeStr = 'perc';
@@ -97,8 +97,9 @@ for i = 1:nChannels
 %     W{i,1} = tmp.W{1,1};
 %     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
 %         num2str(reduction_version), '_perc', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
-    DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
-    num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
+%     DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
+%     num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
+    DRfilename = [datadir, '/CYG_DR_cal_', num2str(realdatablocks), 'b_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
 %     tmp = load(['../../extract_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
 %         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
     fprintf('Read dimensionality reduction file: %s\n', DRfilename)
@@ -258,7 +259,7 @@ if algo_version == 1
     param_HSI.gamma0 = gamma0;
     param_HSI.gamma = gamma;  %convergence parameter L1 (soft th parameter)
     param_HSI.rel_obj = 1e-10; % stopping criterion
-    param_HSI.max_iter = 10; % max number of iterations
+    param_HSI.max_iter = 10000; % max number of iterations
 
     param_HSI.use_adapt_eps = adapt_eps_flag; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 300; % minimum num of iter before stating adjustment
@@ -309,7 +310,7 @@ if algo_version == 1
 
     
     % spectral tesselation (non-overlapping)
-    rg_c = domain_decomposition(Qc2, nChannels); % to be modified % only for data reduction
+    rg_c = domain_decomposition(Qc2, nChannels/2); % to be modified % only for data reduction
     cell_c_chunks = cell(Qc2, 1);
     y_spmd = cell(Qc2, 1);
     epsilon_spmd = cell(Qc2, 1);
@@ -329,8 +330,8 @@ if algo_version == 1
 %     cell_c_chunks{8} = 28:30;
     
     for i = 1:Qc2
-        cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
-%         cell_c_chunks{i} = [rg_c(i, 1):rg_c(i, 2), nChannels-rg_c(i, 2)+1:nChannels-rg_c(i, 1)+1];   % only for data reduction
+%         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+        cell_c_chunks{i} = [rg_c(i, 1):rg_c(i, 2), nChannels-rg_c(i, 2)+1:nChannels-rg_c(i, 1)+1];   % only for data reduction
         y_spmd{i} = yT(cell_c_chunks{i});
         epsilon_spmd{i} = epsilon(cell_c_chunks{i});
         aW_spmd{i} = aW(cell_c_chunks{i});
