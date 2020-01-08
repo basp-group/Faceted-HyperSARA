@@ -545,6 +545,16 @@ for t = t_start : param.max_iter
     end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
+    %% Retrieve value of the monitoring variables (residual norms + epsilons)
+    norm_epsilon_check = 0;
+    norm_residual_check = 0;
+    for i = Q+1:Q+K
+        norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
+        norm_residual_check = norm_residual_check + norm_residual_check_i{i};
+    end
+    norm_epsilon_check = sqrt(norm_epsilon_check);
+    norm_residual_check = sqrt(norm_residual_check);
+    
 %     t_op_prior = 0;
 %     for q = 1:Q
 %        t_op_prior = max(t_op_prior, t_op{q}); 
@@ -578,16 +588,6 @@ for t = t_start : param.max_iter
             l21 = l21 + l21_norm{q};
             nuclear = nuclear + nuclear_norm{q};
         end
-        
-        % retrieve value of the monitoring variables (residual norms + epsilons)
-        norm_epsilon_check = 0;
-        norm_residual_check = 0;
-        for i = Q+1:Q+K
-            norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-            norm_residual_check = norm_residual_check + norm_residual_check_i{i};
-        end
-        norm_epsilon_check = sqrt(norm_epsilon_check);
-        norm_residual_check = sqrt(norm_residual_check);
         
         % SNR
         % get xsol back from the workers

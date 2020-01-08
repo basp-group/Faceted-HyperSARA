@@ -291,6 +291,16 @@ for t = t_start : param.max_iter
     end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
+    %% Retrieve value of the monitoring variables (residual norms)
+    norm_epsilon_check = 0;
+    norm_residual_check = 0;
+    for i = 3:K+2
+        norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
+        norm_residual_check = norm_residual_check + norm_residual_check_i{i};
+    end
+    norm_epsilon_check = sqrt(norm_epsilon_check);
+    norm_residual_check = sqrt(norm_residual_check);
+    
 %     t_nuclear = tw{1};
 %     t_l21 = tw{2};
 %     t_data = 0;
@@ -308,16 +318,6 @@ for t = t_start : param.max_iter
         
         % l21 norm
         l21 = l21_norm_sara(xsol, Psit, s);
-        
-        % retrieve value of the monitoring variables (residual norms)
-        norm_epsilon_check = 0;
-        norm_residual_check = 0;
-        for i = 3:K+2
-            norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-            norm_residual_check = norm_residual_check + norm_residual_check_i{i};
-        end
-        norm_epsilon_check = sqrt(norm_epsilon_check);
-        norm_residual_check = sqrt(norm_residual_check);
         
         % SNR
         sol = reshape(xsol(:),numel(xsol(:))/c,c);

@@ -542,6 +542,30 @@ for t = t_start : param.max_iter
     end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
+    %% Retrieve value of the monitoring variables (residual norms + epsilons)
+    norm_epsilon_check_c = 0;
+    norm_residual_check_c = 0;
+    norm_epsilon_check_a = 0;
+    norm_residual_check_a = 0;
+    count = 1;
+    for i = Q+1:Q+K
+        eps_ch_c(count) = sqrt(norm_epsilon_check_ic{i});
+        res_ch_c(count) = sqrt(norm_residual_check_ic{i});
+        norm_epsilon_check_c = norm_epsilon_check_c + norm_epsilon_check_ic{i};
+        norm_residual_check_c = norm_residual_check_c + norm_residual_check_ic{i};
+        
+        eps_ch_a(count) = sqrt(norm_epsilon_check_ia{i});
+        res_ch_a(count) = sqrt(norm_residual_check_ia{i});
+        norm_epsilon_check_a = norm_epsilon_check_a + norm_epsilon_check_ia{i};
+        norm_residual_check_a = norm_residual_check_a + norm_residual_check_ia{i};
+        
+        count = count + 1;
+    end
+    norm_epsilon_check_c = sqrt(norm_epsilon_check_c);
+    norm_residual_check_c = sqrt(norm_residual_check_c);
+    norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
+    norm_residual_check_a = sqrt(norm_residual_check_a);
+    
     %% save
     if t == 5
         
@@ -587,31 +611,6 @@ for t = t_start : param.max_iter
             l21 = l21 + l21_norm{q};
             nuclear = nuclear + nuclear_norm{q};
         end
-        
-        % retrieve value of the monitoring variables (residual norms + epsilons)
-        norm_epsilon_check_c = 0;
-        norm_residual_check_c = 0;
-        norm_epsilon_check_a = 0;
-        norm_residual_check_a = 0;
-        count = 1;
-        for i = Q+1:Q+K
-            eps_ch_c(count) = sqrt(norm_epsilon_check_ic{i});
-            res_ch_c(count) = sqrt(norm_residual_check_ic{i});
-            norm_epsilon_check_c = norm_epsilon_check_c + norm_epsilon_check_ic{i};
-            norm_residual_check_c = norm_residual_check_c + norm_residual_check_ic{i};
-            
-            eps_ch_a(count) = sqrt(norm_epsilon_check_ia{i});
-            res_ch_a(count) = sqrt(norm_residual_check_ia{i});
-            norm_epsilon_check_a = norm_epsilon_check_a + norm_epsilon_check_ia{i};
-            norm_residual_check_a = norm_residual_check_a + norm_residual_check_ia{i};
-            
-            count = count + 1;
-        end
-        norm_epsilon_check_c = sqrt(norm_epsilon_check_c);
-        norm_residual_check_c = sqrt(norm_residual_check_c);
-        
-        norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
-        norm_residual_check_a = sqrt(norm_residual_check_a);
         %% --
         
         % Log
