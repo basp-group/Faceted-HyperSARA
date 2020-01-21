@@ -5,7 +5,7 @@
 >P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech, A. Repetti, A. Jackson, J.-P. Thiran, Y. Wiaux -
 <strong>Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA)</strong>, submitted, <a href="https://researchportal.hw.ac.uk/en/publications/parallel-faceted-imaging-in-radio-interferometry-via-proximal-spl">preprint available online</a>, Jan. 2020.  
 
-**Authors:** P.-A. Thouvenin (pierre-antoine.thouvenin@centralelille.fr), A. Abdulaziz (aa61@hw.ac.uk), M. Jiang (ming.jiang@epfl.ch).
+**Authors:** P.-A. Thouvenin, A. Abdulaziz, M. Jiang.
 
 **Documentation:** a full documentation is currently under development, and will be made available in the present repository.
 
