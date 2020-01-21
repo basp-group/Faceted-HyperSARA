@@ -47,9 +47,9 @@ usingPrecondition = true;
 rw = -1;
 window_type = 'triangular';
 
-Qx = 2;
-Qy = 1;
-Qc2 = 2;    % to see later
+Qx = 5;
+Qy = 3;
+Qc2 = 6;    % to see later
 
 d = 512;
 flag_algo = algo_version;
@@ -75,19 +75,25 @@ Ky = 7; % number of neighbours for nufft
 [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
 
 % spectral tesselation (non-overlapping)
-rg_c = domain_decomposition(Qc2, nChannels); % to be modified % only for data reduction
+tau_ch = 0.6;
+nChannels1 = tau_ch*nChannels;
+nChannels2 = (1-tau_ch)*nChannels;
+rg_c1 = domain_decomposition(Qc2, nChannels1); % to be modified % only for data reduction
+rg_c2 = domain_decomposition(Qc2, nChannels2); % to be modified % only for data reduction
 cell_c_chunks = cell(Qc2, 1);
+nchannel_per_worker = zeros(Qc2, 1);
 
 for i = 1:Qc2
-    cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
-%     cell_c_chunks{i} = [rg_c(i, 1):rg_c(i, 2), nChannels-rg_c(i, 2)+1:nChannels-rg_c(i, 1)+1];   % only for data reduction
+%     cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+    cell_c_chunks{i} = [rg_c1(i, 1):rg_c1(i, 2), nChannels-rg_c2(i, 2)+1:nChannels-rg_c2(i, 1)+1];   % only for data reduction
+    nchannel_per_worker(i) = numel(cell_c_chunks{i});
 end
     
 %% Load data
 delete(gcp('nocreate'));
 Q = Qx*Qy; 
 numworkers = Q + Qc2;
-cirrus_cluster = parcluster('local');
+cirrus_cluster = parcluster('cirrus R2019a');
 cirrus_cluster.NumWorkers = numworkers;
 cirrus_cluster.NumThreads = 1;
 ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
@@ -96,27 +102,18 @@ if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
 end
 parpool(cirrus_cluster, numworkers, 'IdleTimeout', Inf);
 
-Ap = Composite();
-Atp = Composite();
-Hp = Composite();
-Wp = Composite();
-yTp = Composite();
-Tp = Composite();
-aWp = Composite();
-Wmp = Composite();
-
 spmd
     if labindex > Q
         Ap = A;
         Atp = At;
         chunk = cell_c_chunks{labindex - Q};
         ch_len = length(chunk);
-%         Hp = cell(ch_len,1);
-%         Wp = cell(ch_len,1);
-%         yTp = cell(ch_len,1);
-%         Tp = cell(ch_len,1);
-%         aWp = cell(ch_len,1);
-%         Wmp = cell(ch_len,1);
+        Hp = cell(ch_len,1);
+        Wp = cell(ch_len,1);
+        yTp = cell(ch_len,1);
+        Tp = cell(ch_len,1);
+        aWp = cell(ch_len,1);
+        Wmp = cell(ch_len,1);
         for i = 1: ch_len
             ch_ind = chunk(i);
             fprintf('\nChannel number: %d\n', ch(ch_ind))
@@ -125,7 +122,6 @@ spmd
             DRfilename = [datadir, '/CYG_DR_cal_', num2str(realdatablocks), 'b_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(ch_ind)), '.mat'];
             fprintf('Read dimensionality reduction file: %s\n', DRfilename)
             tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm');
-            disp('true')
             Hp{i,1} = tmp.H{1,1};
             Wp{i,1} = tmp.W{1,1};
             yTp{i,1} = tmp.yT{1,1};
@@ -135,7 +131,7 @@ spmd
             if reduction_version == 2
                 for j = 1:length(Hp{i,1})
                     if usingPrecondition
-                        aWp{i,1}{j} = Tp{j};
+                        aWp{i,1}{j} = Tp{i,1}{j};
                     end
                 end
             end
@@ -150,10 +146,10 @@ for i = 1:nChannels
     DRfilename = [datadir, '/CYG_DR_cal_', num2str(realdatablocks), 'b_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
     fprintf("Read 'epsilon', 'xsol' from: %s\n", DRfilename)
     tmp = load(DRfilename, 'epsilon', 'xsol');
-    epsilon = tmp.epsilon{1,1};
+    epsilon{i,1} = tmp.epsilon{1,1};
         % cheap H matrices
         if reduction_version == 2
-            for j = 1:length(H)
+            for j = 1:length(epsilon{i,1})
                 if adapt_eps_flag
                     epsilon1{i,1}{j} = 0.9 * epsilon{i,1}{j};       % adjust epsilon for high frequency calibrated data
                 end
@@ -181,7 +177,7 @@ if compute_Anorm
 %             end
 %         end
 %     end
-    Anorm = pow_method_op_composite(Hp, Wp, Ap, Atp, Tp, aWp, Q, Qc2, cell_c_chunks,[Ny Nx]);
+    Anorm = pow_method_op_composite(Hp, Wp, Ap, Atp, Tp, aWp, Q, Qc2, nchannel_per_worker, [Ny Nx]);
     save(Anormfile,'-v7.3', 'Anorm');
 else
     fprintf('\nLoad the operator norm file: %s\n', Anormfile)
@@ -241,7 +237,7 @@ if algo_version == 1
     param_HSI.use_adapt_eps = adapt_eps_flag; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 300; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
-    param_HSI.adapt_eps_tol_out = 1.005; % tolerance outside the l2 ball
+    param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
     param_HSI.adapt_eps_rel_obj = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
@@ -283,7 +279,7 @@ if algo_version == 1
         else
             epsilon_spmd{i} = epsilon(cell_c_chunks{i});
         end
-        l2_upper_bound = epsilon(cell_c_chunks{i});
+        l2_upper_bound{i} = epsilon(cell_c_chunks{i});
     end
     
     param_HSI.l2_upper_bound = l2_upper_bound;
@@ -319,8 +315,8 @@ if algo_version == 1
     mkdir('results/')
     
     [xsol,param_HSI,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
-    facetHyperSARA_DR_precond_v2(yp, epsilon_spmd, Ap, Atp, Hp, Wp, aWp, Tp, Wmp, param_HSI, ...
-    Qx, Qy, Qc2, wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, init_file_name, ...
+    facetHyperSARA_DR_precond_v2(yTp, epsilon_spmd, Ap, Atp, Hp, Wp, aWp, Tp, Wmp, param_HSI, ...
+    Qx, Qy, Qc2, wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, initfilename, ...
     reduction_version, realdatablocks, fouRed_gamma, typeStr, Ny, Nx);
     
     save(['results/results_facethyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...

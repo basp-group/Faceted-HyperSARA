@@ -145,12 +145,12 @@ if ~isempty(W)
     flagW = 1;
 end
 
-% initialize monitoring variables (display active)
-norm_epsilon_check_c = Inf;
-norm_residual_check_c = 0;
-
-norm_epsilon_check_a = Inf;
-norm_residual_check_a = 0;
+% % initialize monitoring variables (display active)
+% norm_epsilon_check_c = Inf;
+% norm_residual_check_c = 0;
+% 
+% norm_epsilon_check_a = Inf;
+% norm_residual_check_a = 0;
 
 % size of the oversampled Fourier space (vectorized)
 if flagW
@@ -377,6 +377,8 @@ end
 if init_flag
     xsol = init_m.xsol;
     param = init_m.param;
+    param.rw_tol = 500;
+    param.max_iter = 30000;
     epsilon = init_m.epsilon;
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
@@ -710,7 +712,6 @@ for t = t_start : param.max_iter
         res_ch_c(count) = sqrt(norm_residual_check_ic{i});
         norm_epsilon_check_c = norm_epsilon_check_c + norm_epsilon_check_ic{i};
         norm_residual_check_c = norm_residual_check_c + norm_residual_check_ic{i};
-        
         eps_ch_a(count) = sqrt(norm_epsilon_check_ia{i});
         res_ch_a(count) = sqrt(norm_residual_check_ia{i});
         norm_epsilon_check_a = norm_epsilon_check_a + norm_epsilon_check_ia{i};
@@ -718,9 +719,12 @@ for t = t_start : param.max_iter
         
         count = count + 1;
     end
+    norm_epsilon_check = sqrt(norm_epsilon_check_c + norm_epsilon_check_a);
+    norm_residual_check = sqrt(norm_residual_check_c + norm_residual_check_a);
+
     norm_epsilon_check_c = sqrt(norm_epsilon_check_c);
     norm_residual_check_c = sqrt(norm_residual_check_c);
-    
+
     norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
     norm_residual_check_a = sqrt(norm_residual_check_a);
     
@@ -745,11 +749,13 @@ for t = t_start : param.max_iter
             l21 = l21 + l21_norm{q};
             nuclear = nuclear + nuclear_norm{q};
         end
+        
         %% --
         % Log
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
             fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+            fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
             fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
             fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
             for i = 1 : length(eps_ch_c)
@@ -786,8 +792,9 @@ for t = t_start : param.max_iter
     
     %% Global stopping criteria
     if t>1 && rel_fval(t) < param.rel_obj && reweight_step_count > param.total_reweights && ...
-            (norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c) && ...
-            (norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a)
+            (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
+%             (norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c) && ...
+%             (norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a)
         flag = 1;
         break;
     end
@@ -804,17 +811,28 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
+%     if (param.step_flag && rel_fval(t) < param.reweight_rel_obj && ...
+%             norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c && norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a && t > 300)
+%         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
+%         param.step_flag = 0;
+%     end
     if (param.step_flag && rel_fval(t) < param.reweight_rel_obj && ...
-            norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c && norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a && t > 300)
+            norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check && t > 300)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
     
+%     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
+%             (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
+%             t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr && ...
+%             norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c && ...
+%             norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a) || ...
+%             (param.use_reweight_eps && t - reweight_last_step_iter > param.rw_tol)
+        
     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
             (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
             t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr && ...
-            norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c && ...
-            norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a) || ...
+            norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check) || ...
             (param.use_reweight_eps && t - reweight_last_step_iter > param.rw_tol)
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
@@ -911,6 +929,10 @@ for t = t_start : param.max_iter
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
         rw_counts = rw_counts + 1;
+        
+        if reweight_step_count == 20
+            param.rw_tol = 5000;
+        end
     end
 end
 % profile off
@@ -1029,6 +1051,9 @@ for i = Q+1:Q+K
     
     count = count + 1;
 end
+norm_epsilon_check = sqrt(norm_epsilon_check_c + norm_epsilon_check_a);
+norm_residual_check = sqrt(norm_residual_check_c + norm_residual_check_a);
+
 norm_epsilon_check_c = sqrt(norm_epsilon_check_c);
 norm_residual_check_c = sqrt(norm_residual_check_c);
 
@@ -1040,12 +1065,14 @@ if (param.verbose > 0)
         fprintf('Solution found\n');
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
         fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
         fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
     else
         fprintf('Maximum number of iterations reached\n');
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
         fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
         fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
     end

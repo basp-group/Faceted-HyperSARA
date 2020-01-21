@@ -7,7 +7,7 @@ elseif fouRed_type == 2
 end
 
 diaryFname = ['diary_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), ...
-    '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_algo', num2str(algo_version), '_', typeStr, num2str(fouRed_gamma), '.txt'];
+    '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_algo', num2str(algo_version), '_', typeStr, num2str(fouRed_gamma), '_', num2str(adapt_eps_flag), '.txt'];
     
 if exist(diaryFname, 'file')
     delete(diaryFname)
@@ -264,11 +264,11 @@ if algo_version == 1
     param_HSI.use_adapt_eps = adapt_eps_flag; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 300; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
-    param_HSI.adapt_eps_tol_out = 1.005; % tolerance outside the l2 ball
+    param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
     param_HSI.adapt_eps_rel_obj = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
-    param_HSI.l2_upper_bound = epsilon;
+%     param_HSI.l2_upper_bound = epsilon;
 
     param_HSI.reweight_alpha = (0.8)^10; %1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_HSI.reweight_alpha_ff = 0.8;
@@ -295,8 +295,8 @@ if algo_version == 1
     param_HSI.initsol = xsol;
     
     reweight_step_count = 0;
-    initfilename = ['./results/facetHyperSARA_dr_co_w_real_' ...
-                num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_' num2str(param_HSI.gamma) '_' num2str(reweight_step_count) '.mat'];
+    initfilename = ['results/facetHyperSARA_dr_co_w_real_' ...
+                num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_', num2str(param_HSI.gamma), '_', num2str(reweight_step_count), '_adpteps', num2str(param_HSI.use_adapt_eps), '.mat'];
     
 %     mkdir('results/')
 %     
@@ -314,6 +314,7 @@ if algo_version == 1
     cell_c_chunks = cell(Qc2, 1);
     y_spmd = cell(Qc2, 1);
     epsilon_spmd = cell(Qc2, 1);
+    l2_upper_bound_spmd = cell(Qc2, 1);
     aW_spmd = cell(Qc2, 1);
     Wm_spmd = cell(Qc2, 1);
     T_spmd = cell(Qc2, 1);
@@ -333,23 +334,23 @@ if algo_version == 1
 %         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
         cell_c_chunks{i} = [rg_c(i, 1):rg_c(i, 2), nChannels-rg_c(i, 2)+1:nChannels-rg_c(i, 1)+1];   % only for data reduction
         y_spmd{i} = yT(cell_c_chunks{i});
-        epsilon_spmd{i} = epsilon(cell_c_chunks{i});
+        if adapt_eps_flag
+            epsilon_spmd{i} = epsilon1(cell_c_chunks{i});
+        else
+            epsilon_spmd{i} = epsilon(cell_c_chunks{i});
+        end
+        l2_upper_bound_spmd{i} = epsilon(cell_c_chunks{i});
         aW_spmd{i} = aW(cell_c_chunks{i});
         Wm_spmd{i} = Wm(cell_c_chunks{i});
         T_spmd{i} = T(cell_c_chunks{i});
         H_spmd{i} = H(cell_c_chunks{i});
         W_spmd{i} = W(cell_c_chunks{i});
     end
+    param_HSI.l2_upper_bound = l2_upper_bound_spmd;
     clear yT epsilon aW Wm T epsilon
     
     if  rw >= 0 
         load(['results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma) '_' num2str(rw) '.mat']);
-        
-        if adapt_eps_flag
-            epsilon_spmd = epsilon1;
-        else
-            epsilon_spmd = epsilon;
-        end
         param_HSI.init_xsol = param.init_xsol;
         param_HSI.init_g = param.init_g;
         param_HSI.init_v0 = param.init_v0;
@@ -399,7 +400,7 @@ elseif algo_version == 2
     param_pdfb.elipse_proj_min_iter = 1;
     param_pdfb.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid
     
-    param_pdfb.use_adapt_eps = 1; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
+    param_pdfb.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_pdfb.adapt_eps_start = 300; % minimum num of iter before stating adjustment
     param_pdfb.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
     param_pdfb.adapt_eps_tol_out = 1.001; % tolerance outside the l2 ball
@@ -426,11 +427,12 @@ elseif algo_version == 2
     param_pdfb.rw_tol = 5000;
     
     param_pdfb.initsol = xsol;
+    param_pdfb.chInd = ch(1);
     
     % solvers
     mkdir('results/')
     [xsol, ~, epsilon, t, rel_fval, norm2, res, end_iter] = ...
-        pdfb_DR_precond(yT{1}, epsilon1{1}, A, At, H{1}, W{1}, aW{1}, T{1}, Wm{1}, ...
+        pdfb_DR_precond(yT{1}, epsilon{1}, A, At, H{1}, W{1}, aW{1}, T{1}, Wm{1}, ...
         Psi, Psit, param_pdfb, reduction_version, realdatablocks, fouRed_gamma, typeStr);
     
     save(['results/results_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)),...

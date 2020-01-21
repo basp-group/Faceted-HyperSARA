@@ -22,11 +22,14 @@ spmd
     if labindex > Q
          % each worker owns a portion of the channels
         x = randn([im_size, nchannel_per_worker(labindex-Q)]);
-        norm_x = norm(x(:))^2;
-        norm_x = gplus(norm_x);
-        norm_x = sqrt(norm_x);
+        norm2_x = norm(x(:))^2;
     end
 end
+norm_x = 0;
+for i=Q+1:Q+K
+    norm_x = norm_x + norm2_x{i};
+end
+norm_x = sqrt(norm_x);
 
 % Iterations
 while (cond >= epsilon && n < nmax)
@@ -36,22 +39,28 @@ while (cond >= epsilon && n < nmax)
            xtmp = HS_operatorGtPhi(x/norm_x, Hp, Wp, Ap, Tp, aWp);
            xnew = HS_operatorGtPhi_t(xtmp, Hp, Wp, Atp, Tp, aWp);
                     
-           squared_norm_diff = norm(xnew(:) - x(:))^2;
-           squared_norm_diff = gplus(squared_norm_diff, Q+1); % needed only on one worker
+           squared_norm2_diff = norm(xnew(:) - x(:))^2;
            
            x = xnew;
-           norm_x = norm(x(:))^2;
-           norm_x = gplus(norm_x);
-           norm_x = sqrt(norm_x);
+           norm2_x = norm(x(:))^2;
         end
     end
     
-    cond = sqrt(squared_norm_diff{Q+1}) / norm_x{Q+1};
+    norm_x = 0;
+    squared_norm_diff = 0;
+    for i=Q+1:Q+K
+        norm_x = norm_x + norm2_x{i};
+        squared_norm_diff = squared_norm_diff + squared_norm2_diff{i};
+    end
+    norm_x = sqrt(norm_x);
+    squared_norm_diff = sqrt(squared_norm_diff);
+    
+    cond = squared_norm_diff / norm_x;
     n = n+1 ;   
-    display(['norm it n=' num2str(n) ' norm=' num2str(norm_x{Q+1})])
+    display(['norm it n=' num2str(n) ' norm=' num2str(norm_x)])
 end
 
-val = norm_x{Q+1}; % output not normalised
+val = norm_x; % output not normalised
 
 end
 

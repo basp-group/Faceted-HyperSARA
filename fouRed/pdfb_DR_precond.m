@@ -446,32 +446,32 @@ for t = 1:param.max_iter
         end
         
         % Calculate residual image
-        g_f2 = zeros(No, 1);
-        for q = 1 : R
-            if reduction_version == 1   % H is self-adjoint in this case
-                tmp = zeros(size(Wm{q}));
-                tmp(Wm{q}) = T{q} .* res{q};
-                if flagW
-                    g_f2(W{q}) = g_f2(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
-                else
-                    g_f2 = g_f2 + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
-                end
-            elseif reduction_version == 2
-                if flagW
-                    g_f2(W{q}) = g_f2(W{q}) + H{q}' * (T{q} .* res{q});
-                else
-                    g_f2 = g_f2 + H{q}' * (T{q} .* res{q});
-                end
-            end
-        end
-        res_im = real(At(g_f2));
-            
-        fitswrite(xsol, ['results/xsol_ch32_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
-            'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
-        fitswrite(res_im, ['results/res_ch32_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
-            'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
-        save(['results/conv_dr_ch32_prec_it', num2str(t), '_gamma', num2str(gamma)...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
+%         g_f2 = zeros(No, 1);
+%         for q = 1 : R
+%             if reduction_version == 1   % H is self-adjoint in this case
+%                 tmp = zeros(size(Wm{q}));
+%                 tmp(Wm{q}) = T{q} .* res{q};
+%                 if flagW
+%                     g_f2(W{q}) = g_f2(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+%                 else
+%                     g_f2 = g_f2 + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+%                 end
+%             elseif reduction_version == 2
+%                 if flagW
+%                     g_f2(W{q}) = g_f2(W{q}) + H{q}' * (T{q} .* res{q});
+%                 else
+%                     g_f2 = g_f2 + H{q}' * (T{q} .* res{q});
+%                 end
+%             end
+%         end
+%         res_im = real(At(g_f2));
+%             
+%         fitswrite(xsol, ['results/xsol_ch32_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+%             'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
+%         fitswrite(res_im, ['results/res_ch32_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+%             'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
+%         save(['results/conv_dr_ch32_prec_it', num2str(t), '_gamma', num2str(gamma)...
+%             '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
     end
     fprintf('Time for iteration %i: %3.3f, Rel_error = %e \n',t, end_iter(t), rel_fval(t));
 %     norm_conv(t) = norm(xsol(:) - xstar(:));
@@ -538,33 +538,35 @@ for t = 1:param.max_iter
 %         weights_mat = weights_mat(:);
 %         sigma1 = 1/op_norm(@(x) weights_mat .* Psitw(x), @(x) Psiw(weights_mat .* x), [Ny, Nx], 1e-8, 200, 0);
         
-        % Calculate residual image
-        g_f2 = zeros(No, 1);
-        for q = 1 : R
-            if reduction_version == 1   % H is self-adjoint in this case
-                tmp = zeros(size(Wm{q}));
-                tmp(Wm{q}) = T{q} .* res{q};
-                if flagW
-                    g_f2(W{q}) = g_f2(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
-                else
-                    g_f2 = g_f2 + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
-                end
-            elseif reduction_version == 2
-                if flagW
-                    g_f2(W{q}) = g_f2(W{q}) + H{q}' * (T{q} .* res{q});
-                else
-                    g_f2 = g_f2 + H{q}' * (T{q} .* res{q});
+        if reweight_step_count == 0 || reweight_step_count == 1 || ~mod(reweight_step_count,5)
+            % Calculate residual image
+            g_f2 = zeros(No, 1);
+            for q = 1 : R
+                if reduction_version == 1   % H is self-adjoint in this case
+                    tmp = zeros(size(Wm{q}));
+                    tmp(Wm{q}) = T{q} .* res{q};
+                    if flagW
+                        g_f2(W{q}) = g_f2(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+                    else
+                        g_f2 = g_f2 + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+                    end
+                elseif reduction_version == 2
+                    if flagW
+                        g_f2(W{q}) = g_f2(W{q}) + H{q}' * (T{q} .* res{q});
+                    else
+                        g_f2 = g_f2 + H{q}' * (T{q} .* res{q});
+                    end
                 end
             end
+            res_im = real(At(g_f2));
+
+            fitswrite(xsol, ['results/xsol_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
+                '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
+            fitswrite(res_im, ['results/res_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
+                '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
+            save(['results/conv_dr_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
+                '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
         end
-        res_im = real(At(g_f2));
-        
-        fitswrite(xsol, ['results/xsol_ch32_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
-        fitswrite(res_im, ['results/res_ch32_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
-        save(['results/conv_dr_ch32_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(gamma)...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
        
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;

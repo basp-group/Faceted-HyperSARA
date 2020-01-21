@@ -57,7 +57,7 @@ end
 
 fprintf('Setting DWT mode ... \n');
 spmd
-    dwtmode('zpd');
+    dwtmode('per');
 end
 
 end

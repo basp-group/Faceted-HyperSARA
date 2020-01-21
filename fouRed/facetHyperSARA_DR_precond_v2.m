@@ -150,17 +150,10 @@ function [xsol,param,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
 % maxNumCompThreads(param.num_workers);
 
 % Variable flag for the case where W is present
-flagW = 0;
-if ~isempty(Wp)
-    flagW = 1;
-end
-
-% initialize monitoring variables (display active)
-norm_epsilon_check_c = Inf;
-norm_residual_check_c = 0;
- 
-norm_epsilon_check_a = Inf;
-norm_residual_check_a = 0;
+% flagW = 0;
+% if ~isempty(Wp)
+%     flagW = 1;
+% end
 
 %% -- TO BE MODIFIED
 % size of the oversampled Fourier space (vectorized)
@@ -522,11 +515,7 @@ for k = 1:K
 %     pU{k} = [];
     epsilonp{Q+k} = epsilon{k};
     epsilon{k} = [];
-    if param.use_adapt_eps
-        l2_upper_bound{Q+k} = param.l2_upper_bound{k};
-    else
-        l2_upper_bound{Q+k} = [];
-    end
+    l2_upper_bound{Q+k} = param.l2_upper_bound{k};
 end
 % if ~flagW
 %     W = [];
@@ -599,31 +588,32 @@ reweight_steps = param.reweight_steps;
 g_q = Composite();
 xsol_q = Composite();
 if init_flag
-%     for q = 1:Q
-%         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-%         g_q{q} = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-%     end
-    spmd
-       if labindex <= Qp.Value 
-           q = labindex;
-           xsol_q = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-           g_q = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-       end
+    for q = 1:Q
+        xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        g_q{q} = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
     end
-    
+%     spmd
+%        if labindex <= Qp.Value 
+%            q = labindex;
+%            xsol_q = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+%            g_q = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+%        end
+%     end
+    clear xsol
     fprintf('g uploaded \n\n')
 else
-%     for q = 1:Q
-%         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-%         g_q{q} = zeros([dims(q, :), c]);
-%     end
+    for q = 1:Q
+        xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        g_q{q} = zeros([dims(q, :), c]);
+    end
+    clear xsol
     % update weights [P.-A.: not really needed, even if taking the results
     % from Arwa]
     spmd
         if labindex <= Qp.Value
-            q = labindex;
-            xsol_q = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-            g_q = zeros([dims(q, :), c]);
+%             q = labindex;
+%             xsol_q = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+%             g_q = zeros([dims(q, :), c]);
             
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
@@ -681,7 +671,7 @@ for t = t_start : param.max_iter
                 labSend(xhat_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
             end
             
-            facet_update_t = tic;
+%             facet_update_t = tic;
             % update ghost cells (versions of xhat with overlap)
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
@@ -699,7 +689,7 @@ for t = t_start : param.max_iter
             
             % compute g_ for the final update term
             g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
-            fprintf('Iter = %i, Lab index = %i, facet node Time = %e\n',t,labindex,toc(facet_update_t));
+%             fprintf('Iter = %i, Lab index = %i, facet node Time = %e\n',t,labindex,toc(facet_update_t));
             
             % retrieve portions of g2 from the data nodes
             for i = 1:Kp.Value
@@ -716,11 +706,11 @@ for t = t_start : param.max_iter
             end
 %             fprintf('Iter = %i, Lab index = %i, retrieve_xhat_t Time = %e\n',t,labindex,toc(retrieve_xhat_t));
             
-            update_data_t = tic;
+%             update_data_t = tic;
             [v2_, g2, proj_, norm_res, norm_residual_check_ic, norm_epsilon_check_ic, norm_residual_check_ia, norm_epsilon_check_ia]...
                 = update_data_fidelity_dr_block_new(v2_, yp, xhat_i, proj_, Ap, Atp, Hp, Wp, Tp, Wmp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value, precondition, reduction_version, realdatablocks); % *_dr version when no blocking
-            fprintf('Iter = %i, Lab index = %i, update_data_t Time = %e\n',t,labindex,toc(update_data_t));
+%             fprintf('Iter = %i, Lab index = %i, update_data_t Time = %e\n',t,labindex,toc(update_data_t));
             
             % send portions of g2 to the prior/primal nodes
 %             send_g2_t = tic;
@@ -762,17 +752,19 @@ for t = t_start : param.max_iter
         res_ch_c(count) = sqrt(norm_residual_check_ic{i});
         norm_epsilon_check_c = norm_epsilon_check_c + norm_epsilon_check_ic{i};
         norm_residual_check_c = norm_residual_check_c + norm_residual_check_ic{i};
-        
         eps_ch_a(count) = sqrt(norm_epsilon_check_ia{i});
         res_ch_a(count) = sqrt(norm_residual_check_ia{i});
         norm_epsilon_check_a = norm_epsilon_check_a + norm_epsilon_check_ia{i};
         norm_residual_check_a = norm_residual_check_a + norm_residual_check_ia{i};
-        
+
         count = count + 1;
     end
+    norm_epsilon_check = sqrt(norm_epsilon_check_c + norm_epsilon_check_a);
+    norm_residual_check = sqrt(norm_residual_check_c + norm_residual_check_a);
+    
     norm_epsilon_check_c = sqrt(norm_epsilon_check_c);
     norm_residual_check_c = sqrt(norm_residual_check_c);
-    
+
     norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
     norm_residual_check_a = sqrt(norm_residual_check_a);
     
@@ -797,11 +789,13 @@ for t = t_start : param.max_iter
             l21 = l21 + l21_norm{q};
             nuclear = nuclear + nuclear_norm{q};
         end
+        
         %% --
         % Log
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
             fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+            fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
             fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
             fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
             for i = 1 : length(eps_ch_c)
@@ -840,8 +834,9 @@ for t = t_start : param.max_iter
     
     %% Global stopping criteria
     if t>1 && rel_fval(t) < param.rel_obj && reweight_step_count > param.total_reweights && ...
-            (norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c) && ...
-            (norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a)
+            (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
+%             (norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c) && ...
+%             (norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a)
         flag = 1;
         break;
     end
@@ -858,18 +853,29 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
+%     if (param.step_flag && rel_fval(t) < param.reweight_rel_obj && ...
+%             norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c && norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a && t > 300)
+%         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
+%         param.step_flag = 0;
+%     end
     if (param.step_flag && rel_fval(t) < param.reweight_rel_obj && ...
-            norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c && norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a && t > 300)
+            norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check && t > 300)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
     
+%     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
+%             (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
+%             t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr && ...
+%             norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c && ...
+%             norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a) || ...
+%             (param.use_reweight_eps && t - reweight_last_step_iter > param.rw_tol)
+        
     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
-            (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
-            t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr && ...
-            norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c && ...
-            norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a) || ...
-            (param.use_reweight_eps && t - reweight_last_step_iter > param.rw_tol)
+        (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
+        t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr && ...
+        norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check) || ...
+        (param.use_reweight_eps && t - reweight_last_step_iter > param.rw_tol)
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
         
@@ -900,6 +906,27 @@ for t = t_start : param.max_iter
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t;
         
+         % [05/01/2020] [P.-A.] is it really necessary to have both res and xsol on the mater node? ask Ming...
+        res = zeros(size(xsol));
+        for k = 1 : K
+            res(:,:,c_chunks{k}) = res_{Q+k};
+        end
+        
+        if (reweight_step_count >= param.total_reweights)
+            param.reweight_max_reweight_itr = t+1;
+            fprintf('\n\n No more reweights \n\n');
+            break;
+        end
+        
+        fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), ...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
+        
+        fitswrite(res, ['results/facethyper_res_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), ...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
+        
+        save(['results/facethyper_conv_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0),...
+            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.mat'], '-v7.3', 'rel_fval', 'end_iter')
+        
         %% -- CHANGED -- %%
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
@@ -922,55 +949,50 @@ for t = t_start : param.max_iter
             m.weights1 = cell(Q, 1);
             % Retrieve variables from workers
             % facet nodes
-            spmd
-               % indexing for g and xsol to be verified
-               if labindex <= Qp.Value 
-                   % facet nodes
-                   q = labindex;
-                   m.v0(labindex, 1) = {v0_};
-                   m.v1(labindex, 1) = {v1_};
-                   m.weights0(labindex, 1) = {weights0_};
-                   m.weights1(labindex, 1) = {weights1_};
-                   m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q;
-                   m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q;
-               else
-                   % data nodes
-                   k = labindex - Qp.Value;
-                   m.res(:,:,c_chunksp) = res_;
-                   m.v2(k,1) = {v2_};
-                   m.proj(k,1) = {proj_};
-                   m.t_block(k,1) = {t_block};
-                   m.epsilon(k,1) = {epsilonp};
-                   m.norm_res(k,1) = {norm_res};
-               end
-                
+            for q = 1:Q
+                m.v0(q,1) = v0_(q);
+                m.v1(q,1) = v1_(q);
+                m.weights0(q,1) = weights0_(q);
+                m.weights1(q,1) = weights1_(q);
+                m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+                m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
             end
+            % data nodes
+            for k = 1:K
+                m.res(:,:,c_chunks{k}) = res_{Q+k};
+                res_{Q+k} = [];
+                m.v2(k,1) = v2_(Q+k);
+                m.proj(k,1) = proj_(Q+k);
+                m.t_block(k,1) = t_block(Q+k);
+                m.epsilon(k,1) = epsilonp(Q+k);
+                m.norm_res(k,1) = norm_res(Q+k);
+            end
+            
+%             spmd
+%                % indexing for g and xsol to be verified
+%                if labindex <= Qp.Value 
+%                    % facet nodes
+%                    q = labindex;
+%                    m.v0(labindex, 1) = {v0_};
+%                    m.v1(labindex, 1) = {v1_};
+%                    m.weights0(labindex, 1) = {weights0_};
+%                    m.weights1(labindex, 1) = {weights1_};
+%                    m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q;
+%                    m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q;
+%                else
+%                    % data nodes
+%                    k = labindex - Qp.Value;
+%                    m.res(:,:,c_chunksp) = res_;
+%                    m.v2(k,1) = {v2_};
+%                    m.proj(k,1) = {proj_};
+%                    m.t_block(k,1) = {t_block};
+%                    m.epsilon(k,1) = {epsilonp};
+%                    m.norm_res(k,1) = {norm_res};
+%                end
+%                 
+%             end
             clear m
-        end 
-        
-        % [05/01/2020] [P.-A.] is it really necessary to have both res and xsol on the mater node? ask Ming...
-        res = zeros(size(xsol));
-        for k = 1 : K
-            res(:,:,c_chunks{k}) = res_{Q+k};
-        end 
-        for q = 1:Q
-            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
         end
-        
-        if (reweight_step_count >= param.total_reweights)
-            param.reweight_max_reweight_itr = t+1;
-            fprintf('\n\n No more reweights \n\n');
-            break;
-        end
-        
-        fitswrite(xsol, ['results/facethyper_xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), ...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
-        
-        fitswrite(res, ['results/facethyper_res_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0), ...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
-        
-        save(['results/facethyper_conv_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma), '_gamma0_', num2str(param.gamma0),...
-            '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.mat'], '-v7.3', 'rel_fval', 'end_iter')
         
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
@@ -1005,19 +1027,19 @@ end
 % Calculate residual images
 
 %% -- TO BE CHANGED --
-% res = zeros(size(xsol));
-% for k = 1 : K
-%     res(:,:,c_chunks{k}) = res_{Q+k};
-% end
-% norm_res_out = sqrt(sum(res(:).^2));
-
-spmd
-   if labindex > Qp.Value
-       norm_res_tmp = sqrt(sum((abs(res_(:)).^2)));
-       norm_res_tmp = gplus(norm_res_tmp, Qp.Value+1);
-   end
+res = zeros(size(xsol));
+for k = 1 : K
+    res(:,:,c_chunks{k}) = res_{Q+k};
 end
-norm_res_out = norm_res_tmp{Q+1};
+norm_res_out = sqrt(sum(res(:).^2));
+
+% spmd
+%    if labindex > Qp.Value
+%        norm_res_tmp = sqrt(sum((abs(res_(:)).^2)));
+%        norm_res_tmp = gplus(norm_res_tmp, Qp.Value+1);
+%    end
+% end
+% norm_res_out = norm_res_tmp{Q+1};
 
 % m = matfile(['./results/facetHyperSARA_dr_co_w_real' ...
 %               num2str(param.ind(1)), '_', num2str(param.ind(end)), '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
@@ -1103,6 +1125,9 @@ for i = Q+1:Q+K
     
     count = count + 1;
 end
+norm_epsilon_check = sqrt(norm_epsilon_check_c + norm_epsilon_check_a);
+norm_residual_check = sqrt(norm_residual_check_c + norm_residual_check_a);
+    
 norm_epsilon_check_c = sqrt(norm_epsilon_check_c);
 norm_residual_check_c = sqrt(norm_residual_check_c);
 
@@ -1114,12 +1139,14 @@ if (param.verbose > 0)
         fprintf('Solution found\n');
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
         fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
         fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
     else
         fprintf('Maximum number of iterations reached\n');
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
         fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
         fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
     end
