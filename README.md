@@ -1,4 +1,4 @@
-# Parallel faceted imaging in radio interferometry via proximal splitting
+# Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA)
 
 **Description:** Matlab codes associated with the method described in 
 
