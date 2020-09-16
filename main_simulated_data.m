@@ -39,7 +39,7 @@ function main_simulated_data(image_name, nchannels, Qx, Qy, Qc, p, input_snr, ..
 %        - 'weighted'
 %     ncores_data (int): number of cores handlig the data fidelity terms 
 %                        ("data cores"). The total number of cores is 
-%                        Qx*Qy + ncores_data
+%                        Qx*Qy + ncores_data + 1
 %     ind (int): index of the spectral facet to be reconstructed (set to -1
 %                to deactivate spectral faceting)
 %     overlap_size (int): number of overlapping pixels between contiguous 
@@ -369,7 +369,7 @@ end
     param_HSI.use_reweight_eps = 0;
     param_HSI.num_workers = Qx*Qy + ncores_data;
 
-    disp('Split L21 + Nuclear + wavelets')
+    disp('Faceted HyperSARA')
     disp('-----------------------------------------')
 
     % spectral tesselation (non-overlapping)
