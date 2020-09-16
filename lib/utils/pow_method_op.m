@@ -25,7 +25,7 @@ while ( cond >= epsilon && n < nmax)
     cond = norm(xnew(:) - x(:))  / norm(x(:));
         
     x = xnew;
-    x_norm =x/norm(x(:));
+    x_norm = x/norm(x(:));
 
     n = n+1 ;
     

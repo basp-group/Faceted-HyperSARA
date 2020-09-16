@@ -71,12 +71,6 @@ param_HSI.num_workers = size(chunks,1)+1;
 end
 param_HSI.num_workers 
 
-
-
-% clear all;
-% close all;
-% clc;
-
 addpath hypersara-sdwt2/simulated_data/Audrey/
 addpath hypersara-sdwt2/simulated_data/data/
 addpath hypersara-sdwt2/simulated_data/
@@ -209,8 +203,6 @@ for k = 1 : length(percentage)
     seed = 1;
     rng(seed);
     
-    %diary(['diary_HI_60_' num2str(percentage(k))]);
-    
     %% Generate or Load subsampling mask
     if generate_data
         Generate_data
@@ -239,11 +231,8 @@ for k = 1 : length(percentage)
     end
     
     %% Compute uncertainty quantification
-    
     if solve_minimization_UQ_HS
-        
         Solver_UQ_simulated_data_HS_crop
-        
     end
 end
 

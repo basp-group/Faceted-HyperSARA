@@ -1,11 +1,11 @@
-function [x0,X0] = Generate_cube(file_name,Ny,Nx,f,emission_lines)
-
+function [x0,X0] = Generate_cube(file_name,f,emission_lines)
 disp '/*----------------------------------------------------------------*/'
 disp ' example: Simulation of wide band radio interferometric data'
 disp '/*----------------------------------------------------------------*/'
 
 %% Input model image
 im=fitsread(file_name);
+[Ny, Nx] = size(im);
 % im=((imresize(im,[Ny,Nx],'nearest')));
 im=(im+abs(im))./2;% Enforce positivity
 im=im./max(im(:));
@@ -16,7 +16,7 @@ col = [22 3 192 180 191 218 148 173 81 141 104];
 row = [154 128 97 77 183 174 207 188 210 139 137];
 r = [18 47 30 53 21 48 15 40 17 35 71];
 
-n_src = length(col)
+n_src = length(col);
 S = zeros(Ny*Nx,n_src+1);
 imageSize = size(im);
 
@@ -64,9 +64,9 @@ beta =  [6 6 6 5 5 5 4 4 4 3 -10 5];
 c = length(f);
 %
 H = zeros(c,n_src);
-HI = ones(c,n_src);
 
 if emission_lines
+    HI = ones(c,n_src);
     k = 3;
     for i=1:n_src
         HI(k,i) = 2;
@@ -79,7 +79,7 @@ if emission_lines
     end
 end
 
-police={'-*b','-*b','-*b'}; %, '-or', '-dg', '-sc','.-m', '-+c', '-hb', '-dr','*g', 'sk', ' -.-y' , '-*b'};
+% police={'-*b','-*b','-*b'}; %, '-or', '-dg', '-sc','.-m', '-+c', '-hb', '-dr','*g', 'sk', ' -.-y' , '-*b'};
 
 %%
 
@@ -119,8 +119,8 @@ X0(X0<0) = 0;
 for i=1:size(X0,2)
     x0(:,:,i)=reshape(X0(:,i),[Ny,Nx]);
 end
-
-rank(X0)
+% 
+% rank(X0)
 
 % figure(3),imagesc(log10(max(X0,1e-3)));cb = colorbar; colormap jet; set(cb, 'fontsize', 22);
 % set(gcf, 'Position', [0 400 800 800]);

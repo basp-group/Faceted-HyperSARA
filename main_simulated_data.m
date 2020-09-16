@@ -5,7 +5,7 @@ format compact;
 
 flag_algo = 2; tot = 5; Qx = 2; Qy = 1; Qc = 1; ind = 1; img_size = 512;
 Qc2 = 1;
-T = 1500; % 1500, 3000
+T = 1500;
 hrs = 6;
 
 % select algorithm parameters
