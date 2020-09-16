@@ -116,7 +116,7 @@ f = linspace(1,2,nchannels);
 if generate_cube
     % frequency bandwidth from 1 to 2 GHz
     emission_lines = 0; % insert emission lines on top of the continuous spectra
-    [x0,X0] = Generate_cube_new(path_reference_cube,Ny,Nx,f,emission_lines);
+    [x0,X0] = Generate_cube(path_reference_cube,f,emission_lines);
     [Ny, Nx, nchannels] = size(x0);
     if generate_undersampled_cube
         % undersampling factor for the channels
@@ -196,11 +196,10 @@ for i = 1:nchannels
     nWw = ones(length(uw), 1);
     
     % set the blocks structure
-    [u1, v1, ~, uvidx, aW{i}, nW] = util_gen_block_structure(uw, vw, aWw, nWw, param_block_structure);
+    [u1, v1, ~, ~, aW{i}, nW] = util_gen_block_structure(uw, vw, aWw, nWw, param_block_structure);
     
     % measurement operator initialization
     fprintf('Initializing the NUFFT operator\n\n');
-    tstart = tic;
     [A, At, G{i}, W{i}] = op_p_nufft([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
 end
 
