@@ -10,8 +10,7 @@ with open(parameter_file_full_path, "r") as csvfile:
 
     for job in reader:
 
-        slurm_command = """sbatch --job-name={0} --ntasks-per-node={1} --time=10:00:00 \
-            --mail-type=ALL --mail-user=pierre-antoine.thouvenin@centralelille.fr \
+        slurm_command = """sbatch --job-name={0} --ntasks-per-node={1} \
             -e /lustre/home/sc004/pthouven/Faceted-Hyper-SARA/logs/{0}_Qx={2}_Qy={3}_Qc={4}_L={5}_p={6}_snr={7}.err \
             -o /lustre/home/sc004/pthouven/Faceted-Hyper-SARA/logs/{0}_Qx={2}_Qy={3}_Qc={4}_L={5}_p={6}_snr={7}.out \
             -v --export=ALL,imgname={0},Qx={2},Qy={3},Qc={4},nchannels={5},p={6},snr={7},\
