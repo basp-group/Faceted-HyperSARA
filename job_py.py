@@ -18,7 +18,7 @@ with open(parameter_file_full_path, "r") as csvfile:
             gencube={13},gencov={14},genvis={15},genundersampledcube={16}, \
             computenorm={16},solve={17}, \
             cubepath={18},covpath={19} \
-            run_hypersara.slurm""".format(*job)
+            run_faceted_hypersara.slurm""".format(*job)
 
         # print(slurm_command) # Uncomment this line when testing to view the sbatch command
 
