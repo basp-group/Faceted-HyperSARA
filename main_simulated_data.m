@@ -163,10 +163,10 @@ id = interleaved_facets(Qc, nchannels);
 if ind > 0
     x0 = x0(:,:,id{ind});
     nchannels = size(x0,3);
-    channels = 1:nchannels;
     f = f(id{ind});
     X0 = reshape(x0,Nx*Ny,nchannels);
 end
+channels = 1:nchannels;
 
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
@@ -283,7 +283,7 @@ if compute_operator_norm
     % Compute full measurement operator spectral norm
     F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
     Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-    Anorm = pow_method_op(F, Ft, [Ny Nx length(channels)]);
+    Anorm = pow_method_op(F, Ft, [Ny Nx nchannels]);
     save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
         '_L=',num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
 else
@@ -300,7 +300,7 @@ if generate_eps_nnls
     param_nnls.sol_steps = [inf]; % saves images at the given iterations
     param_nnls.beta = 1;
     % solve nnls per block
-    for i = channels
+    for i = 1:nchannels
         eps_b{i} = cell(length(G{i}),1);
         for j = 1 : length(G{i})
             % printf('solving for band %i\n\n',i)
