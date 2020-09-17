@@ -39,7 +39,7 @@ $HOME/matlab_wrapper_2019_fix \
 '"$algoversion"', '"$wintype"', "$ncdata", "$ind", "$overlapsize", \
 "$gencube", "$gencov", "$genvis", "$genundersampledcube", \
 "$computenorm", "$solve", \
-"$cubepath", "$covpath")" \
+'"$cubepath"', '"$covpath"')" \
 > logs/facethypersara_${img_name}_Qx=${Qx}_Qy=${Qy}_L=${nchannels}_p=${p}_snr=${snr}.log
 
 rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
