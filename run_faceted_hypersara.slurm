@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH --job-name=facet-hypersara
-#SBATCH --time=10:00:00
-## SBATCH --exclusive
+# #SBATCH --job-name=facet-hypersara
+# #SBATCH --time=10:00:00
+# #SBATCH --exclusive
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-## SBATCH --cpus-per-task=36
+# #SBATCH --cpus-per-task=36
 
-#SBATCH --mail-type=ALL # email notifications about the job: start, end, ...
-#SBATCH --mail-user=pierre-antoine.thouvenin@centralelille.fr
+# #SBATCH --mail-type=ALL # email notifications about the job: start, end, ...
+# #SBATCH --mail-user=pierre-antoine.thouvenin@centralelille.fr
 #SBATCH --account=ec110-guest
 # We use the "standard" partition as we are running on CPU nodes
 #SBATCH --partition=standard
