@@ -13,9 +13,9 @@ function rg = domain_decomposition_overlap2(nchunks, N, d)
 %-------------------------------------------------------------------------%
 %%
 % sanity check
-if (d > floor(N/nchunks))
-   error('Overlap greater than the dimension of a single non-redundant facet');
-end
+% if (d > floor(N/nchunks))
+%    error('Overlap greater than the dimension of a single non-redundant facet');
+% end
 
 % only extend the facet toward the left
 splits = round(linspace(0, N, nchunks + 1));
