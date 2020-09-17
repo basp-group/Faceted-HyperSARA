@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=facet_hypersara
+#SBATCH --job-name=facet-hypersara
 #SBATCH --time=10:00:00
 ## SBATCH --exclusive
 #SBATCH --nodes=1
