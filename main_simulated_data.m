@@ -171,7 +171,7 @@ end
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
     num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr),'.mat');
-results_name_function = @(nchannels) strcat('results_N=',num2str(Nx), ...
+results_name_function = @(nchannels) strcat('facetHyperSARA_', algo_version,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr),'.mat');
 
 data_name = data_name_function(nchannels);
@@ -276,47 +276,43 @@ end
 
 clear y0 Nm;
 
-%% Compute MAP estimator
-if solve_minimization
-    if compute_operator_norm
-        % Compute full measurement operator spectral norm
-        F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
-        Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-        Anorm = pow_method_op(F, Ft, [Ny Nx length(channels)]);
-        save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
-            '_L=',num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
-    else
-        load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
-            num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
-    end
+%% Compute operator norm
+if compute_operator_norm
+    % Compute full measurement operator spectral norm
+    F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
+    Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
+    Anorm = pow_method_op(F, Ft, [Ny Nx length(channels)]);
+    save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
+        '_L=',num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
+else
+    load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
+        num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
 end
-        
     
-    %% Generate initial epsilons by performing imaging with NNLS on each data block separately
-    if generate_eps_nnls
-        % param_nnls.im = im; % original image, used to compute the SNR
-        param_nnls.verbose = 2; % print log or not
-        param_nnls.rel_obj = 1e-5; % stopping criterion
-        param_nnls.max_iter = 1000; % max number of iterations
-        param_nnls.sol_steps = [inf]; % saves images at the given iterations
-        param_nnls.beta = 1;
-        % solve nnls per block
-        for i = channels
-            eps_b{i} = cell(length(G{i}),1);
-            for j = 1 : length(G{i})
-                % printf('solving for band %i\n\n',i)
-                [~,eps_b{i}{j}] = fb_nnls_blocks(yb{i}{j}, A, At, G{i}{j}, W{i}{j}, param_nnls);
-            end
+%% Generate initial epsilons by performing imaging with NNLS on each data block separately
+if generate_eps_nnls
+    % param_nnls.im = im; % original image, used to compute the SNR
+    param_nnls.verbose = 2; % print log or not
+    param_nnls.rel_obj = 1e-5; % stopping criterion
+    param_nnls.max_iter = 1000; % max number of iterations
+    param_nnls.sol_steps = [inf]; % saves images at the given iterations
+    param_nnls.beta = 1;
+    % solve nnls per block
+    for i = channels
+        eps_b{i} = cell(length(G{i}),1);
+        for j = 1 : length(G{i})
+            % printf('solving for band %i\n\n',i)
+            [~,eps_b{i}{j}] = fb_nnls_blocks(yb{i}{j}, A, At, G{i}{j}, W{i}{j}, param_nnls);
         end
-        if save_data
-            mkdir('data/')
-            save('data/eps.mat','-v7.3', 'eps_b');
-        end
-    elseif load_data
-        load('data/eps.mat');
     end
-    
-    %% Definition of the SARA dictionary
+    mkdir('data/')
+    save('data/eps.mat','-v7.3', 'eps_b');
+    % load('data/eps.mat');
+end
+
+%% Solver
+if solve_minimization
+    % Definition of the SARA dictionary
     nlevel = 4; % depth of the wavelet decompositions
     %! always specify Dirac basis ('self') in last position if used in the
     %! SARA dictionary 
@@ -359,8 +355,7 @@ end
     param_HSI.elipse_proj_min_iter = 1; % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid   
     
-    %% HyperSARA-sdwt2 (split L21 + nuclear norms + wavelets) 
-        
+    %% faceted HyperSARA
     param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator A*G
     param_HSI.reweight_alpha_ff = 0.9;
     param_HSI.reweight_abs_of_max = 0.005;
@@ -457,8 +452,8 @@ end
     save(fullfile(results_path, results_name),'-v7.3','xsol', 'X0', ...
         'param', 'epsilon', 'rel_fval', 'nuclear', 'l21', 'norm_res_out', ...
         'end_iter', 'time_iter_average', 'snr_x', 'snr_x_average');
-    fitswrite(xsol,strcat(results_path, 'x_hyperSARA_', alg_version, ...
-        '_', algo_version, '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-        '_Qc=', num2str(Qc), '.fits'))
+    fitswrite(xsol,strcat(results_path, 'x_hyperSARA_', algo_version, ...
+        '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
+        '.fits'))
     
 end
