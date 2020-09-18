@@ -1,4 +1,4 @@
-function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
+function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA_cst_overlap(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
     L, nlevel, c_chunks, c, d, init_file_name)
@@ -23,7 +23,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 %
 %   general
 %   > .verbose           print log or not
-%   > .rel_obj   (1e-5)  stopping criterion
+%   > .rel_var   (1e-5)  stopping criterion
 %   > .max_iter (10000)  max number of iterations
 %
 %   convergence
@@ -40,9 +40,10 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 %   > .reweight_steps = [5000: param_HSI.reweight_step_size :10000];
 %   > .step_flag = 1;
 %   > .use_reweight_eps   (false)    reweighting w.r.t the relative change of the solution
-%   > .reweight_max_reweight_itr     param_HSI.max_iter - param_HSI.reweight_step_size;
-%   > .reweight_rel_obj   (1e-4)     criterion for performing reweighting
-%   > .reweight_min_steps_rel_obj (300) minimum number of iterations between consecutive reweights
+%   > .reweight_rel_var   (1e-4)     criterion for performing reweighting
+%   > .reweight_min_steps_rel_var (300) minimum number of iterations between consecutive reweights
+%   > .sig                           noise level (wavelet space)
+%   > .sig_bar                       noise level (singular value space)
 %
 %   projection onto ellipsoid (preconditioning)
 %   > .elipse_proj_max_iter (20)     max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
@@ -55,7 +56,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 %   > .adapt_eps_tol_in (0.99)       tolerance inside the l2 ball
 %   > .adapt_eps_tol_out (1.001)     tolerance outside the l2 ball
 %   > .adapt_eps_steps (100)         min num of iter between consecutive updates
-%   > .adapt_eps_rel_obj (5e-4)      bound on the relative change of the solution
+%   > .adapt_eps_rel_var (5e-4)      bound on the relative change of the solution
 %   > .adapt_eps_change_percentage  (0.5*(sqrt(5)-1)) weight of the update w.r.t the l2 norm of the residual data
 %
 %
@@ -88,7 +89,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 % < reweight_alpha  last value of the reweigthing parameter [1]
 % < epsilon         updated value of th l2-ball radii {...}
 % < t               index of the last iteration step [1]
-% < rel_fval        relative variation
+% < rel_val        relative variation
 % < nuclear         value of the faceted nuclear norm
 % < l21             value of the l21 regularization term
 % < norm_res_out    norm of the reidual image 
@@ -327,7 +328,7 @@ elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
 adapt_eps_tol_in = parallel.pool.Constant(param.adapt_eps_tol_in);
 adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
 adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
-adapt_eps_rel_obj = parallel.pool.Constant(param.adapt_eps_rel_obj);
+adapt_eps_rel_var = parallel.pool.Constant(param.adapt_eps_rel_var);
 adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
 
 Ap = Composite();
@@ -435,13 +436,14 @@ rw_counts = 1;
 
 %% Reweighting parameters
 
+sig_bar = param.sig_bar;
+sig = param.sig;
 reweight_alpha = param.reweight_alpha;
 reweight_alphap = Composite();
 for q = 1:Q
     reweight_alphap{q} = reweight_alpha;
 end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
-reweight_steps = param.reweight_steps;
 
 g_q = Composite();
 xsol_q = Composite();
@@ -477,7 +479,7 @@ beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
 % Variables for the stopping criterion
 flag = 0;
-rel_fval = zeros(param.max_iter, 1);
+rel_val = zeros(param.max_iter, 1);
 end_iter = zeros(param.max_iter, 1);
 
 if isfield(param, 'init_t_start')
@@ -560,7 +562,7 @@ for t = t_start : param.max_iter
         rel_x = rel_x + rel_x_q{q};
         norm_x = norm_x + norm_x_q{q};
     end
-    rel_fval(t) = sqrt(rel_x/norm_x);
+    rel_val(t) = sqrt(rel_x/norm_x);
     end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
@@ -626,7 +628,7 @@ for t = t_start : param.max_iter
         % Log
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
-            fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+            fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
             fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
@@ -636,32 +638,27 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    if t>1 && rel_fval(t) < param.rel_obj && reweight_step_count > param.total_reweights && ...
+    if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
             (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
         flag = 1;
         break;
     end
     
     %% Update epsilons (in parallel)
-    if param.use_adapt_eps && t > param.adapt_eps_start
+    if param.use_adapt_eps && (t > param.adapt_eps_start) && (rel_val(t) < param.adapt_eps_rel_var)
         spmd
             if labindex > Qp.Value
-                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_fval(t), norm_res, ...
-                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_obj.Value, ...
+                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_val(t), norm_res, ...
+                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_var.Value, ...
                     adapt_eps_change_percentage.Value);
             end
         end
     end
     
-    %% Reweighting (in parallel)
-    if (param.step_flag && t>500) %rel_fval(t) < param.reweight_rel_obj)
-        reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
-        param.step_flag = 0;
-    end
-    
-    if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
-            (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
-            t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr)
+    %% Reweighting (in parallel)    
+    if (param.use_reweight_steps && (rel_val(t) < param.reweight_rel_var) && ...
+        (reweight_step_count <= param.total_reweights) && ...
+        (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check))
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
@@ -687,15 +684,15 @@ for t = t_start : param.max_iter
 
                 [weights1_, weights0_] = update_weights_cst_overlap(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
-                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap, crop);
+                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap, crop, sig, sig_bar);
                 
-                reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
+                reweight_alphap = max(reweight_alpha_ffp.Value*reweight_alphap, 1);
             else
                 % compute residual image on the data nodes
                 res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
             end
         end
-        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
+        reweight_alpha = max(param.reweight_alpha_ff.*reweight_alpha, 1); % on the master node
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
@@ -870,19 +867,19 @@ if (param.verbose > 0)
     if (flag == 1)
         fprintf('Solution found\n');
         fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
         fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
         fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     else
         fprintf('Maximum number of iterations reached\n');
         fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
         fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
         fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
 end
 
 end_iter = end_iter(end_iter > 0);
-rel_fval = rel_fval(1:numel(end_iter));
+rel_val = rel_val(1:numel(end_iter));
 
 end

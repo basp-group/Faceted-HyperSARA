@@ -1,6 +1,6 @@
 function [weights1, weights0] = update_weights_overlap_weigthed(x_overlap, size_v1, ...
     I, offset, status, nlevel, wavelet, Ncoefs, dims_overlap_ref, ...
-    offsetL, offsetR, reweight_alpha, w)
+    offsetL, offsetR, reweight_alpha, w,sig, sig_bar)
 %update_weights_overlap_weighted: update the weights involved in the 
 % reweighting procedure applied to the faceted l21 and nuclear norms, 
 % acting on the same facet definition. This version includes the spatial 
@@ -30,6 +30,8 @@ function [weights1, weights0] = update_weights_overlap_weigthed(x_overlap, size_
 % > w                       spatial weights applied to the facet nuclear
 %                           norm (same size as x_overlap after cropping by 
 %                           crop_nuclear)
+% > sig                     noise level (wavelet space) [1]
+% > sig_bar                 noise level (singular value space) [1]
 %
 % Output:
 %
@@ -42,7 +44,7 @@ function [weights1, weights0] = update_weights_overlap_weigthed(x_overlap, size_
 % Motivation: for loops are slow in spmd if not encapsulated in a function.
 %%
 % Code: P.-A. Thouvenin.
-% Last revised: [08/08/2019]
+% Last revised: [18/09/2020]
 %-------------------------------------------------------------------------%
 %%
 
@@ -50,7 +52,8 @@ function [weights1, weights0] = update_weights_overlap_weigthed(x_overlap, size_
 sol = reshape(x_overlap.*w, [prod(dims_overlap_ref), size(x_overlap, 3)]);
 [~,S00,~] = svd(sol,'econ');
 d0 = abs(diag(S00));
-weights0 = reweight_alpha ./ (reweight_alpha + d0);
+upsilon_bar = sig_bar*reweight_alpha;
+weights0 = upsilon_bar ./ (upsilon_bar + d0);
 
 % l21 norm
 zerosNum = dims_overlap_ref + offsetL + offsetR; % offset for the zero-padding
@@ -61,6 +64,7 @@ for l = 1 : size(x_, 3)
     u(:, l) = sdwt2_sara(x_(:, :, l), I, offset, status, nlevel, wavelet, Ncoefs);
 end
 d1 = sqrt(sum(abs((u)).^2,2));
-weights1 = reweight_alpha ./ (reweight_alpha + d1);
+upsilon = sig*reweight_alpha;
+weights1 = upsilon ./ (upsilon + d1);
 
 end

@@ -20,7 +20,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 %
 %   general
 %   > .verbose           print log or not
-%   > .rel_obj   (1e-5)  stopping criterion
+%   > .rel_var   (1e-5)  stopping criterion
 %   > .max_iter (10000)  max number of iterations
 %
 %   convergence
@@ -38,8 +38,10 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 %   > .step_flag = 1;
 %   > .use_reweight_eps   (false)    reweighting w.r.t the relative change of the solution
 %   > .reweight_max_reweight_itr     param_HSI.max_iter - param_HSI.reweight_step_size;
-%   > .reweight_rel_obj   (1e-4)     criterion for performing reweighting
-%   > .reweight_min_steps_rel_obj (300) minimum number of iterations between consecutive reweights
+%   > .reweight_rel_var   (1e-4)     criterion for performing reweighting
+%   > .reweight_min_steps_rel_var (300) minimum number of iterations between consecutive reweights
+%   > .sig                           noise level (wavelet space)
+%   > .sig_bar                       noise level (singular value space)
 %
 %   projection onto ellipsoid (preconditioning)
 %   > .elipse_proj_max_iter (20)     max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
@@ -52,7 +54,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 %   > .adapt_eps_tol_in (0.99)       tolerance inside the l2 ball
 %   > .adapt_eps_tol_out (1.001)     tolerance outside the l2 ball
 %   > .adapt_eps_steps (100)         min num of iter between consecutive updates
-%   > .adapt_eps_rel_obj (5e-4)      bound on the relative change of the solution
+%   > .adapt_eps_rel_var (5e-4)      bound on the relative change of the solution
 %   > .adapt_eps_change_percentage  (0.5*(sqrt(5)-1)) weight of the update w.r.t the l2 norm of the residual data
 %
 %
@@ -294,7 +296,7 @@ elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
 adapt_eps_tol_in = parallel.pool.Constant(param.adapt_eps_tol_in);
 adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
 adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
-adapt_eps_rel_obj = parallel.pool.Constant(param.adapt_eps_rel_obj);
+adapt_eps_rel_var = parallel.pool.Constant(param.adapt_eps_rel_var);
 adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
 
 Ap = Composite();
@@ -588,32 +590,27 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    if t>1 && rel_fval(t) < param.rel_obj && reweight_step_count > param.total_reweights && ...
+    if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
             (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
         flag = 1;
         break;
     end
     
     %% Update epsilons (in parallel)
-    if param.use_adapt_eps && t > param.adapt_eps_start
+    if param.use_adapt_eps && (t > param.adapt_eps_start) && (rel_val(t) < param.adapt_eps_rel_var)
         spmd
             if labindex > Qp.Value
-                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_fval(t), norm_res, ...
-                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_obj.Value, ...
+                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_val(t), norm_res, ...
+                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_var.Value, ...
                     adapt_eps_change_percentage.Value);
             end
         end
     end
     
     %% Reweighting (in parallel)
-    if (param.step_flag && t>500) %rel_fval(t) < param.reweight_rel_obj)
-        reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
-        param.step_flag = 0;
-    end
-    
-    if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
-            (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
-            t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr)
+    if (param.use_reweight_steps && (rel_val(t) < param.reweight_rel_var) && ...
+        (reweight_step_count <= param.total_reweights) && ...
+        (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check))
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 

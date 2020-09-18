@@ -337,12 +337,16 @@ if solve_minimization
     [~,S0,~] = svd(reshape(dirty_image, [Nx*Ny, nchannels]),'econ');
     nuclear_norm = sum(abs(diag(S0)));
     
+    %TODO: do it directly in parallel with faceted SARA
+    dwtmode('zpd')
     [~, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-    Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,length(wlt_basis));
+    [~, s] = n_wavelet_coefficients(L(1:end-1), [Ny, Nx], 'zpd', nlevel);
+    s = s+N; % total number of SARA coefficients
+    Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,s);
     %! the number of elements reported below is only valid for the periodic
     %('per') boundary condition (implicitly assumed to be used in HS_forward_sparsity)
     % TODO: enable other different boundary conditions
-    l21_norm = sum(sqrt(sum(reshape(Psit_full(dirty_image), [length(wlt_basis)*Nx*Ny, nchannels]).^2, 2))); 
+    l21_norm = sum(sqrt(sum(Psit_full(dirty_image).^2, 2))); 
     mu = nuclear_norm/l21_norm;
     clear dirty_image l21_norm nuclear_norm
     
@@ -385,7 +389,7 @@ if solve_minimization
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
     param_HSI.adapt_eps_tol_out = 1.001; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
-    param_HSI.adapt_eps_rel_obj = 5e-4; % bound on the relative change of the solution
+    param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
     
     param_HSI.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
@@ -401,8 +405,8 @@ if solve_minimization
     
     param_HSI.use_reweight_eps = 0; % reweighting w.r.t the relative change of the solution
     param_HSI.reweight_max_reweight_itr = param_HSI.max_iter - param_HSI.reweight_step_size;
-    param_HSI.reweight_rel_obj = 1e-4; 5e-4; % criterion for performing reweighting
-    param_HSI.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
+    param_HSI.reweight_rel_var = 1e-4; 5e-4; % criterion for performing reweighting
+    param_HSI.reweight_min_steps_rel_var = 300; % min num of iter between reweights
     
     param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_min_iter = 1; % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
