@@ -68,7 +68,7 @@ function main_simulated_data(image_name, nchannels, Qx, Qy, Qc, p, input_snr, ..
 % max_iter
 % max_reweight
 
-%% PARAMETERS FOR DEBUGGING/TESTING
+%% PARAMETERS FOR DEBUGGING
 
 % image_name = 'W28_512';
 % nchannels = 60; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
@@ -81,19 +81,21 @@ function main_simulated_data(image_name, nchannels, Qx, Qy, Qc, p, input_snr, ..
 % window_type = 'triangular';
 % ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index from "spectral" facet
-% generate_cube = true;
-% generate_coverage = true;
-% generate_visibilities = true;
+% generate_cube = false;
+% generate_coverage = false;
+% generate_visibilities = false;
 % generate_undersampled_cube = true; % Default 15 channels cube with line emissions
-% compute_operator_norm = true;
+% compute_operator_norm = false;
 % solve_minimization = true;
 % cube_path = strcat('data/', image_name, '_L', num2str(nchannels));
 % coverage_path = 'data/uv_coverage_p=1';
 % 
-% if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
-%     nlevel = 4;
-%     overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
-% end
+% % if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
+% %     nlevel = 4;
+% %     overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
+% % end
+% 
+% overlap_size = 256;
 
 %%
 format compact;
@@ -155,6 +157,7 @@ else
     X0 = fitsread(cube_path).';
     Nx = sqrt(size(X0, 1));
     Ny = Nx;
+    nchannels = size(X0, 2);
     x0 = reshape(X0, [Ny, Nx, nchannels]);
 end
 
@@ -390,6 +393,7 @@ if solve_minimization
     param_HSI.ind = 0;
 
     clear y epsilon aW W G
+    %%
 
     switch algo_version            
         case 'standard' 
