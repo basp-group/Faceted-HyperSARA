@@ -97,6 +97,8 @@ function main_simulated_data(image_name, nchannels, Qx, Qy, Qc, p, input_snr, ..
 % 
 % overlap_size = 256;
 
+% TODO: add warm-restart for this version of the main script
+
 %%
 format compact;
 
@@ -174,7 +176,7 @@ channels = 1:nchannels;
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
     num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr),'.mat');
-results_name_function = @(nchannels) strcat('facetHyperSARA_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
+results_name_function = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels),'_p=',num2str(p), ...
     '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
     '_snr=', num2str(input_snr),'.mat');
@@ -298,7 +300,7 @@ end
 if generate_eps_nnls
     % param_nnls.im = im; % original image, used to compute the SNR
     param_nnls.verbose = 2; % print log or not
-    param_nnls.rel_obj = 1e-5; % stopping criterion
+    param_nnls.rel_obj = 1e-3; % stopping criterion
     param_nnls.max_iter = 1000; % max number of iterations
     param_nnls.sol_steps = [inf]; % saves images at the given iterations
     param_nnls.beta = 1;
@@ -324,37 +326,81 @@ if solve_minimization
     wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; 
     L = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
     
+    % estimate mu: ratio between nuclear and l21 norm priors applied to
+    % the dirty image
+    dirty_image = zeros([Ny, Nx, nchannels]);
+    for l = 1:nchannels
+        temp = zeros(oy*Ny*ox*Nx, 1);
+        for b = 1:numel(G{l})
+            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * (sqrt(aW{l}{b}) .* y{l}{b});
+        end
+        dirty_image(:,:,l) = At(temp);
+    end
+    [~,S0,~] = svd(reshape(dirty_image, [Nx*Ny, nchannels]),'econ');
+    nuclear_norm = sum(abs(diag(S0)));
+    
+    %TODO: do it directly in parallel with faceted SARA
+    dwtmode('zpd')
+    [~, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
+    [~, s] = n_wavelet_coefficients(L(1:end-1), [Ny, Nx], 'zpd', nlevel);
+    s = s+N; % total number of SARA coefficients
+    Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,s);
+    %! the number of elements reported below is only valid for the periodic
+    %('per') boundary condition (implicitly assumed to be used in HS_forward_sparsity)
+    % TODO: enable other different boundary conditions
+    l21_norm = sum(sqrt(sum(Psit_full(dirty_image).^2, 2))); 
+    mu = nuclear_norm/l21_norm;
+    clear dirty_image l21_norm nuclear_norm
+    
+    % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
+    % SARA space) involved in the reweighting scheme
+    B = zeros(size(X0));
+    id_center = floor([Ny, Nx]/2) + 1;
+    dirac = zeros(Ny, Nx);
+    dirac(id_center) = 1;
+    AD = A(dirac);
+    be = zeros(nchannels, 1);
+    for l = 1:nchannels
+        temp = zeros(oy*Ny*ox*Nx, 1);
+        z = zeros(oy*Ny*ox*Nx, 1);
+        for b = 1:numel(y{l})
+            noise = (randn(size(y{l}{b})) + 1i*randn(size(y{l}{b})))/sqrt(2);
+            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * (sqrt(aW{l}{b}) .* noise);
+            z(W{l}{b}) = z(W{l}{b}) + G{l}{b}' * (sqrt(aW{l}{b}) .* (sqrt(aW{l}{b}).*(G{l}{b} * AD(W{l}{b}))) );  
+        end
+        B(:,l) = reshape(At(temp),[Ny*Nx,1]);
+        be(l) = max(reshape(At(z),[Ny*Nx,1]));     
+    end
+    B = B/max(be);
+    [~ ,S0,~] = svd(B,'econ');
+    sig = std(diag(S0));
+    sig_bar = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nchannels])).^2,2)));
+    clear B S0 be z temp AD dirac id_center Psitw Psit_full Psi1 Psit1
+    
     %% HSI parameter structure sent to the  HSI algorithm
     param_HSI.verbose = 2; % print log or not
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.gamma0 = 1;
-    param_HSI.gamma = 1e-2;  %convergence parameter L1 (soft th parameter)
-    param_HSI.rel_obj = 1e-5; % stopping criterion
+    param_HSI.gamma = mu;  %convergence parameter L1 (soft th parameter)
+    param_HSI.rel_obj = 1e-6; % stopping criterion
     param_HSI.max_iter = 10000; % max number of iterations
     
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
-    param_HSI.adapt_eps_start = 200; % minimum num of iter before stating adjustment
+    param_HSI.adapt_eps_start = 250; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
-    param_HSI.adapt_eps_tol_out = 1.001; % tolerance outside the l2 ball
+    param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
-    param_HSI.adapt_eps_rel_obj = 5e-4; % bound on the relative change of the solution
-    param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
+    param_HSI.adapt_eps_rel_var = 1e-4; % bound on the relative change of the solution
+    param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
     param_HSI.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
-    param_HSI.reweight_alpha_ff = 0.9;
+    param_HSI.reweight_alpha_ff = 0.5;
     param_HSI.total_reweights = 30; % -1 if you don't want reweighting
-    param_HSI.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
-    
-    param_HSI.use_reweight_steps = 1; % reweighting by fixed steps
-    param_HSI.reweight_step_size = 300; % reweighting step size
-    param_HSI.reweight_steps = (5000: param_HSI.reweight_step_size :10000);
-    param_HSI.step_flag = 1;
-    
-    param_HSI.use_reweight_eps = 0; % reweighting w.r.t the relative change of the solution
-    param_HSI.reweight_max_reweight_itr = param_HSI.max_iter - param_HSI.reweight_step_size;
-    param_HSI.reweight_rel_obj = 1e-4; 5e-4; % criterion for performing reweighting
-    param_HSI.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
+    param_HSI.sig = sig; % estimate of the noise level in SARA space
+    param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
+    param_HSI.use_reweight_steps = 1; % use reweighting steps
+    param_HSI.reweight_rel_var = 1e-6; % criterion for performing reweighting
     
     param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_min_iter = 1; % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
@@ -362,11 +408,8 @@ if solve_minimization
     
     %% faceted HyperSARA
     param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator A*G
-    param_HSI.reweight_alpha_ff = 0.9;
-    param_HSI.reweight_abs_of_max = 0.005;
-    param_HSI.use_reweight_steps = 1;
-    param_HSI.total_reweights = 30;
-    param_HSI.use_reweight_eps = 0;
+%     param_HSI.use_reweight_steps = 1;
+%     param_HSI.use_reweight_eps = 0;
     param_HSI.num_workers = Qx*Qy + ncores_data;
 
     disp('Faceted HyperSARA')
@@ -458,7 +501,7 @@ if solve_minimization
     save(fullfile(results_path, results_name),'-v7.3','xsol', 'X0', ...
         'param', 'epsilon', 'rel_fval', 'nuclear', 'l21', 'norm_res_out', ...
         'end_iter', 'time_iter_average', 'snr_x', 'snr_x_average');
-    fitswrite(xsol,strcat(results_path, 'x_hyperSARA_', algo_version, ...
+    fitswrite(xsol,strcat(results_path, 'x_fhs_', algo_version, ...
         '_', window_type, ...
         '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
         '.fits'))
