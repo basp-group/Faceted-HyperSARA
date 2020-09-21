@@ -32,6 +32,6 @@ x = x(1:N(1), 1:N(2));
 
 
 % rescale
-x = (No(1) * No(2)) * x .* iscale;
+x = (No(1) * No(2)) * real(x .* iscale);
 
 end

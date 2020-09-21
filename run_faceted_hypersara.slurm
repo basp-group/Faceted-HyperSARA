@@ -23,7 +23,7 @@ mkdir logs
 module load matlab/R2019a  # version to be checked on cirrus
 
 mkdir $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
-# cp -R ../nufft ../nufft_$SLURM_JOB_ID
+cp -R $SLURM_SUBMIT_DIR/lib/nufft $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID
 export MATLAB_PREFDIR=$SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 
 # Matlab option to deactivate threading
@@ -43,4 +43,4 @@ $HOME/matlab_wrapper_2019_fix \
 > logs/facethypersara_${img_name}_Qx=${Qx}_Qy=${Qy}_L=${nchannels}_p=${p}_snr=${snr}.log
 
 rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
-# rm -r ../nufft_$SLURM_JOB_ID
+rm -r $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID

@@ -97,7 +97,7 @@ function main_simulated_data(image_name, nchannels, Qx, Qy, Qc, p, input_snr, ..
 % 
 % overlap_size = 256;
 % 
-% % TODO: add warm-restart for this version of the main script
+% % % TODO: add warm-restart for this version of the main script
 
 %%
 format compact;
@@ -396,7 +396,7 @@ if solve_minimization
     
     param_HSI.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_HSI.reweight_alpha_ff = 0.5;
-    param_HSI.total_reweights = 30; % -1 if you don't want reweighting
+    param_HSI.total_reweights = -1; %30; % -1 if you don't want reweighting
     param_HSI.sig = sig; % estimate of the noise level in SARA space
     param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
     param_HSI.use_reweight_steps = 1; % use reweighting steps
@@ -408,8 +408,6 @@ if solve_minimization
     
     %% faceted HyperSARA
     param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator A*G
-%     param_HSI.use_reweight_steps = 1;
-%     param_HSI.use_reweight_eps = 0;
     param_HSI.num_workers = Qx*Qy + ncores_data;
 
     disp('Faceted HyperSARA')
