@@ -1,1 +1,1 @@
-M31,4,2,1,1,60,1,60,cst_weighted,triangular,1,1,128,1,1,1,1,1,1,./data/W28_N=256_L=15.fits,./uv_model_N=256_p=1.fits
+W28_1024_m39,32,4,4,1,80,0.5,60,cst_weighted,triangular,20,1,128,1,1,1,1,1,1,./data/W28_m39_N=1024_L=20.fits,./uv_model_N=1024_p=05.fits
