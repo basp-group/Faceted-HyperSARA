@@ -1,6 +1,6 @@
 function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA_no_overlap(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    L, nlevel, c_chunks, c, init_file_name)
+    L, nlevel, c_chunks, c, init_file_name, name)
 %facetHyperSARA_no_overlap: faceted HyperSARA
 %
 % version without overlap for the facet nuclear norms.
@@ -652,9 +652,9 @@ for t = t_start : param.max_iter
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
             mkdir('./results/')
-            m = matfile(['./results/facetHyperSARA_no_' ...
-                num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
-                'Writable', true);
+            m = matfile(['./results/facetHyperSARA_no_', name, '_', ...
+              num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+              'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
             m.g = zeros(size(xsol));
@@ -726,7 +726,7 @@ spmd
 end
 
 
-m = matfile(['./results/facetHyperSARA_no_' ...
+m = matfile(['./results/facetHyperSARA_no_', name, '_', ...
               num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
 m.param = param;
