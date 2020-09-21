@@ -1,7 +1,7 @@
 function main_simulated_data(image_name, nchannels, Qx, Qy, Qc, p, input_snr, ...
     algo_version, window_type, ncores_data, ind, overlap_size, ...
-    generate_cube, generate_coverage, generate_visibilities, generate_undersampled_cube, ...
-    compute_operator_norm, solve_minimization, ...
+    flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
+    flag_computeOperatorNorm, flag_solveMinimization, ...
     cube_path, coverage_path)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
@@ -45,20 +45,20 @@ function main_simulated_data(image_name, nchannels, Qx, Qy, Qc, p, input_snr, ..
 %     overlap_size (int): number of overlapping pixels between contiguous 
 %                         facets (only active for  the 'cst' and 
 %                         'cst_overlap' versions of the solver)
-%     generate_cube (bool): flag specifying whether the ground truth image 
+%     flag_generateCube (bool): flag specifying whether the ground truth image 
 %                           cube needs to be generated or loaded from an 
 %                           existing .fits file
-%     generate_coverage (bool): flag specifying whether the uv-coverage 
+%     flag_generateCoverage (bool): flag specifying whether the uv-coverage 
 %     needs to be generated or loaded from an existing .fits file
-%     generate_visibilities (bool): flag specifying whether the 
+%     flag_generateVisibilities (bool): flag specifying whether the 
 %     visibilities need to be generated or loaded from an existing .mat 
 %     file
-%     generate_undersampled_cube (bool): flag to generate an undersampled 
+%     flag_generateUndersampledCube (bool): flag to generate an undersampled 
 %     version (by a factor 4) of the ground-truth wideband image cube
-%     compute_operator_norm (bool): compute norm of the measurement 
+%     flag_computeOperatorNorm (bool): compute norm of the measurement 
 %     operator, or load it from an existing .mat file (e.g., computed from 
 %     a previous run)
-%     solve_minimization (bool): flag triggering the faceted HyperSARA 
+%     flag_solveMinimization (bool): flag triggering the faceted HyperSARA 
 %     solver
 %     cube_path (string): path and name of the wideband cube .fits file 
 %     (w/o file extension)
@@ -108,9 +108,9 @@ disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
 disp(['Number of data points p per frequency (as a fraction of image size): ', num2str(p)]);
 disp(['Input SNR: ', num2str(input_snr)]);
-disp(['Generating image cube: ', num2str(generate_cube)]);
-disp(['Generating coverage: ', num2str(generate_coverage)]);
-disp(['Generating visibilities: ', num2str(generate_visibilities)]);
+disp(['Generating image cube: ', num2str(flag_generateCube)]);
+disp(['Generating coverage: ', num2str(flag_generateCoverage)]);
+disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
 
 addpath lib/generate_data/
 addpath lib/operators/
@@ -143,12 +143,12 @@ save_data = true;
 
 %% Generate/load ground-truth image cube
 f = linspace(1,2,nchannels);
-if generate_cube
+if flag_generateCube
     % frequency bandwidth from 1 to 2 GHz
     emission_lines = 0; % insert emission lines on top of the continuous spectra
     [x0,X0] = Generate_cube(reference_cube_path,f,emission_lines);
     [Ny, Nx, nchannels] = size(x0);
-    if generate_undersampled_cube
+    if flag_generateUndersampledCube
         % undersampling factor for the channels
         unds = 4; % take 1/unds images
         [x0,X0,f,nchannels] = Generate_undersampled_cube(x0,f,Ny,Nx,nchannels,unds);
@@ -218,7 +218,7 @@ param_block_structure.use_manual_partitioning = 0;
 
 %% Generate/load uv-coverage, setup measurement operator
 % generating u-v coverage
-if generate_coverage
+if flag_generateCoverage
     cov_type = 'vlaa';
     dl = 1.1;
     hrs = 5;
@@ -267,7 +267,7 @@ end
 clear u v u1 v1 uw vw aWw nW nWw param_block_structure param_precond;
 
 %% Generate/load visibilities
-if generate_visibilities
+if flag_generateVisibilities
     param_l2_ball.type = 'sigma';
     param_l2_ball.sigma_ball = 2;
     [y0, y, Nm, sigma_noise] = util_gen_measurements(x0, G, W, A, input_snr);
@@ -284,7 +284,7 @@ end
 clear y0 Nm;
 
 %% Compute operator norm
-if compute_operator_norm
+if flag_computeOperatorNorm
     % Compute full measurement operator spectral norm
     F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
     Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
@@ -318,7 +318,7 @@ if generate_eps_nnls
 end
 
 %% Solver
-if solve_minimization
+if flag_solveMinimization
     % Definition of the SARA dictionary
     nlevel = 4; % depth of the wavelet decompositions
     %! always specify Dirac basis ('self') in last position if used in the
