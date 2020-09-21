@@ -1,4 +1,4 @@
-function main_simulated_data(image_name, nchannels, Qx, Qy, Qc, p, input_snr, ...
+function main_simulated_data(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
     algo_version, window_type, ncores_data, ind, overlap_size, ...
     flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
     flag_computeOperatorNorm, flag_solveMinimization, ...
@@ -11,7 +11,7 @@ function main_simulated_data(image_name, nchannels, Qx, Qy, Qc, p, input_snr, ..
 % Args:
 %     image_name (string): name of the reference synthetic image (from the 
 %     data/ folder)
-%     nchannels (int): number of channels
+%     nChannels (int): number of channels
 %     Qx (int): number of spatial facets along axis 2 (x)
 %     Qy (int): number of spatial facets along axis 1 (y)
 %     Qc (int): number of spectral facets
@@ -103,9 +103,10 @@ function main_simulated_data(image_name, nchannels, Qx, Qy, Qc, p, input_snr, ..
 format compact;
 
 disp(['Reference image: ', image_name]);
-disp(['nchannels: ', num2str(nchannels)]);
+disp(['nchannels: ', num2str(nChannels)]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
+disp(['Overlap size: ', num2str(overlap_size)]);
 disp(['Number of data points p per frequency (as a fraction of image size): ', num2str(p)]);
 disp(['Input SNR: ', num2str(input_snr)]);
 disp(['Generating image cube: ', num2str(flag_generateCube)]);
@@ -142,16 +143,16 @@ generate_eps_nnls = false;
 save_data = true; 
 
 %% Generate/load ground-truth image cube
-f = linspace(1,2,nchannels);
+f = linspace(1,2,nChannels);
 if flag_generateCube
     % frequency bandwidth from 1 to 2 GHz
     emission_lines = 0; % insert emission lines on top of the continuous spectra
     [x0,X0] = Generate_cube(reference_cube_path,f,emission_lines);
-    [Ny, Nx, nchannels] = size(x0);
+    [Ny, Nx, nChannels] = size(x0);
     if flag_generateUndersampledCube
         % undersampling factor for the channels
         unds = 4; % take 1/unds images
-        [x0,X0,f,nchannels] = Generate_undersampled_cube(x0,f,Ny,Nx,nchannels,unds);
+        [x0,X0,f,nChannels] = Generate_undersampled_cube(x0,f,Ny,Nx,nChannels,unds);
     end
     fitswrite(X0.', cube_path);
     fitsdisp(cube_path)
@@ -159,19 +160,19 @@ else
     X0 = fitsread(cube_path).';
     Nx = sqrt(size(X0, 1));
     Ny = Nx;
-    nchannels = size(X0, 2);
-    x0 = reshape(X0, [Ny, Nx, nchannels]);
+    nChannels = size(X0, 2);
+    x0 = reshape(X0, [Ny, Nx, nChannels]);
 end
 
 %% Generate spectral facets (interleaved sampling)
-id = interleaved_facets(Qc, nchannels);
+id = interleaved_facets(Qc, nChannels);
 if ind > 0
     x0 = x0(:,:,id{ind});
-    nchannels = size(x0,3);
+    nChannels = size(x0,3);
     f = f(id{ind});
-    X0 = reshape(x0,Nx*Ny,nchannels);
+    X0 = reshape(x0,Nx*Ny,nChannels);
 end
-channels = 1:nchannels;
+channels = 1:nChannels;
 
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
@@ -179,10 +180,11 @@ data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
 results_name_function = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels),'_p=',num2str(p), ...
     '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
+    '_overlap=', num2str(overlap_size), ...
     '_snr=', num2str(input_snr),'.mat');
 
-data_name = data_name_function(nchannels);
-results_name = results_name_function(nchannels);
+data_name = data_name_function(nChannels);
+results_name = results_name_function(nChannels);
 
 %% Default config parameters (can be kept as is)
 % gridding parameters
@@ -245,7 +247,7 @@ else
 end
 
 % setup measurement operator
-for i = 1:nchannels
+for i = 1:nChannels
     uw = (f(i)/f(1)) * u;
     vw = (f(i)/f(1)) * v;
     
@@ -288,12 +290,12 @@ if flag_computeOperatorNorm
     % Compute full measurement operator spectral norm
     F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
     Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-    Anorm = pow_method_op(F, Ft, [Ny Nx nchannels]);
+    Anorm = pow_method_op(F, Ft, [Ny Nx nChannels]);
     save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
-        '_L=',num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
+        '_L=',num2str(nChannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
 else
     load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
-        num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
+        num2str(nChannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
 end
     
 %% Generate initial epsilons by performing imaging with NNLS on each data block separately
@@ -305,7 +307,7 @@ if generate_eps_nnls
     param_nnls.sol_steps = [inf]; % saves images at the given iterations
     param_nnls.beta = 1;
     % solve nnls per block
-    for i = 1:nchannels
+    for i = 1:nChannels
         eps_b{i} = cell(length(G{i}),1);
         for j = 1 : length(G{i})
             % printf('solving for band %i\n\n',i)
@@ -328,15 +330,15 @@ if flag_solveMinimization
     
     % estimate mu: ratio between nuclear and l21 norm priors applied to
     % the dirty image
-    dirty_image = zeros([Ny, Nx, nchannels]);
-    for l = 1:nchannels
+    dirty_image = zeros([Ny, Nx, nChannels]);
+    for l = 1:nChannels
         temp = zeros(oy*Ny*ox*Nx, 1);
         for b = 1:numel(G{l})
             temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * (sqrt(aW{l}{b}) .* y{l}{b});
         end
         dirty_image(:,:,l) = At(temp);
     end
-    [~,S0,~] = svd(reshape(dirty_image, [Nx*Ny, nchannels]),'econ');
+    [~,S0,~] = svd(reshape(dirty_image, [Nx*Ny, nChannels]),'econ');
     nuclear_norm = sum(abs(diag(S0)));
     
     %TODO: do it directly in parallel with faceted SARA
@@ -359,8 +361,8 @@ if flag_solveMinimization
     dirac = zeros(Ny, Nx);
     dirac(id_center) = 1;
     AD = A(dirac);
-    be = zeros(nchannels, 1);
-    for l = 1:nchannels
+    be = zeros(nChannels, 1);
+    for l = 1:nChannels
         temp = zeros(oy*Ny*ox*Nx, 1);
         z = zeros(oy*Ny*ox*Nx, 1);
         for b = 1:numel(y{l})
@@ -374,7 +376,7 @@ if flag_solveMinimization
     B = B/max(be);
     [~ ,S0,~] = svd(B,'econ');
     sig = std(diag(S0));
-    sig_bar = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nchannels])).^2,2)));
+    sig_bar = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
     clear B S0 be z temp AD dirac id_center Psitw Psit_full Psi1 Psit1
     
     %% HSI parameter structure sent to the  HSI algorithm
@@ -502,6 +504,7 @@ if flag_solveMinimization
     fitswrite(xsol,fullfile(results_path, strcat('x_fhs_', algo_version, ...
         '_', window_type, ...
         '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
+        '_overlap=', num2str(overlap_size), ...
         '.fits')))
     
 end

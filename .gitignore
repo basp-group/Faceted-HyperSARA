@@ -20,6 +20,7 @@ real_data_dr/logs
 main_fouRed/WB_new
 irt*
 test*
+figs*
 
 # docs
 docs/_*
