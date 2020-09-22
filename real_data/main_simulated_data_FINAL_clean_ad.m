@@ -1,10 +1,6 @@
 function main_simulated_data_FINAL_clean_ad(subcubeIdx,param_global,jobID)
-% l1_req: soft thresholding param
-% rw : reweights
-%% flags
 %% read essential params
-%:AD:Default params
-%%? to be modified ?
+%:AD:Default params to be modified ?
 % data specific
 if ~isfield(param_global, 'visibilityFileName'),  param_global.visibilityFileName = {'5','7'};end
 %if ~isfield(param_global, 'telescope'),  param_global.telescope = {'vla'}; end % configurations are specific to VLA
