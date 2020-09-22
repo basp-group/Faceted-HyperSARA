@@ -143,12 +143,12 @@ generate_eps_nnls = false;
 save_data = true; 
 
 %% Generate/load ground-truth image cube
-f = linspace(1,2,nChannels);
 if flag_generateCube
     % frequency bandwidth from 1 to 2 GHz
     emission_lines = 0; % insert emission lines on top of the continuous spectra
     [x0,X0] = Generate_cube(reference_cube_path,f,emission_lines);
     [Ny, Nx, nChannels] = size(x0);
+    f = linspace(1,2,nChannels);
     if flag_generateUndersampledCube
         % undersampling factor for the channels
         unds = 4; % take 1/unds images
@@ -162,6 +162,7 @@ else
     Ny = Nx;
     nChannels = size(X0, 2);
     x0 = reshape(X0, [Ny, Nx, nChannels]);
+    f = linspace(1,2,nChannels);
 end
 
 %% Generate spectral facets (interleaved sampling)
@@ -385,7 +386,7 @@ if flag_solveMinimization
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.gamma0 = 1;
     param_HSI.gamma = mu;  %convergence parameter L1 (soft th parameter)
-    param_HSI.rel_obj = 1e-6; % stopping criterion
+    param_HSI.rel_var = 1e-6; % stopping criterion
     param_HSI.max_iter = 10000; % max number of iterations
     
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
