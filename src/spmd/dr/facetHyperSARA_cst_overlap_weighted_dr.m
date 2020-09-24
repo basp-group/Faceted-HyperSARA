@@ -271,7 +271,7 @@ end
 
 % overlap dimension of the neighbour (necessary to define the ghost cells properly)
 % define weights, depending on the weigthing option
-if strcmp(window_type, 'piecewise_constant')
+if strcmp(window_type, 'pc') %'piecewise_constant'
     % create weight matrix Wo (if needed)
     Wo = zeros(M, N);
     for q = 1:Q
@@ -340,7 +340,7 @@ for q = 1:Q
                 wr = ones(1, dims_o(q, 1));
             end
             w{q} = (wr.').*wc;
-        case 'piecewise_constant'
+        case 'pc'
             w{q} = Wo(Io(q,1)+1:Io(q,1)+dims_o(q,1), Io(q,2)+1:Io(q,2)+dims_o(q,2));
         otherwise % make sure there is no 0 at the boundaries of the window
             w{q} = ones(dims_o(q,:));
@@ -759,8 +759,11 @@ for t = t_start : param.max_iter
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
-            mkdir('./results/')
-            m = matfile(['./results/facetHyperSARA_dr_c_w', name, '_', ...
+%             mkdir('./results/')
+%             m = matfile(['./results/facetHyperSARA_dr_c_w', name, '_', ...
+%               num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+%               'Writable', true);
+            m = matfile([name, '_', ...
               num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
             m.param = param;
@@ -835,7 +838,10 @@ spmd
     end
 end
 
-m = matfile(['./results/facetHyperSARA_dr_c_w', name, '_', ...
+% m = matfile(['./results/facetHyperSARA_dr_c_w', name, '_', ...
+%               num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+%               'Writable', true);
+m = matfile([name, '_', ...
               num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
 m.param = param;

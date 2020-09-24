@@ -18,25 +18,31 @@ function main_simulated_data(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ..
 %     p (double): [description]
 %     input_snr (double): input SNR value (in dB)
 %     algo_version (string): selected version of the solver:
-%        - 'standard'      overlap of the faceted nuclear norm equal to the
+%        - 's'             'standard': overlap of the faceted nuclear norm 
+%                          equal to the
 %                          one needed for the faceted SARA dictionary, w/o 
 %                          spatial weights (apodization window)
-%        - 'standard2'     alternative parallellization scheme compared to
-%                          'standard' (gather image and data on the same 
-%                          nodes)
-%        - 'cst'           constant overlap for the faceted nuclear norm,  
-%                          w/o spatial weights (apodization window)
-%        - 'weighted'      overlap of the faceted nuclear norm equal to the 
-%                          one needed for the faceted SARA dictionary,  
-%                          using spatial weights (apodization window)
-%        - 'cst_weighted'  constant overlap taken for the faceted nuclear
-%                          norm, using spatial weights (apodization window)
-%        - 'no_overlap'    no overlap for the faceted nuclear norm prior
+%        - 's2'            'standard2': alternative parallellization scheme 
+%                          compared to 'standard' (gather image and data on 
+%                          the same nodes)
+%        - 'c'             'constant': constant overlap for the faceted 
+%                          nuclear norm, w/o spatial weights (apodization 
+%                          window)
+%        - 'w'             'weighted': overlap of the faceted nuclear norm 
+%                          equal to the one needed for the faceted SARA 
+%                          dictionary,  using spatial weights (apodization 
+%                          window)
+%        - 'cw'            cst_weighted: constant overlap taken for the 
+%                          faceted nuclear norm, using spatial weights 
+%                          (apodization window)
+%        - 'no'            no_overlap: no overlap for the faceted nuclear 
+%                          norm prior
 %     window_type (string): type of apodization window considered for the 
 %                           faceted nuclear norm prior. Only active with 
 %                           the following versions of the algorithm:
-%        - 'cst_weighted'
-%        - 'weighted'
+%        - 'triangular'
+%        - 'hamming'
+%        - 'pc' (piecewise-constant)
 %     ncores_data (int): number of cores handlig the data fidelity terms 
 %                        ("data cores"). The total number of cores is 
 %                        Qx*Qy + ncores_data + 1
@@ -71,23 +77,23 @@ function main_simulated_data(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ..
 %% PARAMETERS FOR DEBUGGING
 
 % image_name = 'W28_512_m39';
-% nchannels = 60; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
+% nChannels = 60; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
 % Qx = 2;
 % Qy = 1;
 % Qc = 1;
 % p = 0.3; % percentage
 % input_snr = 40; % input SNR (in dB)
-% algo_version = 'cst_weighted';
-% window_type = 'triangular';
+% algo_version = 'cw'; % 'cst_weighted';
+% window_type = 'triangular'; % 'hamming', 'pc'
 % ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index from "spectral" facet
-% generate_cube = true;
-% generate_coverage = true;
-% generate_visibilities = true;
-% generate_undersampled_cube = true; % Default 15 channels cube with line emissions
-% compute_operator_norm = false;
-% solve_minimization = true;
-% cube_path = strcat('data/', image_name, '_L', num2str(nchannels));
+% flag_generateCube = false;
+% flag_generateCoverage = false;
+% flag_generateVisibilities = false;
+% flag_generateUndersampledCube = false; % Default 15 channels cube with line emissions
+% flag_computeOperatorNorm = false;
+% flag_solveMinimization = true;
+% cube_path = strcat('data/', image_name, '_L', num2str(nChannels));
 % coverage_path = 'data/uv_coverage_p=1';
 % 
 % % if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
@@ -178,11 +184,18 @@ channels = 1:nChannels;
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
     num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr),'.mat');
+
 results_name_function = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels),'_p=',num2str(p), ...
     '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
     '_overlap=', num2str(overlap_size), ...
     '_snr=', num2str(input_snr),'.mat');
+
+temp_results_name = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
+    '_L=',num2str(nchannels),'_p=',num2str(p), ...
+    '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
+    '_overlap=', num2str(overlap_size), ...
+    '_snr=', num2str(input_snr));
 
 data_name = data_name_function(nChannels);
 results_name = results_name_function(nChannels);
@@ -440,54 +453,54 @@ if flag_solveMinimization
     %%
 
     switch algo_version            
-        case 'standard' 
+        case 's' % 'standard' 
             % reference version, overlap between the facets underlying the nuclear norms
             [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', image_name); % [10/10/2019] ok
+                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
-        case 'weighted' 
+        case 'w' % 'weighted' 
             % (piece-wise constant weights, following Audrey's suggestion)
             [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA_weighted(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', image_name); % [10/10/2019] ok
+                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
-        case 'cst' 
+        case 'c' % 'cst' 
             % cst overlap for the facets undelrying the nuclear norms (d < overlap from sdwt2)
             % d = (power(2, nlevel)-1)*(max(L(:))-2)/2; % use of db8
             [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA_cst_overlap(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), overlap_size, 'whatever.mat', image_name); % [10/10/2019] ok
+                wlt_basis, L, nlevel, cell_c_chunks, channels(end), overlap_size, 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
-        case 'cst_weighted' 
+        case 'cw' % 'cst_weighted' 
             % same as spmd_sct, weight correction (apodization window in this case)
             [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA_cst_overlap_weighted(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, 'whatever.mat', image_name); % [10/10/2019] ok
+                wlt_basis, L, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
             %[xsol,param_HSI,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
             %    facetHyperSARA_cst_overlap_weighted_real_data(y_spmd, epsilon_spmd, ...
             %    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, Qx, Qy, Qc2, wlt_basis, L, ...
             %    nlevel, cell_c_chunks, channels(end), d, window_type, 'whatever.mat'); % [10/10/2019] ok basic debugging
 
-        case 'standard2' 
+        case 's2' % 'standard2' 
             % alternative implementation (gather primal variables and data on the same nodes)
             % gather image and data on the same nodes (extra communications compared to spmd4 for reweigthing and monitoring variables)
             [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA2(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', image_name); % [10/10/2019] ok
+                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
-        case 'no_overlap' 
+        case 'no' % 'no_overlap' 
             % same as spmd4, but no overlap for the facets on which the nuclear norms are taken
             [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA_no_overlap(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', image_name); % [10/10/2019] ok
+                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
         otherwise
             error('Unknown solver version.')
