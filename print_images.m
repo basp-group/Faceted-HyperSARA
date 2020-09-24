@@ -21,7 +21,7 @@ mkdir figs
 % - ...
 %-------------------------------------------------------------------------%
 %%
-savedir = 'figs/';
+savedir = 'figs/W28_1024_m39/';
 
 %% Load ground truth image
 % x0 = fitsread('x0.fits');
@@ -30,10 +30,10 @@ savedir = 'figs/';
 % x0 = flipud(x0);
 
 % parameters chaging from one run to another
-N = [256,256];
-Qx = 2;
-Qy = 1;
-d = {128}; % check overlap (to be included in the bale of the file)
+N = [1024,1024];
+Qx = 4;
+Qy = 4;
+d = {256}; % check overlap (to be included in the bale of the file)
 Q = Qx*Qy;
 algo_version = 'cst_weighted';
 
@@ -41,11 +41,28 @@ algo_version = 'cst_weighted';
 window_type = 'triangular';
 Nx = 256;
 Qc = 1;
-nchannels = 15;
+nchannels = 20;
 p = 1;
 snr = 60;
 
-results_path = 'results/M31';
+results_path = 'results/W28_1024_m39';
+
+% N = [256,256];
+% Qx = 2;
+% Qy = 1;
+% d = {128}; % check overlap (to be included in the bale of the file)
+% Q = Qx*Qy;
+% algo_version = 'cst_weighted';
+% 
+% % parameters kept constant over all simulations
+% window_type = 'triangular';
+% Nx = 256;
+% Qc = 1;
+% nchannels = 15;
+% p = 1;
+% snr = 60;
+% 
+% results_path = 'results/M31';
 
 %% Diplay reasults (images, just first and last band)
 % ground truth, hyperSARA, SARA
@@ -56,11 +73,19 @@ results_path = 'results/M31';
 %=========================================================================%
 % Plot parameters
 %=========================================================================%
-clim_log = [-5, 1;    % image
-    -3.5e-2, 3.5e-2]; % residual images
 
-clim_log(:,:,2) = [-4, 1;   % image
-    -3.5e-2, 3.5e-2];       % residual images
+clim_log = [-5, round(log10(max(xsol(:))));    % image
+    -0.7*max(max(res(:,:,1))), 0.7*max(max(res(:,:,1)))]; % residual images
+
+clim_log(:,:,2) = [-5, 1;   % image
+    -0.7*max(max(res(:,:,2))), 0.7*max(max(res(:,:,2)))]; % residual images
+
+% M31
+% clim_log = [-5, 1;    % image
+%     -3.5e-2, 3.5e-2]; % residual images
+% 
+% clim_log(:,:,2) = [-4, 1;   % image
+%     -3.5e-2, 3.5e-2];       % residual images
 
 % clim_log = [-5, 0];    % image
 %     -3.5e-4, 3.5e-4]; % residual images
@@ -73,14 +98,17 @@ map_img = cubehelix(256); % colormap for the images
 map = cubehelix(256);     % colormap for the residual image
 linewidth = 2.3;
 
-mkdir figs
+mkdir(savedir)
 
+%%
 % TO BE MODIFIED LATER ON
-fileNameFunction = @(Qx, Qy, Qc) strcat('facetHyperSARA_cst_weighted_triangular_N=256_L=15_p=1_Qx=', ...
-    num2str(Qx),'_Qy=',num2str(Qy),'_Qc=', num2str(Qc), '_snr=60.mat');
+% fileNameFunction = @(Qx, Qy, Qc) strcat('facetHyperSARA_cst_weighted_triangular_N=256_L=15_p=1_Qx=', ...
+%     num2str(Qx),'_Qy=',num2str(Qy),'_Qc=', num2str(Qc), '_snr=60.mat');
+% load(fullfile(results_path,fileNameFunction(Qx,Qy,Qc)), 'xsol', 'param');
+% load(fullfile(results_path,'facetHyperSARA_c_w_0_0.01_30.mat'), 'res');
+load(fullfile(results_path,'fhs_cst_weighted_triangular_N=1024_L=20_p=0.5_Qx=4_Qy=4_Qc=1_overlap=128_snr=60.mat'), 'xsol', 'param');
+load(fullfile(results_path,'facetHyperSARA_c_w_W28_1024_m39_0_0.0056566_0.mat'), 'res');
 
-load(fullfile(results_path,fileNameFunction(Qx,Qy,Qc)), 'xsol', 'param');
-load(fullfile(results_path,'facetHyperSARA_c_w_0_0.01_30.mat'), 'res');
 
 % results_name_function = @(Qx, Qy, overlap) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
 %     '_L=',num2str(nchannels),'_p=',num2str(p), ...

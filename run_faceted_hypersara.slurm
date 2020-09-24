@@ -36,7 +36,7 @@ export MATLAB_PREFDIR=$SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 
 $HOME/matlab_wrapper_2019_fix \
 "main_simulated_data('"$imgname"', "$nchannels", "$Qx", "$Qy", "$Qc", "$p", "$snr", \
-'"$algoversion"', '"$wintype"', "$ncdata", "$ind", "$overlapsize", \
+'"$algoversion"', '"$wintype"', "$ncdata", "$ind", "$overlapsize", "$nreweights", \
 "$gencube", "$gencov", "$genvis", "$genundersampledcube", \
 "$computenorm", "$solve", \
 '"$cubepath"', '"$covpath"')" \
