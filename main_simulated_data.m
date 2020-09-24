@@ -398,7 +398,7 @@ if flag_solveMinimization
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.gamma0 = 1;
-    param_HSI.gamma = mu;  %convergence parameter L1 (soft th parameter)
+    param_HSI.gamma = 1e-2*mu;  %convergence parameter L1 (soft th parameter)
     param_HSI.rel_var = 1e-6; % stopping criterion
     param_HSI.max_iter = 10000; % max number of iterations
     
