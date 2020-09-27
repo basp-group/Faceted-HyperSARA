@@ -1,8 +1,8 @@
-function main_simulated_data(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
-    algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
-    flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
-    flag_computeOperatorNorm, flag_solveMinimization, ...
-    cube_path, coverage_path)
+% function main_simulated_data(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
+%     algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
+%     flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
+%     flag_computeOperatorNorm, flag_solveMinimization, ...
+%     cube_path, coverage_path)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -76,32 +76,32 @@ function main_simulated_data(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ..
 
 %% PARAMETERS FOR DEBUGGING
 
-% image_name = 'W28_512_m39';
-% nChannels = 60; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
-% Qx = 2;
-% Qy = 1;
-% Qc = 1;
-% p = 0.3; % percentage
-% input_snr = 40; % input SNR (in dB)
-% algo_version = 'cw'; % 'cst_weighted';
-% window_type = 'triangular'; % 'hamming', 'pc'
-% ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
-% ind = 1;  % index from "spectral" facet
-% flag_generateCube = false;
-% flag_generateCoverage = false;
-% flag_generateVisibilities = false;
-% flag_generateUndersampledCube = false; % Default 15 channels cube with line emissions
-% flag_computeOperatorNorm = false;
-% flag_solveMinimization = true;
-% cube_path = strcat('data/', image_name, '_L', num2str(nChannels));
-% coverage_path = 'data/uv_coverage_p=1';
-% 
-% % if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
-% %     nlevel = 4;
-% %     overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
-% % end
-% 
-% overlap_size = 256;
+image_name = 'W28_512_m39'; %'M31'; %'W28_512_m39';
+nChannels = 80; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
+Qx = 2;
+Qy = 1;
+Qc = 1;
+p = 0.3; % percentage
+input_snr = 40; % input SNR (in dB)
+algo_version = 'cw'; % 'cst_weighted';
+window_type = 'triangular'; % 'hamming', 'pc'
+ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
+ind = 1;  % index from "spectral" facet
+flag_generateCube = true;
+flag_generateCoverage = false;
+flag_generateVisibilities = false;
+flag_generateUndersampledCube = true; % Default 15 channels cube with line emissions
+flag_computeOperatorNorm = false;
+flag_solveMinimization = true;
+cube_path = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
+coverage_path = 'data/uv_coverage_p=1';
+
+% if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
+%     nlevel = 4;
+%     overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
+% end
+
+overlap_size = 256;
 % 
 % % % TODO: add warm-restart for this version of the main script
 
@@ -133,7 +133,7 @@ addpath src/spmd/no_overlap
 
 % setting paths to results and reference image cube
 coverage_path = strcat(coverage_path, '.fits');
-cube_path = strcat(cube_path, '.fits');
+% cube_path = strcat(cube_path, '.fits');
 data_path = 'data/';
 results_path = fullfile('results/', image_name);
 reference_cube_path = fullfile(data_path, strcat(image_name, '.fits'));
@@ -151,19 +151,19 @@ save_data = true;
 %% Generate/load ground-truth image cube
 if flag_generateCube
     % frequency bandwidth from 1 to 2 GHz
+    f = linspace(1,2,nChannels);
     emission_lines = 0; % insert emission lines on top of the continuous spectra
     [x0,X0] = Generate_cube(reference_cube_path,f,emission_lines);
     [Ny, Nx, nChannels] = size(x0);
-    f = linspace(1,2,nChannels);
     if flag_generateUndersampledCube
         % undersampling factor for the channels
         unds = 4; % take 1/unds images
         [x0,X0,f,nChannels] = Generate_undersampled_cube(x0,f,Ny,Nx,nChannels,unds);
     end
-    fitswrite(X0.', cube_path);
-    fitsdisp(cube_path)
+    fitswrite(X0.', strcat(cube_path(nChannels), '.fits'));
+    fitsdisp(strcat(cube_path(nChannels), '.fits'));
 else
-    X0 = fitsread(cube_path).';
+    X0 = fitsread(strcat(cube_path(nChannels), '.fits')).';
     Nx = sqrt(size(X0, 1));
     Ny = Nx;
     nChannels = size(X0, 2);

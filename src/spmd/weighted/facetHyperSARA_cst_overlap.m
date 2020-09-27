@@ -435,7 +435,6 @@ end
 rw_counts = 1;
 
 %% Reweighting parameters
-
 sig_bar = param.sig_bar;
 sig = param.sig;
 reweight_alpha = param.reweight_alpha;
@@ -685,7 +684,6 @@ for t = t_start : param.max_iter
                 [weights1_, weights0_] = update_weights_cst_overlap(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap, crop, sig, sig_bar);
-                
                 reweight_alphap = max(reweight_alpha_ffp.Value*reweight_alphap, 1);
             else
                 % compute residual image on the data nodes

@@ -495,7 +495,8 @@ end
 rw_counts = 1;
 
 %% Reweighting parameters
-
+sig_bar = param.sig_bar;
+sig = param.sig;
 reweight_alpha = param.reweight_alpha;
 reweight_alphap = Composite();
 for q = 1:Q

@@ -21,19 +21,32 @@ mkdir figs
 % - ...
 %-------------------------------------------------------------------------%
 %%
-savedir = 'figs/W28_1024_m39/';
+savedir = 'figs/M31/';
 
 %% Load ground truth image
-% x0 = fitsread('x0.fits');
-% N = ones(1, 2);
-% [N(1), N(2), L] = size(x0);
-% x0 = flipud(x0);
 
 % parameters chaging from one run to another
-N = [1024,1024];
-Qx = 4;
-Qy = 4;
-d = {256}; % check overlap (to be included in the bale of the file)
+% N = [1024,1024];
+% Qx = 4;
+% Qy = 4;
+% d = {256}; % check overlap (to be included in the bale of the file)
+% Q = Qx*Qy;
+% algo_version = 'cst_weighted';
+% 
+% % parameters kept constant over all simulations
+% window_type = 'triangular';
+% Qc = 1;
+% nchannels = 20;
+% p = 1;
+% snr = 60;
+% 
+% results_path = 'results/W28_1024_m39_1';
+
+% M31
+N = [256,256];
+Qx = 2;
+Qy = 1;
+d = {128}; % check overlap (to be included in the bale of the file)
 Q = Qx*Qy;
 algo_version = 'cst_weighted';
 
@@ -41,30 +54,48 @@ algo_version = 'cst_weighted';
 window_type = 'triangular';
 Nx = 256;
 Qc = 1;
-nchannels = 20;
+nchannels = 15;
 p = 1;
 snr = 60;
 
-results_path = 'results/W28_1024_m39';
+results_path = 'results/M31';
 
-% N = [256,256];
-% Qx = 2;
-% Qy = 1;
-% d = {128}; % check overlap (to be included in the bale of the file)
-% Q = Qx*Qy;
-% algo_version = 'cst_weighted';
-% 
-% % parameters kept constant over all simulations
-% window_type = 'triangular';
-% Nx = 256;
-% Qc = 1;
-% nchannels = 15;
-% p = 1;
-% snr = 60;
-% 
-% results_path = 'results/M31';
+data_path = 'data';
 
-%% Diplay reasults (images, just first and last band)
+%%
+% TO BE MODIFIED LATER ON
+% fileNameFunction = @(Qx, Qy, Qc) strcat('facetHyperSARA_cst_weighted_triangular_N=256_L=15_p=1_Qx=', ...
+%     num2str(Qx),'_Qy=',num2str(Qy),'_Qc=', num2str(Qc), '_snr=60.mat');
+% load(fullfile(results_path,fileNameFunction(Qx,Qy,Qc)), 'xsol', 'param');
+
+% M31
+load(fullfile(results_path,'facetHyperSARA_cst_weighted_triangular_N=256_L=15_p=1_Qx=2_Qy=1_Qc=1_snr=60.mat'), 'xsol', 'param');
+load(fullfile(results_path,'facetHyperSARA_c_w_0_0.01_30.mat'), 'res');
+x = fitsread(fullfile(data_path,'M31_L20.fits')).';
+
+% W28_m39_1
+% load(fullfile(results_path,'fhs_cst_weighted_triangular_N=1024_L=20_p=0.5_Qx=4_Qy=4_Qc=1_overlap=128_snr=60.mat'), 'xsol', 'param');
+% load(fullfile(results_path,'facetHyperSARA_c_w_W28_1024_m39_0_0.0056566_0.mat'), 'res');
+% x = fitsread(fullfile(data_path,'W28_512_m39_L20.fits')).';
+
+
+% results_name_function = @(Qx, Qy, overlap) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
+%     '_L=',num2str(nchannels),'_p=',num2str(p), ...
+%     '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
+%     '_overlap=', num2str(overlap_size), ...
+%     '_snr=', num2str(input_snr),'.mat');
+% 
+% load(fullfile(results_path,'facetHyperSARA_c_w_0_0.01_1.mat'), 'res');
+
+Nx = sqrt(size(x, 1));
+Ny = Nx;
+nChannels = size(x, 2);
+x = reshape(x, [Ny, Nx, nChannels]);
+x = flipud(x(:,:,[1, nchannels]));
+xsol = flipud(xsol(:,:,[1, nchannels]));
+res = flipud(res(:,:,[1, nchannels])/param.nu2);
+
+%% Diplay results (images, just first and last band)
 % ground truth, hyperSARA, SARA
 
 % plot residual image faceted HyperSARA for multiple values of Q, and
@@ -74,10 +105,10 @@ results_path = 'results/W28_1024_m39';
 % Plot parameters
 %=========================================================================%
 
-clim_log = [-5, round(log10(max(xsol(:))));    % image
+clim_log = [-5, ceil(log10(max(max(xsol(:,:,1)))));    % image
     -0.7*max(max(res(:,:,1))), 0.7*max(max(res(:,:,1)))]; % residual images
 
-clim_log(:,:,2) = [-5, 1;   % image
+clim_log(:,:,2) = [-4, ceil(log10(max(max(xsol(:,:,2)))));   % image
     -0.7*max(max(res(:,:,2))), 0.7*max(max(res(:,:,2)))]; % residual images
 
 % M31
@@ -99,26 +130,6 @@ map = cubehelix(256);     % colormap for the residual image
 linewidth = 2.3;
 
 mkdir(savedir)
-
-%%
-% TO BE MODIFIED LATER ON
-% fileNameFunction = @(Qx, Qy, Qc) strcat('facetHyperSARA_cst_weighted_triangular_N=256_L=15_p=1_Qx=', ...
-%     num2str(Qx),'_Qy=',num2str(Qy),'_Qc=', num2str(Qc), '_snr=60.mat');
-% load(fullfile(results_path,fileNameFunction(Qx,Qy,Qc)), 'xsol', 'param');
-% load(fullfile(results_path,'facetHyperSARA_c_w_0_0.01_30.mat'), 'res');
-load(fullfile(results_path,'fhs_cst_weighted_triangular_N=1024_L=20_p=0.5_Qx=4_Qy=4_Qc=1_overlap=128_snr=60.mat'), 'xsol', 'param');
-load(fullfile(results_path,'facetHyperSARA_c_w_W28_1024_m39_0_0.0056566_0.mat'), 'res');
-
-
-% results_name_function = @(Qx, Qy, overlap) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
-%     '_L=',num2str(nchannels),'_p=',num2str(p), ...
-%     '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
-%     '_overlap=', num2str(overlap_size), ...
-%     '_snr=', num2str(input_snr),'.mat');
-% 
-% load(fullfile(results_path,'facetHyperSARA_c_w_0_0.01_1.mat'), 'res');
-
-res = res(:,:,[1, 15])/param.nu2;
 
 %%
  % non-overlapping tessellation
@@ -153,6 +164,26 @@ res = res(:,:,[1, 15])/param.nu2;
 
  %%
 for l = 1:2
+    % ground truth
+    f=figure('visible','on');
+    set(gca, 'Color', 'none'); % sets axes background
+    set(f,'PaperUnits','centimeters')
+    set(f,'PaperType','A4');
+    set(f,'PaperOrientation',orient);
+    set(f,'units','pixel','outerposition',[0 0 600 600])
+    imagesc(log10(x(:,:,l)), clim_log(1,:,l));
+    colormap(gca, map_img);
+    axis image
+    ax = gca;
+    ax.YAxis.Visible = 'off';
+    ax.XAxis.Visible = 'off';
+    h = colorbar;
+    set(h,'Fontsize',fontsize)
+    export_fig(strcat(savedir,'x', num2str(l),'.pdf'), '-transparent','-q101')
+    close
+    
+    %--
+    % reconstructed
     f=figure('visible','on');
     set(gca, 'Color', 'none'); % sets axes background
     set(f,'PaperUnits','centimeters')

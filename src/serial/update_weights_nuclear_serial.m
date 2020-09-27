@@ -1,4 +1,4 @@
-function weights = update_weights_nuclear_serial(x, reweight_alpha)
+function weights = update_weights_nuclear_serial(x, reweight_alpha, sig_bar)
 %update_weights_nuclear_serial: update the weigths for the reweighting of 
 % the nuclear norm prior.
 %-------------------------------------------------------------------------%
@@ -22,6 +22,7 @@ function weights = update_weights_nuclear_serial(x, reweight_alpha)
 [M,  N, c] = size(x);
 [~, D, ~] = svd(reshape(x, [M*N, c]),'econ');
 d = abs(diag(D));
-weights = reweight_alpha ./ (reweight_alpha + d);
+upsilon_bar = sig_bar*reweight_alpha;
+weights = upsilon_bar ./ (upsilon_bar + d);
 
 end

@@ -204,7 +204,8 @@ end
 rw_counts = 1;
 
 %% Reweighting parameters
-
+sig_bar = param.sig_bar;
+sig = param.sig;
 reweight_alpha = param.reweight_alpha;
 reweight_steps = param.reweight_steps;
 
@@ -371,9 +372,9 @@ for t = t_start : param.max_iter
         
         spmd
             if labindex == 1
-                weights0_ = update_weights_nuclear_serial(xsol, reweight_alpha);
+                weights0_ = update_weights_nuclear_serial(xsol, reweight_alpha, sig_bar);
             elseif labindex == 2
-                weights1_ = update_weights_l21_serial(xsol, Psit_, weights1_, reweight_alpha);
+                weights1_ = update_weights_l21_serial(xsol, Psit_, weights1_, reweight_alpha, sig);
             end
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha;
