@@ -161,10 +161,10 @@ if flag_generateCube
         unds = 4; % take 1/unds images
         [x0,X0,f,nChannels] = Generate_undersampled_cube(x0,f,Ny,Nx,nChannels,unds);
     end
-    fitswrite(X0.', strcat(cube_path(nChannels), '.fits'));
-    fitsdisp(strcat(cube_path(nChannels), '.fits'));
+    fitswrite(X0.', strcat(cube_path, '.fits'));
+    fitsdisp(strcat(cube_path, '.fits'));
 else
-    X0 = fitsread(strcat(cube_path(nChannels), '.fits')).';
+    X0 = fitsread(strcat(cube_path, '.fits')).';
     Nx = sqrt(size(X0, 1));
     Ny = Nx;
     nChannels = size(X0, 2);
