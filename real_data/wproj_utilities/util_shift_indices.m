@@ -1,4 +1,4 @@
-function ind =shift_ind(ind,Nx,Ny)
+function ind =util_shift_indices(ind,Nx,Ny)
 
 i=ind(:,1);
 j=ind(:,2);
