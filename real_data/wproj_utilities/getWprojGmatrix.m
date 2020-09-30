@@ -133,7 +133,7 @@ for row = 1:length(CountVectSBIS)-1
         kernel.dim = gGriddedFourierDim;
         posShifted = []; % clear
         
-        fullKernel =  sconv2_mod_(kernel,WKERNELS,'same');
+        fullKernel =  util_sconv2(kernel,WKERNELS,'same');
         % sparsify the G kernel
         [thresVal,~]  = BISECT(levelG, 1e-5, abs(nonzeros(fullKernel)),Lnorm);
         [dummyRowBIS,dummyColBIS,dummyVal{wrow}] = find(fullKernel.*(abs(fullKernel)>thresVal));
