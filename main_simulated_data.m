@@ -349,7 +349,7 @@ if flag_solveMinimization
     for l = 1:nChannels
         temp = zeros(oy*Ny*ox*Nx, 1);
         for b = 1:numel(G{l})
-            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * (sqrt(aW{l}{b}) .* y{l}{b});
+            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * y{l}{b};
         end
         dirty_image(:,:,l) = At(temp);
     end
@@ -382,8 +382,8 @@ if flag_solveMinimization
         z = zeros(oy*Ny*ox*Nx, 1);
         for b = 1:numel(y{l})
             noise = (randn(size(y{l}{b})) + 1i*randn(size(y{l}{b})))/sqrt(2);
-            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * (sqrt(aW{l}{b}) .* noise);
-            z(W{l}{b}) = z(W{l}{b}) + G{l}{b}' * (sqrt(aW{l}{b}) .* (sqrt(aW{l}{b}).*(G{l}{b} * AD(W{l}{b}))) );  
+            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * noise;
+            z(W{l}{b}) = z(W{l}{b}) + G{l}{b}' * (G{l}{b} * AD(W{l}{b}));  
         end
         B(:,l) = reshape(At(temp),[Ny*Nx,1]);
         be(l) = max(reshape(At(z),[Ny*Nx,1]));     

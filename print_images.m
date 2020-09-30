@@ -25,6 +25,25 @@ savedir = 'figs/M31/';
 
 %% Load ground truth image
 
+% W28_1024_m39
+% parameters chaging from one run to another
+N = [1024,1024];
+Qx = 4;
+Qy = 4;
+d = {256}; % check overlap (to be included in the bale of the file)
+Q = Qx*Qy;
+algo_version = 'cst_weighted';
+
+% parameters kept constant over all simulations
+window_type = 'triangular';
+Qc = 1;
+nchannels = 20;
+p = 1;
+snr = 60;
+
+results_path = 'results/W28_1024_m39';
+
+
 % parameters chaging from one run to another
 % N = [1024,1024];
 % Qx = 4;
@@ -42,23 +61,23 @@ savedir = 'figs/M31/';
 % 
 % results_path = 'results/W28_1024_m39_1';
 
-% M31
-N = [256,256];
-Qx = 2;
-Qy = 1;
-d = {128}; % check overlap (to be included in the bale of the file)
-Q = Qx*Qy;
-algo_version = 'cst_weighted';
+% % M31
+% N = [256,256];
+% Qx = 2;
+% Qy = 1;
+% d = {128}; % check overlap (to be included in the bale of the file)
+% Q = Qx*Qy;
+% algo_version = 'cst_weighted';
+% 
+% % parameters kept constant over all simulations
+% window_type = 'triangular';
+% Nx = 256;
+% Qc = 1;
+% nchannels = 15;
+% p = 1;
+% snr = 60;
 
-% parameters kept constant over all simulations
-window_type = 'triangular';
-Nx = 256;
-Qc = 1;
-nchannels = 15;
-p = 1;
-snr = 60;
-
-results_path = 'results/M31';
+% results_path = 'results/M31';
 
 data_path = 'data';
 
@@ -69,12 +88,17 @@ data_path = 'data';
 % load(fullfile(results_path,fileNameFunction(Qx,Qy,Qc)), 'xsol', 'param');
 
 % M31
-load(fullfile(results_path,'facetHyperSARA_cst_weighted_triangular_N=256_L=15_p=1_Qx=2_Qy=1_Qc=1_snr=60.mat'), 'xsol', 'param');
-load(fullfile(results_path,'facetHyperSARA_c_w_0_0.01_30.mat'), 'res');
-x = fitsread(fullfile(data_path,'M31_L20.fits')).';
+% load(fullfile(results_path,'facetHyperSARA_cst_weighted_triangular_N=256_L=15_p=1_Qx=2_Qy=1_Qc=1_snr=60.mat'), 'xsol', 'param');
+% load(fullfile(results_path,'facetHyperSARA_c_w_0_0.01_30.mat'), 'res');
+% x = fitsread(fullfile(data_path,'M31_L20.fits')).';
 
 % W28_m39_1
 % load(fullfile(results_path,'fhs_cst_weighted_triangular_N=1024_L=20_p=0.5_Qx=4_Qy=4_Qc=1_overlap=128_snr=60.mat'), 'xsol', 'param');
+% load(fullfile(results_path,'facetHyperSARA_c_w_W28_1024_m39_0_0.0056566_0.mat'), 'res');
+% x = fitsread(fullfile(data_path,'W28_512_m39_L20.fits')).';
+
+% % W28_m39
+% load(fullfile(results_path,'fhs_cw_triangular_N=1024_L=20_p=0.5_Qx=4_Qy=4_Qc=1_overlap=256_snr=60_0_5.6445e-05_1.mat'), 'xsol', 'param');
 % load(fullfile(results_path,'facetHyperSARA_c_w_W28_1024_m39_0_0.0056566_0.mat'), 'res');
 % x = fitsread(fullfile(data_path,'W28_512_m39_L20.fits')).';
 
