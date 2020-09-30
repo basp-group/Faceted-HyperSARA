@@ -124,7 +124,7 @@ for row = 1:length(CountVectSBIS)-1
         %
         %% sparse convolution[
         posOrig=[rGNUFFT(wrow,:).' cGNUFFT(wrow,:).'];
-        posShifted  = shift_ind(posOrig,gGriddedFourierDim(1),gGriddedFourierDim(2));
+        posShifted  = util_shift_indices(posOrig,gGriddedFourierDim(1),gGriddedFourierDim(2));
         posOrig =[]; % clear
         kernel = [];
         kernel.i = posShifted(:,1);
