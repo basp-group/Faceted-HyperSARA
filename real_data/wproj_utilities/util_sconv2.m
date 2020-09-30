@@ -1,4 +1,4 @@
-function C = sconv2_mod_(A, B, shape)
+function C = util_sconv2(A, B, shape)
 % C = sconv2(A, B, shape)
 % Like conv2 but suitable for convolution of sparse matrices
 % Author: Bruno Luong <brunoluong@yahoo.com>
