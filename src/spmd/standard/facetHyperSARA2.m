@@ -1,4 +1,4 @@
-function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
+function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
     L, nlevel, c_chunks, c, init_file_name, name)
 %facetHyperSARA2: ...
@@ -88,7 +88,7 @@ function [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,SNR,SN
 % < reweight_alpha  last value of the reweigthing parameter [1]
 % < epsilon         updated value of th l2-ball radii {...}
 % < t               index of the last iteration step [1]
-% < rel_fval        relative variation
+% < rel_val        relative variation
 % < nuclear         value of the faceted nuclear norm
 % < l21             value of the l21 regularization term
 % < norm_res_out    norm of the reidual image 
@@ -441,7 +441,7 @@ beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
 % Variables for the stopping criterion
 flag = 0;
-rel_fval = zeros(param.max_iter, 1);
+rel_val = zeros(param.max_iter, 1);
 end_iter = zeros(param.max_iter, 1);
 
 if isfield(param, 'init_t_start')
@@ -518,7 +518,7 @@ for t = t_start : param.max_iter
         rel_x = rel_x + rel_x_i{Q+i};
         norm_x = norm_x + norm_x_i{Q+i};
     end
-    rel_fval(t) = sqrt(rel_x/norm_x);
+    rel_val(t) = sqrt(rel_x/norm_x);
     end_iter(t) = toc(start_iter);
     fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
     
@@ -586,7 +586,7 @@ for t = t_start : param.max_iter
         % Log
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
-            fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+            fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
             fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
@@ -849,19 +849,19 @@ if (param.verbose > 0)
     if (flag == 1)
         fprintf('Solution found\n');
         fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
         fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
         fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     else
         fprintf('Maximum number of iterations reached\n');
         fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_fval = %e\n', nuclear, l21, rel_fval(t));
+        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
         fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
         fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
 end
 
 end_iter = end_iter(end_iter > 0);
-rel_fval = rel_fval(1:numel(end_iter));
+rel_val = rel_val(1:numel(end_iter));
 
 end
