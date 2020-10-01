@@ -109,6 +109,11 @@ function main_simulated_data(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ..
 %%
 format compact;
 
+if overlap_size == 0
+    algo_version = 'no';
+end
+
+disp(['Algorithm version: ', algo_version]);
 disp(['Reference image: ', image_name]);
 disp(['nchannels: ', num2str(nChannels)]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
@@ -510,7 +515,7 @@ if flag_solveMinimization
     time_iter_average = mean(end_iter);
     disp(['snr_x: ', num2str(snr_x)]);
     disp(['asnr_x: ', num2str(snr_x_average)]);
-    disp(['Average time per iteration: ', time_iter_average]);
+    disp(['Average time per iteration: ', num2str(time_iter_average)]);
 
     mkdir('results/')
     save(fullfile(results_path, results_name),'-v7.3','xsol', 'X0', ...
