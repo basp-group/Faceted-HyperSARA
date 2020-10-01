@@ -21,6 +21,7 @@ main_fouRed/WB_new
 irt*
 test*
 figs*
+logs*
 
 # docs
 docs/_*
