@@ -1,7 +1,7 @@
 #!/bin/bash
 # #SBATCH --job-name=facet-hypersara
 #SBATCH --time=96:00:00
-#SBATCH --exclusive
+# #SBATCH --exclusive
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 # #SBATCH --cpus-per-task=36
