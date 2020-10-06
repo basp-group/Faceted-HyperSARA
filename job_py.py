@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-import csv, subprocess
-from distutils.dir_util import mkpath
+import csv, subprocess, os
 
 parameter_file_full_path = "job_params.csv"
 
@@ -11,7 +10,7 @@ with open(parameter_file_full_path, "r") as csvfile:
 
     for job in reader:
 
-        mkpath("results/{0}/logs".format(job[0])) # if the directory already exists, do nothing
+        os.makedirs("results/{0}/logs".format(job[0]), exist_ok=True) # if the directory already exists, do nothing
 
         slurm_command = """sbatch --job-name={0} --ntasks-per-node={1} \
             -e /lustre/home/sc004/pthouven/Faceted-Hyper-SARA/results/{0}/logs/{0}_L={5}_Qx={2}_Qy={3}_Qc={4}_id={11}_overlap={12}_p={6}_snr={7}.err \
