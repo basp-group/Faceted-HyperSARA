@@ -312,10 +312,10 @@ if flag_computeOperatorNorm
     Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
     Anorm = pow_method_op(F, Ft, [Ny Nx nChannels]);
     save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
-        '_L=',num2str(nChannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
+        '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
 else
     load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
-        num2str(nChannels),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
+        num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
 end
     
 %% Generate initial epsilons by performing imaging with NNLS on each data block separately
@@ -404,9 +404,9 @@ if flag_solveMinimization
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.gamma0 = 1;
-    param_HSI.gamma = 1e-2*mu;  %convergence parameter L1 (soft th parameter)
-    param_HSI.rel_var = 1e-6; % stopping criterion
-    param_HSI.max_iter = 10000; % max number of iterations
+    param_HSI.gamma = 1e-5;    %1e-2*mu;  %convergence parameter L1 (soft th parameter)
+    param_HSI.rel_var = 1e-6;  % stopping criterion
+    param_HSI.max_iter = 1000; %10000; % max number of iterations
     
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 250; % minimum num of iter before stating adjustment
