@@ -398,7 +398,7 @@ for t = t_start : param.max_iter
                 res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-2}), yp, Gp, Ap, Atp, Wp);
             end
         end
-        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha;
+        reweight_alpha = max(param.reweight_alpha_ff*reweight_alpha, 1);
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;

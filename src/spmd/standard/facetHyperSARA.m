@@ -31,7 +31,7 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 %   > .gamma    regularization parameter (l21 norm)
 %
 %   reweighting
-%   > .reweight_alpha_ff   (0.9)        
+%   > .param.reweight_alpha_ff   (0.9)        
 %   > .total_reweights      (30)     -1 if you don't want reweighting
 %   > .use_reweight_steps    (1)     reweighting by fixed steps
 %   > .reweight_step_size  (300)     reweighting step size
@@ -404,7 +404,7 @@ reweight_alphap = Composite();
 for q = 1:Q
     reweight_alphap{q} = reweight_alpha;
 end
-reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
+reweight_alpha_ffp = parallel.pool.Constant(param.param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
 
 g_q = Composite();
@@ -641,13 +641,13 @@ for t = t_start : param.max_iter
                 [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap, sig, sig_bar);
-                reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
+                reweight_alphap = max(reweight_alpha_ffp.Value*reweight_alphap, 1);
             else
                 % compute residual images
                 res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
             end
         end
-       reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
+        reweight_alpha = max(param.reweight_alpha_ff*reweight_alpha, 1); % on the master node
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
