@@ -139,7 +139,7 @@ for row = 1:length(CountVectSBIS)-1
         [dummyRowBIS,dummyColBIS,dummyVal{wrow}] = find(fullKernel.*(abs(fullKernel)>thresVal));
         
         % shift along the column dim.
-        dc_Shift = shift_ind([dummyRowBIS dummyColBIS],gGriddedFourierDim(1),gGriddedFourierDim(2));
+        dc_Shift = util_shift_indices([dummyRowBIS dummyColBIS],gGriddedFourierDim(1),gGriddedFourierDim(2));
         dummyCol{wrow} = sub2ind(gGriddedFourierDim,dc_Shift(:,1),dc_Shift(:,2));
         %
         
