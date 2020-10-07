@@ -600,7 +600,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
+    if t>1 && rel_val(t) < param.rel_var && reweight_step_count >= param.total_reweights && ...
             (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
         flag = 1;
         break;
@@ -626,10 +626,9 @@ for t = t_start : param.max_iter
     % if (param.use_reweight_steps && (rel_val(t) < param.reweight_rel_var) && ...
     %     (reweight_step_count <= param.total_reweights) && ...
     %     (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check))
-    if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
+    if reweight_step_count < param.total_reweights && ((param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
         (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
-        t - reweight_last_step_iter > param.reweight_min_steps_rel_var && t < param.reweight_max_reweight_itr)
-        
+        t - reweight_last_step_iter > param.reweight_min_steps_rel_var && t < param.reweight_max_reweight_itr))
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
         % SNR
@@ -654,7 +653,7 @@ for t = t_start : param.max_iter
 
                 [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
-                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap, sig, sig_bar);
+                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap);
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
             else
                 % compute residual images

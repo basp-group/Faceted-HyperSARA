@@ -664,7 +664,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
+    if t>1 && rel_val(t) < param.rel_var && reweight_step_count >= param.total_reweights && ...
             (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
         flag = 1;
         break;
@@ -682,8 +682,12 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
-    if (param.step_flag && rel_val(t) < param.reweight_rel_var && ...
-        norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
+    % if (param.step_flag && rel_val(t) < param.reweight_rel_var && ...
+    %     norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
+    %     reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
+    %     param.step_flag = 0;
+    % end
+    if (param.step_flag && t>500) % rel_fval(t) < param.reweight_rel_var)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
@@ -691,10 +695,9 @@ for t = t_start : param.max_iter
     % if (param.use_reweight_steps && (rel_val(t) < param.reweight_rel_var) && ...
     %     (reweight_step_count <= param.total_reweights) && ...
     %     (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check))
-    if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
+    if reweight_step_count < param.total_reweights && ((param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
         (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
-        t - reweight_last_step_iter > param.reweight_min_steps_rel_var && t < param.reweight_max_reweight_itr)
-        
+        t - reweight_last_step_iter > param.reweight_min_steps_rel_var && t < param.reweight_max_reweight_itr))
         fprintf('Reweighting: %i\n\n', reweight_step_count);
         
         % get xsol back from the workers
@@ -711,7 +714,7 @@ for t = t_start : param.max_iter
                 [weights1_, weights0_] = update_weights_overlap2_weighted(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                    reweight_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+                    reweight_alphap, crop_l21, crop_nuclear, w);
                 reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
             else
                 % compute residual image on the data nodes

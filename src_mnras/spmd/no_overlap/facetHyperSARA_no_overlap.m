@@ -591,7 +591,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
+    if t>1 && rel_val(t) < param.rel_var && reweight_step_count >= param.total_reweights && ...
             (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
         flag = 1;
         break;

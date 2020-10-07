@@ -596,7 +596,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
+    if t>1 && rel_val(t) < param.rel_var && reweight_step_count >= param.total_reweights && ...
             (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
         flag = 1;
         break;
@@ -622,10 +622,9 @@ for t = t_start : param.max_iter
     % if (param.use_reweight_steps && (rel_val(t) < param.reweight_rel_var) && ...
     %     (reweight_step_count <= param.total_reweights) && ...
     %     (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check))
-    if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
+    if reweight_step_count < param.total_reweights && ((param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
         (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
-        t - reweight_last_step_iter > param.reweight_min_steps_rel_var && t < param.reweight_max_reweight_itr)
-        
+        t - reweight_last_step_iter > param.reweight_min_steps_rel_var && t < param.reweight_max_reweight_itr))    
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
         spmd
@@ -655,12 +654,10 @@ for t = t_start : param.max_iter
             end
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
-        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t; 
-        %-- end modifications
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
