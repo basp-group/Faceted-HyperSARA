@@ -1,6 +1,6 @@
 function [weights1, weights0] = update_weights_overlap2(x_overlap, size_v1, ...
     I, offset, status, nlevel, wavelet, Ncoefs, dims_overlap_ref, ...
-    offsetL, offsetR, reweight_alpha, crop_l21, crop_nuclear, sig, sig_bar)
+    offsetL, offsetR, reweight_alpha, crop_l21, crop_nuclear)
 %update_weights_overlap2: update the weights involved in the 
 % reweighting procedure applied to the faceted l21 and nuclear norms.
 %-------------------------------------------------------------------------%

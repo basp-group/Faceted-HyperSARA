@@ -1,6 +1,6 @@
 function [weights1, weights0] = update_weights_cst_overlap_weighted(x_overlap, size_v1, ...
     I, dims, offset, status, nlevel, wavelet, Ncoefs, dims_overlap_ref, ...
-    offsetL, offsetR, reweight_alpha, w, crop, sig, sig_bar)
+    offsetL, offsetR, reweight_alpha, w, crop)
 %update_weights_cst_overlap_weighted: update the weights involved in the 
 % reweighting procedure applied to the faceted l21 and nuclear norms. This 
 % version includes a spatial correction for the faceted nuclear norm 
