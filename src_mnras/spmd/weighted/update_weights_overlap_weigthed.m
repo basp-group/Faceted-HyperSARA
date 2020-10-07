@@ -52,8 +52,7 @@ function [weights1, weights0] = update_weights_overlap_weigthed(x_overlap, size_
 sol = reshape(x_overlap.*w, [prod(dims_overlap_ref), size(x_overlap, 3)]);
 [~,S00,~] = svd(sol,'econ');
 d0 = abs(diag(S00));
-upsilon_bar = sig_bar*reweight_alpha;
-weights0 = upsilon_bar ./ (upsilon_bar + d0);
+weights0 = reweight_alpha ./ (reweight_alpha + d0);
 
 % l21 norm
 zerosNum = dims_overlap_ref + offsetL + offsetR; % offset for the zero-padding
@@ -64,7 +63,6 @@ for l = 1 : size(x_, 3)
     u(:, l) = sdwt2_sara(x_(:, :, l), I, offset, status, nlevel, wavelet, Ncoefs);
 end
 d1 = sqrt(sum(abs((u)).^2,2));
-upsilon = sig*reweight_alpha;
-weights1 = upsilon ./ (upsilon + d1);
+weights1 = reweight_alpha ./ (reweight_alpha + d1);
 
 end
