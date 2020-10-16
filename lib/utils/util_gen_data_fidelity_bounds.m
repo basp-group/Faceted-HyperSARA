@@ -12,8 +12,8 @@ if param.type == 'sigma'
     % compute the data blocks L2 bounds
     for i =  1 : c
         for j = 1 : length(y{i})
-        m = length(y{i}{j});    
-        epsilons{i}{j} = sqrt(m/Nm) * epsilon;
+            m = length(y{i}{j});    
+            epsilons{i}{j} = sqrt(m/Nm) * epsilon;
         end
     end
 end

@@ -15,7 +15,8 @@ function rg = interleaved_facets(nchunks, N)
 %-------------------------------------------------------------------------%
 %%
 if nchunks > N
-    error('Number of facets Q=%i greater than the dimension L=%i', nchunks, N);
+    error('Number of facets Q=%i greater than the dimension L=%i', ...
+    nchunks, N);
 end
 
 rg = cell(nchunks, 1);

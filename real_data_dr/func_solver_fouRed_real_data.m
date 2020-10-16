@@ -1,4 +1,4 @@
-function func_solver_fouRed_real_data(datadir, gamma0, gamma, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag)
+function func_solver_fouRed_real_data(datadir, gamma0, gamma, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag, wterm, levelG, levelC, init_file_name, rw_alpha, rw_tot, lowRes)
 
 if fouRed_type == 1
     typeStr = 'perc';
@@ -6,13 +6,13 @@ elseif fouRed_type == 2
     typeStr = 'th';
 end
 
-diaryFname = ['diary_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), ...
-    '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_algo', num2str(algo_version), '_', typeStr, num2str(fouRed_gamma), '_', num2str(adapt_eps_flag), '.txt'];
-    
-if exist(diaryFname, 'file')
-    delete(diaryFname)
-end
-diary(diaryFname)
+% diaryFname = ['diary_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), ...
+%     '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_algo', num2str(algo_version), '_', typeStr, num2str(fouRed_gamma), '_', num2str(adapt_eps_flag), '.txt'];
+%     
+% if exist(diaryFname, 'file')
+%     delete(diaryFname)
+% end
+% diary(diaryFname)
 
 addpath ../fouRed
 addpath ../lib/
@@ -20,8 +20,8 @@ addpath ../lib/operators/
 addpath ../lib/nufft/
 addpath ../lib/utils/
 addpath ../lib/CubeHelix/
-addpath ../lib/Proximity_operators/code/matlab/indicator/
-addpath ../lib/Proximity_operators/code/matlab/multi/
+% addpath ../lib/Proximity_operators/code/matlab/indicator/
+% addpath ../lib/Proximity_operators/code/matlab/multi/
 addpath ../sdwt2/
 addpath ../src/
 addpath ../src/spmd/
@@ -41,23 +41,30 @@ elseif fouRed_type == 2
     fprintf('Reduction level: keep %f sigma\n', fouRed_gamma);
 end
 fprintf('Adapt epsilon: %d\n', adapt_eps_flag);
+fprintf('Reweight alpha: %f, total reweights: %d\n', rw_alpha, rw_tot);
+fprintf('Low resolution: %d\n', lowRes);
 
 % compute_Anorm = true;
 usingPrecondition = true;
 rw = -1;
 window_type = 'triangular';
 
-Qx = 5;
-Qy = 3;
+Qx = 4;
+Qy = 4;
 Qc2 = 15;    % to see later
 
-d = 512;
+d = 1024;
 flag_algo = algo_version;
 % parallel_version = 'spmd4_cst';
 % bool_weights = true; % for the spmd4_new version (50% overlap version)
 
-param_real_data.image_size_Nx = 2560; % 2560;
-param_real_data.image_size_Ny = 1536; % 1536;
+if lowRes
+    param_real_data.image_size_Nx = 2560; % 2560;
+    param_real_data.image_size_Ny = 2560; % 1536;
+else
+    param_real_data.image_size_Nx = 4096; % 2560;
+    param_real_data.image_size_Ny = 4096; % 1536;
+end
 nChannels = length(ch); % total number of "virtual" channels (i.e., after
 % concatenation) for the real dataset considered
 % nBlocks = realdatablocks;        % number of data blocks (needs to be known beforehand,
@@ -72,7 +79,9 @@ oy = 2; % oversampling factors for nufft
 Kx = 7; % number of neighbours for nufft
 Ky = 7; % number of neighbours for nufft
 
-[A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
+if ~wterm
+    [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
+end
 
 %% Load data
 % delete(gcp('nocreate'));
@@ -99,11 +108,25 @@ for i = 1:nChannels
 %         num2str(reduction_version), '_perc', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
 %     DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
 %     num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
-    DRfilename = [datadir, '/CYG_DR_cal_', num2str(realdatablocks), 'b_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
 %     tmp = load(['../../extract_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
 %         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
-    fprintf('Read dimensionality reduction file: %s\n', DRfilename)
-    tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon', 'xsol');
+    if wterm
+        if lowRes
+            DRfilename = [datadir, '/ESO137_LOW_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '=', num2str(ch(i)), '.mat'];
+        else
+            DRfilename = [datadir, '/ESO137_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '=', num2str(ch(i)), '.mat'];
+        end
+        fprintf('Read dimensionality reduction file: %s\n', DRfilename)
+        tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'A', 'At', 'epsilon');
+    else
+        if lowRes
+            DRfilename = [datadir, '/ESO137_LOW_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '=', num2str(ch(i)), '.mat'];
+        else
+            DRfilename = [datadir, '/ESO137_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '=', num2str(ch(i)), '.mat'];
+        end
+        fprintf('Read dimensionality reduction file: %s\n', DRfilename)
+        tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
+    end
     H{i,1} = tmp.H{1,1};
     W{i,1} = tmp.W{1,1};
     yT{i,1} = tmp.yT{1,1};
@@ -111,6 +134,10 @@ for i = 1:nChannels
     aW{i,1} = tmp.aW{1,1};
     Wm{i,1} = tmp.Wm{1,1};
     epsilon{i,1} = tmp.epsilon{1,1};
+    if wterm
+        A = tmp.A;
+        At = tmp.At;
+    end
 %     H = tmp.H{1,1};
 %     W = tmp.W{1,1};
 %     yT = tmp.yT{1,1};
@@ -123,10 +150,10 @@ for i = 1:nChannels
         for j = 1:length(H{i,1})
 %         for j = 1:length(H)
 %             H{i,1}{j} = H{i,1}{j}(Wm{i,1}{j}, :);
-            if adapt_eps_flag
-                epsilon1{i,1}{j} = 0.9 * epsilon{i,1}{j};       % adjust epsilon for high frequency calibrated data
-%                 epsilon1{j} = 0.9 * epsilon{j};
-            end
+%             if adapt_eps_flag
+%                 epsilon1{i,1}{j} = 0.9 * epsilon{i,1}{j};       % adjust epsilon for high frequency calibrated data
+% %                 epsilon1{j} = 0.9 * epsilon{j};
+%             end
             if usingPrecondition
                 aW{i,1}{j} = T{i,1}{j};
 %                 aW{j} = T{j};
@@ -139,9 +166,20 @@ for i = 1:nChannels
 %         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'epsilon');
 %     tmp = load(['../../extract_real_data/CYG_eps_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
 %         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'epsilon');   
-    xsol(:,:,i) = tmp.xsol;
+%     xsol(:,:,i) = tmp.xsol;
 %     xsol = tmp.xsol;
     fprintf('\nDR file of channel number %d has been read\n', ch(i))
+    
+%     if wterm
+%         DRfilename = [datadir, '/ESO137_NNLS_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '=', num2str(ch(i)), '.mat'];
+%         fprintf("Read 'epsilon' from: %s\n", DRfilename)
+%         tmp = load(DRfilename, 'epsilon');
+%     else
+%         DRfilename = [datadir, '/ESO137_NNLS_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '=', num2str(ch(i)), '.mat'];
+%         fprintf("Read 'epsilon' from: %s\n", DRfilename)
+%         tmp = load(DRfilename, 'epsilon');
+%     end
+%     epsilon{i,1} = tmp.epsilon{1,1};
 end
 
 clear tmp
@@ -187,8 +225,23 @@ clear tmp
 % clear Hp Wp yTp Tp aWp Wmp epsilonp xsolp
 
 %% Compute full measurement operator spectral norm
-Anormfile = ['Anorm_dr_prec_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_',...
-    num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.mat'];
+if wterm
+    if lowRes
+        Anormfile = ['Anorm_LOW_dr_prec_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_',...
+        num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.mat'];
+    else
+        Anormfile = ['Anorm_dr_prec_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_',...
+        num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.mat'];
+    end
+else
+    if lowRes
+        Anormfile = ['Anorm_LOW_dr_prec_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_',...
+        num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.mat'];
+    else
+        Anormfile = ['Anorm_dr_prec_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_',...
+        num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.mat'];
+    end
+end
 if isfile(Anormfile)
     compute_Anorm = false;
 else
@@ -217,7 +270,7 @@ clear F Ft;
 
 %% Sparsity operator definition
 nlevel = 4; % wavelet level
-wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; % wavelet basis to be used
+wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8'}; % 'self' % wavelet basis to be used
 L = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
 
 if flag_algo < 2
@@ -259,7 +312,7 @@ if algo_version == 1
     param_HSI.gamma0 = gamma0;
     param_HSI.gamma = gamma;  %convergence parameter L1 (soft th parameter)
     param_HSI.rel_obj = 1e-10; % stopping criterion
-    param_HSI.max_iter = 10000; % max number of iterations
+    param_HSI.max_iter = 10; % max number of iterations
 
     param_HSI.use_adapt_eps = adapt_eps_flag; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 300; % minimum num of iter before stating adjustment
@@ -292,7 +345,7 @@ if algo_version == 1
     param_HSI.rw_tol = 5000;
     param_HSI.ind = 1:16;
     
-    param_HSI.initsol = xsol;
+%     param_HSI.initsol = xsol;
     
     reweight_step_count = 0;
     initfilename = ['results/facetHyperSARA_dr_co_w_real_' ...
@@ -310,7 +363,7 @@ if algo_version == 1
 
     
     % spectral tesselation (non-overlapping)
-    rg_c = domain_decomposition(Qc2, nChannels/2); % to be modified % only for data reduction
+    rg_c = domain_decomposition(Qc2, nChannels); % to be modified % only for data reduction
     cell_c_chunks = cell(Qc2, 1);
     y_spmd = cell(Qc2, 1);
     epsilon_spmd = cell(Qc2, 1);
@@ -331,11 +384,11 @@ if algo_version == 1
 %     cell_c_chunks{8} = 28:30;
     
     for i = 1:Qc2
-%         cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
-        cell_c_chunks{i} = [rg_c(i, 1):rg_c(i, 2), nChannels-rg_c(i, 2)+1:nChannels-rg_c(i, 1)+1];   % only for data reduction
+        cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+%         cell_c_chunks{i} = [rg_c(i, 1):rg_c(i, 2), nChannels-rg_c(i, 2)+1:nChannels-rg_c(i, 1)+1];   % only for data reduction
         y_spmd{i} = yT(cell_c_chunks{i});
         if adapt_eps_flag
-            epsilon_spmd{i} = epsilon1(cell_c_chunks{i});
+            epsilon_spmd{i} = epsilon(cell_c_chunks{i});
         else
             epsilon_spmd{i} = epsilon(cell_c_chunks{i});
         end
@@ -400,7 +453,7 @@ elseif algo_version == 2
     param_pdfb.elipse_proj_min_iter = 1;
     param_pdfb.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid
     
-    param_pdfb.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
+    param_pdfb.use_adapt_eps = adapt_eps_flag; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_pdfb.adapt_eps_start = 300; % minimum num of iter before stating adjustment
     param_pdfb.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
     param_pdfb.adapt_eps_tol_out = 1.001; % tolerance outside the l2 ball
@@ -409,9 +462,9 @@ elseif algo_version == 2
     param_pdfb.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
     param_pdfb.l2_upper_bound = epsilon{1};
 
-    param_pdfb.reweight_alpha = (0.8)^20; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
-    param_pdfb.reweight_alpha_ff = 0.8;
-    param_pdfb.total_reweights = 30; % -1 if you don't want reweighting
+    param_pdfb.reweight_alpha = 10; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+    param_pdfb.reweight_alpha_ff = rw_alpha;
+    param_pdfb.total_reweights = rw_tot; % -1 if you don't want reweighting
     param_pdfb.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
 
     param_pdfb.use_reweight_steps = 0; % reweighting by fixed steps
@@ -426,19 +479,20 @@ elseif algo_version == 2
     
     param_pdfb.rw_tol = 5000;
     
-    param_pdfb.initsol = xsol;
+%     param_pdfb.initsol = xsol;
     param_pdfb.chInd = ch(1);
+    param_pdfb.init_file_name = init_file_name;
     
     % solvers
     mkdir('results/')
     [xsol, ~, epsilon, t, rel_fval, norm2, res, end_iter] = ...
         pdfb_DR_precond(yT{1}, epsilon{1}, A, At, H{1}, W{1}, aW{1}, T{1}, Wm{1}, ...
-        Psi, Psit, param_pdfb, reduction_version, realdatablocks, fouRed_gamma, typeStr);
+        Psi, Psit, param_pdfb, reduction_version, realdatablocks, fouRed_gamma, typeStr, wterm, levelG, levelC, init_file_name);
     
     save(['results/results_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)),...
         '_', num2str(algo_version), '_gamma=', num2str(gamma), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.mat'], '-v7.3', ...
         'xsol', 'epsilon', 't', 'rel_fval', 'norm2', 'res', 'end_iter');
     
 end
-diary off
+
 end

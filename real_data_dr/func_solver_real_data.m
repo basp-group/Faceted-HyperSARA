@@ -1,4 +1,4 @@
-function func_solver_real_data(gamma, chInd)
+function func_solver_real_data(datadir, gamma, chInd, wterm, levelG, levelC, rw_alpha, rw_tot, lowRes)
 % chInd = 1;
 addpath ../fouRed
 addpath ../lib/
@@ -14,18 +14,11 @@ addpath ../src/spmd/
 addpath ../src/spmd/dr/
 addpath ../src/spmd/weighted/
 
-disp(chInd)
-
-compute_Anorm = false;
 usingPrecondition = false;
 
-flag_algo = 1;
-
 param_real_data.image_size_Nx = 2560; % 2560;
-param_real_data.image_size_Ny = 1536; % 1536;
-nChannels = 1; % total number of "virtual" channels (i.e., after
-% concatenation) for the real dataset considered
-realdatablocks = 2;        % number of data blocks (needs to be known beforehand,
+param_real_data.image_size_Ny = 2560; % 1536;
+flag_algo = 1;
 % quite restrictive here), change l.70 accordingly
 % klargestpercent = 20;
 
@@ -86,56 +79,87 @@ param_block_structure.use_manual_partitioning = 1;
 % end
 
 % Phase 3 data
-datadir = '/lustre/home/shared/sc004/AD_Data_Subcubes/SubCubes/';
-gmatdir = '/lustre/home/shared/sc004/AD_Update_G_Codes/results/';
-subInd = 1:16;
+% datadir = '/lustre/home/shared/sc004/AD_Data_Subcubes/SubCubes/';
+% gmatdir = '/lustre/home/shared/sc004/AD_Update_G_Codes/results/';
+% subInd = 1:16;
+% 
+% xsol = zeros(Ny, Nx);
+% 
+% Gw = cell(realdatablocks, 1);
+% Wl = cell(realdatablocks, 1);
+% res = cell(realdatablocks, 1);
+% yb = cell(realdatablocks, 1);
+% epsilon = cell(realdatablocks, 1);
+% 
+% for j = 1:length(subInd)
+%     fprintf('\nIndex number: %d\n', subInd(j))
+%     if chInd < 17
+%         kerl = 5;
+%     else
+%         kerl = 7;
+%     end
+%     % Calibrated G matrices
+%     gmatfile = [gmatdir, 'SubCube', num2str(subInd(j)), '/WB', num2str(kerl), '-', num2str(chInd), '/PreProcStruct.mat'];
+%     fprintf('Read G matrix file: %s\n', gmatfile)
+%     tmp = load(gmatfile);
+% %     xsol = xsol + tmp.PreProcStruct.SolInit;        
+%     for k = 1:realdatablocks
+%         Gw{k} = [Gw{k}; tmp.PreProcStruct.Gw{k}];
+%         res{k} = [res{k}; tmp.PreProcStruct.ResiudalModelDataInit{k}];
+%     end
+% 
+%     % Raw data
+%     datafile = [datadir, 'CYG', num2str(j), '.mat'];
+%     fprintf('Read data file: %s\n', datafile)
+%     tmp = load(datafile);
+%     for k = 1:realdatablocks
+%         yb{k} = [yb{k}; tmp.y_I{chInd}{k}(tmp.y_I{chInd}{k}~=0)];
+%     end
+% end
+% % xsol = xsol/length(subInd);   % average of initial xsol
+% xsol = fitsread('xsol_sara_it4500.fits');
+% 
+% for k = 1:realdatablocks
+%     Wl{k}= Gw{k}' * ones(size(Gw{k}, 1), 1) ~= 0;       % remove zero columns of G matrices
+%     Gw{k} = Gw{k}(:, Wl{k});
+%     epsilon{k} = norm(res{k});
+%     fprintf('Block %d of channel %d, estimated epsilon: %f\n', k, chInd, epsilon{k})
+% end 
 
-xsol = zeros(Ny, Nx);
-
-Gw = cell(realdatablocks, 1);
-Wl = cell(realdatablocks, 1);
-res = cell(realdatablocks, 1);
-yb = cell(realdatablocks, 1);
-epsilon = cell(realdatablocks, 1);
-
-for j = 1:length(subInd)
-    fprintf('\nIndex number: %d\n', subInd(j))
-    if chInd < 17
-        kerl = 5;
+%% Load data
+% spmd
+%     i = labindex;
+fprintf('\nChannel number: %d\n', chInd)
+if wterm
+    if lowRes
+        filename = [datadir, '/ESO137_LOW_w', num2str(levelG), '_', num2str(levelC), '=', num2str(chInd), '.mat'];
     else
-        kerl = 7;
+        filename = [datadir, '/ESO137_w', num2str(levelG), '_', num2str(levelC), '=', num2str(chInd), '.mat'];
     end
-    % Calibrated G matrices
-    gmatfile = [gmatdir, 'SubCube', num2str(subInd(j)), '/WB', num2str(kerl), '-', num2str(chInd), '/PreProcStruct.mat'];
-    fprintf('Read G matrix file: %s\n', gmatfile)
-    tmp = load(gmatfile);
-%     xsol = xsol + tmp.PreProcStruct.SolInit;        
-    for k = 1:realdatablocks
-        Gw{k} = [Gw{k}; tmp.PreProcStruct.Gw{k}];
-        res{k} = [res{k}; tmp.PreProcStruct.ResiudalModelDataInit{k}];
+    fprintf('Read file: %s\n', filename)
+    tmp = load(filename, 'A','At','Gw', 'W', 'yT', 'epsilon');
+else
+    if lowRes
+        filename = [datadir, '/ESO137_LOW=', num2str(chInd), '.mat'];
+    else
+        filename = [datadir, '/ESO137=', num2str(chInd), '.mat'];
     end
-
-    % Raw data
-    datafile = [datadir, 'CYG', num2str(j), '.mat'];
-    fprintf('Read data file: %s\n', datafile)
-    tmp = load(datafile);
-    for k = 1:realdatablocks
-        yb{k} = [yb{k}; tmp.y_I{chInd}{k}(tmp.y_I{chInd}{k}~=0)];
-    end
+    fprintf('Read file: %s\n', filename)
+    tmp = load(filename, 'Gw', 'W', 'yT', 'epsilon');
 end
-% xsol = xsol/length(subInd);   % average of initial xsol
-xsol = fitsread('xsol_sara_it4500.fits');
+Gw{1,1} = tmp.Gw{1,1};
+W{1,1} = tmp.W{1,1};
+yT{1,1} = tmp.yT{1,1};
+epsilon{1,1} = tmp.epsilon{1,1};
+if wterm
+    A = tmp.A;
+    At = tmp.At;
+else
+    [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
+end
+fprintf('\nFile of channel number %d has been read\n', chInd)
 
-for k = 1:realdatablocks
-    Wl{k}= Gw{k}' * ones(size(Gw{k}, 1), 1) ~= 0;       % remove zero columns of G matrices
-    Gw{k} = Gw{k}(:, Wl{k});
-    epsilon{k} = norm(res{k});
-    fprintf('Block %d of channel %d, estimated epsilon: %f\n', k, chInd, epsilon{k})
-end 
-
-[A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
-
-clear res
+clear tmp
 % if compute_G  
 %     new_file_u = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_u.mat');
 %     new_file_v = matfile('/Users/ming/workspace/Git/extract_real_data/CYG_2b_v.mat');
@@ -166,22 +190,42 @@ clear res
 
 
 %% Compute full measurement operator spectral norm
-if compute_Anorm
-    F = afclean( @(x) HS_forward_operator_precond_G(x, {Gw}, {Wl}, A));
-    Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, {Gw}, {Wl}, At, Ny, Nx));
-    Anorm = pow_method_op(F, Ft, [Ny Nx length(chInd)]);   
-    save(['Anorm_2b_per_', num2str(chInd), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '.mat'],'-v7.3', 'Anorm');
+if wterm
+    if lowRes
+        Anormfile = ['Anorm_raw_LOW_ch', num2str(chInd), '_w', num2str(levelG), '_', num2str(levelC), '.mat'];
+    else
+        Anormfile = ['Anorm_raw_ch', num2str(chInd), '_w', num2str(levelG), '_', num2str(levelC), '.mat'];
+    end
 else
-    load(['Anorm_2b_per_', num2str(chInd), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '.mat']);
+    if lowRes
+        Anormfile = ['Anorm_raw_LOW_ch', num2str(chInd), '.mat'];
+    else
+        Anormfile = ['Anorm_raw_ch', num2str(chInd), '.mat'];
+    end
+end
+if isfile(Anormfile)
+    compute_Anorm = false;
+else
+    compute_Anorm = true;
 end
 
-Anorm
+if compute_Anorm
+    F = afclean( @(x) HS_forward_operator_precond_G(x, Gw, W, A));
+    Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, Gw, W, At, Ny, Nx));
+    Anorm = pow_method_op(F, Ft, [Ny Nx length(chInd)]);   
+    save(Anormfile,'-v7.3', 'Anorm');
+else
+    fprintf('\nLoad the operator norm file: %s\n', Anormfile)
+    load(Anormfile);
+end
+
+fprintf('\nThe operator norm: %e\n', Anorm)
 
 clear F Ft;
 
 %% Sparsity operator definition
 nlevel = 4; % wavelet level
-wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; % wavelet basis to be used
+wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8'}; % wavelet basis to be used
 L = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
 
 if flag_algo < 2
@@ -230,17 +274,17 @@ param_pdfb.elipse_proj_max_iter = 20;
 param_pdfb.elipse_proj_min_iter = 1;
 param_pdfb.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid
 
-param_pdfb.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
+param_pdfb.use_adapt_eps = 1; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
 param_pdfb.adapt_eps_start = 300; % minimum num of iter before stating adjustment
 param_pdfb.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
-param_pdfb.adapt_eps_tol_out = 1.001; % tolerance outside the l2 ball
+param_pdfb.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
 param_pdfb.adapt_eps_steps = 100; % min num of iter between consecutive updates
 param_pdfb.adapt_eps_rel_obj = 5e-4; % bound on the relative change of the solution
 param_pdfb.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
 
-param_pdfb.reweight_alpha = (0.8)^20; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
-param_pdfb.reweight_alpha_ff = 0.8;
-param_pdfb.total_reweights = 1; % -1 if you don't want reweighting
+param_pdfb.reweight_alpha = 10; %(0.8)^20; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+param_pdfb.reweight_alpha_ff = rw_alpha; %0.8;
+param_pdfb.total_reweights = rw_tot; %1; % -1 if you don't want reweighting
 param_pdfb.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
 
 param_pdfb.use_reweight_steps = 0; % reweighting by fixed steps
@@ -253,17 +297,18 @@ param_pdfb.reweight_max_reweight_itr = param_pdfb.max_iter - param_pdfb.reweight
 param_pdfb.reweight_rel_obj = 1e-4; % criterion for performing reweighting
 param_pdfb.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
 
-param_pdfb.rw_tol1 = 500;
+% param_pdfb.rw_tol1 = 500;
 param_pdfb.rw_tol = 5000;
 
-param_pdfb.init_xsol = xsol;
+% param_pdfb.init_file_name = init_file_name;
+% param_pdfb.init_xsol = xsol;
 
 % param_pdfb.xstar = fitsread('xsol_sara_ch32_calibrated_5e-6_15rw.fits');
 % solvers
 mkdir('results/')
-[xsol,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,l11,norm_res,res] = ...
-    pdfb_L11_Adapt_blocks_rw_par_precond_new({yb}, {epsilon}, A, At, {Gw}, {Wl}, Psi, Psit, param_pdfb, chInd);
+[xsol,v1,v2,g,weights1,t_block,reweight_alpha,epsilon,t,rel_fval,l11,norm_res,res] = ...
+    pdfb_L11_Adapt_blocks_rw_par_precond_new(yT, epsilon, A, At, Gw, W, Psi, Psit, param_pdfb, chInd, wterm, levelG, levelC);
 
-save(['results/results_SARA_fouRed_ch', num2str(chInd), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '.mat'], '-v7.3', ...
+save(['results/results_SARA_ch', num2str(chInd), '.mat'], '-v7.3', ...
     'xsol', 'epsilon', 't', 'rel_fval', 'l11', 'norm_res', 'res');
     

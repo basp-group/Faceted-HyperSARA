@@ -57,14 +57,17 @@ for i = 1 : nChannels
                 t_block{i}{j} = t;
                 fprintf('Updated  epsilon DOWN: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
             end
-
-            if norm_res{i}{j} > adapt_eps_tol_out * epsilon{i}{j}
-                target_eps = adapt_eps_change_percentage*norm_res{i}{j} + (1 - adapt_eps_change_percentage)*epsilon{i}{j};
-                if target_eps > l2_upper_bound{i}{j}
-                    epsilon{i}{j} = l2_upper_bound{i}{j};
-                else
-                   epsilon{i}{j} = target_eps;
-                end
+        end
+        
+        if  norm_res{i}{j} > adapt_eps_tol_out * epsilon{i}{j}
+            if t > t_block{i}{j} + adapt_eps_steps && rel_fval < adapt_eps_rel_obj
+                target_eps = epsilon{i}{j} + (norm_res{i}{j} - epsilon{i}{j}) * adapt_eps_change_percentage;
+%                 if target_eps > l2_upper_bound{i}{j}
+%                     epsilon{i}{j} = l2_upper_bound{i}{j};
+%                 else
+                epsilon{i}{j} = target_eps;
+%                 end
+%                 epsilon{i}{j} = epsilon{i}{j} + (norm_res{i}{j} - epsilon{i}{j}) * adapt_eps_change_percentage;
                 t_block{i}{j} = t;
                 fprintf('Updated  epsilon UP: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
             end

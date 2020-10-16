@@ -58,7 +58,7 @@ PsiSty = zeros(max(dims_overlap));
 
 %% inverse transform
 
-for m = 1:M-1
+for m = 1:M
     % inverse transform
     %[lo_r, hi_r] = wfilters(wavelet{m}, 'r'); % reconstruction filters
     Ncoefs_m = Ncoefs(start_coefs:start_coefs+(J+1)-1,:);
@@ -74,9 +74,9 @@ for m = 1:M-1
 end
 
 % last coeffs = Dirac basis
-s = prod(Ncoefs(end,:)); % = prod(dims) for the Dirac basis (no boundary extension)
-PsiSty(start_facet(M,1):end_facet(M,1), start_facet(M,2):end_facet(M,2)) = ...
-    PsiSty(start_facet(M,1):end_facet(M,1), start_facet(M,2):end_facet(M,2)) + reshape(SPsitLx(start:start+s-1), Ncoefs(end,:));
+% s = prod(Ncoefs(end,:)); % = prod(dims) for the Dirac basis (no boundary extension)
+% PsiSty(start_facet(M,1):end_facet(M,1), start_facet(M,2):end_facet(M,2)) = ...
+%     PsiSty(start_facet(M,1):end_facet(M,1), start_facet(M,2):end_facet(M,2)) + reshape(SPsitLx(start:start+s-1), Ncoefs(end,:));
 
 % Renormalize reconstructed facet (use of several dictionaries)
 PsiSty = PsiSty/sqrt(M);
