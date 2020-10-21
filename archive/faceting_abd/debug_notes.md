@@ -26,10 +26,6 @@
 ## List of functions used (per folder)
 
 - `addpath ../hypersara-clean/lib/`
-   1. ...
-   2. ...
-   3. ...
-
 - `addpath ../hypersara-clean/lib/generate_data/`
 - `addpath ../hypersara-clean/lib/operators/`
 - `addpath(irt_library)`
@@ -42,7 +38,21 @@
 ## Comparison between the different files and folder (manual)
 
 - `sdwt2/`: domain_decomposition to be checked (all the rest is identical, up to comments)
-- `nufft/`: all files are identical, but my version has all the files required
-- `operators/`: those from the archive identical to current codes
-- `generate_data/`: ...
-- `src/`: ...
+- `nufft/`: all files are identical, but my version has all the files required (including `.mat`)
+- `operators/`: HS_forwad_operator_precond_G, op_p_nufft, so_fft2_adj
+- `generate_data/`: Generate_cube, Generate_cube_new, generate_uv_coverage -> ok, no significant difference (most difference in the way the uv-coverage is obtained)
+- `src/`: only functions to be compared for the moment are thos used in the weigthed version of the algo
+  1. domain_decomposition: ok (sdwt2)
+  2. generate_segdwt_indices: ok (sdwt2)
+  3. domain_decomposition_overlap2: ok (sdwt2)
+  4. initialize_dual_variables_prior_cst_overlap: ok
+  5. update_primal: ok
+  6. comm2d_update_ghost_cells: ok (sdwt2)
+  7. update_nuclear_spmd_weighted: ok
+  8. update_l21_spmd: ok
+  9. comm2d_reduce: ok (sdwt2)
+  10. update_data_fidelity: ok
+  11. prior_overlap_spmd_cst3_weighted: ok
+  12. update_weights_overlap2_weighted: ok
+  13. compute_residual_images: ok
+  14. pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted: same inner functions used (those mentioned above), only differences in warm restart, use of some auxiliary variables
