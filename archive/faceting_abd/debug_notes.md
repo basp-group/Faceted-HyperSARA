@@ -32,10 +32,17 @@
 
 - `addpath ../hypersara-clean/lib/generate_data/`
 - `addpath ../hypersara-clean/lib/operators/`
-- `addpath ../hypersara-clean/lib/CubeHelix/`
 - `addpath(irt_library)`
 - `addpath ../sdwt2/`
 - `addpath ../src/`
 - `addpath ../data/`
 - `addpath ../hypersara-clean/lib/Proximity_operators/code/matlab/indicator/`
 - `addpath ../hypersara-clean/lib/Proximity_operators/code/matlab/multi/`
+
+## Comparison between the different files and folder (manual)
+
+- `sdwt2/`: domain_decomposition to be checked (all the rest is identical, up to comments)
+- `nufft/`: all files are identical, but my version has all the files required
+- `operators/`: those from the archive identical to current codes
+- `generate_data/`: ...
+- `src/`: ...
