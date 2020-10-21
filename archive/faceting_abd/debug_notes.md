@@ -1,6 +1,6 @@
 # [21/10/2020] List of functions / folders used in Abdullah's older codes (mnras branch, test7_20_triangular_d256)
 
-**Caveat**: apparently Abdullah re-generated the image cube with the older functions (which may explain why he doesn't see the same issue as I do)
+**Caveat**: apparently Abdullah re-generated the image cube and uv-coverage with the older functions (which may explain why he doesn't see the same issue as I currently do).
 
 ## List of functions used (per script) (to be checked and compared to the current ones)
 
@@ -56,3 +56,11 @@
   12. update_weights_overlap2_weighted: ok
   13. compute_residual_images: ok
   14. pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted: same inner functions used (those mentioned above), only differences in warm restart, use of some auxiliary variables
+
+## Remaining differences (out of the solver itself)
+
+[21/10/2020]
+
+- uv-coverage? (Abdullah currently modifying, using meqtrees instead of the current MATLAB codes)
+- image cube: possible issue with the spectra? (Abdullah currently running a new test to check this point)
+- type of prior? (new to add "facets" on the border of the foeld of view) -> would need to rerun the real data expriments
