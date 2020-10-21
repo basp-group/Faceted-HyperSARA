@@ -123,7 +123,17 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 % min || X ||_* + lambda * ||Psit(X)||_2,1   s.t.  || Y - A(X) ||_2 <= epsilon and x>=0
 %
 %%
+% List of auxiliairy function used:
+% - generate_segdwt_indices
+% domain_decomposition
+% domain_decomposition_overlap2
+% -> write a function to generate weights
+% -> revise setup weights on distributed workers + amount of overlap involved
+% -> 
 
+
+
+%%
 % initialize monitoring variables (display active)
 SNR = 0;
 SNR_average = 0;
