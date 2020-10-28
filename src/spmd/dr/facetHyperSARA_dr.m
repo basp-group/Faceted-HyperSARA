@@ -710,15 +710,15 @@ for t = t_start : param.max_iter
             clear m
         end
         
+        reweight_step_count = reweight_step_count + 1;
+        reweight_last_step_iter = t;
+        rw_counts = rw_counts + 1;
+
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;
             fprintf('\n\n No more reweights \n\n');
             break;
-        end
-        
-        reweight_step_count = reweight_step_count + 1;
-        reweight_last_step_iter = t;
-        rw_counts = rw_counts + 1;        
+        end    
     end
 end
 toc(start_loop)
