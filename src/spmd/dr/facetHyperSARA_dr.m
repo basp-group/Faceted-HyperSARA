@@ -628,7 +628,7 @@ for t = t_start : param.max_iter
 (norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check))) || ...
 ((t - reweight_last_step_iter) >= param.ppd_max_iter));
         
-    if is_converged_ppd && (reweight_step_count < param.total_reweights+1) % corresponds to the PPD stopping criterion
+    if is_converged_ppd && (reweight_step_count < param.total_reweights) % corresponds to the PPD stopping criterion
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
         % SNR
