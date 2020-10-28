@@ -64,3 +64,78 @@
 - uv-coverage? (Abdullah currently modifying, using meqtrees instead of the current MATLAB codes)
 - image cube: possible issue with the spectra? (Abdullah currently running a new test to check this point)
 - type of prior? (new to add "facets" on the border of the foeld of view) -> would need to rerun the real data expriments
+
+- function within the solver to be debugged: (co_w version, /weighted/)
+
+  - spmd/update_primal
+  - spmd/update_nuclear_spmd_weighted
+  - spmd/update_l21_spmd
+  - spmd/prior_overlap_spmd_cst3_weighted
+  - spmd/update_weights_overlap2_weighted
+  - spmd/initialize_dual_variables_prior_cst_overlap
+  - update_data_fidelity
+  - update_epsilon
+  - compute_residual_images
+
+- co version (/weighted/)
+  - initialize_dual_variables_prior_cst_overlap
+  - update_primal
+  - update_nuclear_spmd
+  - update_l21_spmd
+  - update_data_fidelity
+  - prior_overlap_spmd_cst
+  - update_epsilon
+  - update_weights_cst_overlap
+  - compute_residual_images
+
+- w version (/weighted/)
+  - initialize_dual_variables_prior_overlap
+  - update_primal
+  - update_nuclear_spmd_weighted -> create a single function, with auxiliary parameter
+  - update_l21_spmd
+  - update_data_fidelity
+  - prior_overlap_spmd_weighted
+  - update_epsilon
+  - update_weights_overlap_weigthed
+  - compute_residual_images
+
+- no overlap
+  - initialize_dual_variables_prior
+  - update_primal
+  - update_nuclear_spmd
+  - update_l21_spmd
+  - update_data_fidelity
+  - prior_value_spmd
+  - update_epsilon
+  - update_weights
+  - compute_residual_images
+
+- standard (same overlap for nuclear and l21)
+  - initialize_dual_variables_prior_overlap
+  - update_primal
+  - update_nuclear_spmd
+  - update_l21_spmd
+  - update_data_fidelity
+  - prior_overlap_spmd
+  - update_epsilon
+  - update_weights_overlap
+  - compute_residual_images
+
+- serial
+  - initialize_l21_serial
+  - run_par_nuclear
+  - run_par_l21
+  - update_data_fidelity
+  - update_epsilon
+  - update_weights_nuclear_serial
+  - update_weights_l21_serial
+  - compute_residual_images
+
+---
+
+- from the sdwt2 library
+  - domain_decomposition
+  - generate_segdwt_indices
+  - domain_decomposition_overlap2
+  - comm2d_update_ghost_cells
+  - comm2d_reduce
