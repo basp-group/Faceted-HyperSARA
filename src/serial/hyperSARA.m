@@ -223,7 +223,6 @@ for q = 1:2
     reweight_alphap{q} = reweight_alpha;
 end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
-reweight_steps = param.reweight_steps;
 
 if init_flag
     g = m_init.g;
@@ -282,15 +281,15 @@ for t = t_start : param.max_iter
     spmd
         if labindex == 1 % nuclear prior node
             %tic;
-            [v0_, g0_] = run_par_nuclear(v0_, xhat, weights0_, beta0.Value, sigma00.Value);
+            [v0_, g0_] = update_dual_nuclear_serial(v0_, xhat, weights0_, beta0.Value, sigma00.Value);
             %tw = toc;  
         elseif labindex == 2 % l21 prior node (full SARA prior)
             %tic
-            [v1_, g1_] = run_par_l21(v1_, Psit_, Psi_, xhat, weights1_, beta1.Value, sigma11.Value);  
+            [v1_, g1_] = update_dual_l21_serial(v1_, Psit_, Psi_, xhat, weights1_, beta1.Value, sigma11.Value);  
             %tw = toc;
         else % data nodes, 3:K+2 (labindex > 2)
             %tic
-            [v2_, g2_, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            [v2_, g2_, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             %tw = toc;
         end
@@ -334,7 +333,7 @@ for t = t_start : param.max_iter
         nuclear = nuclear_norm(xsol);
         
         % l21 norm
-        l21 = l21_norm_sara(xsol, Psit, s);
+        l21 = compute_sara_prior(xsol, Psit, s);
         
         % SNR
         sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -446,13 +445,13 @@ for t = t_start : param.max_iter
         
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
-        rw_counts = rw_counts + 1; 
+        rw_counts = rw_counts + 1;   
 
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;
             fprintf('\n\n No more reweights \n\n');
             break;
-        end       
+        end     
     end
 end
 toc(start_loop)
@@ -533,7 +532,7 @@ clear m
 % nuclear norm
 nuclear = nuclear_norm(xsol);
 % l21 norm
-l21 = l21_norm_sara(xsol, Psit, s);
+l21 = compute_sara_prior(xsol, Psit, s);
 if (param.verbose > 0)
     if (flag == 1)
         fprintf('Solution found\n');

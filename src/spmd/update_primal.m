@@ -5,13 +5,13 @@ function [xsol, xhat, rel_x, norm_x] = update_primal(xsol, g)
 % algorithm.
 %
 % Args:
-%     xsol (array_like): wideband facet [M, N, L].
-%     g (array_like): auxiliary variable related to the wideband facet 
+%     xsol (array): wideband facet [M, N, L].
+%     g (array): auxiliary variable related to the wideband facet 
 %                     [M, N, L].
 %
 % Returns:
-%     xsol (array_like): updated wideband facet [M, N, L].
-%     xhat (array_like): auxiliary variable related to the wideband facet 
+%     xsol (array): updated wideband facet [M, N, L].
+%     xhat (array): auxiliary variable related to the wideband facet 
 %                        [M, N, L]
 %     rel_x (double): relative variation squared
 %     norm_x (double): squared Euclidean norm of xsol
