@@ -52,7 +52,7 @@ x_(offsetLq(1)+1:end-offsetRq(1), offsetLq(2)+1:end-offsetRq(2), :) = x_overlap;
 % faceted SARA
 z = zeros(size_v1);
 for l = 1 : c
-    z(:,l) = sdwt2_sara(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
+    z(:,l) = sdwt2_sara_faceting(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
 end
 l21_norm = sum(sqrt(sum(abs(z).^2,2)), 1);
 

@@ -65,7 +65,7 @@ x_ = zeros([zerosNum, size(x_overlap, 3)]);
 x_(offsetL(1)+1:end-offsetR(1), offsetL(2)+1:end-offsetR(2), :) = x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :);
 z = zeros(size_v1);
 for l = 1 : size(x_, 3)
-    z(:, l) = sdwt2_sara(x_(:, :, l), I, offset, status, nlevel, wavelet, Ncoefs);
+    z(:, l) = sdwt2_sara_faceting(x_(:, :, l), I, offset, status, nlevel, wavelet, Ncoefs);
 end
 d1 = sqrt(sum(z.^2,2));
 upsilon = sig*reweight_alpha;

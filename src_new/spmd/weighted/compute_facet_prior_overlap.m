@@ -1,4 +1,4 @@
-function [l21_norm, nuclear_norm] = compute_facet_prior(x_overlap, Iq, ...
+function [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
     offset, status_q, nlevel, wavelet, Ncoefs_q, dims_overlap_ref_q, ...
     offsetLq, offsetRq, crop_l21, crop_nuclear, w, size_v1)
 % Compute the value of the faceted prior (:math:`\ell_{2,1}` + nuclear 
@@ -59,7 +59,7 @@ x_(offsetLq(1)+1:end-offsetRq(1), offsetLq(2)+1:end-offsetRq(2), :) = x_overlap(
 % faceted SARA
 z = zeros(size_v1);
 for l = 1 : c
-    z(:,l) = sdwt2_sara(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
+    z(:,l) = sdwt2_sara_faceting(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
 end
 l21_norm = sum(sqrt(sum(abs(z).^2,2)), 1);
 

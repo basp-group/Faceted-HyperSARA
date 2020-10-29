@@ -65,12 +65,13 @@
 - image cube: possible issue with the spectra? (Abdullah currently running a new test to check this point)
 - type of prior? (need to add "facets" on the border of the field of view) -> would need to rerun the real data expriments
 
-[28/10/2020]
+[28/10/2020] -- [29/10/2020] : updating all the code interface
 
 - results from Abdullah are really good: make sure l2 constraint is "sufficiently" satisfied before starting the first reweight (increase max number of PPD iterations + consider l2 constraint in the stopping criterion for PPD)
-  - compute duality gap to properly check convergence for each PPD algo?
+- compute duality gap to properly check convergence for each PPD algo? (development perspective...)
 
 - function within the solver to be debugged: (co_w version, /weighted/) [done]
+  facetHyperSARA_cst_overlap_weighted -> facetHyperSARA_cw
   - spmd/update_primal
   - spmd/update_nuclear_spmd_weighted -> update_dual_nuclear
   - spmd/update_l21_spmd -> update_dual_l21
@@ -81,7 +82,8 @@
   - update_epsilon
   - compute_residual_images
 
-- co version (/weighted/) [done]
+- c version (/weighted/) [done] [trashed] [moved to trash, less general than cw version (only fine for smaller overlap for the nuclear compared to l21)]
+  facetHyperSARA_cst_overlap-> facetHyperSARA_c
   - spmd/initialize_dual_variables_prior_cst_overlap -> initialize_dual_overlap
   - spmd/update_primal
   - spmd/update_nuclear_spmd -> update_dual_nuclear
@@ -92,7 +94,7 @@
   - update_data_fidelity -> update_dual_fidelity
   - compute_residual_images
 
-- w version (/weighted/) [trashed] [moved to trash, less general than co_weighted]
+- w version (/weighted/) [trashed] [moved to trash, less general than cw version + not used in the faceting paper]
   - spmd/weighted/initialize_dual_variables_prior_overlap -> initialize_dual_overlap
   - spmd/weighted/prior_overlap_spmd_weighted -> compute_facet_prior_overlap
   - spmd/weighted/update_weights_overlap_weigthed
@@ -105,7 +107,7 @@
 
 ---
 
-- no overlap [done]
+- no overlap (no): facetHyperSARA_no_overlap -> facetHyperSARA_no [done]
   - spmd/no/initialize_dual_variables_prior -> initialize_dual_variables
   - spmd/no/prior_value_spmd -> compute_facet_prior
   - spmd/no/update_weights
@@ -118,7 +120,7 @@
 
 ---
 
-- standard (same overlap for nuclear and l21) [done]
+- standard (same overlap for nuclear and l21): facetHyperSARA / facetHyperSARA2 [done]
   - spmd/standard/prior_overlap_spmd -> compute_facet_prior_so
   - spmd/standard/update_weights_overlap -> update_weights_so
   - spmd/initialize_dual_variables_prior_overlap -> initialize_dual_overlap
@@ -131,7 +133,7 @@
 
 ---
 
-- serial (can be kept as is) [done]
+- serial (can be kept as is) : hyperSARA [done]
   - serial/initialize_l21_serial
   - serial/run_par_nuclear -> update_dual_nuclear_serial
   - serial/run_par_l21 -> update_dual_l21_serial
@@ -145,7 +147,7 @@
 
 ---
 
-- from the sdwt2 library
+- from the sdwt2 library: 100% consistent with the older codes
   - domain_decomposition -> split_range
   - generate_segdwt_indices
   - domain_decomposition_overlap2 -> split_range
@@ -154,4 +156,4 @@
 
 ---
 
-[29/10/2020] Start debugging src_new
+[29/10/2020] Start debugging src_new / cleansing

@@ -223,7 +223,6 @@ for q = 1:2
     reweight_alphap{q} = reweight_alpha;
 end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
-reweight_steps = param.reweight_steps;
 
 if init_flag
     g = m_init.g;
