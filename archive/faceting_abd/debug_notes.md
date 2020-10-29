@@ -48,11 +48,11 @@
   4. initialize_dual_variables_prior_cst_overlap: ok
   5. update_primal: ok
   6. comm2d_update_ghost_cells: ok (sdwt2)
-  7. update_nuclear_spmd_weighted: ok
-  8. update_l21_spmd: ok
+  7. update_nuclear_spmd_weighted -> update_dual_nuclear: ok
+  8. update_l21_spmd -> update_dual_l21: ok
   9. comm2d_reduce: ok (sdwt2)
-  10. update_data_fidelity: ok
-  11. prior_overlap_spmd_cst3_weighted: ok
+  10. update_data_fidelity: ok -> update_dual_fidelity
+  11. prior_overlap_spmd_cst3_weighte -> spmd/weighted -> d: ok
   12. update_weights_overlap2_weighted: ok
   13. compute_residual_images: ok
   14. pdfb_LRJS_precond_NL21_sdwt2_spmd4_cst_overlap_weighted: same inner functions used (those mentioned above), only differences in warm restart, use of some auxiliary variables
@@ -63,79 +63,95 @@
 
 - uv-coverage? (Abdullah currently modifying, using meqtrees instead of the current MATLAB codes)
 - image cube: possible issue with the spectra? (Abdullah currently running a new test to check this point)
-- type of prior? (new to add "facets" on the border of the foeld of view) -> would need to rerun the real data expriments
+- type of prior? (need to add "facets" on the border of the field of view) -> would need to rerun the real data expriments
 
-- function within the solver to be debugged: (co_w version, /weighted/)
+[28/10/2020]
 
+- results from Abdullah are really good: make sure l2 constraint is "sufficiently" satisfied before starting the first reweight (increase max number of PPD iterations + consider l2 constraint in the stopping criterion for PPD)
+  - compute duality gap to properly check convergence for each PPD algo?
+
+- function within the solver to be debugged: (co_w version, /weighted/) [done]
   - spmd/update_primal
-  - spmd/update_nuclear_spmd_weighted
-  - spmd/update_l21_spmd
-  - spmd/prior_overlap_spmd_cst3_weighted
-  - spmd/update_weights_overlap2_weighted
-  - spmd/initialize_dual_variables_prior_cst_overlap
-  - update_data_fidelity
+  - spmd/update_nuclear_spmd_weighted -> update_dual_nuclear
+  - spmd/update_l21_spmd -> update_dual_l21
+  - spmd/prior_overlap_spmd_cst3_weighted -> spmd/weighted ->  -> compute_facet_prior_overlap
+  - spmd/update_weights_overlap2_weighted -> spmd/weighted -> update_weights_overlap
+  - spmd/initialize_dual_variables_prior_cst_overlap -> initialize_dual_overlap
+  - update_data_fidelity -> update_dual_fidelity
   - update_epsilon
   - compute_residual_images
 
-- co version (/weighted/)
-  - initialize_dual_variables_prior_cst_overlap
-  - update_primal
-  - update_nuclear_spmd
-  - update_l21_spmd
-  - update_data_fidelity
-  - prior_overlap_spmd_cst
+- co version (/weighted/) [done]
+  - spmd/initialize_dual_variables_prior_cst_overlap -> initialize_dual_overlap
+  - spmd/update_primal
+  - spmd/update_nuclear_spmd -> update_dual_nuclear
+  - spmd/update_l21_spmd -> update_dual_l21
+  - spmd/weighted/prior_overlap_spmd_cst -> compute_facet_prior_overlap
+  - spmd/weighted/update_weights_cst_overlap -> update_weights_overlap
   - update_epsilon
-  - update_weights_cst_overlap
+  - update_data_fidelity -> update_dual_fidelity
   - compute_residual_images
 
-- w version (/weighted/)
-  - initialize_dual_variables_prior_overlap
-  - update_primal
-  - update_nuclear_spmd_weighted -> create a single function, with auxiliary parameter
-  - update_l21_spmd
-  - update_data_fidelity
-  - prior_overlap_spmd_weighted
+- w version (/weighted/) [trashed] [moved to trash, less general than co_weighted]
+  - spmd/weighted/initialize_dual_variables_prior_overlap -> initialize_dual_overlap
+  - spmd/weighted/prior_overlap_spmd_weighted -> compute_facet_prior_overlap
+  - spmd/weighted/update_weights_overlap_weigthed
+  - spmd/update_primal
+  - spmd/update_nuclear_spmd_weighted -> update_dual_nuclear -> create a single function, with auxiliary parameter
+  - spmd/update_l21_spmd -> update_dual_l21
+  - update_data_fidelity -> update_dual_fidelity
   - update_epsilon
-  - update_weights_overlap_weigthed
   - compute_residual_images
 
-- no overlap
-  - initialize_dual_variables_prior
-  - update_primal
-  - update_nuclear_spmd
-  - update_l21_spmd
-  - update_data_fidelity
-  - prior_value_spmd
+---
+
+- no overlap [done]
+  - spmd/no/initialize_dual_variables_prior -> initialize_dual_variables
+  - spmd/no/prior_value_spmd -> compute_facet_prior
+  - spmd/no/update_weights
+  - spmd/update_primal
+  - spmd/update_nuclear_spmd -> update_dual_nuclear
+  - spmd/update_l21_spmd -> update_dual_l21
+  - update_data_fidelity -> update_dual_fidelity
   - update_epsilon
-  - update_weights
   - compute_residual_images
 
-- standard (same overlap for nuclear and l21)
-  - initialize_dual_variables_prior_overlap
-  - update_primal
-  - update_nuclear_spmd
-  - update_l21_spmd
-  - update_data_fidelity
-  - prior_overlap_spmd
+---
+
+- standard (same overlap for nuclear and l21) [done]
+  - spmd/standard/prior_overlap_spmd -> compute_facet_prior_so
+  - spmd/standard/update_weights_overlap -> update_weights_so
+  - spmd/initialize_dual_variables_prior_overlap -> initialize_dual_overlap
+  - spmd/update_primal
+  - spmd/update_nuclear_spmd -> update_dual_nuclear
+  - spmd/update_l21_spmd -> update_dual_l21
+  - update_data_fidelity -> update_dual_fidelity
   - update_epsilon
-  - update_weights_overlap
   - compute_residual_images
 
-- serial
-  - initialize_l21_serial
-  - run_par_nuclear
-  - run_par_l21
-  - update_data_fidelity
+---
+
+- serial (can be kept as is) [done]
+  - serial/initialize_l21_serial
+  - serial/run_par_nuclear -> update_dual_nuclear_serial
+  - serial/run_par_l21 -> update_dual_l21_serial
+  - serial/update_weights_nuclear_serial
+  - serial/update_weights_l21_serial
+  - serial/nuclear_norm
+  - serial/l21_norm_sara -> compute_sara_prior
+  - update_data_fidelity -> update_dual_fidelity
   - update_epsilon
-  - update_weights_nuclear_serial
-  - update_weights_l21_serial
   - compute_residual_images
 
 ---
 
 - from the sdwt2 library
-  - domain_decomposition
+  - domain_decomposition -> split_range
   - generate_segdwt_indices
-  - domain_decomposition_overlap2
-  - comm2d_update_ghost_cells
+  - domain_decomposition_overlap2 -> split_range
+  - comm2d_update_ghost_cells -> comm2d_update_borders
   - comm2d_reduce
+
+---
+
+[29/10/2020] Start debugging src_new

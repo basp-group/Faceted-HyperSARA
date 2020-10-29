@@ -1,0 +1,3 @@
+[submodule "lib/faceted-wavelet-transform"]
+	path = lib/faceted-wavelet-transform
+	url = git@github.com:basp-group-private/faceted-wavelet-transform.git
