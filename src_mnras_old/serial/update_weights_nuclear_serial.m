@@ -1,14 +1,11 @@
-function weights = update_weights_l21_serial(x, Psit, weights, reweight_alpha)
-%update_weights_l21_serial: update the weigths for the reweighting of the
-% l21-norm prior.
+function weights = update_weights_nuclear_serial(x, reweight_alpha)
+%update_weights_nuclear_serial: update the weigths for the reweighting of 
+% the nuclear norm prior.
 %-------------------------------------------------------------------------%
 %%
 % Input:
 %
 % > x                       wideband image [M, N, L]
-% > Psit                    full SARA operator @[1]                     
-% > weights                 weights associated with the reweigthing step 
-%                           [s, L]
 % > reweight_alpha          reweighting parameter [1]
 %
 % Output:
@@ -22,13 +19,9 @@ function weights = update_weights_l21_serial(x, Psit, weights, reweight_alpha)
 %-------------------------------------------------------------------------%
 %%
 
-w = zeros(size(weights, 1), size(x, 3));
-for l = 1 : size(x, 3)
-    w(:, l) = Psit(x(:, :, l));
-end
-d = sqrt(sum(abs((w)).^2,2));
-% upsilon = sig*reweight_alpha;
-% weights = upsilon ./ (upsilon + d);
+[M,  N, c] = size(x);
+[~, D, ~] = svd(reshape(x, [M*N, c]),'econ');
+d = abs(diag(D));
 weights = reweight_alpha ./ (reweight_alpha + d);
 
 end

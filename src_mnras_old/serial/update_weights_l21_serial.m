@@ -27,8 +27,6 @@ for l = 1 : size(x, 3)
     w(:, l) = Psit(x(:, :, l));
 end
 d = sqrt(sum(abs((w)).^2,2));
-% upsilon = sig*reweight_alpha;
-% weights = upsilon ./ (upsilon + d);
 weights = reweight_alpha ./ (reweight_alpha + d);
 
 end
