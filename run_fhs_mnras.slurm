@@ -39,7 +39,7 @@ $HOME/matlab_wrapper_2019_fix \
 '"$algoversion"', '"$wintype"', "$ncdata", "$ind", "$overlapsize", "$nreweights", \
 "$gencube", "$gencov", "$genvis", "$genundersampledcube", \
 "$computenorm", "$solve", \
-'"$cubepath"', '"$covpath"')" \
+'"$cubepath"', '"$covpath"', "$gam")" \
 > results/$imgname/logs/fhs_mnras_${imgname}_L=${nchannels}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_id=${ind}_overlap=${overlapsize}_p=${p}_snr=${snr}.log
 
 rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID

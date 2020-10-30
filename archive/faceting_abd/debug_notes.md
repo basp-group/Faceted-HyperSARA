@@ -160,4 +160,7 @@
 
 ---
 
-[30/10/2020] Start upgrading interfaxe in the `mnras` folder + debugging
+[30/10/2020]
+1. Upgrade interface in the `mnras` folder + debugging [done]
+2. Check the value of all the parameters used in Abdullah's codess [done]
+3. Adapt cirrus scipts for new round of tests with the mnras solver [done]

@@ -2,7 +2,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
     algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
     flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
     flag_computeOperatorNorm, flag_solveMinimization, ...
-    cube_path, coverage_path)
+    cube_path, coverage_path, gam)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -409,9 +409,9 @@ if flag_solveMinimization
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.gamma0 = 1;
-    param_HSI.gamma = 1e-5;    %1e-2*mu;  %convergence parameter L1 (soft th parameter)
-    param_HSI.rel_var = 1e-6;  % stopping criterion
-    param_HSI.max_iter = 10000; % max number of iterations
+    param_HSI.gamma = gam;    %1e-2*mu;  %convergence parameter L1 (soft th parameter)
+    param_HSI.rel_var = 1e-5;  % stopping criterion
+    param_HSI.max_iter = 15000; % max number of iterations
     
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 200; % minimum num of iter before stating adjustment
@@ -431,11 +431,10 @@ if flag_solveMinimization
     param_HSI.reweight_step_size = 300; % reweighting step size
     param_HSI.reweight_steps = (5000: param_HSI.reweight_step_size :10000);
     param_HSI.step_flag = 1;
-    param_HSI.reweight_rel_var = 1e-6; % criterion for performing reweighting
 
     param_HSI.use_reweight_eps = 0; % reweighting w.r.t the relative change of the solution
     param_HSI.reweight_max_reweight_itr = param_HSI.max_iter - param_HSI.reweight_step_size;
-    param_HSI.reweight_rel_obj = 1e-4; 5e-4; % criterion for performing reweighting
+    param_HSI.reweight_rel_var = 1e-4; 5e-4; % criterion for performing reweighting
     param_HSI.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
     
     param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
