@@ -585,9 +585,6 @@ for t = t_start : param.max_iter
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
             fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
-        
-%         fitswrite(x0, './x0.fits');
-%         fitswrite(xsol, './xsol.fits');
     end
     
     %% Global stopping criteria

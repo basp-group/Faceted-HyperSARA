@@ -77,7 +77,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 %% PARAMETERS FOR DEBUGGING
 
 % image_name = 'W28_512_m39'; %'M31'; %'W28_512_m39';
-% nChannels = 80; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
+% nChannels = 20; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
 % Qx = 2;
 % Qy = 1;
 % Qc = 1;
@@ -94,7 +94,8 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 % flag_generateUndersampledCube = true; % Default 15 channels cube with line emissions
 % flag_computeOperatorNorm = false;
 % flag_solveMinimization = true;
-% cube_path = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
+% cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
+% cube_path = cube_path(nChannels);
 % coverage_path = 'data/uv_coverage_p=1';
 % 
 % % if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
@@ -130,13 +131,13 @@ addpath lib/generate_data/
 addpath lib/operators/
 addpath lib/nufft/
 addpath lib/utils/
-addpath lib/sdwt2/
+addpath lib/faceted-wavelet-transform/src
 addpath data/
 addpath src_mnras/
 addpath src_mnras/spmd
 addpath src_mnras/spmd/weighted
 addpath src_mnras/spmd/standard
-addpath src_mnras/spmd/no_overlap
+addpath src_mnras/spmd/no
 
 % setting paths to results and reference image cube
 coverage_path = strcat(coverage_path, '.fits');
@@ -179,7 +180,7 @@ else
 end
 
 %% Generate spectral facets (interleaved sampling)
-id = interleaved_facets(Qc, nChannels);
+id = split_range_interleaved(Qc, nChannels);
 if ind > 0
     x0 = x0(:,:,id{ind});
     nchans = size(x0,3);
@@ -317,20 +318,9 @@ if flag_computeOperatorNorm
     Anorm = pow_method_op(F, Ft, [Ny Nx nchans]);
     save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
         '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
-    
-    % save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
-    %     '_L=',num2str(nChannels), ...
-    %     '_Qc=', num2str(Qc), ...
-    %     '_ind=', num2str(ind), ...
-    %     '_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
 else
     load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
         num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
-    % load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
-    %     num2str(nChannels),...
-    %     '_Qc=', num2str(Qc), ...
-    %     '_ind=', num2str(ind), ...
-    %     '_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
 end
     
 %% Generate initial epsilons by performing imaging with NNLS on each data block separately
@@ -460,7 +450,7 @@ if flag_solveMinimization
     disp('-----------------------------------------')
 
     % spectral tesselation (non-overlapping)
-    rg_c = domain_decomposition(ncores_data, channels(end));
+    rg_c = split_range(ncores_data, channels(end));
     cell_c_chunks = cell(ncores_data, 1);
     y_spmd = cell(ncores_data, 1);
     epsilon_spmd = cell(ncores_data, 1);
@@ -490,40 +480,27 @@ if flag_solveMinimization
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
                 wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
-        case 'w'
-            % (piece-wise constant weights, following Audrey's suggestion)
-            [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-                facetHyperSARA_weighted(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
-
-        case 'c'
-            % cst overlap for the facets undelrying the nuclear norms (d < overlap from sdwt2)
-            % d = (power(2, nlevel)-1)*(max(L(:))-2)/2; % use of db8
-            [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-                facetHyperSARA_cst_overlap(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), overlap_size, 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
+            case 's2'
+                % alternative implementation (gather primal variables and data on the same nodes)
+                % gather image and data on the same nodes (extra communications compared to spmd4 for reweigthing and monitoring variables)
+                [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
+                    facetHyperSARA2(y_spmd, epsilon_spmd, ...
+                    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
+                    wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
+        
 
         case 'cw'
             % same as spmd_sct, weight correction (apodization window in this case)
             [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-                facetHyperSARA_cst_overlap_weighted(y_spmd, epsilon_spmd, ...
+                facetHyperSARA_cw(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
                 wlt_basis, L, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
-        case 's2'
-            % alternative implementation (gather primal variables and data on the same nodes)
-            % gather image and data on the same nodes (extra communications compared to spmd4 for reweigthing and monitoring variables)
-            [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-                facetHyperSARA2(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
         case 'no'
             % same as spmd4, but no overlap for the facets on which the nuclear norms are taken
             [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-                facetHyperSARA_no_overlap(y_spmd, epsilon_spmd, ...
+                facetHyperSARA_no(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
                 wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
@@ -546,5 +523,4 @@ if flag_solveMinimization
         '_ind=', num2str(ind), ...
         '_overlap=', num2str(overlap_size), ...
         '.fits')))
-    
 end
