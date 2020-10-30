@@ -88,6 +88,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 % window_type = 'triangular'; % 'hamming', 'pc'
 % ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index from "spectral" facet
+% gam = 1e-5;
 % flag_generateCube = true;
 % flag_generateCoverage = false;
 % flag_generateVisibilities = true;
@@ -95,7 +96,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 % flag_computeOperatorNorm = false;
 % flag_solveMinimization = true;
 % cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
-% cube_path = cube_path(nChannels);
+% cube_path = cubepath(nChannels);
 % coverage_path = 'data/uv_coverage_p=1';
 % 
 % % if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
@@ -479,22 +480,27 @@ if flag_solveMinimization
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
                 wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
-            case 's2'
-                % alternative implementation (gather primal variables and data on the same nodes)
-                % gather image and data on the same nodes (extra communications compared to spmd4 for reweigthing and monitoring variables)
-                [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-                    facetHyperSARA2(y_spmd, epsilon_spmd, ...
-                    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                    wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
+        case 's2'
+            % alternative implementation (gather primal variables and data on the same nodes)
+            % gather image and data on the same nodes (extra communications compared to spmd4 for reweigthing and monitoring variables)
+            [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
+                facetHyperSARA2(y_spmd, epsilon_spmd, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
+                wlt_basis, L, nlevel, cell_c_chunks, channels(end), 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
         
-
         case 'cw'
             % same as spmd_sct, weight correction (apodization window in this case)
             [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA_cw(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
                 wlt_basis, L, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
-
+            
+        case 'w' % 'weighted' 
+            % same overlap for nuclear and l21, with weight correction (apodization window or ones)
+            [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
+                facetHyperSARA_w(y_spmd, epsilon_spmd, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
+                wlt_basis, L, nlevel, cell_c_chunks, channels(end), window_type, 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [29/10/2020] ok
 
         case 'no'
             % same as spmd4, but no overlap for the facets on which the nuclear norms are taken

@@ -164,4 +164,5 @@
 1. Upgrade interface in the `mnras` folder + debugging [done]
 2. Check the value of all the parameters used in Abdullah's codess [done]
 3. Adapt cirrus scipts for new round of tests with the mnras solver [done]
-4. upgrade interface for dr solvers
+4. upgrade interface for dr solvers [done]
+5. adding back "weighted version" with same overlap (for both l21 and nuclear norm) [done]

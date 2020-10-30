@@ -132,11 +132,11 @@ addpath lib/nufft/
 addpath lib/utils/
 addpath lib/faceted-wavelet-transform/src
 addpath data/
-addpath src_new/
-addpath src_new/spmd
-addpath src_new/spmd/weighted
-addpath src_new/spmd/standard
-addpath src_new/spmd/no
+addpath src/
+addpath src/spmd
+addpath src/spmd/weighted
+addpath src/spmd/standard
+addpath src/spmd/no
 
 % setting paths to results and reference image cube
 coverage_path = strcat(coverage_path, '.fits');
@@ -483,7 +483,14 @@ if flag_solveMinimization
                 facetHyperSARA_cw(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
                 wlt_basis, L, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [29/10/2020] ok
-
+            
+        case 'w' % 'weighted' 
+            % same overlap for nuclear and l21, with weight correction (apodization window or ones)
+            [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
+                facetHyperSARA_w(y_spmd, epsilon_spmd, ...
+                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
+                wlt_basis, L, nlevel, cell_c_chunks, channels(end), window_type, 'whatever.mat', fullfile(results_path,temp_results_name(nChannels))); % [29/10/2020] ok
+            
         case 'no' % 'no_overlap' 
             % same as cw, but no overlap for the facets on which the nuclear norms are taken
             [xsol,param,epsilon,t,rel_fval,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...

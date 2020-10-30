@@ -2,7 +2,7 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
     facetHyperSARA_cw(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
     L, nlevel, c_chunks, c, d, window_type, init_file_name, name)
-%facetHyperSARA_co_w: faceted HyperSARA
+%facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
 % smaller than the extension needed for the 2D segmented discrete wavelet 
