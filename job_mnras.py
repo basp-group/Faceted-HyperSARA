@@ -2,7 +2,7 @@
 
 import csv, subprocess, os
 
-parameter_file_full_path = "job_params.csv"
+parameter_file_full_path = "job_params_mnras.csv"
 
 with open(parameter_file_full_path, "r") as csvfile:
 
@@ -20,7 +20,7 @@ with open(parameter_file_full_path, "r") as csvfile:
 
         # print(slurm_command) # Uncomment this line when testing to view the sbatch command
 
-        # # Comment the following 3 lines when testing to prevent jobs from being submitted
+        # Comment the following 3 lines when testing to prevent jobs from being submitted
         exit_status = subprocess.call(slurm_command, shell=True)
         if exit_status is 1:  # Check to make sure the job submitted
             print("Job {0} failed to submit".format(slurm_command))
