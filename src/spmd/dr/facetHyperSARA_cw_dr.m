@@ -1,8 +1,8 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
-    facetHyperSARA_cst_overlap_weighted_dr(y, imsize, ...
+    facetHyperSARA_cw_dr(y, imsize, ...
     epsilon, A, At, H, pU, T, W, param, X0, Qx, Qy, K, ...
     wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name, name)
-%facetHyperSARA_cst_overlap_weighted_dr: faceted HyperSARA
+%facetHyperSARA_cw_dr: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
 % smaller than the extension needed for the 2D segmented discrete wavelet 
@@ -167,6 +167,7 @@ clear rg_y rg_x;
 % instantiate auxiliary variables for sdwt2
 [~, dims_overlap_ref, I_overlap, dims_overlap, status, offset, offsetL, ...
     offsetR, Ncoefs, temLIdxs, temRIdxs] = sdwt2_setup([M, N], I, dims, nlevel, wavelet, L);
+    
 id_dirac = find(ismember(wavelet, 'self'), 1);
 dirac_present = ~isempty(id_dirac);
 
@@ -469,7 +470,6 @@ for q = 1:Q
     reweight_alphap{q} = reweight_alpha;
 end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
-reweight_steps = param.reweight_steps;
 
 g_q = Composite();
 xsol_q = Composite();
@@ -500,7 +500,7 @@ tau = 0.99/(sigma0*param.nu0 + sigma1*param.nu1 + sigma2*param.nu2);
 sigma00 = parallel.pool.Constant(tau*sigma0);
 sigma11 = parallel.pool.Constant(tau*sigma1);
 sigma22 = parallel.pool.Constant(tau*sigma2);
-beta0 = parallel.pool.Constant(param.gamma0/sigma0); % only needed on the "primal/prior" workers
+beta0 = parallel.pool.Constant(param.gamma0/sigma0);
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
 % Variables for the stopping criterion

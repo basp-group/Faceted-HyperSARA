@@ -1,8 +1,8 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
-    facetHyperSARA_cst_overlap_weighted_dr(y, imsize, ...
+    facetHyperSARA_cw_dr(y, imsize, ...
     epsilon, A, At, H, pU, T, W, param, X0, Qx, Qy, K, ...
     wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name, name)
-%facetHyperSARA_cst_overlap_weighted_dr: faceted HyperSARA
+%facetHyperSARA_cw_dr: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
 % smaller than the extension needed for the 2D segmented discrete wavelet 
@@ -461,8 +461,8 @@ rw_counts = 1;
 
 
 %% Reweighting parameters
-sig_bar = param.sig_bar;
-sig = param.sig;
+% sig_bar = param.sig_bar;
+% sig = param.sig;
 reweight_alpha = param.reweight_alpha;
 reweight_alphap = Composite();
 for q = 1:Q
@@ -645,11 +645,11 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    % if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
-    %         (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
-    if ((t>1) && (reweight_step_count >= param.total_reweights)) && ((rel_val(t) < param.rel_var && ...
-        (norm(residual_check) < param.adapt_eps_tol_out*norm(epsilon_check))) || ...
-        (t - reweight_last_step_iter >= param.ppd_max_iter))
+    if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
+            (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
+    % if ((t>1) && (reweight_step_count >= param.total_reweights)) && ((rel_val(t) < param.rel_var && ...
+    %     (norm(residual_check) < param.adapt_eps_tol_out*norm(epsilon_check))) || ...
+    %     (t - reweight_last_step_iter >= param.ppd_max_iter))
         flag = 1;
         break;
     end
@@ -666,14 +666,13 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
-    % if (param.use_reweight_steps && (rel_val(t) < param.reweight_rel_var) && ...
-    %     (reweight_step_count <= param.total_reweights) && ...
-    %     (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check))
-    is_converged_ppd = ((t - reweight_last_step_iter) >= param.ppd_min_iter) && (((rel_val(t) <= param.reweight_rel_var) && ...
-(norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check))) || ...
-((t - reweight_last_step_iter) >= param.ppd_max_iter));
-        
-    if is_converged_ppd && (reweight_step_count < param.total_reweights) % corresponds to the PPD stopping criterion
+    if (param.step_flag && t>500) % rel_fval(t) < param.reweight_rel_var)
+        reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
+        param.step_flag = 0;
+    end
+    if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
+            (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
+            t - reweight_last_step_iter > param.reweight_min_steps_rel_var && t < param.reweight_max_reweight_itr) % corresponds to the PPD stopping criterion 
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
         % SNR
@@ -698,14 +697,14 @@ for t = t_start : param.max_iter
                 [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                    reweight_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
-                reweight_alphap = max(reweight_alpha_ffp.Value*reweight_alphap, 1);
+                    reweight_alphap, crop_l21, crop_nuclear, w);
+                    reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
             else
                 % compute residual image on the data nodes
                 res_ = compute_residual_images_dr_block(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp); % *_dr w/o data blocking
             end
         end
-        reweight_alpha = max(param.reweight_alpha_ff*reweight_alpha, 1);
+        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
@@ -754,15 +753,19 @@ for t = t_start : param.max_iter
             clear m
         end 
         
-        reweight_step_count = reweight_step_count + 1;
-        reweight_last_step_iter = t;
-        rw_counts = rw_counts + 1;
+        % reweight_step_count = reweight_step_count + 1;
+        % reweight_last_step_iter = t;
+        % rw_counts = rw_counts + 1;
 
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;
             fprintf('\n\n No more reweights \n\n');
             break;
         end      
+
+        reweight_step_count = reweight_step_count + 1;
+        reweight_last_step_iter = t;
+        rw_counts = rw_counts + 1;
     end
 end
 toc(start_loop)

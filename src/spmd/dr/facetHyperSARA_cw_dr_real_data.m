@@ -1,8 +1,8 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter] = ...
-    facetHyperSARA_cst_overlap_weighted_dr_real_data(y, imsize, ...
+    facetHyperSARA_cw_dr_real_data(y, imsize, ...
     epsilon, A, At, H, pU, T, W, param, Qx, Qy, K, wavelet, L, nlevel, ...
     c_chunks, c, d, window_type, init_file_name, name)
-%facetHyperSARA_cst_overlap_weighted_dr_real_data: faceted HyperSARA
+%facetHyperSARA_cw_dr_real_data: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
 % smaller than the extension needed for the 2D segmented discrete wavelet 
@@ -467,7 +467,6 @@ for q = 1:Q
     reweight_alphap{q} = reweight_alpha;
 end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
-reweight_steps = param.reweight_steps;
 
 g_q = Composite();
 xsol_q = Composite();
@@ -624,9 +623,6 @@ for t = t_start : param.max_iter
             fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
         end
-        
-%         fitswrite(x0, ['./x0_it', num2str(t), '.fits']);
-%         fitswrite(xsol, ['./xsol_it', num2str(t), '.fits']);
     end
     
     %% Global stopping criteria
@@ -852,7 +848,7 @@ if (param.verbose > 0)
     end
 end
 
-% end_iter = end_iter(end_iter > 0);
-% rel_val = rel_val(1:numel(end_iter));
+end_iter = end_iter(end_iter > 0);
+rel_val = rel_val(1:numel(end_iter));
 
 end
