@@ -296,7 +296,7 @@ end
 clear u v u1 v1 uw vw aWw nW nWw param_block_structure param_precond;
 
 %% Generate/load visibilities
-if flag_generateVisibilities && ind < 1 % generate only full spectral dataset
+if flag_generateVisibilities % generate only full spectral dataset
     param_l2_ball.type = 'sigma';
     param_l2_ball.sigma_ball = 2;
     [y0, y, Nm, sigma_noise] = util_gen_measurements(x0, G, W, A, input_snr);
