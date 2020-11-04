@@ -14,9 +14,9 @@
 > J. A. Fessler and B. P. Sutton - 
 <strong>Nonuniform Fast Fourier Transforms Using Min-Max Interpolation</strong>, <em>IEEE Trans. Image Process.</em>, vol. 51, n. 2, pp. 560--574, Feb. 2003.
 
-**Installation** To properly clone the project with the submodules, you may need to use to do the following:
+**Installation** To properly clone the project with the submodules, you may need to do follow one of set of instructions:
 
-- update from an existing *Faceted HyperSARA* repository:
+- updating from an existing `Faceted-Hyper-SARA` repository:
 
 ```bash
 git pull
@@ -35,7 +35,7 @@ If you get an access error, fix the `.gitmodules` file as follows
 - cloning the repository from scratch
 
 ```bash
-git clone --recurse-submodules https://github.com/basp-group-private/faceted-wavelet-transform.git
+git clone --recurse-submodules https://github.com/basp-group-private/Faceted-Hyper-SARA.git
 ```
 
-Updating the project to use `subtrees` instead of `submodules` might be considered in the long term (though it seems to require a recent version of git (not installed by default on `CIRRUS`)).
+In the long term, the `Faceted-Hyper-SARA` project might be updated to use `subtrees` instead of `submodules` (though it seems to require a recent version of git (not installed by default on `CIRRUS`)).
