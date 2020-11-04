@@ -5,7 +5,7 @@ format compact;
 
 addpath lib/generate_data/
 addpath lib/operators/
-addpath lib/nufft/
+addpath lib/measurement-operator/nufft/
 addpath lib/utils/
 addpath lib/sdwt2/
 addpath data/

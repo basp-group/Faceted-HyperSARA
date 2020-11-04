@@ -128,7 +128,7 @@ disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
 
 addpath lib/generate_data/
 addpath lib/operators/
-addpath lib/nufft/
+addpath lib/measurement-operator/nufft/
 addpath lib/utils/
 addpath lib/faceted-wavelet-transform/src
 addpath data/

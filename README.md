@@ -30,6 +30,9 @@ If you get an access error, fix the `.gitmodules` file as follows
 [submodule "lib/faceted-wavelet-transform"]
         path = lib/faceted-wavelet-transform
         url = https://github.com/basp-group-private/faceted-wavelet-transform.git
+[submodule "lib/measurement-operator"]
+        path = lib/measurement-operator
+        url = https://github.com/basp-group-private/measurement-operator.git
 ```
 
 - cloning the repository from scratch
