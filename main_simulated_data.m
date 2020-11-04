@@ -420,7 +420,7 @@ if flag_solveMinimization
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
     param_HSI.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
-    param_HSI.reweight_alpha_ff = 0.5;
+    param_HSI.reweight_alpha_ff = 0.8;
     param_HSI.total_reweights = nReweights; %30; % -1 if you don't want reweighting
     param_HSI.sig = sig; % estimate of the noise level in SARA space
     param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
