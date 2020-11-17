@@ -1,8 +1,8 @@
-function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
-    algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
-    flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
-    flag_computeOperatorNorm, flag_solveMinimization, ...
-    cube_path, coverage_path, gam)
+% function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
+%     algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
+%     flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
+%     flag_computeOperatorNorm, flag_solveMinimization, ...
+%     cube_path, coverage_path, gam)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -76,35 +76,35 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 
 %% PARAMETERS FOR DEBUGGING
 
-% image_name = 'W28_512_m39'; %'M31'; %'W28_512_m39';
-% nChannels = 20; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
-% Qx = 2;
-% Qy = 1;
-% Qc = 1;
-% p = 0.3; % percentage
-% nReweights = 1;
-% input_snr = 40; % input SNR (in dB)
-% algo_version = 'cw'; % 'cst_weighted';
-% window_type = 'triangular'; % 'hamming', 'pc'
-% ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
-% ind = 1;  % index from "spectral" facet
-% gam = 1e-5;
-% flag_generateCube = true;
-% flag_generateCoverage = false;
-% flag_generateVisibilities = true;
-% flag_generateUndersampledCube = true; % Default 15 channels cube with line emissions
-% flag_computeOperatorNorm = false;
-% flag_solveMinimization = true;
-% cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
-% cube_path = cubepath(nChannels);
-% coverage_path = 'data/uv_coverage_p=1';
-% 
-% % if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
-% %     nlevel = 4;
-% %     overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
-% % end
-% 
-% overlap_size = 256;
+image_name = 'W28_512_m39'; %'M31'; %'W28_512_m39';
+nChannels = 20; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
+Qx = 2;
+Qy = 1;
+Qc = 1;
+p = 0.3; % percentage
+nReweights = 1;
+input_snr = 40; % input SNR (in dB)
+algo_version = 'hypersara'; % 'cst_weighted';
+window_type = 'triangular'; % 'hamming', 'pc'
+ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
+ind = 1;  % index from "spectral" facet
+gam = 1e-5;
+flag_generateCube = true;
+flag_generateCoverage = true;
+flag_generateVisibilities = true;
+flag_generateUndersampledCube = true; % Default 15 channels cube with line emissions
+flag_computeOperatorNorm = true;
+flag_solveMinimization = true;
+cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
+cube_path = cubepath(nChannels);
+coverage_path = 'data/uv_coverage_p=1';
+
+% if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
+%     nlevel = 4;
+%     overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
+% end
+
+overlap_size = 256;
 % 
 % % % TODO: add warm-restart for this version of the main script
 
@@ -135,10 +135,15 @@ addpath lib/utils/
 addpath lib/faceted-wavelet-transform/src
 addpath data/
 addpath src_mnras/
-addpath src_mnras/spmd
-addpath src_mnras/spmd/weighted
-addpath src_mnras/spmd/standard
-addpath src_mnras/spmd/no
+if strcmp(algo_version, "hypersara")
+    addpath src_mnras/serial
+else
+    addpath src_mnras/spmd
+    addpath src_mnras/spmd/weighted
+    addpath src_mnras/spmd/standard
+    addpath src_mnras/spmd/no
+end
+
 
 % setting paths to results and reference image cube
 coverage_path = strcat(coverage_path, '.fits');

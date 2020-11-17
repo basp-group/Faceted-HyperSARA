@@ -1,5 +1,5 @@
-function [v1, g1] = update_dual_l21(v1, Psit, Psi, xhat, weights1, beta1, sigma1)
-%update_dual_nuclear: update the dual variable related to the facet l21-norm
+function [v1, g1] = update_dual_l21_serial(v1, Psit, Psi, xhat, weights1, beta1, sigma1)
+%update_dual_nuclear_serial: update the dual variable related to the facet l21-norm
 % prior.
 %-------------------------------------------------------------------------%
 %%

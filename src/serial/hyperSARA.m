@@ -474,11 +474,6 @@ spmd
         res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-2}), yp, Gp, Ap, Atp, Wp);
     end
 end
-for k = 1 : K
-    res(:,:,c_chunks{k}) = res_{2+k};
-    res_{2+k} = [];
-end
-
 m = matfile([name, '_', ...
             num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
             'Writable', true);
@@ -497,6 +492,7 @@ m.weights1 = weights1_{2};
 % Retrieve variables from workers
 % data nodes
 for k = 1:K
+    res(:,:,c_chunks{k}) = res_{2+k};
     m.res(:,:,c_chunks{k}) = res_{2+k};
     res_{2+k} = [];
     m.v2(k,1) = v2_(2+k);

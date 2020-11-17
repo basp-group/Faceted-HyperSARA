@@ -1,5 +1,5 @@
-function [v0, g0] = update_dual_nuclear(v0, xhat, weights0, beta0, sigma0)
-%update_dual_nuclear: update the dual variables related to the nuclear
+function [v0, g0] = update_dual_nuclear_serial(v0, xhat, weights0, beta0, sigma0)
+%update_dual_nuclear_serial: update the dual variables related to the nuclear
 % norm prior.
 %-------------------------------------------------------------------------%
 %%
