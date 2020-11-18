@@ -1,0 +1,241 @@
+
+ncores = 20
+
+MATLAB settings have been changed.  These settings persist between MATLAB sessions.
+Maximum number of computational threads (maxNumCompThreads)          = 20
+Preferred number of workers in a parallel pool (PreferredNumWorkers) = 20
+MATLAB default cluster profile is 'local'
+MATLAB 'local' cluster profile settings:
+Number of workers to start on your local machine (NumWorkers)        = 20
+Number of computational threads to use on each worker (NumThreads)   = 1
+
+NumWorkers and NumThreads can be changed (using parcluster and saveProfile)
+but NumWorkers * NumThreads should be less than 20
+
+MNRAS configuration
+Algorithm version: hypersara
+Reference image: W28_1024
+nchannels: 20
+Number of facets Qy x Qx : 1 x 1
+Number of spectral facets Qc : 1
+Overlap size: 256
+Number of data points p per frequency (as a fraction of image size): 0
+Input SNR: 0
+Generating image cube: 1
+Generating coverage: 0
+Generating visibilities: 1
+[Warning: Directory already exists.] 
+[> In main_simulated_data_abd (line 154)] 
+/*----------------------------------------------------------------*/
+ example: Simulation of wide band radio interferometric data NEW
+/*----------------------------------------------------------------*/
+n_src =
+    12
+ans =
+     1
+channels =
+  Columns 1 through 13
+     1     2     3     4     5     6     7     8     9    10    11    12    13
+  Columns 14 through 20
+    14    15    16    17    18    19    20
+coverage_path =
+    'vla_7.95h_dt10s.uvw.mat'
+ans =
+     1004562           3
+ans =
+     1004562           1
+Coverage loaded successfully
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 33s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 33s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 31s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 31s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+sigma_noise =
+    0.1000
+norm_noise =
+  448.2457
+epsilon =
+  448.3325
+epsilon_wrong =
+  634.0379
+ 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  WARNING: Change DWT Extension Mode  !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                        
+****************************************
+**  DWT Extension Mode: Zero Padding  **
+****************************************
+                                        
+                                        
+****************************************
+**  DWT Extension Mode: Zero Padding  **
+****************************************
+                                        
+Faceted HyperSARA
+-----------------------------------------
+Starting parallel pool (parpool) using the 'local' profile ...
+Connected to the parallel pool (number of workers: 22).
+                                        
+****************************************
+**  DWT Extension Mode: Zero Padding  **
+****************************************
+                                        
+Lab  2: 
+   
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !  WARNING: Change DWT Extension Mode  !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                          
+  ****************************************
+  **  DWT Extension Mode: Zero Padding  **
+  ****************************************
+                                          
+xsol initialized 
+
+v0, v1, weigths0, weights1 initialized 
+
+v2, proj, t_block initialized 
+
+reweight_step_count initialized 
+
+reweight_last_iter_step initialized 
+
+g initialized 
+
+t_start initialized 
+
+START THE LOOP MNRAS ver 
+
+Iter = 1, Time = 4.204852e+01
+Iter = 2, Time = 4.033805e+01
+Iter = 3, Time = 4.004062e+01
+Iter = 4, Time = 4.015117e+01
+Iter = 5, Time = 4.060173e+01
+Iter = 6, Time = 3.984845e+01
+Iter = 7, Time = 3.986744e+01
+Iter = 8, Time = 3.972368e+01
+Iter = 9, Time = 3.941466e+01
+Iter = 10, Time = 4.564684e+01
+Iter = 11, Time = 4.624267e+01
+Iter = 12, Time = 4.628148e+01
+Iter = 13, Time = 4.421892e+01
+Iter = 14, Time = 4.637110e+01
+Iter = 15, Time = 4.738525e+01
+Iter = 16, Time = 4.741957e+01
+Iter = 17, Time = 4.683387e+01
+Iter = 18, Time = 4.826274e+01
+Iter = 19, Time = 4.655007e+01
+Iter = 20, Time = 4.814372e+01
+Iter = 21, Time = 4.747475e+01
+Iter = 22, Time = 4.709279e+01
+Iter = 23, Time = 4.792839e+01
+Iter = 24, Time = 4.778812e+01
+Iter = 25, Time = 4.804169e+01
+Iter = 26, Time = 4.672159e+01
+Iter = 27, Time = 4.670413e+01
+Iter = 28, Time = 4.733783e+01
+Iter = 29, Time = 4.728332e+01
+Iter = 30, Time = 4.725658e+01
+Iter = 31, Time = 4.719097e+01
+Iter = 32, Time = 4.654765e+01
+Iter = 33, Time = 4.755868e+01
+Iter = 34, Time = 4.772316e+01
+Iter = 35, Time = 4.783637e+01
+Iter = 36, Time = 4.870161e+01
+Iter = 37, Time = 4.823204e+01
