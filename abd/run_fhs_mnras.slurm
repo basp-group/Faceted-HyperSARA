@@ -23,7 +23,7 @@ mkdir results/$imgname/logs/
 module load matlab/R2019a  # version to be checked on cirrus
 
 mkdir $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
-cp -R $SLURM_SUBMIT_DIR/lib/nufft $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID
+cp -R ../lib/nufft ../lib/nufft_$SLURM_JOB_ID
 export MATLAB_PREFDIR=$SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 
 # Matlab option to deactivate threading
@@ -35,12 +35,12 @@ export MATLAB_PREFDIR=$SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 # > logs/hypersara_N=${Nx}_L=${L}_p=${p}_snr=${snr}.log
 
 $HOME/matlab_wrapper_2019_fix \
-"main_simulated_data_mnras('"$imgname"', "$nchannels", "$Qx", "$Qy", "$Qc", "$p", "$snr", \
+"main_simulated_data_abd('"$imgname"', "$nchannels", "$Qx", "$Qy", "$Qc", "$p", "$snr", \
 '"$algoversion"', '"$wintype"', "$ncdata", "$ind", "$overlapsize", "$nreweights", \
 "$gencube", "$gencov", "$genvis", "$genundersampledcube", \
 "$computenorm", "$solve", \
 '"$cubepath"', '"$covpath"', "$gam")" \
-> results/$imgname/logs/fhs_mnras_${imgname}_L=${nchannels}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_id=${ind}_overlap=${overlapsize}_p=${p}_snr=${snr}.log
+> fhs_mnras_${imgname}_L=${nchannels}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_id=${ind}_overlap=${overlapsize}_p=${p}_snr=${snr}.txt
 
 rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
-rm -r $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID
+rm -r ../lib/nufft_$SLURM_JOB_ID
