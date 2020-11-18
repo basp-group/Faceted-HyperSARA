@@ -28,3 +28,7 @@ docs/_*
 
 # editor
 .vscode*
+
+*.err
+*.txt
+*.out
