@@ -49,26 +49,6 @@ Initializing the NUFFT operator
 
 
 Computing block matrices ...
-Block matrix 1: 34s 
-Initializing the NUFFT operator
-
-
-Computing block matrices ...
-Block matrix 1: 33s 
-Initializing the NUFFT operator
-
-
-Computing block matrices ...
-Block matrix 1: 33s 
-Initializing the NUFFT operator
-
-
-Computing block matrices ...
-Block matrix 1: 33s 
-Initializing the NUFFT operator
-
-
-Computing block matrices ...
 Block matrix 1: 33s 
 Initializing the NUFFT operator
 
@@ -140,6 +120,26 @@ Initializing the NUFFT operator
 
 Computing block matrices ...
 Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 32s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 31s 
+Initializing the NUFFT operator
+
+
+Computing block matrices ...
+Block matrix 1: 31s 
 Initializing the NUFFT operator
 
 
@@ -202,4 +202,17 @@ t_start initialized
 
 START THE LOOP MNRAS ver 
 
-Analyzing and transferring files to the workers ...done.
+Iter = 1, Time = 4.204852e+01
+Iter = 2, Time = 4.033805e+01
+Iter = 3, Time = 4.004062e+01
+Iter = 4, Time = 4.015117e+01
+Iter = 5, Time = 4.060173e+01
+Iter = 6, Time = 3.984845e+01
+Iter = 7, Time = 3.986744e+01
+Iter = 8, Time = 3.972368e+01
+Iter = 9, Time = 3.941466e+01
+Iter = 10, Time = 4.564684e+01
+Iter = 11, Time = 4.624267e+01
+Iter = 12, Time = 4.628148e+01
+Iter = 13, Time = 4.421892e+01
+Iter = 14, Time = 4.637110e+01

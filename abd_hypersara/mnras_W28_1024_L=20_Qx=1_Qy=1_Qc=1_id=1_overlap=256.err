@@ -11,18 +11,3 @@ support@cirrus.ac.uk to arrange use of your own MATLAB license on
 Cirrus.
     
 cp: cannot stat '../lib/nufft': No such file or directory
-{Error using hyperSARA (line 282)
-Error detected on worker 1.
-Error in main_simulated_data_abd (line 532)
-                hyperSARA(y_spmd, epsilon_spmd, ...
-Caused by:
-    Error using hyperSARA (line 282)
-    An UndefinedFunction error was thrown on the workers for
-    'update_dual_nuclear_serial'.  This may be because the file containing
-    'update_dual_nuclear_serial' is not accessible on the workers.  Specify the
-    required files for this parallel pool using the command:
-    addAttachedFiles(pool, ...).  See the documentation for parpool for more
-    details.
-        Undefined function 'update_dual_nuclear_serial' for input arguments of
-        type 'double'.} 
-rm: cannot remove '../lib/nufft_252746': No such file or directory
