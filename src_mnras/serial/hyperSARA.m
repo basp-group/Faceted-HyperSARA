@@ -251,8 +251,6 @@ beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
 % Variables for the stopping criterion
 flag = 0;
-rel_val = zeros(param.max_iter, 1);
-end_iter = zeros(param.max_iter, 1);
 
 if isfield(param, 'init_t_start')
     t_start = param.init_t_start;
@@ -260,6 +258,19 @@ if isfield(param, 'init_t_start')
 else
     t_start = 1;
     fprintf('t_start initialized \n\n')
+end
+
+
+if init_flag
+    rel_val = init_m.rel_val;
+    end_iter = init_m.end_iter;
+    t_active = init_m.t_active;
+    fprintf('rel_val, end_iter and t_active uploaded \n\n')
+else
+    rel_val = zeros(param.max_iter, 1);
+    end_iter = zeros(param.max_iter, 1);
+    t_active = zeros(param.max_iter, 1);
+    fprintf('rel_val, end_iter and t_active initialized \n\n')
 end
 
 start_loop = tic;
@@ -270,9 +281,11 @@ for t = t_start : param.max_iter
     start_iter = tic;
     
     %% Update primal variable
+    tw = tic;
     prev_xsol = xsol;
     xsol = max(real(xsol - g), 0);
     xhat = 2*xsol - prev_xsol;
+    t_active(t) = toc(tw);
 
     for i = 1:K
        xhat_i{2+i} = xhat(:, :, c_chunks{i}); 
@@ -281,18 +294,18 @@ for t = t_start : param.max_iter
     %% Update dual variables
     spmd
         if labindex == 1 % nuclear prior node
-            %tic;
+            tw = tic;
             [v0_, g0_] = update_dual_nuclear_serial(v0_, xhat, weights0_, beta0.Value, sigma00.Value);
-            %tw = toc;  
+            t_op = toc(tw);  
         elseif labindex == 2 % l21 prior node (full SARA prior)
-            %tic
+            tw = tic;
             [v1_, g1_] = update_dual_l21_serial(v1_, Psit_, Psi_, xhat, weights1_, beta1.Value, sigma11.Value);  
-            %tw = toc;
+            t_op = toc(tw); 
         else % data nodes, 3:K+2 (labindex > 2)
-            %tic
+            tw = tic;
             [v2_, g2_, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
-            %tw = toc;
+            t_op = toc(tw); 
         end
     end
     
@@ -306,7 +319,12 @@ for t = t_start : param.max_iter
     norm_x = norm(xsol(:));
     rel_val(t) = rel_x/norm_x;
     end_iter(t) = toc(start_iter);
-    fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
+    spmd
+        ta = gplus(t_op, 1);
+    end
+    t_active(t) = t_active(t) + ta{1};
+
+    fprintf('Iter = %i, Time = %e, Update time = %e\n',t,end_iter(t),t_active(t));
     
     %% Retrieve value of the monitoring variables (residual norms)
     norm_epsilon_check = 0;
@@ -444,6 +462,9 @@ for t = t_start : param.max_iter
             end
             m.SNR = SNR;
             m.SNR_average = SNR_average;
+            m.end_iter = end_iter;
+            m.t_active = t_active;
+            m.rel_val = rel_val;
             clear m
         end
         
@@ -531,6 +552,9 @@ end
 SNR_average = mean(psnrh);
 m.SNR = SNR;
 m.SNR_average = SNR_average;
+m.end_iter = end_iter;
+m.t_active = t_active;
+m.rel_val = rel_val;
 clear m
 
 % Final log

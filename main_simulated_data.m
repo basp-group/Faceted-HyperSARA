@@ -144,6 +144,7 @@ coverage_path = strcat(coverage_path, '.fits');
 data_path = 'data/';
 results_path = fullfile('results/', image_name);
 reference_cube_path = fullfile(data_path, strcat(image_name, '.fits'));
+freq_name = @(nchan) ['freq_', image_name, '_L=',num2str(nchan), '.mat'];
 mkdir(data_path)
 mkdir(results_path)
 
@@ -169,13 +170,15 @@ if flag_generateCube
     end
     fitswrite(X0.', strcat(cube_path, '.fits'));
     fitsdisp(strcat(cube_path, '.fits'));
+    save(fullfile(data_path,freq_name(nChannels)), 'f');
 else
     X0 = fitsread(strcat(cube_path, '.fits')).';
     Nx = sqrt(size(X0, 1));
     Ny = Nx;
     nChannels = size(X0, 2);
     x0 = reshape(X0, [Ny, Nx, nChannels]);
-    f = linspace(1,2,nChannels);
+    load(fullfile(data_path,freq_name(nChannels)), 'f');
+    % f = linspace(1,2,nChannels);
 end
 
 %% Generate spectral facets (interleaved sampling)

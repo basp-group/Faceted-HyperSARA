@@ -84,7 +84,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 % p = 0.3; % percentage
 % nReweights = 1;
 % input_snr = 40; % input SNR (in dB)
-% algo_version = 'hypersara'; % 'cst_weighted';
+% algo_version = 'cw'; % 'cst_weighted';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index from "spectral" facet
@@ -151,6 +151,7 @@ coverage_path = strcat(coverage_path, '.fits');
 data_path = 'data/';
 results_path = fullfile('results/', image_name);
 reference_cube_path = fullfile(data_path, strcat(image_name, '.fits'));
+freq_name = @(nchan) ['freq_', image_name, '_L=',num2str(nchan), '.mat'];
 mkdir(data_path)
 mkdir(results_path)
 
@@ -176,13 +177,15 @@ if flag_generateCube
     end
     fitswrite(X0.', strcat(cube_path, '.fits'));
     fitsdisp(strcat(cube_path, '.fits'));
+    save(fullfile(data_path,freq_name(nChannels)), 'f');
 else
     X0 = fitsread(strcat(cube_path, '.fits')).';
     Nx = sqrt(size(X0, 1));
     Ny = Nx;
     nChannels = size(X0, 2);
     x0 = reshape(X0, [Ny, Nx, nChannels]);
-    f = linspace(1,2,nChannels);
+    load(fullfile(data_path,freq_name(nChannels)), 'f');
+    % f = linspace(1,2,nChannels);
 end
 
 %% Generate spectral facets (interleaved sampling)

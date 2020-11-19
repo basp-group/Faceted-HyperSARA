@@ -505,8 +505,6 @@ beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
 % Variables for the stopping criterion
 flag = 0;
-rel_val = zeros(param.max_iter, 1);
-end_iter = zeros(param.max_iter, 1);
 
 if isfield(param, 'init_t_start')
     t_start = param.init_t_start;
@@ -515,6 +513,18 @@ else
     param.init_t_start = 1;
     t_start = 1;
     fprintf('t_start initialized \n\n')
+end
+
+if init_flag
+    rel_val = init_m.rel_val;
+    end_iter = init_m.end_iter;
+    t_active = init_m.t_active;
+    fprintf('rel_val, end_iter and t_active uploaded \n\n')
+else
+    rel_val = zeros(param.max_iter, 1);
+    end_iter = zeros(param.max_iter, 1);
+    t_active = zeros(param.max_iter, 1);
+    fprintf('rel_val, end_iter and t_active initialized \n\n')
 end
 
 start_loop = tic;
@@ -529,7 +539,9 @@ for t = t_start : param.max_iter
             % primal/prior nodes (1:Q)
             
             % update primal variable
+            tw = tic;
             [xsol_q, xhat_q, rel_x_q, norm_x_q] = update_primal(xsol_q, g_q);
+            t_op = toc(tw);
             
             % send xhat_q (communication towards the data nodes)
             for i = 1:K
@@ -537,6 +549,7 @@ for t = t_start : param.max_iter
             end
             
             % update ghost cells (versions of xhat with overlap)
+            tw = tic;
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
             x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
@@ -550,6 +563,7 @@ for t = t_start : param.max_iter
             g(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :) = sigma00.Value*g0;
             g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) = g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) + sigma11.Value*g1;          
             g = comm2d_reduce(g, overlap, Qyp.Value, Qxp.Value);
+            t_op = t_op + toc(tw);
             
             % compute g_ for the final update term
             g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
@@ -566,8 +580,10 @@ for t = t_start : param.max_iter
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                     labReceive(q);
             end
+            tw = tic;
             [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_data_fidelity_dr_block(v2_, yp, xhat_i, proj_, Ap, Atp, Hp, Tp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
+            t_op = toc(tw);
             % send portions of g2 to the prior/primal nodes
             for q = 1:Qp.Value
                 labSend(g2(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
@@ -585,7 +601,12 @@ for t = t_start : param.max_iter
     end
     rel_val(t) = sqrt(rel_x/norm_x);
     end_iter(t) = toc(start_iter);
-    fprintf('Iter = %i, Time = %e\n',t,end_iter(t));
+    spmd
+        ta = gplus(t_op, 1);
+    end
+    t_active(t) = ta{1};
+
+    fprintf('Iter = %i, Time = %e, Update time = %e\n',t,end_iter(t),t_active(t));
 
     % retrieve value of the monitoring variables (residual norms + epsilons)
     norm_epsilon_check = 0;
@@ -750,6 +771,9 @@ for t = t_start : param.max_iter
             end
             m.SNR = SNR;
             m.SNR_average = SNR_average;
+            m.end_iter = end_iter;
+            m.t_active = t_active;
+            m.rel_val = rel_val;
             clear m
         end 
         
@@ -858,6 +882,9 @@ end
 SNR_average = mean(psnrh);
 m.SNR = SNR;
 m.SNR_average = SNR_average;
+m.end_iter = end_iter;
+m.t_active = t_active;
+m.rel_val = rel_val;
 clear m
 
 % Final log
