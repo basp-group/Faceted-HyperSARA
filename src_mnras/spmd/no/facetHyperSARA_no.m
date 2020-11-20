@@ -460,13 +460,15 @@ end
 if init_flag
     rel_val = init_m.rel_val;
     end_iter = init_m.end_iter;
-    t_active = init_m.t_active;
-    fprintf('rel_val, end_iter and t_active uploaded \n\n')
+    t_facet = init_m.t_facet;
+    t_data = init_m.t_data;
+    fprintf('rel_val, end_iter, t_facet and t_data uploaded \n\n')
 else
     rel_val = zeros(param.max_iter, 1);
     end_iter = zeros(param.max_iter, 1);
-    t_active = zeros(param.max_iter, 1);
-    fprintf('rel_val, end_iter and t_active initialized \n\n')
+    t_facet = zeros(param.max_iter, 1);
+    t_data = zeros(param.max_iter, 1);
+    fprintf('rel_val, end_iter, t_facet and t_data initialized \n\n')
 end
 
 start_loop = tic;
@@ -542,12 +544,20 @@ for t = t_start : param.max_iter
     end
     rel_val(t) = sqrt(rel_x/norm_x);
     end_iter(t) = toc(start_iter);
-    spmd
-        ta = gplus(t_op, 1);
+    
+    % compute average update time (data and facet processes)
+    t_facet(t) = 0; % just in case
+    for q = 1:Q
+        t_facet(t) = t_facet(t) + t_op{q};
     end
-    t_active(t) = ta{1};
+    t_facet(t) = t_facet(t)/Q;
 
-    fprintf('Iter = %i, Time = %e, Update time = %e\n',t,end_iter(t),t_active(t));
+    t_data(t) = 0; % just in case
+    for i = Q+1:Q+K
+        t_data(t) = t_data(t) + t_op{i};
+    end
+    t_data(t) = t_data(t)/K;
+    fprintf('Iter = %i, Time = %e, t_facet = %e, t_data = %e\n',t,end_iter(t),t_facet(t),t_data(t));
     
     %% Retrieve value of the monitoring variables (residual norms + epsilons)
     norm_epsilon_check = 0;
@@ -716,7 +726,8 @@ for t = t_start : param.max_iter
             m.SNR = SNR;
             m.SNR_average = SNR_average;
             m.end_iter = end_iter;
-            m.t_active = t_active;
+            m.t_facet = t_facet;
+            m.t_data = t_data;
             m.rel_val = rel_val;
             clear m
         end   
@@ -825,7 +836,8 @@ SNR_average = mean(psnrh);
 m.SNR = SNR;
 m.SNR_average = SNR_average;
 m.end_iter = end_iter;
-m.t_active = t_active;
+m.t_facet = t_facet;
+m.t_data = t_data;
 m.rel_val = rel_val;
 clear m
 

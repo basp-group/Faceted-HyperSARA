@@ -260,17 +260,22 @@ else
     fprintf('t_start initialized \n\n')
 end
 
-
 if init_flag
     rel_val = init_m.rel_val;
     end_iter = init_m.end_iter;
-    t_active = init_m.t_active;
-    fprintf('rel_val, end_iter and t_active uploaded \n\n')
+    t_master = init_m.t_master;
+    t_l21 = init_m.t_l21;
+    t_nuclear = init_m.t_nuclear;
+    t_data = init_m.t_data;
+    fprintf('rel_val, end_iter, t_master, t_l21, t_nuclear and t_data uploaded \n\n')
 else
     rel_val = zeros(param.max_iter, 1);
     end_iter = zeros(param.max_iter, 1);
-    t_active = zeros(param.max_iter, 1);
-    fprintf('rel_val, end_iter and t_active initialized \n\n')
+    t_master = zeros(param.max_iter, 1);
+    t_l21 = zeros(param.max_iter, 1);
+    t_nuclear = zeros(param.max_iter, 1);
+    t_data = zeros(param.max_iter, 1);
+    fprintf('rel_val, end_iter, t_master, t_l21, t_nuclear and t_data initialized \n\n')
 end
 
 start_loop = tic;
@@ -285,7 +290,7 @@ for t = t_start : param.max_iter
     prev_xsol = xsol;
     xsol = max(real(xsol - g), 0);
     xhat = 2*xsol - prev_xsol;
-    t_active(t) = toc(tw);
+    t_master(t) = toc(tw);
 
     for i = 1:K
        xhat_i{2+i} = xhat(:, :, c_chunks{i}); 
@@ -319,12 +324,16 @@ for t = t_start : param.max_iter
     norm_x = norm(xsol(:));
     rel_val(t) = rel_x/norm_x;
     end_iter(t) = toc(start_iter);
-    spmd
-        ta = gplus(t_op, 1);
+    
+    % retrieve update time (average for data processes)
+    t_nuclear(t) = t_op{1};
+    t_l21(t) = t_op{2};
+    t_data(t) = 0; % just in case
+    for i = 3:K+2
+        t_data(t) = t_data(t) + t_op{i};
     end
-    t_active(t) = t_active(t) + ta{1};
-
-    fprintf('Iter = %i, Time = %e, Update time = %e\n',t,end_iter(t),t_active(t));
+    t_data(t) = t_data(t)/K;
+    fprintf('Iter = %i, Time = %e, t_master= %e, t_l21 = %e, t_nuclear = %e, t_data = %e\n',t,end_iter(t),t_master(t),t_l21(t),t_nuclear(t),t_data(t));
     
     %% Retrieve value of the monitoring variables (residual norms)
     norm_epsilon_check = 0;
@@ -463,7 +472,10 @@ for t = t_start : param.max_iter
             m.SNR = SNR;
             m.SNR_average = SNR_average;
             m.end_iter = end_iter;
-            m.t_active = t_active;
+            m.t_master = t_master;
+            m.t_l21 = t_l21;
+            m.t_nuclear = t_nuclear;
+            m.t_data = t_data;
             m.rel_val = rel_val;
             clear m
         end
@@ -553,7 +565,10 @@ SNR_average = mean(psnrh);
 m.SNR = SNR;
 m.SNR_average = SNR_average;
 m.end_iter = end_iter;
-m.t_active = t_active;
+m.t_master = t_master;
+m.t_l21 = t_l21;
+m.t_nuclear = t_nuclear;
+m.t_data = t_data;
 m.rel_val = rel_val;
 clear m
 

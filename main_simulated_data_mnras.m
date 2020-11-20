@@ -89,11 +89,11 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 % ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index from "spectral" facet
 % gam = 1e-5;
-% flag_generateCube = true;
-% flag_generateCoverage = true;
-% flag_generateVisibilities = true;
-% flag_generateUndersampledCube = true; % Default 15 channels cube with line emissions
-% flag_computeOperatorNorm = true;
+% flag_generateCube = false;
+% flag_generateCoverage = 0;
+% flag_generateVisibilities = 0;
+% flag_generateUndersampledCube =0; % Default 15 channels cube with line emissions
+% flag_computeOperatorNorm = 0;
 % flag_solveMinimization = true;
 % cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
