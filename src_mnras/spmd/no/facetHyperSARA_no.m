@@ -644,10 +644,13 @@ for t = t_start : param.max_iter
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
-    
+   
     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
-        (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
-        t - reweight_last_step_iter > param.reweight_min_steps_rel_var && t < param.reweight_max_reweight_itr) % corresponds to the PPD stopping criterion
+            (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
+            norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check && ...
+            t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr) || ...
+            (t - reweight_last_step_iter > 3000)
+
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
         % SNR
