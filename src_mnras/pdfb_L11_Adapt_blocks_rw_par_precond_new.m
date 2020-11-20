@@ -1,4 +1,4 @@
-function [xsol,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,l11,norm_res,res] = pdfb_L11_Adapt_blocks_rw_par_precond_new(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ch)
+function [xsol,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_fval,l11,norm_res,res,t_l11,t_master,end_iter] = pdfb_L11_Adapt_blocks_rw_par_precond_new(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ch)
 
 % This function solves:
 %
@@ -149,12 +149,26 @@ reweight_alpha = param.reweight_alpha;
 reweight_alpha_ff = param.reweight_alpha_ff;
 reweight_steps = param.reweight_steps;
 
-        %%%%% ABD
-        for k = 1 : P
-            d_val = abs(Psit{k}(xsol));
-            weights1{k} = reweight_alpha ./ (reweight_alpha + d_val);
-            weights1{k}(d_val > max(d_val) * param.reweight_abs_of_max) = 0;
-        end
+%%%%% ABD
+for k = 1 : P
+    d_val = abs(Psit{k}(xsol));
+    weights1{k} = reweight_alpha ./ (reweight_alpha + d_val);
+    weights1{k}(d_val > max(d_val) * param.reweight_abs_of_max) = 0;
+end
+
+if isfield(param,'end_iter')
+    end_iter = param.end_iter;
+    t_master = param.t_master;
+    t_l11 = param.t_l11;
+    t_data = param.t_data;
+    fprintf('rel_val, end_iter, t_master, t_l11, and t_data uploaded \n\n')
+else
+    end_iter = zeros(param.max_iter, 1);
+    t_master = zeros(param.max_iter, 1);
+    t_l11 = zeros(param.max_iter, 1);
+    t_data = zeros(param.max_iter, 1);
+    fprintf('rel_val, end_iter, t_master, t_l11, and t_data initialized \n\n')
+end
 
 %Step sizes computation
 
@@ -197,9 +211,11 @@ for t = t_start : param.max_iter
     tic;
     
     %% Primal update
+    tw = tic;
     prev_xsol = xsol;
     xsol = hardt(xsol - g);
     xhat = 2*xsol - prev_xsol;
+    t_master(t) = toc(tw);
     
     %% Relative change of objective function
     rel_fval(t) = norm(xsol(:) - prev_xsol(:))/norm(xsol(:));
@@ -210,7 +226,7 @@ for t = t_start : param.max_iter
     
     %% L-1,1 function update
     for k = 1:P
-        f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, xhat, weights1{k}, beta1);
+        f(k) = parfeval(@run_par_waverec, 4, v1{k}, Psit{k}, Psi{k}, xhat, weights1{k}, beta1);
     end
     
     %% L2 ball projection update
@@ -220,6 +236,7 @@ for t = t_start : param.max_iter
     epsilon_check_a = 0;
 
     counter = 1;
+    tw = tic;
     for i = 1 : c
         Fx = A(xhat(:,:,i));
         g2 = zeros(No,1);
@@ -251,27 +268,28 @@ for t = t_start : param.max_iter
         end
         Ftx(:,:,i) = real(At(g2));
     end
+    t_data(t) = toc(tw);
     % Free memory
     g2=[]; Fx=[];
    
-        epsilon_check_c = sqrt(epsilon_check_c);
-        residual_check_c = sqrt(residual_check_c);
+    epsilon_check_c = sqrt(epsilon_check_c);
+    residual_check_c = sqrt(residual_check_c);
 
-        epsilon_check_a = sqrt(epsilon_check_a);
-        residual_check_a = sqrt(residual_check_a);
+    epsilon_check_a = sqrt(epsilon_check_a);
+    residual_check_a = sqrt(residual_check_a);
 
  
     %% Update primal gradient
     g1 = zeros(size(xsol));
     for k = 1:P
-        [idx, v1_, u1_, l11_] = fetchNext(f);
+        [idx, v1_, u1_, l11_, t_l11_] = fetchNext(f);
         v1{idx} = v1_;
         u1{idx} = u1_;
         l11_cell{idx} = l11_;
-        
+        t_l11(t) = t_l11(t) + t_l11_;
         g1 = g1 + u1{idx};
     end
-    
+    t_l11(t) = t_l11(t)/P; % average compute time for the dual variable
     g = sigma11*g1 + sigma22*Ftx;
     % Free memory
     Ftx=[]; g1=[];
@@ -384,8 +402,15 @@ for t = t_start : param.max_iter
         
         if (reweight_step_count == 0) || (~mod(reweight_step_count,5)) 
             %|| (~mod(reweight_step_count,1))
+
+            
+            param.end_iter = end_iter;
+            param.t_master = t_master;
+            param.t_l11 = t_l11;
+            param.t_data = t_data;
+            param.reweight_alpha = reweight_alpha;
             mkdir('./results')
-            save(['./results/result_SARA_cube_' num2str(param.ind) '_ch_' num2str(ch) '_gamma_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','xsol','res');
+            save(['./results/result_SARA_cube_' num2str(param.ind) '_ch_' num2str(ch) '_gamma_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'],'-v7.3','xsol','res', 'param');
             %break;
         end
        
@@ -432,11 +457,13 @@ if (param.verbose > 0)
 end
 end
 
-function [v1_, u1_, l11_] = run_par_waverec(v1_, Psit, Psi, xhat, weights1_, beta1)
+function [v1_, u1_, l11_, t_l11_] = run_par_waverec(v1_, Psit, Psi, xhat, weights1_, beta1)
 
+tw = tic;
 r1 = v1_ + Psit(xhat);
 v1_ = r1 - sign(r1).*max(abs(r1) - beta1*weights1_,0);
 u1_ = Psi(v1_);
+t_l11_ = toc(tw);
 
 % local L11 norm of current solution
 l11_ = norm(r1(:),1);
