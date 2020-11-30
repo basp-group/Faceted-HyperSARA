@@ -56,9 +56,9 @@ spmd
 end
 
 %Initializations.
-init_flag = isfile(init_file_name);
+init_flag = isfile(init_file_name)
 if init_flag
-    init_m = matfile(init_file_name);
+    init_m = matfile(init_file_name)
 end
 
 if init_flag
@@ -226,7 +226,7 @@ reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
 
 if init_flag
-    g = m_init.g;
+    g = init_m.g;
     fprintf('g uploaded \n\n')
 else
     g = zeros(size(xsol));
@@ -280,6 +280,8 @@ end
 
 start_loop = tic;
 fprintf('START THE LOOP MNRAS ver \n\n')
+param.max_iter = 100000;
+
 for t = t_start : param.max_iter
     
     %fprintf('Iter %i\n',t);

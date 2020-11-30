@@ -1,0 +1,56 @@
+
+--------------------------------------------------------------------------------
+       Segmentation violation detected at Sun Nov 29 08:23:59 2020 +0000
+--------------------------------------------------------------------------------
+
+Configuration:
+  Crash Decoding           : Disabled - No sandbox or build area path
+  Crash Mode               : continue (default)
+  Default Encoding         : UTF-8
+  Deployed                 : false
+  GNU C Library            : 2.28 stable
+  Graphics Driver          : Unknown software 
+  Graphics card 1          : 0x1a03 ( 0x1a03 ) 0x2000 Version 0.0.0.0 (0-0-0)
+  Java Version             : Java 1.8.0_181-b13 with Oracle Corporation Java HotSpot(TM) 64-Bit Server VM mixed mode
+  MATLAB Architecture      : glnxa64
+  MATLAB Entitlement ID    : 1772200
+  MATLAB Root              : /lustre/sw/cse-matlab/MATLAB/R2019a
+  MATLAB Version           : 9.6.0.1135713 (R2019a) Update 3
+  OpenGL                   : software
+  Operating System         : "CentOS Linux release 8.1.1911 (Core) "
+  Process ID               : 72581
+  Processor ID             : x86 Family 6 Model 79 Stepping 1, GenuineIntel
+  Session Key              : cc2b0299-eff6-4b2c-87a5-1f3217e71d33
+  Static TLS mitigation    : Disabled: Unable to open display
+  Window System            : No active display
+
+Fault Count: 1
+
+
+Abnormal termination:
+Segmentation violation
+
+Register State (from fault):
+  RAX = 0000000000002b2c  RBX = 000014cc123b8c25
+  RCX = 0000000000000b2c  RDX = 0ffffffffffff000
+  RSP = 000014cbefff8d00  RBP = 000014cbefff8dd0
+  RSI = 0000ffffffffffff  RDI = f000000000000fff
+
+   R8 = 000014c9f51fc000   R9 = 000014c9f51fc6a0
+  R10 = 0000000000000000  R11 = 0000000000000003
+  R12 = 000014c9f52054b0  R13 = 000014c9f52054b0
+  R14 = 000014cbefff8d60  R15 = 000014cbefff8d20
+
+  RIP = 000014caeefff568  EFL = 0000000000010202
+
+   CS = 0033   FS = 0000   GS = 0000
+
+Stack Trace (from fault):
+[  0] 0x000014caeefff568                                   <unknown-module>+00000000
+[  1] 0x000014cc03c1bb96 /lustre/sw/cse-matlab/MATLAB/R2019a/bin/glnxa64/libmwlxeindexing.so+00797590 _ZN9MathWorks3lxe25IndexingEnvironmentCommon39GetConstScalarMxArrayReferenceWithCheckEPK11mxArray_tagRKN7mwboost14iterator_rangeIPKNS0_6xvalueEEEm+00000022
+[  2] 0x000014cc03c26839 /lustre/sw/cse-matlab/MATLAB/R2019a/bin/glnxa64/libmwlxeindexing.so+00841785
+[  3] 0x000014cc053c06c0 /lustre/sw/cse-matlab/MATLAB/R2019a/bin/glnxa64/libmwm_lxe.so+14313152
+[  4] 0x000014cc053ee76b /lustre/sw/cse-matlab/MATLAB/R2019a/bin/glnxa64/libmwm_lxe.so+14501739
+[  5] 0x000014cc04cc2690 /lustre/sw/cse-matlab/MATLAB/R2019a/bin/glnxa64/libmwm_lxe.so+06981264
+[  6] 0x000014caee696443                                   <unknown-module>+00000000
+
