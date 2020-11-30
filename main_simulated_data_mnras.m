@@ -76,8 +76,8 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 
 %% PARAMETERS FOR DEBUGGING
 
-% image_name = 'W28_512_m39'; %'M31'; %'W28_512_m39';
-% nChannels = 20; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
+% image_name = 'W28_1024_m39'; %'W28_512_m39'; %'M31'; %'W28_512_m39';
+% nChannels = 60; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
 % Qx = 2;
 % Qy = 1;
 % Qc = 1;
@@ -89,24 +89,24 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 % ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index from "spectral" facet
 % gam = 1e-5;
-% flag_generateCube = false;
+% flag_generateCube = 0;
 % flag_generateCoverage = 0;
 % flag_generateVisibilities = 0;
-% flag_generateUndersampledCube =0; % Default 15 channels cube with line emissions
+% flag_generateUndersampledCube = 1; % Default 15 channels cube with line emissions
 % flag_computeOperatorNorm = 0;
 % flag_solveMinimization = true;
 % cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
-% cube_path = cubepath(nChannels);
+% cube_path = cubepath(6);
 % coverage_path = 'data/uv_coverage_p=1';
-% 
-% % if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
-% %     nlevel = 4;
-% %     overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
-% % end
-% 
-% overlap_size = 256;
-% 
-% % % TODO: add warm-restart for this version of the main script
+
+% if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
+%     nlevel = 4;
+%     overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
+% end
+
+% overlap_size = 341; % 256;
+
+% % TODO: add warm-restart for this version of the main script
 
 %%
 format compact;

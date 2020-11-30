@@ -43,7 +43,7 @@ function [v1, g] = update_dual_l21(v1, x_overlap, weights, beta1, Iq, dims_q,...
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-% Last revision: [08/08/2019]
+% Last revision: [30/11/2020]
 %-------------------------------------------------------------------------%
 %%
 
@@ -52,15 +52,19 @@ x_ = zeros([zerosNum, size(x_overlap, 3)]);
 x_(offsetLq(1)+1:end-offsetRq(1), offsetLq(2)+1:end-offsetRq(2), :) = x_overlap;
 g = zeros(size(x_overlap));
 
-for l = 1 : size(x_, 3)
-    w = sdwt2_sara_faceting(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
-    
-    w = v1(:, l) +  w;
-    l2 = sqrt(sum(abs(w).^2,2));
-    l2_soft = max(l2 - beta1*weights, 0)./(l2+eps);
-    v1(:, l) = w - l2_soft.*w;
-    
+tmp = sdwt2_sara_faceting(x_(:, :, 1), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
+w = zeros(numel(tmp), size(x_, 3));
+w(:, 1) = tmp;
+for l = 2:size(x_, 3)
+    w(:,l) = sdwt2_sara_faceting(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
+end  
+w = v1 +  w;
+l2 = sqrt(sum(abs(w).^2,2));
+l2_soft = max(l2 - beta1*weights, 0)./(l2+eps);
+v1 = w - l2_soft.*w;
+for l = 1:size(x_, 3)
     g(:, :, l) = isdwt2_sara_faceting(v1(:, l), Iq, dims_q, I_overlap_q, dims_overlap_q, Ncoefs_q, nlevel, wavelet, temLIdxs_q, temRIdxs_q);
 end
+
 
 end
