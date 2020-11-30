@@ -193,13 +193,6 @@ spmd
     dwtmode(ext_mode,'nodisp');
     max_dims = dims_overlap_ref_q;
     p = prod(Ncoefs_q, 2);
-%     if dirac_present
-%         sz = 3*sum(p(1:end)) -
-%         2*sum(p(nlevelp.Value+1:nlevelp.Value+1:end)) + prod(dims_q); %
-%         wrong
-%     else
-%         sz = 3*sum(p) - 2*sum(p(nlevelp.Value+1:nlevel+1:end));
-%     end
     sz = 3*sum(p(1:end)) - 2*sum(p(nlevel+1:nlevel+1:end)) - 2*p(end);
     
     % update weights
@@ -217,7 +210,6 @@ spmd
     end
     d1 = sqrt(sum(v1_.^2,2));
     weights1_ = reweight_alpha ./ (reweight_alpha + d1);
-
 end
 
 %%
@@ -229,16 +221,23 @@ spmd
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
     g = zeros(size(x_overlap));
-    g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) = g1(crop_l21(1)+1:end, crop_l21(2)+1:end, :); % x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :);
+    g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) = g1(crop_l21(1)+1:end, crop_l21(2)+1:end, :);
+    g = comm2d_reduce(g, overlap, Qyp.Value, Qxp.Value);
     g_q = g(overlap(1)+1:end, overlap(2)+1:end, :); % no overlap here 
 end
 
 %%
 % gather all image g segments in a single image
 faceted_g = zeros(size(x));
+% the two instructions below are equivalent
 for q = 1:Q
-    faceted_g = place2DSegment(faceted_g, g{q}, min(I_overlap{q},[],1), max(dims_overlap{q},[],1));
+%     faceted_g = place2DSegment(faceted_g, g{q}, min(I_overlap{q},[],1), max(dims_overlap{q},[],1));
+    faceted_g = place2DSegment(faceted_g, g_q{q}, I(q,:), dims(q,:));
 end
+
+% -> comparing weights and wavelet coefficients directly is a bot more 
+% involved (not in the same order in the two cases -> adapt codes from Prusa 
+% for comparison)
 
 %% check error between the faceted and serial update step for the l21 variable 
 % after a single reweighting step
