@@ -63,9 +63,21 @@ end
 
 if init_flag
     xsol = init_m.xsol;
+    % xhat = init_m.xhat;
     param = init_m.param;
     epsilon = init_m.epsilon;
     fprintf('xsol, param and epsilon uploaded \n\n')
+    %! display norm of interest
+%     norm_eps = 0;
+%     for k = 1:K
+%         for l = 1:numel(epsilon{k})
+%             for b = 1:numel(epsilon{k}{l})
+%                 norm_eps = norm_eps + norm(epsilon{k}{l}{b}, 'fro');
+%             end
+%         end
+%     end
+%     fprintf('|xsol| = %e, |epsilon| = %e \n\n', norm(xsol(:)), norm_eps)
+%     param
 else
     xsol = zeros(M,N,c);
     fprintf('xsol initialized \n\n')
@@ -85,6 +97,9 @@ if init_flag
     weights1_{2} = init_m.weights1;
     s = size(init_m.v1, 1);
     fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
+    %!
+%     fprintf('|v0| = %e, |v1| = %e, |weights0| = %e, |weights1| = %e \n\n', norm(init_m.v0,'fro'), norm(init_m.v1,'fro'), ...
+%         norm(init_m.weights0,'fro'), norm(init_m.weights1,'fro'))
 else
     spmd
         if labindex == 1
@@ -125,6 +140,20 @@ if init_flag
     for k = 1:K
         norm_res(2+k) = init_m.norm_res(k,1);
     end
+    fprintf('norm_res uploaded \n\n')
+    
+    %!
+%     nres = 0;
+%     for k = 1:K
+%         e = norm_res{2+k};
+%         for l = 1:numel(e)
+%             for b = 1:numel(e{l})
+%                 nres = nres + norm(e{l}{b})^2;
+%             end
+%         end
+%     end
+%     nres = sqrt(nres);
+%     fprintf('|norm_res| = %e \n\n', nres);
 else
     for k = 1:K
         norm_res_tmp = cell(length(c_chunks{k}), 1);
@@ -137,6 +166,7 @@ else
         norm_res{2+k} = norm_res_tmp;
     end
     clear norm_res_tmp
+    fprintf('norm_res initialized \n\n')
 end
 
 sz_y = cell(K, 1);
@@ -174,6 +204,23 @@ if init_flag
         t_block(2+k) = init_m.t_block(k,1);
     end
     fprintf('v2, proj, t_block uploaded \n\n')
+    %!
+%     nv2 = 0;
+%     nproj = 0;
+%     ntblock = 0;
+%     for k = 1:K
+%         e = init_m.v2(k,1);
+%         e1 = init_m.proj(k,1);
+%         e2 = init_m.t_block(k,1);
+%         for l = 1:numel(e{1})
+%             for b = 1:numel(e{1}{l})
+%                 nv2 = nv2 + norm(e{1}{l}{b}, 'fro');
+%                 nproj = nproj + norm(e1{1}{l}{b}, 'fro');
+%                 ntblock = ntblock + norm(e2{1}{l}{b}, 'fro');
+%             end
+%         end
+%     end
+%     fprintf('|v2| = %e, |proj| = %e, |t_block| = %e \n\n', nv2, nproj, ntblock);
 else
     for k = 1:K
         v2_tmp = cell(length(c_chunks{k}), 1);
@@ -228,6 +275,8 @@ reweight_steps = param.reweight_steps;
 if init_flag
     g = init_m.g;
     fprintf('g uploaded \n\n')
+    %!
+    % fprintf('|g| = %e \n\n', norm(g(:)))
 else
     g = zeros(size(xsol));
     fprintf('g initialized \n\n')
@@ -277,6 +326,48 @@ else
     t_data = zeros(param.max_iter, 1);
     fprintf('rel_val, end_iter, t_master, t_l21, t_nuclear and t_data initialized \n\n')
 end
+
+%%
+%! check warm-start worked as expected
+if init_flag
+    spmd
+        if labindex > 2
+            [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
+        end
+    end  
+    norm_epsilon_check = 0;
+    norm_residual_check = 0;
+    for i = 3:K+2
+        norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
+        norm_residual_check = norm_residual_check + norm_residual_check_i{i};
+    end
+    norm_epsilon_check = sqrt(norm_epsilon_check);
+    norm_residual_check = sqrt(norm_residual_check);
+    
+    % nuclear norm
+    nuclear = nuclear_norm(xsol);
+    
+    % l21 norm
+    l21 = compute_sara_prior(xsol, Psit, s);
+    
+    % SNR
+    sol = reshape(xsol(:),numel(xsol(:))/c,c);
+    SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+    psnrh = zeros(c,1);
+    for i = 1:c
+        psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+    end
+    SNR_average = mean(psnrh);
+    
+    % Log
+    if (param.verbose >= 1)
+        fprintf('Iter %i\n',t_start-1);
+        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t_start-1));
+        fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+    end
+end
+%%
 
 start_loop = tic;
 fprintf('START THE LOOP MNRAS ver \n\n')
@@ -441,7 +532,7 @@ for t = t_start : param.max_iter
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
-        param.init_t_start = t;
+        param.init_t_start = t+1; %! should  be t+1 ?
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             m = matfile([name, '_', ...
@@ -479,9 +570,79 @@ for t = t_start : param.max_iter
             m.t_nuclear = t_nuclear;
             m.t_data = t_data;
             m.rel_val = rel_val;
+            % m.xhat = xhat;
             clear m
+            
+            % nuclear norm
+            nuclear = nuclear_norm(xsol);
+            
+            % l21 norm
+            l21 = compute_sara_prior(xsol, Psit, s);
+            
+            % SNR
+            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+            psnrh = zeros(c,1);
+            for i = 1:c
+                psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+            end
+            SNR_average = mean(psnrh);
+            
+            % Log
+            if (param.verbose >= 1)
+                fprintf('Backup iter: %i\n',t);
+                fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
+                fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+                fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+            end
         end
         
+        %%
+        %! debugging
+%         norm_eps = 0;
+%         for k = 1:K
+%             e = epsilonp{2+k};
+%             for l = 1:numel(e)
+%                 for b = 1:numel(e{l})
+%                     norm_eps = norm_eps + norm(e{l}{b}, 'fro');
+%                 end
+%             end
+%         end
+%         fprintf('|xsol| = %e, |epsilon| = %e \n\n', norm(xsol(:)), norm_eps)
+%         fprintf('|v0| = %e, |v1| = %e, |weights0| = %e, |weights1| = %e \n\n', norm(m.v0, 'fro'), norm(m.v1, 'fro'), ...
+%         norm(m.weights0,'fro'), norm(m.weights1,'fro'))
+%         nres = 0;
+%         for k = 1:K
+%             e = norm_res{2+k};
+%             for l = 1:numel(e)
+%                 for b = 1:numel(e{l})
+%                     nres = nres + norm(e{l}{b})^2;
+%                 end
+%             end
+%         end
+%         nres = sqrt(nres);
+%         fprintf('|norm_res| = %e \n\n', nres);
+%         nv2 = 0;
+%         nproj = 0;
+%         ntblock = 0;
+%         for k = 1:K
+%             e = m.v2(k,1);
+%             e1 = m.proj(k,1);
+%             e2 = m.t_block(k,1);
+%             for l = 1:numel(e{1})
+%                 for b = 1:numel(e{1}{l})
+%                     nv2 = nv2 + norm(e{1}{l}{b}, 'fro');
+%                     nproj = nproj + norm(e1{1}{l}{b}, 'fro');
+%                     ntblock = ntblock + norm(e2{1}{l}{b}, 'fro');
+%                 end
+%             end
+%         end
+%         fprintf('|v2| = %e, |proj| = %e, |t_block| = %e \n\n', nv2, nproj, ntblock);
+%         fprintf('|g| = %e \n\n', norm(g(:)))
+%         param
+        %!--
+        %%
+    
         % reweight_step_count = reweight_step_count + 1;
         % reweight_last_step_iter = t;
         % rw_counts = rw_counts + 1;   
@@ -553,7 +714,7 @@ norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
 param.reweight_alpha = reweight_alpha;
 param.init_reweight_step_count = reweight_step_count;
 param.init_reweight_last_iter_step = t;
-param.init_t_start = t;
+param.init_t_start = t+1;
 m.param = param;
 
 % SNR (computed only on the master node)
@@ -572,6 +733,7 @@ m.t_l21 = t_l21;
 m.t_nuclear = t_nuclear;
 m.t_data = t_data;
 m.rel_val = rel_val;
+% m.xhat = xhat;
 clear m
 
 % Final log

@@ -125,6 +125,7 @@ if init_flag
     for k = 1:K
         norm_res(2+k) = init_m.norm_res(k,1);
     end
+    fprintf('norm_res uploaded \n\n')
 else
     for k = 1:K
         norm_res_tmp = cell(length(c_chunks{k}), 1);
@@ -137,6 +138,7 @@ else
         norm_res{2+k} = norm_res_tmp;
     end
     clear norm_res_tmp
+    fprintf('norm_res initialized \n\n')
 end
 
 sz_y = cell(K, 1);
@@ -225,7 +227,7 @@ end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 
 if init_flag
-    g = m_init.g;
+    g = init_m.g;
     fprintf('g uploaded \n\n')
 else
     g = zeros(size(xsol));
@@ -262,14 +264,62 @@ end
 if init_flag
     rel_val = init_m.rel_val;
     end_iter = init_m.end_iter;
-    t_active = init_m.t_active;
-    fprintf('rel_val, end_iter and t_active uploaded \n\n')
+    t_master = init_m.t_master;
+    t_l21 = init_m.t_l21;
+    t_nuclear = init_m.t_nuclear;
+    t_data = init_m.t_data;
+    fprintf('rel_val, end_iter, t_master, t_l21, t_nuclear and t_data uploaded \n\n')
 else
     rel_val = zeros(param.max_iter, 1);
     end_iter = zeros(param.max_iter, 1);
-    t_active = zeros(param.max_iter, 1);
-    fprintf('rel_val, end_iter and t_active initialized \n\n')
+    t_master = zeros(param.max_iter, 1);
+    t_l21 = zeros(param.max_iter, 1);
+    t_nuclear = zeros(param.max_iter, 1);
+    t_data = zeros(param.max_iter, 1);
+    fprintf('rel_val, end_iter, t_master, t_l21, t_nuclear and t_data initialized \n\n')
 end
+
+%%
+%! check warm-start worked as expected
+if init_flag
+    spmd
+        if labindex > 2
+            [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
+        end
+    end  
+    norm_epsilon_check = 0;
+    norm_residual_check = 0;
+    for i = 3:K+2
+        norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
+        norm_residual_check = norm_residual_check + norm_residual_check_i{i};
+    end
+    norm_epsilon_check = sqrt(norm_epsilon_check);
+    norm_residual_check = sqrt(norm_residual_check);
+    
+    % nuclear norm
+    nuclear = nuclear_norm(xsol);
+    
+    % l21 norm
+    l21 = compute_sara_prior(xsol, Psit, s);
+    
+    % SNR
+    sol = reshape(xsol(:),numel(xsol(:))/c,c);
+    SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+    psnrh = zeros(c,1);
+    for i = 1:c
+        psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+    end
+    SNR_average = mean(psnrh);
+    
+    % Log
+    if (param.verbose >= 1)
+        fprintf('Iter %i\n',t_start-1);
+        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t_start-1));
+        fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+    end
+end
+%%
 
 start_loop = tic;
 
@@ -283,7 +333,7 @@ for t = t_start : param.max_iter
     prev_xsol = xsol;
     xsol = max(real(xsol - g), 0);
     xhat = 2*xsol - prev_xsol;
-    t_active(t) = toc(tw);
+    t_master(t) = toc(tw);
 
     for i = 1:K
        xhat_i{2+i} = xhat(:, :, c_chunks{i}); 
@@ -317,12 +367,16 @@ for t = t_start : param.max_iter
     norm_x = norm(xsol(:));
     rel_val(t) = rel_x/norm_x;
     end_iter(t) = toc(start_iter);
-    spmd
-        ta = gplus(t_op, 1);
+    
+    % retrieve update time (average for data processes)
+    t_nuclear(t) = t_op{1};
+    t_l21(t) = t_op{2};
+    t_data(t) = 0; % just in case
+    for i = 3:K+2
+        t_data(t) = t_data(t) + t_op{i};
     end
-    t_active(t) = t_active(t) + ta{1};
-
-    fprintf('Iter = %i, Time = %e, Update time = %e\n',t,end_iter(t),t_active(t));
+    t_data(t) = t_data(t)/K;
+    fprintf('Iter = %i, Time = %e, t_master= %e, t_l21 = %e, t_nuclear = %e, t_data = %e\n',t,end_iter(t),t_master(t),t_l21(t),t_nuclear(t),t_data(t));
     
     %% Retrieve value of the monitoring variables (residual norms)
     norm_epsilon_check = 0;
@@ -425,7 +479,7 @@ for t = t_start : param.max_iter
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
-        param.init_t_start = t;
+        param.init_t_start = t+1;
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             m = matfile([name, '_', ...
@@ -458,9 +512,35 @@ for t = t_start : param.max_iter
             m.SNR = SNR;
             m.SNR_average = SNR_average;
             m.end_iter = end_iter;
-            m.t_active = t_active;
+            m.t_master = t_master;
+            m.t_l21 = t_l21;
+            m.t_nuclear = t_nuclear;
+            m.t_data = t_data;
             m.rel_val = rel_val;
             clear m
+
+            % nuclear norm
+            nuclear = nuclear_norm(xsol);
+            
+            % l21 norm
+            l21 = compute_sara_prior(xsol, Psit, s);
+            
+            % SNR
+            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+            psnrh = zeros(c,1);
+            for i = 1:c
+                psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+            end
+            SNR_average = mean(psnrh);
+            
+            % Log
+            if (param.verbose >= 1)
+                fprintf('Backup iter: %i\n',t);
+                fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
+                fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+                fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+            end
         end
         
         reweight_step_count = reweight_step_count + 1;
@@ -529,7 +609,7 @@ norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
 param.reweight_alpha = reweight_alpha;
 param.init_reweight_step_count = reweight_step_count;
 param.init_reweight_last_iter_step = t;
-param.init_t_start = t;
+param.init_t_start = t+1;
 m.param = param;
 
 % SNR (computed only on the master node)
@@ -543,7 +623,10 @@ SNR_average = mean(psnrh);
 m.SNR = SNR;
 m.SNR_average = SNR_average;
 m.end_iter = end_iter;
-m.t_active = t_active;
+m.t_master = t_master;
+m.t_l21 = t_l21;
+m.t_nuclear = t_nuclear;
+m.t_data = t_data;
 m.rel_val = rel_val;
 clear m
 
