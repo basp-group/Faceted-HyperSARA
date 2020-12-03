@@ -382,7 +382,7 @@ end
 
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
-    fprintf('reweight_step_count uploaded')
+    fprintf('reweight_step_count uploaded\n\n')
 else
     reweight_step_count = 0;
     fprintf('reweight_step_count initialized \n\n')
@@ -485,7 +485,7 @@ if init_flag
     spmd
         if labindex <= Qp.Value
             % compute values for the prior terms
-            %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+            x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             [l21_norm, nuclear_norm] = compute_facet_prior_so(x_overlap, Iq, ...

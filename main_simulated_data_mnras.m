@@ -106,8 +106,8 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 % 
 % rw = 1;
 % overlap_size = 341; % 256;
-% 
-% % % TODO: add warm-restart for this version of the main script
+%
+% % TODO: add warm-restart for this version of the main script
 
 %%
 format compact;
@@ -485,7 +485,7 @@ if flag_solveMinimization
 
     clear y epsilon aW W G
     %%
-
+    
     switch algo_version   
         case 'hypersara'
             % reference HyperSARA version
@@ -493,12 +493,7 @@ if flag_solveMinimization
                 hyperSARA(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
                 wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)));
-%             wsp = 'results/W28_1024_m39/fhs_cw_triangular_N=1024_L=6_Qx=2_Qy=1_Qc=1_ind=1_overlap=341_p=0.3_snr=40_1_1e-05_0.mat';
-% %             wsp = 'whatever.mat';
-%             [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
-%                 hyperSARA(y_spmd, epsilon_spmd, ...
-%                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
-%                 wlt_basis, nlevel, cell_c_chunks, channels(end), wsp, fullfile(results_path,temp_results_name(nChannels)));
+            
         case 's'
             % reference version, overlap between the facets underlying the nuclear norms
             [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...

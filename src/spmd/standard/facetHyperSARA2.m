@@ -383,7 +383,7 @@ end
 
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
-    fprintf('reweight_step_count uploaded')
+    fprintf('reweight_step_count uploaded\n\n')
 else
     reweight_step_count = 0;
     fprintf('reweight_step_count initialized \n\n')
@@ -486,7 +486,7 @@ if init_flag
         if labindex <= Qp.Value
             % compute values for the prior terms
             for i = 1:Kp.Value
-                xsol_i(:, :, c_chunksp.Value{i}) = labReceive(Qp.Value+i);
+                xhat_q(:, :, c_chunksp.Value{i}) = labReceive(Qp.Value+i);
             end
         
             % update ghost cells (versions of xhat with overlap)
@@ -757,7 +757,6 @@ for t = t_start : param.max_iter
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;
             % fprintf('\n\n No more reweights \n\n');
-            break;
         end 
 
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
@@ -853,7 +852,7 @@ for t = t_start : param.max_iter
 
             % Log
             if (param.verbose >= 1)
-                fprintf('Backup iter: %i\n',t;
+                fprintf('Backup iter: %i\n',t);
                 fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
                 fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
