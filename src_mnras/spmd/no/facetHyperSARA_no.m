@@ -276,7 +276,7 @@ if init_flag
         weights0_(q) = init_m.weights0(q,1);
         weights1_(q) = init_m.weights1(q,1);
     end
-    fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
+    fprintf('v0, v1, weights0, weights1 uploaded \n\n')
 else
     spmd
         if labindex <= Qp.Value

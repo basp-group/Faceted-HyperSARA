@@ -284,7 +284,7 @@ if init_flag
         weights0_(q) = init_m.weights0(q,1);
         weights1_(q) = init_m.weights1(q,1);
     end
-    fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
+    fprintf('v0, v1, weights0, weights1 uploaded \n\n')
 else
     spmd
         if labindex <= Qp.Value
@@ -814,46 +814,46 @@ for t = t_start : param.max_iter
             clear m
 
             %% compute value of the priors in parallel
-        spmd
-        if labindex <= Qp.Value
-            % compute values for the prior terms
-            %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-            x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-            [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                offsetLq, offsetRq, [0,0], [0,0], w, size(v1_));
-        end
-    end
-    
-    % retrieve value of the priors
-    l21 = 0;
-    nuclear = 0;
-    for q = 1:Q
-        l21 = l21 + l21_norm{q};
-        nuclear = nuclear + nuclear_norm{q};
-    end
-    
-    % SNR
-    % get xsol back from the workers
-    for q = 1:Q
-        xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-    end
-    sol = reshape(xsol(:),numel(xsol(:))/c,c);
-    SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-    psnrh = zeros(c,1);
-    for i = 1:c
-        psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-    end
-    SNR_average = mean(psnrh);
-    
-    % Log
-    if (param.verbose >= 1)
-        fprintf('Backup iter: %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
-        fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
-    end
+            spmd
+                if labindex <= Qp.Value
+                    % compute values for the prior terms
+                    %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+                    x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+                    x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+                    [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
+                        offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                        offsetLq, offsetRq, [0,0], [0,0], w, size(v1_));
+                end
+            end
+            
+            % retrieve value of the priors
+            l21 = 0;
+            nuclear = 0;
+            for q = 1:Q
+                l21 = l21 + l21_norm{q};
+                nuclear = nuclear + nuclear_norm{q};
+            end
+            
+            % SNR
+            % get xsol back from the workers
+            for q = 1:Q
+                xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+            end
+            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+            psnrh = zeros(c,1);
+            for i = 1:c
+                psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+            end
+            SNR_average = mean(psnrh);
+            
+            % Log
+            if (param.verbose >= 1)
+                fprintf('Backup iter: %i\n',t);
+                fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
+                fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+                fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+            end
         end   
         
         % reweight_step_count = reweight_step_count + 1;
@@ -861,7 +861,7 @@ for t = t_start : param.max_iter
         % rw_counts = rw_counts + 1;  
 
         if (reweight_step_count >= param.total_reweights)
-            param.reweight_max_reweight_itr = t+1;
+            % param.reweight_max_reweight_itr = t+1;
             fprintf('\n\n No more reweights \n\n');
             break;
         end

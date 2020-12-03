@@ -480,6 +480,12 @@ for t = t_start : param.max_iter
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1;
+
+        if (reweight_step_count >= param.total_reweights)
+            % param.reweight_max_reweight_itr = t+1;
+            fprintf('\n\n No more reweights \n\n');
+            break;
+        end  
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             m = matfile([name, '_', ...
@@ -548,7 +554,7 @@ for t = t_start : param.max_iter
         rw_counts = rw_counts + 1;   
 
         if (reweight_step_count >= param.total_reweights)
-            param.reweight_max_reweight_itr = t+1;
+            % param.reweight_max_reweight_itr = t+1;
             fprintf('\n\n No more reweights \n\n');
             break;
         end     

@@ -453,17 +453,17 @@ else
 end
 
 if init_flag
-rel_val = init_m.rel_val;
-end_iter = init_m.end_iter;
-t_facet = init_m.t_facet;
-t_data = init_m.t_data;
-fprintf('rel_val, end_iter, t_facet and t_data uploaded \n\n')
+    rel_val = init_m.rel_val;
+    end_iter = init_m.end_iter;
+    t_facet = init_m.t_facet;
+    t_data = init_m.t_data;
+    fprintf('rel_val, end_iter, t_facet and t_data uploaded \n\n')
 else
-rel_val = zeros(param.max_iter, 1);
-end_iter = zeros(param.max_iter, 1);
-t_facet = zeros(param.max_iter, 1);
-t_data = zeros(param.max_iter, 1);
-fprintf('rel_val, end_iter, t_facet and t_data initialized \n\n')
+    rel_val = zeros(param.max_iter, 1);
+    end_iter = zeros(param.max_iter, 1);
+    t_facet = zeros(param.max_iter, 1);
+    t_data = zeros(param.max_iter, 1);
+    fprintf('rel_val, end_iter, t_facet and t_data initialized \n\n')
 end
 
 %! check warm-start worked as expected
@@ -801,7 +801,6 @@ for t = t_start : param.max_iter
             m.t_data = t_data;
             m.rel_val = rel_val;
             clear m
-
 
             % compute value of the priors in parallel
             spmd

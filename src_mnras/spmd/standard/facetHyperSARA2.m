@@ -309,6 +309,7 @@ if init_flag
     for k = 1:K
         norm_res(Q+k) = init_m.norm_res(k,1);
     end
+    fprintf('norm_res uploaded \n\n')
 else
     for k = 1:K
         norm_res_tmp = cell(length(c_chunks{k}), 1);

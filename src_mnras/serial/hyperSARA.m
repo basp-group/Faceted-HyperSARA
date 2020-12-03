@@ -533,6 +533,12 @@ for t = t_start : param.max_iter
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1; %! should  be t+1 ?
+
+        if (reweight_step_count >= param.total_reweights)
+            % param.reweight_max_reweight_itr = t+1;
+            fprintf('\n\n No more reweights \n\n');
+            break;
+        end  
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             m = matfile([name, '_', ...
@@ -570,7 +576,6 @@ for t = t_start : param.max_iter
             m.t_nuclear = t_nuclear;
             m.t_data = t_data;
             m.rel_val = rel_val;
-            % m.xhat = xhat;
             clear m
             
             % nuclear norm
@@ -648,7 +653,7 @@ for t = t_start : param.max_iter
         % rw_counts = rw_counts + 1;   
 
         if (reweight_step_count >= param.total_reweights)
-            param.reweight_max_reweight_itr = t+1;
+            % param.reweight_max_reweight_itr = t+1;
             fprintf('\n\n No more reweights \n\n');
             break;
         end     
@@ -678,7 +683,6 @@ spmd
         res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-2}), yp, Gp, Ap, Atp, Wp);
     end
 end
-
 m = matfile([name, '_', ...
             num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
             'Writable', true);
@@ -733,7 +737,6 @@ m.t_l21 = t_l21;
 m.t_nuclear = t_nuclear;
 m.t_data = t_data;
 m.rel_val = rel_val;
-% m.xhat = xhat;
 clear m
 
 % Final log

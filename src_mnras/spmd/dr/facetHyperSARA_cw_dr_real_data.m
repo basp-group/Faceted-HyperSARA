@@ -379,7 +379,7 @@ else
         norm_res{Q+k} = norm_res_tmp;
     end
     clear norm_res_tmp
-    fprintf('norm_res initialized \n\n')
+    fprintf('norm_res initialized \n\n')`
 end
 
 sz_y = cell(K, 1);
@@ -807,8 +807,6 @@ for t = t_start : param.max_iter
                 m.epsilon(k,1) = epsilonp(Q+k);
                 m.norm_res(k,1) = norm_res(Q+k);
             end
-            m.SNR = SNR;
-            m.SNR_average = SNR_average;
             m.end_iter = end_iter;
             m.t_facet = t_facet;
             m.t_data = t_data;
