@@ -527,7 +527,6 @@ else
 end
 
 start_loop = tic;
-param.max_iter = 100000;
 
 fprintf('START THE LOOP MNRAS ver \n\n')
 for t = t_start : param.max_iter

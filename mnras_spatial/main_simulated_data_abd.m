@@ -446,12 +446,12 @@ if flag_solveMinimization
     param_HSI.sig = sig; % estimate of the noise level in SARA space
     param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
 
-    param_HSI.use_reweight_steps = 0; % reweighting by fixed steps
+    param_HSI.use_reweight_steps = 1; % reweighting by fixed steps
     param_HSI.reweight_step_size = 300; % reweighting step size
     param_HSI.reweight_steps = (5000: param_HSI.reweight_step_size :10000);
     param_HSI.step_flag = 1;
 
-    param_HSI.use_reweight_eps = 1; % reweighting w.r.t the relative change of the solution
+    param_HSI.use_reweight_eps = 0; % reweighting w.r.t the relative change of the solution
     param_HSI.reweight_max_reweight_itr = param_HSI.max_iter - param_HSI.reweight_step_size;
     param_HSI.reweight_rel_var = 5e-4; % criterion for performing reweighting
     param_HSI.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
