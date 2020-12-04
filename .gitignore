@@ -34,3 +34,5 @@ docs/_*
 *.out
 
 abd_hypersara2
+*local_cluster_jobs/
+*pref_*

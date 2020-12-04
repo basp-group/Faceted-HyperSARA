@@ -39,8 +39,8 @@ $HOME/matlab_wrapper_2019_fix \
 '"$algoversion"', '"$wintype"', "$ncdata", "$ind", "$overlapsize", "$nreweights", \
 "$gencube", "$gencov", "$genvis", "$genundersampledcube", \
 "$computenorm", "$solve", \
-'"$cubepath"', '"$covpath"', "$gamma")" \
-> results/$imgname/logs/facethypersara_${imgname}_L=${nchannels}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_id=${ind}_overlap=${overlapsize}_p=${p}_snr=${snr}.log
+'"$cubepath"', '"$covpath"', "$gamma", "$rw")" \
+> results/$imgname/logs/facethypersara_${imgname}_L=${nchannels}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_id=${ind}_overlap=${overlapsize}_p=${p}_snr=${snr}_rw=${rw}.log
 
 rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 rm -r $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID
