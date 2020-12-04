@@ -1,5 +1,5 @@
-function [xsol,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ch, init_file_name, name)
+function [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
+    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ch, init_file_name, name, x0)
 
 % This function solves:
 %
@@ -53,20 +53,20 @@ if init_flag
         u1{k} = zeros(size(Psi{k}(v1{k})));
     end
     weights1 = init_m.weights1;
-    fprintf('v1, weights uploaded \n\n')
+    fprintf('v1, weights1 uploaded \n\n')
 else
     l11_cell = cell(P, 1);
     u1 = cell(P, 1);
     v1 = cell(P, 1);
     weights1 = cell(P, 1);
     for k = 1:P
-        weights1{k} = ones(size(v1{k},1),1);
         % start from zero solution
         v1{k} = zeros(size(Psit{k}(xsol)));
         % initial L1 descent step
         u1{k} = zeros(size(Psi{k}(v1{k})));
+        weights1{k} = ones(size(v1{k},1),1);
     end
-    fprintf('v1, weights initialized \n\n')
+    fprintf('v1, weights1 initialized \n\n')
 end
 
 if init_flag
@@ -78,7 +78,8 @@ if init_flag
         end
     end
     r2 = v2;
-    fprintf('v2 uploaded \n\n')
+    norm_res = init_m.norm_res;
+    fprintf('v2, norm_res uploaded \n\n')
 else
     for i = 1 : c
         v2{i} = cell(length(G{i}),1);
@@ -111,10 +112,10 @@ end
 
 
 if init_flag
-    t_block = param.init_t_block;
-    t_start = param.init_t+1;
-    reweight_last_step_iter = param.init_t;
-    reweight_step_count = param.reweight_step_count+1;
+    t_block = init_m.t_block;
+    t_start = param.init_t_start;
+    reweight_last_step_iter = param.init_reweight_last_iter_step;
+    reweight_step_count = param.init_reweight_step_count;
     rw_counts = 1;
     fprintf('t_start, t_block uploaded \n\n')
 else
@@ -139,6 +140,7 @@ reweight_alpha_ff = param.reweight_alpha_ff;
 reweight_steps = param.reweight_steps;
 
 %%%%% ABD
+%! [P.-A.] not sure this is useful
 for k = 1 : P
     d_val = abs(Psit{k}(xsol));
     weights1{k} = reweight_alpha ./ (reweight_alpha + d_val);
@@ -146,17 +148,42 @@ for k = 1 : P
 end
 
 if init_flag
-    end_iter = param.end_iter;
-    t_master = param.t_master;
-    t_l11 = param.t_l11;
-    t_data = param.t_data;
-    fprintf('rel_val, end_iter, t_master, t_l11, and t_data uploaded \n\n')
+    rel_val = init_m.rel_val;
+    l11 = init_m.l11;
+    end_iter = init_m.end_iter;
+    t_master = init_m.t_master;
+    t_l11 = init_m.t_l11;
+    t_data = init_m.t_data;
+    fprintf('rel_val, l11, end_iter, t_master, t_l11, and t_data uploaded \n\n')
 else
+    rel_val = zeros(param.max_iter, 1);
+    l11 = zeros(param.max_iter, 1);
     end_iter = zeros(param.max_iter, 1);
     t_master = zeros(param.max_iter, 1);
     t_l11 = zeros(param.max_iter, 1);
     t_data = zeros(param.max_iter, 1);
-    fprintf('rel_val, end_iter, t_master, t_l11, and t_data initialized \n\n')
+    fprintf('rel_val, l11, end_iter, t_master, t_l11, and t_data initialized \n\n')
+end
+
+if init_flag
+    SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));  
+    norm_residual_check = 0;
+    norm_epsilon_check = 0;
+    for i = 1 : c
+        for j = 1 : length(G{i})
+            norm_residual_check = norm_residual_check + norm_res{i}{j}^2;
+            norm_epsilon_check = norm_epsilon_check + power(epsilon{i}{j},2);
+        end
+    end
+    norm_residual_check = sqrt(norm_residual_check);
+    norm_epsilon_check = sqrt(norm_epsilon_check);
+    % Log
+    if (param.verbose >= 1)
+        fprintf('Iter %i\n',t_start-1);
+        fprintf('l11-norm = %e, rel_val = %e\n', l11(t_start-1), rel_val(t_start-1));
+        fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+        fprintf(' SNR = %e\n', SNR);
+    end
 end
 
 %Step sizes computation
@@ -192,7 +219,10 @@ Ftx = zeros(size(xsol));
 
 % Main loop. Sequential.
 %maxNumCompThreads(12);
-util_create_pool(15); %! ask Abdullah here
+% util_create_pool(15); %! ask Abdullah here
+spmd
+    dwtmode('zpd')
+end
 
 for t = t_start : param.max_iter
     
@@ -296,7 +326,7 @@ for t = t_start : param.max_iter
     if ~mod(t,100)
 
         % SNR
-        % SNR(t) = 20*log10(norm(XF(:))/norm(XF(:)-xsol(:)));
+        SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
         
         % Log
         if (param.verbose >= 1)
@@ -307,6 +337,7 @@ for t = t_start : param.max_iter
             % fprintf(' epsilon_c = %e, residual_c = %e\n', epsilon_check_c, residual_check_c);
             % fprintf(' epsilon_a = %e, residual_a = %e\n', epsilon_check_a, residual_check_a);
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+            fprintf(' SNR = %e\n', SNR);
 
             for i = 1 : length(epsilon_check)
                fprintf(['eps_b' num2str(i) '= %e, res_b' num2str(i) '= %e\n'], epsilon_check(i), residual_check(i));
@@ -428,7 +459,7 @@ for t = t_start : param.max_iter
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
             m = matfile([name, '_', ...
-              num2str(param.ind) '_ch_' num2str(ch) '_'  num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+              num2str(param.ind) '_ch_' num2str(ch) '_'  num2str(param.gamma) '_rw=' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
             m.param = param;
             m.res = res;
@@ -444,6 +475,7 @@ for t = t_start : param.max_iter
             m.res = res;
             % m.SNR = SNR;
             % m.SNR_average = SNR_average;
+            m.l11 = l11;
             m.end_iter = end_iter;
             m.t_l11 = t_l11;
             m.t_master = t_master;
@@ -457,7 +489,7 @@ for t = t_start : param.max_iter
                 fprintf('Backup iter: %i\n',t);
                 fprintf('l11-norm = %e, rel_val = %e\n', l11(t), rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-                % fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+                fprintf(' SNR = %e\n', SNR);
             end
         end
        
@@ -472,7 +504,6 @@ for t = t_start : param.max_iter
         reweight_last_step_iter = t;
         rw_counts = rw_counts + 1;
     end
-    toc;
 end
 
 % Calculate residual images
@@ -488,7 +519,7 @@ for i = 1 : c
 end
 
 m = matfile([name, '_', ...
-    num2str(param.ind) '_ch_' num2str(ch) '_'  num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+    num2str(param.ind) '_ch_' num2str(ch) '_'  num2str(param.gamma) '_rw=' num2str(reweight_step_count) '.mat'], ...
 'Writable', true);
 m.param = param;
 m.res = res;
