@@ -29,9 +29,9 @@ addpath ../../CubeHelix
 addpath ../../export_fig
 savedir = 'figs_facets/';
 
-Q = Qx.^2;
-doComputeMetric = true; % save metrics in a .txt file
-display = true;
+% Q = Qx.^2;
+% doComputeMetric = true; % save metrics in a .txt file
+% display = true;
 
 load('ground_truth_spatial_faceting.mat') % .mat file generated with 
                                            % `get_ground_truth.m` -> x0, f,

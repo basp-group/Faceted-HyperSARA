@@ -26,7 +26,7 @@ addpath ../lib/faceted-wavelet-transform/src
 addpath ../../CubeHelix
 addpath ../../export_fig
 
-overlap_size = [0; 16; 64; 128; 256];
+overlap_size = [0; 20; 64; 128];
 Qx = 4;
 Qy = 4;
 Q = Qx*Qy;
