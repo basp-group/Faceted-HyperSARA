@@ -34,9 +34,9 @@ mkdir $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 # "$gencube", "$gencov", "$genvis")" \
 # > logs/hypersara_N=${Nx}_L=${L}_p=${p}_snr=${snr}.log
 
+# "get_ground_truth('/lustre/home/shared/sc004/mnras_faceted_corrected');
 $HOME/matlab_wrapper_2019_fix \
-"get_ground_truth('/lustre/home/shared/sc004/mnras_faceted_corrected'); \
-print_images_spectral('/lustre/home/shared/sc004/'); \
+"print_images_spectral('/lustre/home/shared/sc004/'); \
 print_images_facets('/lustre/home/shared/sc004/'); \
 print_images_overlap('/lustre/home/shared/sc004/')" > results.log
 
