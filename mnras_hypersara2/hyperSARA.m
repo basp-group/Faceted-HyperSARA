@@ -371,6 +371,9 @@ end
 
 start_loop = tic;
 fprintf('START THE LOOP MNRAS ver \n\n');
+param.max_iter = 100000;
+t_start = t_start+1;
+param.adapt_eps_tol_out = 1.01;
 
 for t = t_start : param.max_iter
     

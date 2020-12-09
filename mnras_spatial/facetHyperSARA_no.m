@@ -1,14 +1,9 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
-    facetHyperSARA_cw(y, epsilon, ...
-    A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    L, nlevel, c_chunks, c, d, window_type, init_file_name, name)
-%facetHyperSARA_cw: faceted HyperSARA
+    facetHyperSARA_no(y, epsilon, A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
+    L, nlevel, c_chunks, c, init_file_name, name)
+%facetHyperSARA_no: faceted HyperSARA
 %
-% version with a fixed overlap for the faceted nuclear norm, larger or 
-% smaller than the extension needed for the 2D segmented discrete wavelet 
-% transforms (sdwt2). Includes spatial weihting correction for the faceted
-% nuclear norm (triangular, hamming, piecewise_constant, no weights by
-% default).
+% version without overlap for the facet nuclear norms.
 %
 %-------------------------------------------------------------------------%
 %%
@@ -38,12 +33,15 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 %   > .reweight_alpha_ff   (0.9)        
 %   > .total_reweights      (30)     -1 if you don't want reweighting
 %   > .use_reweight_steps    (1)     reweighting by fixed steps
+%   > .reweight_step_size  (300)     reweighting step size
+%   > .reweight_steps = [5000: param_HSI.reweight_step_size :10000];
 %   > .step_flag = 1;
+%   > .use_reweight_eps   (false)    reweighting w.r.t the relative change of the solution
 %   > .reweight_max_reweight_itr     param_HSI.max_iter - param_HSI.reweight_step_size;
 %   > .reweight_rel_var   (1e-4)     criterion for performing reweighting
 %   > .reweight_min_steps_rel_var (300) minimum number of iterations between consecutive reweights
 %   > .sig                           noise level (wavelet space)
-%   > sig_bar                        noise level (singular value space)
+%   > .sig_bar                       noise level (singular value space)
 %
 %   projection onto ellipsoid (preconditioning)
 %   > .elipse_proj_max_iter (20)     max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
@@ -70,10 +68,6 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 % > nlevel      decomposition depth [1]
 % > c_chunks    indices of the bands handled by each data node {K, 1}
 % > c           total number of specrtal channels [1]
-% > d           size of the fixed overlap for the faceted nuclear norm 
-%               [1, 2]
-% > window_type type of apodization window affecting the faceted nuclear
-%               norm prior [string]
 % > init_file_name  name of a valid .mat file for initialization (for warm-restart)
 %
 %
@@ -109,29 +103,31 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 %-------------------------------------------------------------------------%
 %%
 %SPMD version: use spmd for all the priors, deal with the data fidelity
-% term in a single place. Constant overlap for the nuclear norm assuming d
-% is smaller than the smallest overlap for the sdwt2 (the other option 
-% would also change the communication process (ghost cells and reduction 
-% operation)). d <= (power(2, nlevel)-1)*(max(L(:)-1))
+% term in a single place.
 
-%% NOTE:
-% this version relies on a specialised version of sdwt2, slightly less
-% general but faster (based on Arwa's work).
+% Version without overlap for the nuclear norm prior (to be compared to the
+% version 4)
 
 % This function solves:
 %
 % min || X ||_* + lambda * ||Psit(X)||_2,1   s.t.  || Y - A(X) ||_2 <= epsilon and x>=0
 %
-%%
-% List of auxiliairy function used:
-% - generate_segdwt_indices
-% domain_decomposition
-% domain_decomposition_overlap2
-% -> write a function to generate weights
-% -> revise setup weights on distributed workers + amount of overlap involved
-% -> use the new interface from the sdwt2 library (more modular)
+% Author: Abdullah Abdulaziz
+% Modified by: P.-A. Thouvenin.
 
+%% REMARKS
+% 1. Do I need to have the number of nodes Q, I available as parallel
+% constants? (automatically broadcasted otherwise each time they are used?)
+% 2. Try to find a compromise between Li and Nk, depending on the size of
+% the problem at hand (assuming the data size is not the main bottleneck),
+% and depending on the computational complexity of the task to be driven by
+% each worker -> see if there is any acceleration here...
+% 4. Backup options have been removed for the moment, see initialization
+% from a set of known variables (warm-restart) [really useful in practice? 
 %%
+
+% maxNumCompThreads(param.num_workers);
+
 % initialize monitoring variables (display active)
 SNR = 0;
 SNR_average = 0;
@@ -141,11 +137,10 @@ norm_residual_check = 0;
 % size of the oversampled Fourier space (vectorized)
 No = size(W{1}{1}{1}, 1);
 
-% number of pixels (spatial dimensions)
+% number of pixels (sptial dimensions)
 [M, N] = size(At(zeros(No, 1)));
 
-%%-- instantiate auxiliary variables for sdwt2
-% define reference 2D facets (no overlap)
+% define reference spatial facets (no overlap)
 Q = Qx*Qy;
 rg_y = split_range(Qy, M);
 rg_x = split_range(Qx, N);
@@ -160,28 +155,12 @@ for qx = 1:Qx
 end
 clear rg_y rg_x;
 
-% instantiate auxiliary variables for faceted wavelet transforms involved
-% in SARA (sdwt2)
-% [I_overlap_ref, dims_overlap_ref, I_overlap, dims_overlap, ...
-%     status, offset, pre_offset, post_offset, Ncoefs, pre_offset_dict, ...
-%     post_offset_dict] = sdwt2_setup(N, I, dims, J, wavelet, L)
+%%- begin initialization sdwt2
+% [P.-A.] instantiate auxiliary variables for sdwt2
 [~, dims_overlap_ref, I_overlap, dims_overlap, status, offset, offsetL, ...
     offsetR, Ncoefs, temLIdxs, temRIdxs] = sdwt2_setup([M, N], I, dims, nlevel, wavelet, L);
-
 id_dirac = find(ismember(wavelet, 'self'), 1);
 dirac_present = ~isempty(id_dirac);
-
-rg_yo = split_range(Qy, M, d);
-rg_xo = split_range(Qx, N, d);
-Io = zeros(Q, 2);
-dims_o = zeros(Q, 2);
-for qx = 1:Qx
-    for qy = 1:Qy
-        q = (qx-1)*Qy+qy;
-        Io(q, :) = [rg_yo(qy, 1)-1, rg_xo(qx, 1)-1];
-        dims_o(q, :) = [rg_yo(qy,2)-rg_yo(qy,1)+1, rg_xo(qx,2)-rg_xo(qx,1)+1];
-    end
-end
 
 % total number of workers (Q: facets workers, K: data workers)
 numworkers = Q + K;
@@ -192,10 +171,10 @@ ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
 if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
     exit(1);
 end
-% maxNumCompThreads(param.num_workers);
+
 parpool(cirrus_cluster, numworkers);
 
-% define parallel constants (known by each worker)
+% define parallel constants(known by each worker)
 Qyp = parallel.pool.Constant(Qy);
 Qxp = parallel.pool.Constant(Qx);
 Qp = parallel.pool.Constant(Q);
@@ -206,6 +185,7 @@ nlevelp = parallel.pool.Constant(nlevel);
 offsetp = parallel.pool.Constant(offset);
 
 % define composite variables (local to a given worker)
+% wavelet auxiliary variables
 % /!\ only simple indexing allowed into Composite objects from the master
 % node
 Iq = Composite();
@@ -224,11 +204,6 @@ overlap_g_south = Composite();
 overlap_g_east = Composite();
 overlap_g_south_east = Composite();
 overlap = Composite();
-% constant overlap: facet size
-dims_oq = Composite();
-crop_nuclear = Composite();
-crop_l21 = Composite();
-
 % initialize composite variables and constants
 for q = 1:Q
     Iq{q} = I(q, :);
@@ -240,36 +215,14 @@ for q = 1:Q
     status_q{q} = status(q, :);
     Ncoefs_q{q} = Ncoefs{q};
     
-    % additional composite variables (for the zero padding / boundary conditions)
+    % additional composite variables (for the zero padding, see if fewer elements can be used)
     dims_overlap_ref_q{q} = dims_overlap_ref(q,:);
     offsetLq{q} = offsetL(q,:);
     offsetRq{q} = offsetR(q,:);
-    
-    % check which overlap is the largest (sdwt2 or nuclear norms)
-    bool_crop = dims_overlap_ref(q,:) >= dims_o(q,:); % 0: nuclear norm largest, 1: dwt2 largest
-    tmp_crop_l21 = [0, 0];
-    tmp_crop_nuclear = [0, 0];
-    if bool_crop(1)
-        % sdwt2 largest
-        tmp_crop_nuclear(1) = dims_overlap_ref(q,1) - dims_o(q,1);
-    else
-        tmp_crop_l21(1) = dims_o(q,1) - dims_overlap_ref(q,1);
-    end
-    
-    if bool_crop(2)
-        % sdwt2 largest
-        tmp_crop_nuclear(2) = dims_overlap_ref(q,2) - dims_o(q,2);
-    else
-        tmp_crop_l21(2) = dims_o(q,2) - dims_overlap_ref(q,2);
-    end
-    crop_l21{q} = tmp_crop_l21;
-    crop_nuclear{q} = tmp_crop_nuclear;    
-    overlap{q} = max(max(dims_overlap{q}) - dims(q,:), dims_o(q, :) - dims(q,:)); 
-    % amount of overlap necessary for each facet
-    dims_oq{q} = dims_o(q, :);
+    overlap{q} = max(dims_overlap{q}) - dims(q,:); % amount of overlap necessary for each facet
 end
 
-w = Composite();
+% overlap dimension of the neighbour (necessary to define the ghost cells properly)
 for q = 1:Q
     [qy, qx] = ind2sub([Qy, Qx], q);
     if qy < Qy
@@ -292,11 +245,8 @@ for q = 1:Q
     else
         overlap_g_east{q} = [0, 0];
     end
-    
-    % define the weights (depends on the position of the facet inside the grid)
-    w{q} =  generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), [d,d]);
 end
-%%-- end initialisation auxiliary variables for sdwt2
+%%-- end initialisation auxiliary variables sdwt2
 
 %Initializations.
 init_flag = isfile(init_file_name);
@@ -318,7 +268,7 @@ end
 v0_ = Composite();
 weights0_ = Composite();
 v1_ = Composite();
-weights1_ = Composite();
+weights1_ = Composite(); % idem, can be created in parallel with spmd
 if init_flag
     for q = 1:Q
         v0_(q) = init_m.v0(q,1);
@@ -326,23 +276,18 @@ if init_flag
         weights0_(q) = init_m.weights0(q,1);
         weights1_(q) = init_m.weights1(q,1);
     end
-    spmd
-        if labindex <= Qp.Value
-            max_dims = max(dims_overlap_ref_q, dims_oq);
-        end
-    end
-    fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
+    fprintf('v0, v1, weights0, weights1 uploaded \n\n')
 else
     spmd
         if labindex <= Qp.Value
-            max_dims = max(dims_overlap_ref_q, dims_oq);
-            [v0_, v1_, weights0_, weights1_] = initialize_dual_overlap(Ncoefs_q, max_dims-crop_nuclear, c, nlevelp.Value);
+            [v0_, v1_, weights0_, weights1_] = initialize_dual_variables(Ncoefs_q, dims_q, dirac_present, c, nlevelp.Value);
         end
     end
     fprintf('v0, v1, weigths0, weights1 initialized \n\n')
 end
 
-%% Data node parameters
+%% Data node parameters: to be completely modified
+% data nodes
 A = afclean(A);
 At = afclean(At);
 elipse_proj_max_iter = parallel.pool.Constant(param.elipse_proj_max_iter);
@@ -444,7 +389,7 @@ end
 
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
-    fprintf('reweight_step_count uploaded\n\n')
+    fprintf('reweight_step_count uploaded \n\n')
 else
     reweight_step_count = 0;
     fprintf('reweight_step_count initialized \n\n')
@@ -479,6 +424,7 @@ if init_flag
     end
     fprintf('g uploaded \n\n')
 else
+    param.init_g = zeros(size(xsol)); % 0 values...
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
         g_q{q} = zeros([dims(q, :), c]);
@@ -499,7 +445,7 @@ tau = 0.99/(sigma0*param.nu0 + sigma1*param.nu1 + sigma2*param.nu2);
 sigma00 = parallel.pool.Constant(tau*sigma0);
 sigma11 = parallel.pool.Constant(tau*sigma1);
 sigma22 = parallel.pool.Constant(tau*sigma2);
-beta0 = parallel.pool.Constant(param.gamma0/sigma0);
+beta0 = parallel.pool.Constant(param.gamma0/sigma0); % only needed on the "primal/prior" workers
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
 % Variables for the stopping criterion
@@ -548,12 +494,12 @@ if init_flag
     spmd
         if labindex <= Qp.Value
             % compute values for the prior terms
-            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
+            x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-            [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+            [l21_norm, nuclear_norm] = compute_facet_prior(x_overlap, overlap, Iq, ...
+                offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                offsetLq, offsetRq, size(v1_));
         end
     end
 
@@ -588,8 +534,7 @@ if init_flag
 end
 
 start_loop = tic;
-
-fprintf('START THE LOOP MNRAS ver \n\n')
+t_start = t_start + 1;
 
 for t = t_start : param.max_iter
     
@@ -611,32 +556,30 @@ for t = t_start : param.max_iter
             end
             
             % update ghost cells (versions of xhat with overlap)
+            % overlap_q = dims_overlap_ref_q - dims_q;
             tw = tic;
-            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
+            x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
             x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             
-            % update dual variables (nuclear, l21) % errors here
-            [v0_, g0] = update_dual_nuclear(v0_, x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :), w, weights0_, beta0.Value);
-            [v1_, g1] = update_dual_l21(v1_, x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :), weights1_, beta1.Value, Iq, ...
+            % update dual variables (nuclear, l21)
+            [v0_, g0] = update_dual_nuclear(v0_, xhat_q, ones(size(xhat_q)), weights0_, beta0.Value);
+            [v1_, g1] = update_dual_l21(v1_, x_overlap, weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
-            g = zeros(size(x_overlap));
-            g(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :) = sigma00.Value*g0;
-            g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) = g(crop_l21(1)+1:end, crop_l21(2)+1:end, :) + sigma11.Value*g1;          
-            g = comm2d_reduce(g, overlap, Qyp.Value, Qxp.Value);
+            g1 = comm2d_reduce(g1, overlap, Qyp.Value, Qxp.Value);
             t_op = t_op + toc(tw);
             
             % compute g_ for the final update term
-            g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
+            g_q = sigma00.Value*g0 + ...
+                sigma11.Value*g1(overlap(1)+1:end, overlap(2)+1:end, :);
             
             % retrieve portions of g2 from the data nodes
             for i = 1:Kp.Value
                 g_q(:,:,c_chunksp.Value{i}) = g_q(:,:,c_chunksp.Value{i}) + labReceive(Qp.Value+i);
             end
         else
-            % data nodes (Q+1:Q+K) (no data blocking, just frequency for
-            % the moment)
+            % data nodes (Q+1:Q+K) (no data blocking, just frequency for the moment
             % retrieve xhat_i from the prior/primal nodes
             for q = 1:Qp.Value
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
@@ -646,6 +589,7 @@ for t = t_start : param.max_iter
             [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             t_op = toc(tw);
+            
             % send portions of g2 to the prior/primal nodes
             for q = 1:Qp.Value
                 labSend(g2(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
@@ -656,14 +600,14 @@ for t = t_start : param.max_iter
     %% Relative change of objective function
     % retrieve rel_x_q, norm_x_q for the workers
     rel_x = 0;
-    norm_x = 0;    
+    norm_x = 0;
     for q = 1:Q
         rel_x = rel_x + rel_x_q{q};
         norm_x = norm_x + norm_x_q{q};
     end
     rel_val(t) = sqrt(rel_x/norm_x);
     end_iter(t) = toc(start_iter);
-
+    
     % compute average update time (data and facet processes)
     t_facet(t) = 0; % just in case
     for q = 1:Q
@@ -698,9 +642,9 @@ for t = t_start : param.max_iter
                 %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-                [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                    offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+                [l21_norm, nuclear_norm] = compute_facet_prior(x_overlap, overlap, Iq, ...
+                    offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                    offsetLq, offsetRq, size(v1_));
             end
         end
         
@@ -735,7 +679,7 @@ for t = t_start : param.max_iter
         end
     end
     
-    %% Global stopping criterion
+    %% Global stopping criteria
     if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
             (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
     % if ((t>1) && (reweight_step_count >= param.total_reweights)) && ((rel_val(t) < param.rel_var && ...
@@ -757,20 +701,20 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
-    if (param.step_flag && t>500) % rel_fval(t) < param.reweight_rel_var)
+    if (param.step_flag && t>500) %rel_fval(t) < param.reweight_rel_var)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
-
+   
     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
             (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
             norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check && ...
             t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr) || ...
-            (t - reweight_last_step_iter > 3000)
-        
+            (t - reweight_last_step_iter > 300)
+
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
-        % compute SNR
+        % SNR
         % get xsol back from the workers
         for q = 1:Q
             xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
@@ -783,16 +727,16 @@ for t = t_start : param.max_iter
         end
         SNR_average = mean(psnrh);
         
+        % update weights
         spmd
             if labindex <= Qp.Value
-                % update weights
+                x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
-                [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
-                    Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
-                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                    reweight_alphap, crop_l21, crop_nuclear, w);
+                [weights1_, weights0_] = update_weights(x_overlap, size(v1_), overlap, ...
+                    Iq, dims_q, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
+                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, reweight_alphap);
                     reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
             else
                 % compute residual image on the data nodes
@@ -803,13 +747,13 @@ for t = t_start : param.max_iter
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
-        param.init_t_start = t+1; 
+        param.init_t_start = t+1;  
         
         if (reweight_step_count >= param.total_reweights)
             param.reweight_max_reweight_itr = t+1;
             % fprintf('\n\n No more reweights \n\n');
         end
-        
+
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
             m = matfile([name, '_', ...
@@ -859,16 +803,16 @@ for t = t_start : param.max_iter
             %% compute value of the priors in parallel
             spmd
                 if labindex <= Qp.Value
-                % compute values for the prior terms
-                %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-                x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-                x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-                [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                    offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+                    % compute values for the prior terms
+                    % x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+                    x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+                    x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+                    [l21_norm, nuclear_norm] = compute_facet_prior(x_overlap, overlap, Iq, ...
+                        offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                        offsetLq, offsetRq, size(v1_));
                 end
             end
-            
+
             % retrieve value of the priors
             l21 = 0;
             nuclear = 0;
@@ -876,7 +820,7 @@ for t = t_start : param.max_iter
                 l21 = l21 + l21_norm{q};
                 nuclear = nuclear + nuclear_norm{q};
             end
-            
+
             % SNR
             % get xsol back from the workers
             for q = 1:Q
@@ -889,7 +833,7 @@ for t = t_start : param.max_iter
                 psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
             end
             SNR_average = mean(psnrh);
-            
+
             % Log
             if (param.verbose >= 1)
                 fprintf('Backup iter: %i\n',t);
@@ -897,16 +841,17 @@ for t = t_start : param.max_iter
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
                 fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
             end
-        end 
+        end   
         
         % reweight_step_count = reweight_step_count + 1;
         % reweight_last_step_iter = t;
         % rw_counts = rw_counts + 1; 
-        
+
         if (reweight_step_count >= param.total_reweights)
+            % param.reweight_max_reweight_itr = t+1;
             fprintf('\n\n No more reweights \n\n');
             break;
-        end
+        end       
 
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
@@ -920,19 +865,17 @@ for q = 1:Q
     xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
 end
 
-% [09/10/2019] Modification from previous version: return fewer parameters,
-% save through matfile to reduce memory footprint.
-% Calculate residual images
 spmd
-    if labindex <= Qp.Value
+    if labindex <= Q
+        x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
         x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
         x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
         
-        [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
+        [l21_norm, nuclear_norm] = compute_facet_prior(x_overlap, overlap, Iq, ...
             offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+            offsetLq, offsetRq, size(v1_));
     else
-        res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
+       res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
     end
 end
 

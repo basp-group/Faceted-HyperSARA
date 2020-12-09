@@ -1,7 +1,1 @@
-W28_1024,20,2,2,1,cw,triangular,20,1,512,30,true,false,true,false,false,true,../data/vla_7.95h_dt10s.uvw.mat,1e-5,25,5
-W28_1024,20,3,3,1,cw,triangular,20,1,342,30,true,false,true,false,false,true,../data/vla_7.95h_dt10s.uvw.mat,1e-5,30,5
-W28_1024,20,4,4,1,cw,triangular,20,1,256,30,true,false,true,false,false,true,../data/vla_7.95h_dt10s.uvw.mat,1e-5,36,5
-W28_1024,20,4,4,1,cw,triangular,20,1,128,30,true,false,true,false,false,true,../data/vla_7.95h_dt10s.uvw.mat,1e-5,36,5
 W28_1024,20,4,4,1,cw,triangular,20,1,64,30,true,false,true,false,false,true,../data/vla_7.95h_dt10s.uvw.mat,1e-5,36,5
-W28_1024,20,4,4,1,cw,triangular,20,1,20,30,true,false,true,false,false,true,../data/vla_7.95h_dt10s.uvw.mat,1e-5,36,5
-W28_1024,20,4,4,1,no,triangular,20,1,0,30,true,false,true,false,false,true,../data/vla_7.95h_dt10s.uvw.mat,1e-5,36,5
