@@ -23,8 +23,8 @@ cd $SLURM_SUBMIT_DIR
 module load matlab/R2019a  # version to be checked on cirrus
 
 mkdir $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
-cp -R $SLURM_SUBMIT_DIR/lib/nufft $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID
-export MATLAB_PREFDIR=$SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
+# cp -R $SLURM_SUBMIT_DIR/lib/nufft $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID
+# export MATLAB_PREFDIR=$SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 
 # Matlab option to deactivate threading
 # -singleCompThread
@@ -35,10 +35,10 @@ export MATLAB_PREFDIR=$SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 # > logs/hypersara_N=${Nx}_L=${L}_p=${p}_snr=${snr}.log
 
 $HOME/matlab_wrapper_2019_fix \
-"get_ground_truth('/home/shared/sc004/mnras_faceted_corrected'); \
-print_images_spectral('/home/shared/sc004/'); \
-print_images_facets('/home/shared/sc004/'); \
-print_images_overlap('/home/shared/sc004/')" > results.log
+"get_ground_truth('/lustre/home/shared/sc004/mnras_faceted_corrected'); \
+print_images_spectral('/lustre/home/shared/sc004/'); \
+print_images_facets('/lustre/home/shared/sc004/'); \
+print_images_overlap('/lustre/home/shared/sc004/')" > results.log
 
 rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
-rm -r $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID
+# rm -r $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID
