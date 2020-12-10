@@ -84,11 +84,11 @@ vtime_master = zeros(numel(Qc), 1);
 %=========================================================================%
 clim_log = [-5, 0;  % image
     -4, 0;            % error image
-    -3.5e-4, 3.5e-4]; % residual images
+    -3.5e-6, 3.5e-6]; % residual images % e-4 before
 
 clim_log(:,:,2) = [-4, 0; % image
     -3, 0;                % error image
-    -3.5e-4, 3.5e-4];     % residual images
+    -3.5e-6, 3.5e-6];     % residual images
 
 fontsize = 25;
 map_img = cubehelix(256);
