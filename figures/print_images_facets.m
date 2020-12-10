@@ -120,7 +120,7 @@ for k = 1:numel(Qx)
 
             % residual images
             display_image(res(:,:,l), clim_log(3,:,l), map_img, fontsize);
-            export_fig(strcat(savedir,'res_hs', num2str(l),'.pdf'), '-transparent','-q101')
+            export_fig(strcat(savedir,'res_fhs', num2str(l),'.pdf'), '-transparent','-q101')
             close
         end
     end
