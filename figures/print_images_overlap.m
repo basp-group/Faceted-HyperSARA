@@ -75,8 +75,8 @@ vtime_data = zeros(numel(overlap_size), 1);     % variance
 %=========================================================================%
 % Plot parameters
 %=========================================================================%
-% clim_log = [-5, 0;  % image
-%     -4, 0;            % error image
+% clim_log = [1e-5, 1;  % image
+%     1e-4, 1;            % error image
 %     -3.5e-4, 3.5e-4]; % residual images
 % 
 % clim_log(:,:,2) = [-4, 0; % image
@@ -128,12 +128,12 @@ for k = 1:numel(overlap_size)
 %     
 %     for l = 1:2
 %         % images
-%         display_image(log10(x(:,:,l)), clim_log(1,:,l), map_img, fontsize);
+%         display_image(x(:,:,l), clim_log(1,:,l), map_img, fontsize, true);
 %         export_fig(strcat(savedir,'x_fhs', num2str(l),'.pdf'), '-transparent','-q101')
 %         close
 %         
 %         % residual images
-%         display_image(res(:,:,l), clim_log(3,:,l), map_img, fontsize);
+%         display_image(res(:,:,l), clim_log(3,:,l), map_img, fontsize, false);
 %         export_fig(strcat(savedir,'res_hs', num2str(l),'.pdf'), '-transparent','-q101')
 %         close
 %     end

@@ -1,4 +1,4 @@
-function display_image(x, clim, map_img, fontsize)
+function display_image(x, clim, map_img, fontsize, log)
 
 f=figure('visible','on');
 set(gca, 'Color', 'none'); % sets axes background
@@ -8,6 +8,9 @@ set(f,'PaperOrientation',orient);
 set(f,'units','pixel','outerposition',[0 0 600 600])
 imagesc(x, clim);
 colormap(gca, map_img);
+if log
+    set(gca,'ColorScale','log'); 
+end
 axis image
 ax = gca;
 ax.YAxis.Visible = 'off';

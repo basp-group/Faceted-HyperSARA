@@ -1,4 +1,4 @@
-function print_images_facets(results_path, ncores_data)
+function print_images_facets(results_path, ncores_data, flag_display, flag_metric)
 %%
 % Produce the images and metrics reported in the MNRAS paper
 % ``A Faceted Prior for Scalable Wideband Imaging: Application to Radio 
@@ -48,10 +48,10 @@ mkdir(savedir)
 %=========================================================================%
 % Reconstruction metrics
 %=========================================================================%
-col = @(x) x(:);
+% col = @(x) x(:);
 norm2D = @(x) squeeze(sqrt(sum(sum(x.^2, 2), 1)));
-norm2 = @(x) squeeze(sqrt(sum(sum(x(:).^2, 2), 1)));
-DR = @(x, res, n) sqrt(prod(N))*squeeze(max(max(x,[],2),[],1))*n./norm2D(res); % per band input
+% norm2 = @(x) squeeze(sqrt(sum(sum(x(:).^2, 2), 1)));
+% DR = @(x, res, n) sqrt(prod(N))*squeeze(max(max(x,[],2),[],1))*n./norm2D(res); % per band input
 SNR = @(x, x0) 20*log10(norm2D(x0)./norm2D(x - x0));
 SNR_log = @(x, x0) SNR(log10(x+eps), log10(x0+eps));
 
@@ -75,139 +75,153 @@ vtime_data = zeros(numel(Qx), 1);     % variance
 %=========================================================================%
 % Plot parameters
 %=========================================================================%
-clim_log = [-5, 0;  % image
-    -4, 0;            % error image
+clim_log = [1e-5, 1;  % image
+    1e-4, 1;            % error image
     -3.5e-6, 3.5e-6]; % residual images % e-4 before
 
-clim_log(:,:,2) = [-4, 0; % image
-    -3, 0;                % error image
+clim_log(:,:,2) = [5e-5, 1; % image
+    1e-3, 1;                % error image
     -3.5e-6, 3.5e-6];     % residual images
 
 fontsize=25;
 map_img = cubehelix(256);
 
 %% Display ground truth image (spatial faceting)
-for l = 1:2
-    % ground truth
-    display_image(log10(x0(:,:,channels(l))), clim_log(1,:,l), map_img, fontsize);
-    export_fig(strcat(savedir,'x', num2str(l),'.pdf'), '-transparent','-q101')
-    close
+if flag_display
+    for l = 1:2
+        % ground truth
+        display_image(log10(x0(:,:,channels(l))), clim_log(1,:,l), map_img, fontsize, true);
+        export_fig(strcat(savedir,'x', num2str(l),'.pdf'), '-transparent','-q101')
+        close
+    end
 end
 
 %% Load images %! first and last channel only for SARA, overall norm otherwise?
 for k = 1:numel(Qx)
     if Qx(k) > 1
         % faceted HyperSARA
-        overlap = floor(N(1)/Qx(k));
-        fileName = name_pattern(Qx(k), overlap);
-        load(fileName, 'xsol', 'res', 't_facet', 't_data', 'end_iter')
+        if flag_metric || (flag_display && Qx(k) == 4)
+            overlap = floor(N(1)/Qx(k));
+            fileName = name_pattern(Qx(k), overlap);
+            load(fileName, 'xsol', 'res', 't_facet', 't_data', 'end_iter')
+            x = flipud(xsol);
+        end
 
         % snr
-        x = flipud(xsol);
-        a = SNR(x, x0);
-        asnr(k) = mean(a);
-        vsnr(k) = var(a);
-        a = SNR_log(x, x0);
-        asnr_log(k) = mean(a);
-        vsnr_log(k) = var(a);
+        if flag_metric
+            a = SNR(x, x0);
+            asnr(k) = mean(a);
+            vsnr(k) = var(a);
+            a = SNR_log(x, x0);
+            asnr_log(k) = mean(a);
+            vsnr_log(k) = var(a);
 
-        % timing
-        iteration_number(k) = sum((end_iter > 0));
-        %
-        total_runtime(k) = sum(end_iter(end_iter > 0));
-        aruntime(k) = total_runtime(k)/iteration_number(k); % average runtime per iteration
-        vruntime(k) = var(end_iter(end_iter > 0));
-        %
-        atime_facet(k) = mean(t_facet(t_facet > 0));
-        vtime_facet(k) = var(t_facet(t_facet > 0));
-        atime_data(k) = mean(t_data(t_data > 0));
-        vtime_data(k) = var(t_data(t_data > 0));
-        %
-        a_ = Qx(k)^2*t_facet(t_facet > 0) + ncores_data*t_data(t_data > 0);
-        total_cpu_time(k) = sum(a_);
-        acpu_time(k) = Qx(k)^2*atime_facet(k) + ncores_data*atime_data(k);
-        vcpu_time(k) = var(a_);
+            % timing
+            iteration_number(k) = sum((end_iter > 0));
+            %
+            total_runtime(k) = sum(end_iter(end_iter > 0));
+            aruntime(k) = total_runtime(k)/iteration_number(k); % average runtime per iteration
+            vruntime(k) = var(end_iter(end_iter > 0));
+            %
+            atime_facet(k) = mean(t_facet(t_facet > 0));
+            vtime_facet(k) = var(t_facet(t_facet > 0));
+            atime_data(k) = mean(t_data(t_data > 0));
+            vtime_data(k) = var(t_data(t_data > 0));
+            %
+            a_ = Qx(k)^2*t_facet(t_facet > 0) + ncores_data*t_data(t_data > 0);
+            total_cpu_time(k) = sum(a_);
+            acpu_time(k) = Qx(k)^2*atime_facet(k) + ncores_data*atime_data(k);
+            vcpu_time(k) = var(a_);
+        end
         
-        if Qx(k) == 4
+        if flag_display && Qx(k) == 4
             res = flipud(res(:,:,[1,end]))./reshape(operatorNorm([1,end]), [1, 1, 2]);
             x = x(:,:,[1,end]); % keep last two channels
             for l = 1:2
                 % images
-                display_image(log10(x(:,:,l)), clim_log(1,:,l), map_img, fontsize);
+                display_image(x(:,:,l), clim_log(1,:,l), map_img, fontsize, true);
                 export_fig(strcat(savedir,'x_fhs', num2str(l),'.pdf'), '-transparent','-q101')
                 close
 
                 % residual images
-                display_image(res(:,:,l), clim_log(3,:,l), map_img, fontsize);
+                display_image(res(:,:,l), clim_log(3,:,l), map_img, fontsize, false);
                 export_fig(strcat(savedir,'res_fhs', num2str(l),'.pdf'), '-transparent','-q101')
                 close
             end
         end
     else
         % HyperSARA results
-        fileName = fullfile(results_path, 'mnras_faceted_corrected/final_hypersara/fhs_hypersara_triangular_N=1024_L=20_Qx=1_Qy=1_Qc=1_ind=1_overlap=256_1_1e-05_25.mat');
-        load(fileName, 'xsol', 'res', 't_l21', 't_nuclear', 't_master', 't_data', 'end_iter')
+        if flag_metric || flag_display
+            fileName = fullfile(results_path, 'mnras_faceted_corrected/final_hypersara/fhs_hypersara_triangular_N=1024_L=20_Qx=1_Qy=1_Qc=1_ind=1_overlap=256_1_1e-05_25.mat');
+            load(fileName, 'xsol', 'res', 't_l21', 't_nuclear', 't_master', 't_data', 'end_iter')
+            x = flipud(xsol);
+        end
 
         % snr
-        x = flipud(xsol);
-        a = SNR(x, x0);
-        asnr(k) = mean(a);
-        vsnr(k) = var(a);
-        a = SNR_log(x, x0);
-        asnr_log(k) = mean(a);
-        vsnr_log(k) = var(a);
+        if flag_metric
+            a = SNR(x, x0);
+            asnr(k) = mean(a);
+            vsnr(k) = var(a);
+            a = SNR_log(x, x0);
+            asnr_log(k) = mean(a);
+            vsnr_log(k) = var(a);
 
-        % timing
-        a_ = t_l21(t_l21 > 0) + t_nuclear(t_nuclear > 0) + t_master(t_master > 0);
-        b_ = t_data(t_data > 0);
-        iteration_number(k) = sum((end_iter > 0));
-        %
-        atime_facet(k) = mean(a_);
-        vtime_facet(k) = var(a_);
-        atime_data(k) = mean(b_);
-        vtime_data(k) = var(b_);
-        %
-        total_runtime(k) = sum(end_iter(end_iter > 0));
-        aruntime(k) = total_runtime(k)/iteration_number(k); % average runtime per iteration
-        vruntime(k) = var(end_iter(end_iter > 0));
-        %
-        a_ = a_ + ncores_data*b_;
-        total_cpu_time(k) = sum(a_);
-        acpu_time(k) = atime_facet(k) + ncores_data*atime_data(k); % average cpu time per iteration
-        vcpu_time(k) = var(a_);
+            % timing
+            a_ = t_l21(t_l21 > 0) + t_nuclear(t_nuclear > 0) + t_master(t_master > 0);
+            b_ = t_data(t_data > 0);
+            iteration_number(k) = sum((end_iter > 0));
+            %
+            atime_facet(k) = mean(a_);
+            vtime_facet(k) = var(a_);
+            atime_data(k) = mean(b_);
+            vtime_data(k) = var(b_);
+            %
+            total_runtime(k) = sum(end_iter(end_iter > 0));
+            aruntime(k) = total_runtime(k)/iteration_number(k); % average runtime per iteration
+            vruntime(k) = var(end_iter(end_iter > 0));
+            %
+            a_ = a_ + ncores_data*b_;
+            total_cpu_time(k) = sum(a_);
+            acpu_time(k) = atime_facet(k) + ncores_data*atime_data(k); % average cpu time per iteration
+            vcpu_time(k) = var(a_);
+        end
         
         % display image
-        res = flipud(res(:,:,[1,end]))./reshape(operatorNorm([1,end]), [1, 1, 2]);
-        x = x(:,:,[1,end]); % keep last two channels
-        for l = 1:2
-            % images
-            display_image(log10(x(:,:,l)), clim_log(1,:,l), map_img, fontsize);
-            export_fig(strcat(savedir,'x_hs', num2str(l),'.pdf'), '-transparent','-q101')
-            close
+        if flag_display
+            res = flipud(res(:,:,[1,end]))./reshape(operatorNorm([1,end]), [1, 1, 2]);
+            x = x(:,:,[1,end]); % keep last two channels
+            for l = 1:2
+                % images
+                display_image(x(:,:,l), clim_log(1,:,l), map_img, fontsize, true);
+                export_fig(strcat(savedir,'x_hs', num2str(l),'.pdf'), '-transparent','-q101')
+                close
 
-            % residual images
-            display_image(res(:,:,l), clim_log(3,:,l), map_img, fontsize);
-            export_fig(strcat(savedir,'res_hs', num2str(l),'.pdf'), '-transparent','-q101')
-            close
+                % residual images
+                display_image(res(:,:,l), clim_log(3,:,l), map_img, fontsize, false);
+                export_fig(strcat(savedir,'res_hs', num2str(l),'.pdf'), '-transparent','-q101')
+                close
+            end
         end
     end
 end
 
 %% Display results (table)
-for k = 1:numel(Qx)
-   fprintf("Qx = %i, asnr = %2.2f, std_snr = %1.2e, asnr_log = %2.2f, std_snr_log = %1.2e, iteration_number = %i \n", ...
-       Qx(k), asnr(k), std(vsnr(k)), asnr_log(k), std(vsnr_log(k)), iteration_number(k))
-   fprintf(" aruntime (s) = %.2f, vruntime (s) = %1.2e, acpu_time (s) = %.2f, vcpu_time (s) = %1.2e \n", ...
-       aruntime(k), std(vruntime(k)), acpu_time(k), std(vcpu_time(k)));
-   fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
-       total_runtime(k)/3600, total_cpu_time(k)/3600)
-end
+if flag_metric
+    for k = 1:numel(Qx)
+       fprintf("Qx = %i, asnr = %2.2f, std_snr = %1.2e, asnr_log = %2.2f, std_snr_log = %1.2e, iteration_number = %i \n", ...
+           Qx(k), asnr(k), std(vsnr(k)), asnr_log(k), std(vsnr_log(k)), iteration_number(k))
+       fprintf(" aruntime (s) = %.2f, vruntime (s) = %1.2e, acpu_time (s) = %.2f, vcpu_time (s) = %1.2e \n", ...
+           aruntime(k), std(vruntime(k)), acpu_time(k), std(vcpu_time(k)));
+       fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
+           total_runtime(k)/3600, total_cpu_time(k)/3600)
+    end
 
 %% Saving results
-save('results_facets.mat', '-v7.3', 'asnr', 'vsnr', 'asnr_log', ...
-    'vsnr_log', 'aruntime', 'vruntime', 'acpu_time', 'vcpu_time', ...
-    'atime_facet', 'vtime_facet', 'atime_data', 'vtime_data', ...
-    'iteration_number', 'total_runtime', 'total_cpu_time');
+    save('results_facets.mat', '-v7.3', 'asnr', 'vsnr', 'asnr_log', ...
+        'vsnr_log', 'aruntime', 'vruntime', 'acpu_time', 'vcpu_time', ...
+        'atime_facet', 'vtime_facet', 'atime_data', 'vtime_data', ...
+        'iteration_number', 'total_runtime', 'total_cpu_time');
+end
 
 %%
 % %% Faceted HyperSARA (results with mutliple number of facets and overlap)
