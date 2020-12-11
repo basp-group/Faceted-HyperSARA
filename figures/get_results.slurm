@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=results
-#SBATCH --time=02:00:00
+#SBATCH --time=00:15:00
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --ntasks-per-node=4
