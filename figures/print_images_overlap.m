@@ -55,10 +55,10 @@ DR = @(x, res, n) sqrt(prod(N))*squeeze(max(max(x,[],2),[],1))*n./norm2D(res); %
 SNR = @(x, x0) 20*log10(norm2D(x0)./norm2D(x - x0));
 SNR_log = @(x, x0) SNR(log10(x+eps), log10(x0+eps));
 
-asnr = zeros(numel(overlap_size));
-asnr_log = zeros(numel(overlap_size));
-vsnr = zeros(numel(overlap_size));
-vsnr_log = zeros(numel(overlap_size));
+asnr = zeros(numel(overlap_size), 1);
+asnr_log = zeros(numel(overlap_size), 1);
+vsnr = zeros(numel(overlap_size), 1);
+vsnr_log = zeros(numel(overlap_size), 1);
 
 iteration_number = zeros(numel(overlap_size), 1);
 total_runtime = zeros(numel(overlap_size), 1);  % total runtime (in s)
