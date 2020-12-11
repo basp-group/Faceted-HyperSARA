@@ -3,7 +3,7 @@
 #SBATCH --time=00:15:00
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --ntasks-per-node=4
+#SBATCH --ntasks-per-node=2
 # #SBATCH --export=ALL
 #SBATCH --mail-type=ALL # email notifications about the job: start, end, ...
 #SBATCH --mail-user=pierre-antoine.thouvenin@centralelille.fr
