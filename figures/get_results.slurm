@@ -36,9 +36,9 @@ mkdir $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 
 # "get_ground_truth('/lustre/home/shared/sc004/mnras_faceted_corrected');
 $HOME/matlab_wrapper_2019_fix \
-"print_images_spectral('/lustre/home/shared/sc004/'); \
-print_images_facets('/lustre/home/shared/sc004/'); \
-print_images_overlap('/lustre/home/shared/sc004/')" > results.log
+"print_images_spectral('/lustre/home/shared/sc004/', 5); \
+print_images_facets('/lustre/home/shared/sc004/', 20); \
+print_images_overlap('/lustre/home/shared/sc004/', 20)" > results.log
 
 rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 # rm -r $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID

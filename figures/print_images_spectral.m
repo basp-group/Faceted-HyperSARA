@@ -1,4 +1,4 @@
-function print_images_spectral(results_path)
+function print_images_spectral(results_path, ncores_data)
 %%
 % Produce the images and metrics reported in the MNRAS paper
 % ``A Faceted Prior for Scalable Wideband Imaging: Application to Radio
@@ -26,6 +26,9 @@ function print_images_spectral(results_path)
 % debugging
 % results_path = '..';
 % operatorNorm = 1e4*ones(100,1);
+% doComputeMetric = true;
+display = true;
+
 %%
 % clc; clear all; close all;
 format compact;
@@ -37,8 +40,6 @@ savedir = 'figs_spectral/';
 % Qy = 1;
 % Q = Qx*Qy;
 Qc = [1, 2, 3, 5, 7, 10, 16];
-% doComputeMetric = true;                      % save metrics in a .txt file
-display = true;
 
 load('ground_truth_spectral_faceting.mat') % .mat file generated with 
                                            % `get_ground_truth.m` -> x0, f,
@@ -68,8 +69,13 @@ asnr = zeros(numel(Qc), 1);
 asnr_log = zeros(numel(Qc), 1);
 vsnr = zeros(numel(Qc), 1);
 vsnr_log = zeros(numel(Qc), 1);
-runtime = zeros(numel(Qc), 1);
-cpu_time = zeros(numel(Qc), 1);
+
+total_runtime = zeros(numel(Qc), 1);  % assuming all sub-cubes are running in parallel
+total_cpu_time = zeros(numel(Qc), 1); % 
+aruntime = zeros(numel(Qc), 1);
+vruntime = zeros(numel(Qc), 1);
+acpu_time = zeros(numel(Qc), 1);
+vcpu_time = zeros(numel(Qc), 1);
 atime_l21 = zeros(numel(Qc), 1); % average time (per iteration)
 atime_nuclear = zeros(numel(Qc), 1);
 atime_data = zeros(numel(Qc), 1);
@@ -78,6 +84,7 @@ vtime_l21 = zeros(numel(Qc), 1); % variance
 vtime_nuclear = zeros(numel(Qc), 1);
 vtime_data = zeros(numel(Qc), 1);
 vtime_master = zeros(numel(Qc), 1);
+iteration_number = zeros(numel(Qc), 1);
 
 %=========================================================================%
 % Plot parameters
@@ -106,30 +113,61 @@ for k = 1:numel(Qc)
     x = zeros(N(1), N(2), L);
     res_ = zeros(N(1), N(2), L);
     channels = split_range_interleaved(Qc(k), L);
+    
+    sum_runtime_sqr = 0;
+    sum_l21_sqr = 0;
+    sum_nuclear_sqr = 0;
+    sum_master_sqr = 0;
+    sum_data_sqr = 0;
+    sum_cpu_sqr = 0;
     for ind = 1:Qc(k)
         fileName = name_pattern(Qc(k), ind);
         % ncpus =
-        load(fileName, 'xsol', 'res', 't_l21', 't_nuclear', 't_master', 't_data', 'end_iter') % , 'param'
+        load(fileName, 'xsol', 'res', 't_l21', 't_nuclear', 't_master', 't_data', 'end_iter')
         % operator_norm = param.nu2;
         x(:,:,channels{ind}) = flipud(xsol);
         res_(:,:,channels{ind}) = flipud(res); 
         
         % compute mean and variance over all the files? just 1 for now
-        if ind == 1
-            runtime(k) = mean(end_iter(end_iter > 0)); % average runtime per iteration
-            atime_l21(k) = mean(t_l21(t_l21 > 0));
-            atime_nuclear(k) = mean(t_nuclear(t_nuclear > 0));
-            atime_master(k) = mean(t_master(t_master > 0));
-            atime_data(k) = mean(t_data(t_data > 0));
-            vtime_l21(k) = var(t_l21(t_l21 > 0));
-            vtime_nuclear(k) = var(t_nuclear(t_nuclear > 0));
-            vtime_master(k) = var(t_master(t_master > 0));
-            vtime_data(k) = var(t_data(t_data > 0));
-            % average cpu time per iteration
-            cpu_time(k) = atime_l21(k) + atime_nuclear(k) + ...
-                atime_master(k) + numel(channels{ind})*atime_data(k);  
-        end
+        aruntime(k) = aruntime(k) + sum(end_iter(end_iter > 0)); % average runtime per iteration, over all sub-problems
+        sum_runtime_sqr = sum_runtime_sqr + sum(end_iter(end_iter > 0).^2);
+        
+        atime_l21(k) = atime_l21(k) + sum(t_l21(t_l21 > 0));
+        atime_nuclear(k) = atime_nuclear(k) + sum(t_nuclear(t_nuclear > 0));
+        atime_master(k) = atime_master(k) + sum(t_master(t_master > 0));
+        atime_data(k) = atime_data(k) + sum(t_data(t_data > 0));
+        sum_l21_sqr = sum_l21_sqr + sum(t_l21(t_l21 > 0).^2);
+        sum_nuclear_sqr = sum_nuclear_sqr + sum(t_nuclear(t_nuclear > 0).^2);
+        sum_master_sqr = sum_master_sqr + sum(t_master(t_master > 0).^2);
+        sum_data_sqr = sum_data_sqr + sum(t_data(t_data > 0).^2);
+        
+        % average number of iterations over all sub-problems
+        iteration_number(k) = iteration_number(k) + sum(end_iter > 0);
+        total_runtime(k) = max(total_runtime(k), sum(end_iter(end_iter > 0)));
+        total_cpu_time(k) = total_cpu_time(k) + sum(t_l21(t_l21 > 0)) + ...
+            sum(t_nuclear(t_nuclear > 0)) + sum(t_master(t_master > 0)) ...
+            + ncores_data*sum(t_data(t_data > 0));
+        sum_cpu_sqr = sum_cpu_sqr + sum(t_l21(t_l21 > 0)).^2 + ...
+            sum(t_nuclear(t_nuclear > 0)).^2 + sum(t_master(t_master > 0)).^2 ...
+            + ncores_data*sum(t_data(t_data > 0)).^2;
+        
     end
+    % iteration_number(k) = round(iteration_number(k) / Qc(k)); % only report average iteration number over all sub-problems
+    aruntime(k) = aruntime(k)/iteration_number(k);
+    atime_l21(k) = atime_l21(k)/iteration_number(k);
+    atime_nuclear(k) = atime_nuclear(k)/iteration_number(k);
+    atime_master(k) = atime_master(k)/iteration_number(k);
+    atime_data(k) = atime_data(k)/iteration_number(k);
+    %
+    vruntime(k) = (sum_runtime_sqr - iteration_number(k)*aruntime(k)^2)/(iteration_number(k) - 1);
+    vtime_l21(k) = (sum_l21_sqr - iteration_number(k)*atime_l21(k)^2)/(iteration_number(k) - 1);
+    vtime_nuclear(k) = (sum_nuclear_sqr - iteration_number(k)*atime_nuclear(k)^2)/(iteration_number(k) - 1);
+    vtime_master(k) = (sum_master_sqr - iteration_number(k)*atime_master(k)^2)/(iteration_number(k) - 1);
+    vtime_data(k) = (sum_data_sqr - iteration_number(k)*atime_data(k)^2)/(iteration_number(k) - 1);  
+    % 
+    acpu_time(k) = total_cpu_time(k)/iteration_number(k);
+    vcpu_time(k) = (sum_cpu_sqr - iteration_number(k)*acpu_time(k)^2)/(iteration_number(k) - 1);  
+    
     
     % compute SNR
     a = SNR(x, x0);
@@ -173,12 +211,18 @@ end
 
 %% Display results (table)
 for k = 1:numel(Qc)
-   fprintf("Qc = %i, asnr = %2.2f, vsnr = %1.2e, asnr_log = %2.2f, vsnr_log = %1.2e, runtime = %.2f, cpu_time = %.2f \n", ...
-       Qc(k), asnr(k), vsnr(k), asnr_log(k), vsnr_log(k), runtime(k), cpu_time(k))
+   fprintf("Q = %i, asnr = %2.2f, vsnr = %1.2e, asnr_log = %2.2f, vsnr_log = %1.2e, iteration_number = %i \n", ...
+       Qc(k), asnr(k), vsnr(k), asnr_log(k), vsnr_log(k), iteration_number(k))
+   fprintf(" aruntime (s) = %.2f, vruntime (s) = %1.2e, acpu_time (s) = %.2f, vcpu_time (s) = %1.2e \n", ...
+       aruntime(k), vruntime(k), acpu_time(k), vcpu_time(k));
+   fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
+       total_runtime(k)/3600, total_cpu_time(k)/3600)
 end
 
 %% Saving results
 save('results_spectral.mat', '-v7.3', 'asnr', 'vsnr', 'asnr_log', ...
-    'vsnr_log', 'runtime', 'cpu_time', ...
+    'vsnr_log', 'aruntime', 'vruntime', 'acpu_time', 'vcpu_time', ...
+    'iteration_number', ...
     'atime_l21', 'atime_nuclear', 'atime_data', 'atime_master', ...
-    'vtime_l21', 'vtime_nuclear', 'vtime_data', 'vtime_master')
+    'vtime_l21', 'vtime_nuclear', 'vtime_data', 'vtime_master', ...
+    'total_runtime', 'total_cpu_time');

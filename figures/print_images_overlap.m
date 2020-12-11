@@ -1,4 +1,4 @@
-function print_images_overlap(results_path)
+function print_images_overlap(results_path, ncores_data)
 %%
 % Produce the images and metrics reported in the MNRAS paper
 % ``A Faceted Prior for Scalable Wideband Imaging: Application to Radio 
@@ -59,12 +59,18 @@ asnr = zeros(numel(overlap_size));
 asnr_log = zeros(numel(overlap_size));
 vsnr = zeros(numel(overlap_size));
 vsnr_log = zeros(numel(overlap_size));
-runtime = zeros(numel(overlap_size));
-cpu_time = zeros(numel(overlap_size));
-atime_facet = zeros(numel(overlap_size), 1);
-atime_data = zeros(numel(overlap_size), 1);
-vtime_facet = zeros(numel(overlap_size), 1);
-vtime_data = zeros(numel(overlap_size), 1);
+
+iteration_number = zeros(numel(overlap_size), 1);
+total_runtime = zeros(numel(overlap_size), 1);  % total runtime (in s)
+total_cpu_time = zeros(numel(overlap_size), 1); % total CPU time (in s)
+aruntime = zeros(numel(overlap_size), 1);       % average runtime (per iteration, in s)
+vruntime = zeros(numel(overlap_size), 1);       % variance runtime
+acpu_time = zeros(numel(overlap_size), 1);      % average cpu time (per iter., in s)
+vcpu_time = zeros(numel(overlap_size), 1);      % variance cpu time
+atime_facet = zeros(numel(overlap_size), 1);    % average time (facet, per iter., in s)
+atime_data = zeros(numel(overlap_size), 1);     % variance
+vtime_facet = zeros(numel(overlap_size), 1);    % average time (data, per iter., in s)
+vtime_data = zeros(numel(overlap_size), 1);     % variance
 
 %=========================================================================%
 % Plot parameters
@@ -89,10 +95,10 @@ for k = 1:numel(overlap_size)
         fileName = file_pattern(overlap_size(k));
     end
     
-    load(fileName, 'xsol', 't_facet', 't_data', 'end_iter') % 'res', 'param'
-    % operator_norm = param.Anorm;
-    x = flipud(xsol);
+    load(fileName, 'xsol', 't_facet', 't_data', 'end_iter') % 'res'
     
+    % snr
+    x = flipud(xsol);
     a = SNR(x, x0);
     asnr(k) = mean(a);
     vsnr(k) = var(a);
@@ -100,12 +106,22 @@ for k = 1:numel(overlap_size)
     asnr_log(k) = mean(a);
     vsnr_log(k) = var(a);
     
-    runtime(k) = mean(end_iter(end_iter > 0)); % average runtime per iteration
+    % timing
+    iteration_number(k) = sum((end_iter > 0));
+    %
+    total_runtime(k) = sum(end_iter(end_iter > 0));
+    aruntime(k) = total_runtime(k)/iteration_number(k); % average runtime per iteration
+    vruntime(k) = var(end_iter(end_iter > 0));
+    %
     atime_facet(k) = mean(t_facet(t_facet > 0));
-    atime_data(k) = mean(t_data(t_data > 0));
     vtime_facet(k) = var(t_facet(t_facet > 0));
+    atime_data(k) = mean(t_data(t_data > 0));
     vtime_data(k) = var(t_data(t_data > 0));
-    cpu_time(k) = Q*atime_facet(k) + L*atime_data(k); % average cpu time per iteration
+    %
+    a_ = Q*t_facet(t_facet > 0) + ncores_data*t_data(t_data > 0); % average cpu time per iteration
+    total_cpu_time(k) = sum(a_);
+    acpu_time(k) = total_cpu_time(k)/iteration_number(k);
+    vcpu_time(k) = var(a_);
     
 %     res = flipud(res(:,:,[1,end]))./reshape(operatorNorm, [1, 1, L]);
 %     x = x(:,:,[1,end]); % keep last two channels
@@ -125,11 +141,16 @@ end
 
 %% Display results (table)
 for k = 1:numel(overlap_size)
-   fprintf("overlap = %i, asnr = %2.2f, vsnr = %1.2e, asnr_log = %2.2f, vsnr_log = %1.2e, runtime = %.2f \n", ...
-       overlap_size(k), asnr(k), vsnr(k), asnr_log(k), vsnr_log(k), runtime(k))
+    fprintf("overlap = %i, asnr = %2.2f, vsnr = %1.2e, asnr_log = %2.2f, vsnr_log = %1.2e, iteration_number = %i \n", ...
+       overlap_size(k), asnr(k), vsnr(k), asnr_log(k), vsnr_log(k), iteration_number(k))
+   fprintf(" aruntime (s) = %.2f, vruntime (s) = %1.2e, acpu_time (s) = %.2f, vcpu_time (s) = %1.2e \n", ...
+       aruntime(k), vruntime(k), acpu_time(k), vcpu_time(k));
+   fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
+       total_runtime(k)/3600, total_cpu_time(k)/3600)
 end
 
 %% Saving results
 save('results_overlap.mat', '-v7.3', 'asnr', 'vsnr', 'asnr_log', ...
-    'vsnr_log', 'runtime', 'cpu_time', 'atime_facet', 'atime_data', ...
-    'vtime_facet', 'vtime_data')
+    'vsnr_log', 'aruntime', 'vruntime', 'acpu_time', 'vcpu_time', ...
+    'atime_facet', 'vtime_facet', 'atime_data', 'vtime_data', ...
+    'iteration_number', 'total_runtime', 'total_cpu_time');
