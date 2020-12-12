@@ -89,11 +89,11 @@ iteration_number = zeros(numel(Qc), 1);
 %=========================================================================%
 % Plot parameters
 %=========================================================================%
-clim_log = [1e-5, 1;  % image
+clim = [1e-5, 1;  % image
     1e-4, 1;            % error image
     -3.5e-6, 3.5e-6]; % residual images % e-4 before
 
-clim_log(:,:,2) = [5e-5, 1; % image
+clim(:,:,2) = [5e-5, 1; % image
     1e-3, 1;                % error image
     -3.5e-6, 3.5e-6];     % residual images
 
@@ -104,7 +104,7 @@ map_img = cubehelix(256);
 if flag_display
     for l = 1:2
         % ground truth
-        display_image(x0(:,:,chans(l)), clim_log(1,:,l), map_img, fontsize, true);
+        display_image(x0(:,:,chans(l)), clim(1,:,l), map_img, fontsize, true);
         export_fig(strcat(savedir,'x', num2str(l),'_sub.pdf'), '-transparent','-q101')
         close
     end
@@ -188,12 +188,12 @@ for k = 1:numel(Qc)
     if flag_display && (Qc(k) == 1) % HyperSARA
         for l = 1:2
             % images
-            display_image(x(:,:,chans(l)), clim_log(1,:,l), map_img, fontsize, true);
+            display_image(x(:,:,chans(l)), clim(1,:,l), map_img, fontsize, true);
             export_fig(strcat(savedir,'x_full_hs', num2str(l),'.pdf'), '-transparent','-q101')
             close
             
             % residual images
-            display_image(res_(:,:,chans(l)), clim_log(3,:,l), map_img, fontsize, false);
+            display_image(res_(:,:,chans(l)), clim(3,:,l), map_img, fontsize, false);
             export_fig(strcat(savedir,'res_full_hs', num2str(l),'.pdf'), '-transparent','-q101')
             close
         end
@@ -202,12 +202,12 @@ for k = 1:numel(Qc)
     if flag_display && Qc(k) == 10
         for l = 1:2
             % images
-            display_image(x(:,:,chans(l)), clim_log(1,:,l), map_img, fontsize, true);
+            display_image(x(:,:,chans(l)), clim(1,:,l), map_img, fontsize, true);
             export_fig(strcat(savedir,'x_sub', num2str(l),'.pdf'), '-transparent','-q101')
             close
             
             % residual images
-            display_image(res_(:,:,chans(l)), clim_log(3,:,l), map_img, fontsize, false);
+            display_image(res_(:,:,chans(l)), clim(3,:,l), map_img, fontsize, false);
             export_fig(strcat(savedir,'res_sub', num2str(l),'.pdf'), '-transparent','-q101')
             close
         end
