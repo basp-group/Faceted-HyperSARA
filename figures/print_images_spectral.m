@@ -91,11 +91,11 @@ iteration_number = zeros(numel(Qc), 1);
 %=========================================================================%
 clim = [1e-5, 1;  % image
     1e-4, 1;            % error image
-    -3.5e-6, 3.5e-6]; % residual images % e-4 before
+    -2.3e-6, 2.3e-6]; % residual images % e-4 before
 
 clim(:,:,2) = [5e-5, 1; % image
     1e-3, 1;                % error image
-    -3.5e-6, 3.5e-6];     % residual images
+    -3e-6, 3e-6];     % residual images
 
 fontsize = 25;
 map_img = cubehelix(256);

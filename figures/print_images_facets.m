@@ -77,11 +77,11 @@ vtime_data = zeros(numel(Qx), 1);     % variance
 %=========================================================================%
 clim = [1e-5, 1;  % image
     1e-4, 1;            % error image
-    -3.5e-6, 3.5e-6]; % residual images % e-4 before
+    -6e-7, 6e-7]; % residual images % e-4 before
 
 clim(:,:,2) = [5e-5, 1; % image
     1e-3, 1;                % error image
-    -3.5e-6, 3.5e-6];     % residual images
+    -8e-7, 8e-7];     % residual images
 
 fontsize=25;
 map_img = cubehelix(256);
