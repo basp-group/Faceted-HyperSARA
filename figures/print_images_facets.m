@@ -209,9 +209,9 @@ end
 if flag_metric
     for k = 1:numel(Qx)
        fprintf("Qx = %i, asnr = %2.2f, std_snr = %1.2e, asnr_log = %2.2f, std_snr_log = %1.2e, iteration_number = %i \n", ...
-           Qx(k), asnr(k), std(vsnr(k)), asnr_log(k), std(vsnr_log(k)), iteration_number(k))
+           Qx(k), asnr(k), sqrt(vsnr(k)), asnr_log(k), sqrt(vsnr_log(k)), iteration_number(k))
        fprintf(" aruntime (s) = %.2f, vruntime (s) = %1.2e, acpu_time (s) = %.2f, vcpu_time (s) = %1.2e \n", ...
-           aruntime(k), std(vruntime(k)), acpu_time(k), std(vcpu_time(k)));
+           aruntime(k), sqrt(vruntime(k)), acpu_time(k), sqrt(vcpu_time(k)));
        fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
            total_runtime(k)/3600, total_cpu_time(k)/3600)
     end
