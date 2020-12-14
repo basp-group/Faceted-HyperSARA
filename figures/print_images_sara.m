@@ -1,4 +1,4 @@
-function print_images_sara(results_path, simulation_type, ncores_l11, flag_display, flag_metric)
+function print_images_sara(results_path, simulation_type, ncores_l11, rw, flag_display, flag_metric)
 %%
 % Produce the images and metrics reported in the MNRAS paper
 % ``A Faceted Prior for Scalable Wideband Imaging: Application to Radio
@@ -41,7 +41,7 @@ x0 = flipud(x0);             % display image using axis convention from ds9
 chans = [1, L];
 
 name_pattern = @(ch) fullfile(results_path, ['mnras_faceted_corrected/final_sara_', simulation_type, '/sara_N=', ...
-    num2str(N(1)), '_L=',num2str(L),'_ind=1_ch=', num2str(ch),'_gam=0.0001_rw=25.mat']);
+    num2str(N(1)), '_L=',num2str(L),'_ind=1_ch=', num2str(ch),'_gam=0.0001_rw=', num2str(rw),'.mat']);
 
 %=========================================================================%
 % Reconstruction metrics

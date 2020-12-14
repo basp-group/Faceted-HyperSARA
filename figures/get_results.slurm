@@ -41,8 +41,8 @@ mkdir $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 #print_images_overlap('/lustre/home/shared/sc004/', 20)" > results.log
 
 $HOME/matlab_wrapper_2019_fix \
-"print_images_sara('/lustre/home/shared/sc004/', 'spatial', 9, true, true); \
-print_images_sara('/lustre/home/shared/sc004/', 'spectral', 9, true, true);" > results_sara.log
+"print_images_sara('/lustre/home/shared/sc004/', 'spatial', 9, 25, true, true); \
+print_images_sara('/lustre/home/shared/sc004/', 'spectral', 9, 10, true, true);" > results_sara.log
 
 rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 # rm -r $SLURM_SUBMIT_DIR/lib/nufft_$SLURM_JOB_ID
