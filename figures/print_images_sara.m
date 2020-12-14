@@ -98,7 +98,7 @@ if flag_metric
     sum_data_sqr = 0;
     sum_cpu_sqr = 0;
     
-    for l = 8 % 1:L
+    for l = 1:L
         fileName = name_pattern(l);
         % ncpus =
         load(fileName, 'xsol', 't_l11', 't_master', 't_data', 'end_iter')
