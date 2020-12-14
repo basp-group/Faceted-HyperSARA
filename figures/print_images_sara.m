@@ -137,6 +137,7 @@ if flag_metric
     %
     acpu_time = total_cpu_time/iteration_number;
     vcpu_time = (sum_cpu_sqr - iteration_number*acpu_time^2)/(iteration_number - 1);
+    iteration_number = iteration_number/L; % average number of iterations for each SARA problem
     
     % compute SNR
     a = SNR(x, x0);
