@@ -458,8 +458,7 @@ for t = t_start : param.max_iter
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
-            m = matfile([name, '_', ...
-              num2str(param.ind) '_ch_' num2str(ch) '_'  num2str(param.gamma) '_rw=' num2str(reweight_step_count) '.mat'], ...
+            m = matfile([name, '_gam='  num2str(param.gamma) '_rw=' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
             m.param = param;
             m.res = res;
@@ -518,8 +517,7 @@ for i = 1 : c
     res(:,:,i) = real(At(g2));
 end
 
-m = matfile([name, '_', ...
-    num2str(param.ind) '_ch_' num2str(ch) '_'  num2str(param.gamma) '_rw=' num2str(reweight_step_count) '.mat'], ...
+m = matfile([name, '_gam='  num2str(param.gamma) '_rw=' num2str(reweight_step_count) '.mat'], ...
 'Writable', true);
 m.param = param;
 m.res = res;

@@ -203,7 +203,7 @@ end
 
 % Main loop. Sequential.
 %maxNumCompThreads(12);
-util_create_pool(15);
+util_create_pool(12);
 
 for t = t_start : param.max_iter
     
@@ -230,10 +230,8 @@ for t = t_start : param.max_iter
     end
     
     %% L2 ball projection update
-    residual_check_c = 0;
-    epsilon_check_c = 0;
-    residual_check_a = 0;
-    epsilon_check_a = 0;
+    residual_check = 0;
+    epsilon_check = 0;
 
     counter = 1;
     tw = tic;
@@ -253,17 +251,8 @@ for t = t_start : param.max_iter
             
             % norm of residual
             norm_res{i}{j} = norm(r2{i}{j} - y{i}{j});
-            residual_check(counter) = norm_res{i}{j};
-            epsilon_check(counter) = epsilon{i}{j};
-            counter = counter + 1;
-
-        if j == 1 
-            residual_check_c = residual_check_c + norm_res{i}{j}^2;
-            epsilon_check_c = epsilon_check_c + power(epsilon{i}{j},2);
-        else
-            residual_check_a = residual_check_a + norm_res{i}{j}^2;
-            epsilon_check_a = epsilon_check_a + power(epsilon{i}{j},2);
-        end
+            residual_check = residual_check + norm_res{i}{j}^2;
+            epsilon_check = epsilon_check + power(epsilon{i}{j},2);
 
         end
         Ftx(:,:,i) = real(At(g2));
@@ -272,12 +261,6 @@ for t = t_start : param.max_iter
     % Free memory
     g2=[]; Fx=[];
    
-    epsilon_check_c = sqrt(epsilon_check_c);
-    residual_check_c = sqrt(residual_check_c);
-
-    epsilon_check_a = sqrt(epsilon_check_a);
-    residual_check_a = sqrt(residual_check_a);
-
  
     %% Update primal gradient
     g1 = zeros(size(xsol));
@@ -295,7 +278,10 @@ for t = t_start : param.max_iter
     Ftx=[]; g1=[];
     
     l11(t) = sum(cell2mat(l11_cell));
-    
+   
+    norm_epsilon_check = sqrt(epsilon_check);
+    norm_residual_check = sqrt(residual_check);
+
     %% Display
     if ~mod(t,50)
         
@@ -305,9 +291,7 @@ for t = t_start : param.max_iter
         %Log
         if (param.verbose >= 1)
             fprintf('l11-norm = %e, rel_fval = %e\n', l11(t), rel_fval(t));
-            fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check), norm(residual_check));
-            fprintf(' epsilon_c = %e, residual_c = %e\n', epsilon_check_c, residual_check_c);
-            fprintf(' epsilon_a = %e, residual_a = %e\n', epsilon_check_a, residual_check_a);
+            fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
             for i = 1 : length(epsilon_check)
                fprintf(['eps_b' num2str(i) '= %e, res_b' num2str(i) '= %e\n'], epsilon_check(i), residual_check(i));
             end
@@ -317,18 +301,15 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    %     if (t>1 && rel_fval(t) < param.rel_obj && reweight_step_count >= param.total_reweights && ...
-    %             prod(prod(residual_check < param.adapt_eps_tol_out*epsilon_check)) && prod(prod(residual_check > param.adapt_eps_tol_in*epsilon_check)))
-    %         flag = 1;
-    %         break;
-    %     end
-    
-    if (t>1 && rel_fval(t) < param.rel_obj && reweight_step_count > param.total_reweights && ...
-            residual_check_c <= param.adapt_eps_tol_out*epsilon_check_c && residual_check_a <= param.adapt_eps_tol_out*epsilon_check_a)
+    if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
+            (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
+    % if ((t>1) && (reweight_step_count >= param.total_reweights)) && ((rel_val(t) < param.rel_var && ...
+    %     (norm(residual_check) < param.adapt_eps_tol_out*norm(epsilon_check))) || ...
+    %     (t - reweight_last_step_iter >= param.ppd_max_iter))
         flag = 1;
         break;
     end
-    
+
     %% Update epsilons
     if param.use_adapt_eps && t > param.adapt_eps_start
         for i = 1 : c
@@ -360,18 +341,17 @@ for t = t_start : param.max_iter
     %        prod(prod(residual_check < param.adapt_eps_tol_out*epsilon_check)) && prod(prod(residual_check > param.adapt_eps_tol_in*epsilon_check))  && ...
     %       t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr)
     
-    if (param.step_flag && (norm(residual_check) <= param.adapt_eps_tol_out*norm(epsilon_check)) && ...
-       rel_fval(t) < param.reweight_rel_obj && t > 300)
-        reweight_steps = [t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size)];
+    %% Reweighting (in parallel)
+    if (param.step_flag && t > 500) %rel_val(t) < param.reweight_rel_var)
+        reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
-    
+
     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
-            (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
-            residual_check_c <= param.adapt_eps_tol_out*epsilon_check_c && residual_check_a <= param.adapt_eps_tol_out*epsilon_check_a  && ...
+            (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
+            norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check && ...
             t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr) || ...
-            (param.use_reweight_eps && t - reweight_last_step_iter > param.rw_tol)
-        
+            (t - reweight_last_step_iter > 3000) 
         
         weights1_old = weights1;
         
@@ -402,8 +382,7 @@ for t = t_start : param.max_iter
         
         if (reweight_step_count == 0) || (~mod(reweight_step_count,5)) 
             %|| (~mod(reweight_step_count,1))
-
-            
+        
             param.end_iter = end_iter;
             param.t_master = t_master;
             param.t_l11 = t_l11;

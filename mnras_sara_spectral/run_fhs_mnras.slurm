@@ -1,6 +1,6 @@
 #!/bin/bash
 # #SBATCH --job-name=facet-hypersara
-#SBATCH --time=96:00:00
+#SBATCH --time=6:00:00
 # #SBATCH --exclusive
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
@@ -35,12 +35,12 @@ export MATLAB_PREFDIR=$SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 # > logs/hypersara_N=${Nx}_L=${L}_p=${p}_snr=${snr}.log
 
 $HOME/matlab_wrapper_2019_fix \
-"main_simulated_data_abd('"$imgname"', "$nchannels", "$Qx", "$Qy", "$Qc", \
+"main_simulated_data_sara('"$imgname"', "$nchannels", "$Qx", "$Qy", "$Qc", \
 '"$algoversion"', '"$wintype"', "$ncdata", "$ind", "$overlapsize", "$nreweights", \
 "$gencube", "$gencov", "$genvis", "$genundersampledcube", \
 "$computenorm", "$solve", \
-'"$covpath"', "$gam","$rw")" \
-> ${algoversion}_${imgname}_L=${nchannels}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_id=${ind}_overlap=${overlapsize}_gamma=${gam}_rw=${rw}.txt
+'"$covpath"', "$gam","$rw"i,"$ch")" \
+> ${algoversion}_${imgname}_L=${nchannels}_ch=${ch}_gamma=${gam}_rw=${rw}.txt
 
 rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 rm -r ../lib/measurement-operator/nufft_$SLURM_JOB_ID
