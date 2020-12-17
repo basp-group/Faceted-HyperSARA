@@ -315,6 +315,7 @@ if init_flag
     for k = 1:K
         norm_res(Q+k) = init_m.norm_res(k,1);
     end
+    fprintf('norm_res uploaded \n\n')
 else
     for k = 1:K
         norm_res_tmp = cell(length(c_chunks{k}), 1);
@@ -327,6 +328,7 @@ else
         norm_res{Q+k} = norm_res_tmp;
     end
     clear norm_res_tmp
+    fprintf('norm_res initialized \n\n')
 end
 
 sz_y = cell(K, 1);
