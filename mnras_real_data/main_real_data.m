@@ -8,14 +8,9 @@ function main_real_data(Qx, Qy, Qc, ...
 % approach to reconstruct an :math:`N \times L` wideband image cube.
 % 
 % Args:
-%     image_name (string): name of the reference synthetic image (from the 
-%     data/ folder)
-%     nChannels (int): number of channels
 %     Qx (int): number of spatial facets along axis 2 (x)
 %     Qy (int): number of spatial facets along axis 1 (y)
 %     Qc (int): number of spectral facets
-%     p (double): [description]
-%     input_snr (double): input SNR value (in dB)
 %     algo_version (string): selected version of the solver:
 %        - 's'             'standard': overlap of the faceted nuclear norm 
 %                          equal to the
@@ -50,25 +45,16 @@ function main_real_data(Qx, Qy, Qc, ...
 %     overlap_size (int): number of overlapping pixels between contiguous 
 %                         facets (only active for  the 'cst' and 
 %                         'cst_overlap' versions of the solver)
-%     flag_generateCube (bool): flag specifying whether the ground truth image 
-%                           cube needs to be generated or loaded from an 
-%                           existing .fits file
-%     flag_generateCoverage (bool): flag specifying whether the uv-coverage 
-%     needs to be generated or loaded from an existing .fits file
-%     flag_generateVisibilities (bool): flag specifying whether the 
-%     visibilities need to be generated or loaded from an existing .mat 
-%     file
-%     flag_generateUndersampledCube (bool): flag to generate an undersampled 
-%     version (by a factor 4) of the ground-truth wideband image cube
+%     nReweights (int): number of reweighting steps
+%     flag_extractData (bool): flag specifying whether the real data need 
+%       to be extracted
 %     flag_computeOperatorNorm (bool): compute norm of the measurement 
 %     operator, or load it from an existing .mat file (e.g., computed from 
 %     a previous run)
 %     flag_solveMinimization (bool): flag triggering the faceted HyperSARA 
 %     solver
-%     cube_path (string): path and name of the wideband cube .fits file 
-%     (w/o file extension)
-%     coverage_path (string): path and name of the uv-coverage .fits file 
-%     (w/o file extension) 
+%     gam (double): l21-norm regulariation parameter
+%     gam0 (double): nuclear-norm regularization parameter
 %
 %%
 format compact;
@@ -320,8 +306,8 @@ if flag_solveMinimization
     param_HSI.verbose = 2; % print log or not
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
-    param_HSI.gamma0 = gam0;
-    param_HSI.gamma = gam;  %convergence parameter L1 (soft th parameter)
+    param_HSI.gamma0 = gam0; % regularization parameter nuclear norm
+    param_HSI.gamma = gam;  % regularization parameter L21 (soft th parameter)
     param_HSI.rel_var = 1e-6;  % stopping criterion
     param_HSI.max_iter = 100000; % max number of iterations
     
