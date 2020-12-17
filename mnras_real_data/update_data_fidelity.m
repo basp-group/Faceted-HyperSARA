@@ -23,11 +23,11 @@ for i = 1 : ci
         norm_res{i}{j} = norm(r2 - y{i}{j}, 2);
 
         if j == 1  %%%% C block
-        global_norm_res_c = global_norm_res_c + norm_res{i}{j}^2;
-        norm_epsilon_c = norm_epsilon_c + power(epsilon{i}{j}, 2);
+            global_norm_res_c = global_norm_res_c + norm_res{i}{j}^2;
+            norm_epsilon_c = norm_epsilon_c + power(epsilon{i}{j}, 2);
         else %%%% A block
-        global_norm_res_a = global_norm_res_a + norm_res{i}{j}^2;
-        norm_epsilon_a = norm_epsilon_a + power(epsilon{i}{j}, 2);
+            global_norm_res_a = global_norm_res_a + norm_res{i}{j}^2;
+            norm_epsilon_a = norm_epsilon_a + power(epsilon{i}{j}, 2);
         end
     end
     Ftx(:,:,i) = real(At(g2));
