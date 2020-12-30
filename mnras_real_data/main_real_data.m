@@ -1,7 +1,7 @@
 function main_real_data(Qx, Qy, Qc, ...
     algo_version, window_type, ncores_data, ind, overlap_size, ...
-    nReweights, flag_extractData, flag_computeOperatorNorm, ...
-    flag_solveMinimization, gam, gam0, rw)
+    nReweights, extract_raw_data, flag_computeOperatorNorm, ...
+    flag_solveMinimization, gam0, gam, rw, alpha)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -65,7 +65,7 @@ disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
 disp(['Number of cores data fidelity : ', num2str(ncores_data)]);
 disp(['Overlap size: ', num2str(overlap_size)]);
-disp(['Extracting real data: ', num2str(flag_extractData)]);
+disp(['Extracting real data: ', num2str(extract_raw_data)]);
 disp(['Computing operator norm: ', num2str(flag_computeOperatorNorm)]);
 disp(['Solving problem: ', num2str(flag_solveMinimization)]);
 
@@ -83,9 +83,9 @@ addpath ../src_mnras/spmd/weighted
 %! TO BE CHANGED (paths, flags, ...)
 % setting paths to results and reference image cube
 generate_eps_nnls = false;
-save_data = true; 
+save_data = false; 
 save_full_operator = false;
-extract_raw_data = false;
+%extract_raw_data = false;
 data_path = '../data/';
 results_path = fullfile('results/');
 mkdir(data_path)
@@ -128,7 +128,7 @@ param_block_structure.use_manual_partitioning = 1;
 
 %% Generate/load real data
 %! TO BE CHECKED / CHANGED
-if flag_extractData
+%if flag_extractData
     % visibility_file_name = '/home/h019/aa16/S-band/CYG-S.mat';
     visibility_file_name = {'5','7'};
     configuration_file_name = {'C','A'};
@@ -204,7 +204,7 @@ if flag_extractData
 
         ii = ii + 1;
     end
-    save(['eps_ind=' num2str(ind) '.mat'],'-v7.3', 'eps_b');
+    save(['eps_new_ind=' num2str(ind) '.mat'],'-v7.3', 'eps_b');
 
     %% Save data
     if save_data
@@ -220,37 +220,38 @@ if flag_extractData
     %% Free memory
     clear y u v uv_mat uv_mat1 uvidx uw vw ant1 ant2 aWw nW nWw out_block;
     clear param_block_structure param_precond;
-else
-    load('CYG_data.mat');
-    [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
-end
+%else
+%    load('CYG_data.mat');
+%    [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
+%end
+
 ch = (1 : size(yb,2));
-nChannels = size(yb,2);
+nChannels = size(yb,2)
 %!-----------
 
 %% Setup name of results file
 %! TO BE CHANGED
-data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
-    num2str(nchannels),'.mat');
+data_name_function = @(nchannels) strcat('y_cygA_Nx=',num2str(Nx),'_Ny=',num2str(Ny), '_L=', num2str(nchannels),'.mat');
 
-results_name_function = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
-    '_L=',num2str(nchannels),'_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-    '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
-    '_overlap=', num2str(overlap_size),'.mat');
-
-temp_results_name = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
+results_name_function = @(nchannels) strcat('Final_fhs_', algo_version,'_',window_type,'_Nx=',num2str(Nx), '_Ny=',num2str(Ny), ...
     '_L=',num2str(nchannels), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-    '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
-    '_overlap=', num2str(overlap_size));
+    '_Qc=', num2str(Qc), '_overlap=', num2str(overlap_size), '_ind=', num2str(ind), ...
+    '_gam0=', num2str(gam0), '_gam=', num2str(gam), '_rw=', num2str(rw), '.mat');
 
-warm_start = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
+temp_results_name = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_Nx=',num2str(Nx), '_Ny=',num2str(Ny), ...
     '_L=',num2str(nchannels), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-    '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
-    '_overlap=', num2str(overlap_size), '_', num2str(ind), '_', num2str(gam), '_', num2str(rw), '.mat');
+    '_Qc=', num2str(Qc), '_overlap=', num2str(overlap_size), '_ind=', num2str(ind), ...
+    '_gam0=', num2str(gam0), '_gam=', num2str(gam));
 
-data_name = data_name_function(nChannels);
+warm_start = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_Nx=',num2str(Nx), '_Ny=',num2str(Ny), ...
+    '_L=',num2str(nchannels), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
+    '_Qc=', num2str(Qc), '_overlap=', num2str(overlap_size), '_ind=', num2str(ind), ...
+    '_gam0=', num2str(gam0), '_gam=', num2str(gam), '_rw=', num2str(rw), '.mat');
+
+data_name = data_name_function(nChannels);    
 results_name = results_name_function(nChannels);
 %!-----------
+
 
 %% Compute operator norm
 %! TO BE CHANGED (paths, ...) add computation of the operator norm w/o 
@@ -260,13 +261,13 @@ if flag_computeOperatorNorm
     F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
     Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
     Anorm = pow_method_op(F, Ft, [Ny Nx nchans]);
-    save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
-        '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm');
+    %save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
+    %    '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm');
     % save(['Anorm_ind=' num2str(ind) '.mat'],'-v7.3', 'Anorm');
 else
-    load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),...
-        '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')));
-    % load(['Anorm_ind=' num2str(ind) '.mat']); 
+    %load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),...
+    %    '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')));
+    load(['Anorm_ind=' num2str(ind) '.mat']); 
 end
 %!----------
 
@@ -319,7 +320,7 @@ if flag_solveMinimization
     param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
-    param_HSI.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+    param_HSI.reweight_alpha = (0.8)^alpha; 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_HSI.reweight_alpha_ff = 0.8;
     param_HSI.total_reweights = nReweights; % -1 if you don't want reweighting
     param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised

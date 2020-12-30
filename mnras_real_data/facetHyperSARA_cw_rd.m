@@ -704,7 +704,7 @@ for t = t_start : param.max_iter
     norm_residual_check_A = sqrt(norm_residual_check_A);
     
     %% Display
-    if ~mod(t,100)
+    if ~mod(t,50)
         
         %% compute value of the priors in parallel
         spmd
@@ -815,8 +815,7 @@ for t = t_start : param.max_iter
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
-            m = matfile([name, '_', ...
-              num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+            m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
