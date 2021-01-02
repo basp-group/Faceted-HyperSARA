@@ -74,8 +74,8 @@ cell_c_chunks = cell(Qc2, 1);
 nchannel_per_worker = zeros(Qc2, 1);
 
 for i = 1:Qc2
-    cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
-%     cell_c_chunks{i} = [rg_c1(i, 1):rg_c1(i, 2), nChannels-rg_c2(i, 2)+1:nChannels-rg_c2(i, 1)+1];   % only for data reduction
+    % cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+    cell_c_chunks{i} = [rg_c1(i, 1):rg_c1(i, 2), nChannels-rg_c2(i, 2)+1:nChannels-rg_c2(i, 1)+1];   % only for data reduction
     nchannel_per_worker(i) = numel(cell_c_chunks{i});
 end
     
