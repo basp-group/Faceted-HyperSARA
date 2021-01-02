@@ -107,9 +107,9 @@ spmd
         for i = 1: ch_len
             ch_ind = chunk(i);
             fprintf('\nChannel number: %d\n', ch(ch_ind))
-        %     DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
-        %     num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
-            DRfilename = [datadir, '/ESO137_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(ch_ind)), '.mat'];
+            DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
+            num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
+            % DRfilename = [datadir, '/ESO137_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(ch_ind)), '.mat'];
             fprintf('Read dimensionality reduction file: %s\n', DRfilename)
             tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
             Hp{i,1} = tmp.H{1,1};
