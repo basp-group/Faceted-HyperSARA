@@ -21,9 +21,19 @@ main_fouRed/WB_new
 irt*
 test*
 figs*
+logs*
 
 # docs
 docs/_*
 
 # editor
 .vscode*
+
+*.err
+*.txt
+*.out
+
+abd_hypersara2
+*local_cluster_jobs*
+*pref_*
+
