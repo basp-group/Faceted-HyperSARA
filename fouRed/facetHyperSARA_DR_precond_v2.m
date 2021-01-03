@@ -352,8 +352,8 @@ if init_flag
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
 %     xsol = fitsread('/lustre/home/shared/sc004/solWB-mono-calib.fits');   % specificlly for calibrated real data
-%     xsol = param.initsol;          % specificlly for calibrated real data
-    xsol = zeros(M,N,c);
+    xsol = param.initsol;          % specificlly for calibrated real data
+%     xsol = zeros(M,N,c);
     fprintf('xsol initialized \n\n')
 end
 
@@ -429,15 +429,15 @@ else
             
             % check if acceptable indexing on composite variables
             v2_ = cell(length(yp), 1);
-            t_block = cell(length(yp), 1);
+            t_block_ = cell(length(yp), 1);
             proj_ = cell(length(yp), 1);
             for i = 1:length(yp)
                 v2_{i} = cell(length(yp{i}),1);
-                t_block{i} = cell(length(yp{i}),1);
+                t_block_{i} = cell(length(yp{i}),1);
                 proj_{i} = cell(length(yp{i}),1);
                 for j = 1 : length(yp{i})
                     v2_{i}{j} = zeros(length(yp{i}{j}) ,1);
-                    t_block{i}{j} = 0;
+                    t_block_{i}{j} = 0;
                     proj_{i}{j} = zeros(length(yp{i}{j}), 1);
                 end
             end
@@ -518,7 +518,7 @@ clear epsilon pU Wm A At H W y T
 
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
-    fprintf('reweight_step_count uploaded')
+    fprintf('reweight_step_count uploaded\n\n')
 else
     param.init_reweight_step_count = 0;
     reweight_step_count = 0;
@@ -725,9 +725,9 @@ for t = t_start : param.max_iter
 %             fprintf('Iter = %i, Lab index = %i, retrieve_xhat_t Time = %e\n',t,labindex,toc(retrieve_xhat_t));
             
 %             update_data_t = tic;
-
 %             [v2_, g2, proj_, norm_res, norm_residual_check_ic, norm_epsilon_check_ic, norm_residual_check_ia, norm_epsilon_check_ia] = update_data_fidelity_dr_block(v2_, yp, xhat_i, proj_, Ap, Atp, Hp, Tp, Wp, pUp, epsilonp, ...
-%                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value); % *_dr version when no blocking            
+%                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value); % *_dr version when no blocking
+            
             [v2_, g2, proj_, norm_res, norm_residual_check_ic, norm_epsilon_check_ic, norm_residual_check_ia, norm_epsilon_check_ia]...
                 = update_data_fidelity_dr_block_new(v2_, yp, xhat_i, proj_, Ap, Atp, Hp, Wp, Tp, Wmp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value, precondition, reduction_version, realdatablocks); % *_dr version when no blocking
@@ -763,31 +763,31 @@ for t = t_start : param.max_iter
     fprintf('Iter = %i, Time = %e, Rel_error = %e\n',t,end_iter(t),rel_val(t));
     
     %% Retrieve value of the monitoring variables (residual norms + epsilons)
-    norm_epsilon_check = 0;
-    norm_residual_check = 0;
-%     norm_epsilon_check_a = 0;
-%     norm_residual_check_a = 0;
+    norm_epsilon_check_c = 0;
+    norm_residual_check_c = 0;
+    norm_epsilon_check_a = 0;
+    norm_residual_check_a = 0;
     count = 1;
     for i = Q+1:Q+K
-        eps_ch(count) = sqrt(norm_epsilon_check_i{i});
-        res_ch(count) = sqrt(norm_residual_check_i{i});
-        norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-        norm_residual_check = norm_residual_check + norm_residual_check_i{i};
-%         eps_ch_a(count) = sqrt(norm_epsilon_check_ia{i});
-%         res_ch_a(count) = sqrt(norm_residual_check_ia{i});
-%         norm_epsilon_check_a = norm_epsilon_check_a + norm_epsilon_check_ia{i};
-%         norm_residual_check_a = norm_residual_check_a + norm_residual_check_ia{i};
+        eps_ch_c(count) = sqrt(norm_epsilon_check_ic{i});
+        res_ch_c(count) = sqrt(norm_residual_check_ic{i});
+        norm_epsilon_check_c = norm_epsilon_check_c + norm_epsilon_check_ic{i};
+        norm_residual_check_c = norm_residual_check_c + norm_residual_check_ic{i};
+        eps_ch_a(count) = sqrt(norm_epsilon_check_ia{i});
+        res_ch_a(count) = sqrt(norm_residual_check_ia{i});
+        norm_epsilon_check_a = norm_epsilon_check_a + norm_epsilon_check_ia{i};
+        norm_residual_check_a = norm_residual_check_a + norm_residual_check_ia{i};
 
         count = count + 1;
     end
-%     norm_epsilon_check = sqrt(norm_epsilon_check_c + norm_epsilon_check_a);
-%     norm_residual_check = sqrt(norm_residual_check_c + norm_residual_check_a);
+    norm_epsilon_check = sqrt(norm_epsilon_check_c + norm_epsilon_check_a);
+    norm_residual_check = sqrt(norm_residual_check_c + norm_residual_check_a);
     
-    norm_epsilon_check = sqrt(norm_epsilon_check);
-    norm_residual_check = sqrt(norm_residual_check);
+    norm_epsilon_check_c = sqrt(norm_epsilon_check_c);
+    norm_residual_check_c = sqrt(norm_residual_check_c);
 
-%     norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
-%     norm_residual_check_a = sqrt(norm_residual_check_a);
+    norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
+    norm_residual_check_a = sqrt(norm_residual_check_a);
     
     %% Display
     if ~mod(t,500)
@@ -817,15 +817,15 @@ for t = t_start : param.max_iter
             fprintf('Iter %i\n',t);
             fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
             fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-%             fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
-%             fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
-            for i = 1 : length(eps_ch)
-                fprintf(['eps_ch' num2str(i) '= %e, res_ch' num2str(i) '= %e\n'], eps_ch(i), res_ch(i));
+            fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
+            fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
+            for i = 1 : length(eps_ch_c)
+                fprintf(['eps_ch_c' num2str(i) '= %e, res_ch_c' num2str(i) '= %e\n'], eps_ch_c(i), res_ch_c(i));
             end
             
-%             for i = 1 : length(eps_ch_a)
-%                 fprintf(['eps_ch_a' num2str(i) '= %e, res_ch_a' num2str(i) '= %e\n'], eps_ch_a(i), res_ch_a(i));
-%             end
+            for i = 1 : length(eps_ch_a)
+                fprintf(['eps_ch_a' num2str(i) '= %e, res_ch_a' num2str(i) '= %e\n'], eps_ch_a(i), res_ch_a(i));
+            end
         end
         
         for q = 1:Q
@@ -1168,32 +1168,32 @@ for q = 1:Q
     nuclear = nuclear + nuclear_norm{q};
 end
 
-norm_epsilon_check = 0;
-norm_residual_check = 0;
-% norm_epsilon_check_a = 0;
-% norm_residual_check_a = 0;
+norm_epsilon_check_c = 0;
+norm_residual_check_c = 0;
+norm_epsilon_check_a = 0;
+norm_residual_check_a = 0;
 count = 1;
 for i = Q+1:Q+K
-    eps_ch(count) = sqrt(norm_epsilon_check_i{i});
-    res_ch(count) = sqrt(norm_residual_check_i{i});
-    norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-    norm_residual_check = norm_residual_check + norm_residual_check_i{i};
-%     
-%     eps_ch_a(count) = sqrt(norm_epsilon_check_ia{i});
-%     res_ch_a(count) = sqrt(norm_residual_check_ia{i});
-%     norm_epsilon_check_a = norm_epsilon_check_a + norm_epsilon_check_ia{i};
-%     norm_residual_check_a = norm_residual_check_a + norm_residual_check_ia{i};
+    eps_ch_c(count) = sqrt(norm_epsilon_check_ic{i});
+    res_ch_c(count) = sqrt(norm_residual_check_ic{i});
+    norm_epsilon_check_c = norm_epsilon_check_c + norm_epsilon_check_ic{i};
+    norm_residual_check_c = norm_residual_check_c + norm_residual_check_ic{i};
+    
+    eps_ch_a(count) = sqrt(norm_epsilon_check_ia{i});
+    res_ch_a(count) = sqrt(norm_residual_check_ia{i});
+    norm_epsilon_check_a = norm_epsilon_check_a + norm_epsilon_check_ia{i};
+    norm_residual_check_a = norm_residual_check_a + norm_residual_check_ia{i};
     
     count = count + 1;
 end
-% norm_epsilon_check = sqrt(norm_epsilon_check_c + norm_epsilon_check_a);
-% norm_residual_check = sqrt(norm_residual_check_c + norm_residual_check_a);
+norm_epsilon_check = sqrt(norm_epsilon_check_c + norm_epsilon_check_a);
+norm_residual_check = sqrt(norm_residual_check_c + norm_residual_check_a);
     
-norm_epsilon_check = sqrt(norm_epsilon_check);
-norm_residual_check = sqrt(norm_residual_check);
+norm_epsilon_check_c = sqrt(norm_epsilon_check_c);
+norm_residual_check_c = sqrt(norm_residual_check_c);
 
-% norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
-% norm_residual_check_a = sqrt(norm_residual_check_a);
+norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
+norm_residual_check_a = sqrt(norm_residual_check_a);
 
 if (param.verbose > 0)
     if (flag == 1)
@@ -1201,15 +1201,15 @@ if (param.verbose > 0)
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
         fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-%         fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
-%         fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
+        fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
+        fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
     else
         fprintf('Maximum number of iterations reached\n');
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
         fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-%         fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
-%         fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
+        fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
+        fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
     end
 end
 

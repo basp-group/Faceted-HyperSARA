@@ -46,8 +46,8 @@ flag_algo = algo_version;
 % parallel_version = 'spmd4_cst';
 % bool_weights = true; % for the spmd4_new version (50% overlap version)
 
-param_real_data.image_size_Nx = 4096; % 2560;
-param_real_data.image_size_Ny = 4096; % 1536;
+param_real_data.image_size_Nx = 2560; % 2560;
+param_real_data.image_size_Ny = 1536; % 1536;
 nChannels = length(ch); % total number of "virtual" channels (i.e., after
 % concatenation) for the real dataset considered
 % nBlocks = realdatablocks;        % number of data blocks (needs to be known beforehand,
@@ -59,8 +59,8 @@ Nx = param_real_data.image_size_Nx;
 Ny = param_real_data.image_size_Ny;
 ox = 2; % oversampling factors for nufft
 oy = 2; % oversampling factors for nufft
-Kx = 8; % number of neighbours for nufft
-Ky = 8; % number of neighbours for nufft
+Kx = 7; % number of neighbours for nufft
+Ky = 7; % number of neighbours for nufft
 
 [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
 
@@ -74,7 +74,7 @@ cell_c_chunks = cell(Qc2, 1);
 nchannel_per_worker = zeros(Qc2, 1);
 
 for i = 1:Qc2
-    % cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+%     cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
     cell_c_chunks{i} = [rg_c1(i, 1):rg_c1(i, 2), nChannels-rg_c2(i, 2)+1:nChannels-rg_c2(i, 1)+1];   % only for data reduction
     nchannel_per_worker(i) = numel(cell_c_chunks{i});
 end
@@ -107,11 +107,11 @@ spmd
         for i = 1: ch_len
             ch_ind = chunk(i);
             fprintf('\nChannel number: %d\n', ch(ch_ind))
-            DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
-            num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
-            % DRfilename = [datadir, '/ESO137_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(ch_ind)), '.mat'];
+        %     DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
+        %     num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
+            DRfilename = [datadir, '/CYG_DR_cal_', num2str(realdatablocks), 'b_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(ch_ind)), '.mat'];
             fprintf('Read dimensionality reduction file: %s\n', DRfilename)
-            tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
+            tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm');
             Hp{i,1} = tmp.H{1,1};
             Wp{i,1} = tmp.W{1,1};
             yTp{i,1} = tmp.yT{1,1};
@@ -133,19 +133,19 @@ end
 clear tmp
  
 for i = 1:nChannels
-    DRfilename = [datadir, '/ESO137_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
-    fprintf("Read 'epsilon' from: %s\n", DRfilename)
-    tmp = load(DRfilename, 'epsilon');
+    DRfilename = [datadir, '/CYG_DR_cal_', num2str(realdatablocks), 'b_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
+    fprintf("Read 'epsilon', 'xsol' from: %s\n", DRfilename)
+    tmp = load(DRfilename, 'epsilon', 'xsol');
     epsilon{i,1} = tmp.epsilon{1,1};
         % cheap H matrices
-%         if reduction_version == 2
-%             for j = 1:length(epsilon{i,1})
-%                 if adapt_eps_flag
-%                     epsilon1{i,1}{j} = 0.9 * epsilon{i,1}{j};       % adjust epsilon for high frequency calibrated data
-%                 end
-%             end
-%         end
-%     xsol(:,:,i) = tmp.xsol;
+        if reduction_version == 2
+            for j = 1:length(epsilon{i,1})
+                if adapt_eps_flag
+                    epsilon1{i,1}{j} = 0.9 * epsilon{i,1}{j};       % adjust epsilon for high frequency calibrated data
+                end
+            end
+        end
+    xsol(:,:,i) = tmp.xsol;
 end
 
 %% Compute full measurement operator spectral norm
@@ -234,7 +234,7 @@ if algo_version == 1
 
     param_HSI.reweight_alpha = 1; %1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_HSI.reweight_alpha_ff = 0.8;
-    param_HSI.total_reweights = 5; % -1 if you don't want reweighting
+    param_HSI.total_reweights = 50; % -1 if you don't want reweighting
     param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
 
     param_HSI.use_reweight_steps = 0; % reweighting by fixed steps
@@ -259,19 +259,18 @@ if algo_version == 1
     param_HSI.initsol = xsol;
     
     reweight_step_count = 0;
-%     initfilename = ['./results/facetHyperSARA_dr_co_w_real_' ...
-%                 num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_' num2str(param_HSI.gamma) '_' num2str(reweight_step_count) '.mat'];
-    initfilename = [' '];
+    initfilename = ['./results/facetHyperSARA_dr_co_w_real_' ...
+                num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_' num2str(param_HSI.gamma) '_' num2str(reweight_step_count) '.mat'];
         
     % spectral tesselation (non-overlapping)
     epsilon_spmd = cell(Qc2, 1);
        
     for i = 1:Qc2
-%         if adapt_eps_flag
-%             epsilon_spmd{i} = epsilon1(cell_c_chunks{i});
-%         else
-        epsilon_spmd{i} = epsilon(cell_c_chunks{i});
-%         end
+        if adapt_eps_flag
+            epsilon_spmd{i} = epsilon1(cell_c_chunks{i});
+        else
+            epsilon_spmd{i} = epsilon(cell_c_chunks{i});
+        end
         l2_upper_bound{i} = epsilon(cell_c_chunks{i});
     end
     
@@ -312,7 +311,7 @@ if algo_version == 1
     Qx, Qy, Qc2, wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, initfilename, name, ...
     reduction_version, realdatablocks, fouRed_gamma, typeStr, Ny, Nx);
     
-    save(['results/results_facethyperSARA_hard_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
+    save(['results/results_facethyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
         '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma), '_gamma0=', num2str(gamma0), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(adapt_eps_flag),'.mat'], '-v7.3', ...
         'xsol', 'param_HSI', 't', 'rel_fval', 'nuclear', 'l21', 'norm_res_out', 'end_iter');
 diary off
