@@ -6,8 +6,7 @@ if param.type == 'sigma'
     s1 = param.sigma_ball;
     
     % estimate the global L2 bound from the chi square distribution
-    %epsilon = sqrt(Nm + s1*sqrt(2*Nm)) * sigma_noise;
-    epsilon = sqrt(2*Nm + s1*sqrt(4*Nm)) * sigma_noise;
+    epsilon = sqrt(Nm + s1*sqrt(Nm)) * sigma_noise
     
     % compute the data blocks L2 bounds
     for i =  1 : c

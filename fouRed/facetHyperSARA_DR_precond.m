@@ -530,7 +530,7 @@ end
 
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
-    fprintf('reweight_step_count uploaded')
+    fprintf('reweight_step_count uploaded\n\n')
 else
     param.init_reweight_step_count = 0;
     reweight_step_count = 0;

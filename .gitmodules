@@ -1,6 +1,6 @@
 [submodule "lib/faceted-wavelet-transform"]
-        path = lib/faceted-wavelet-transform
-        url = https://github.com/basp-group-private/faceted-wavelet-transform.git
+	path = lib/faceted-wavelet-transform
+	url = https://github.com/basp-group-private/faceted-wavelet-transform.git
 [submodule "lib/measurement-operator"]
-        path = lib/measurement-operator
-        url = https://github.com/basp-group-private/measurement-operator.git
+	path = lib/measurement-operator
+	url = https://github.com/basp-group-private/measurement-operator.git
