@@ -1,4 +1,4 @@
-function func_solver_fouRed_real_data_composite(datadir, name, Qx, Qy, Qc2, gamma0, gamma1, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag)
+function func_solver_fouRed_real_data_composite(datadir, name, Qx, Qy, Qc2, gamma0, gamma1, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag, jobpath)
 
 if fouRed_type == 1
     typeStr = 'perc';
@@ -76,7 +76,8 @@ end
 delete(gcp('nocreate'));
 Q = Qx*Qy; 
 numworkers = Q + Qc2;
-cirrus_cluster = parcluster('SlurmProfile1'); % 'local'
+cirrus_cluster = parcluster('SlurmProfile1'); % 'local' 'SlurmProfile1'
+cirrus_cluster.JobStorageLocation= jobpath;
 cirrus_cluster.NumWorkers = numworkers;
 cirrus_cluster.NumThreads = 1;
 ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
