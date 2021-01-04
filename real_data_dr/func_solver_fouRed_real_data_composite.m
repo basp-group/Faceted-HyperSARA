@@ -1,4 +1,4 @@
-function func_solver_fouRed_real_data_composite(datadir, name, Qx, Qy, Qc2, gamma0, gamma, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag)
+function func_solver_fouRed_real_data_composite(datadir, name, Qx, Qy, Qc2, gamma0, gamma1, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag)
 
 if fouRed_type == 1
     typeStr = 'perc';
@@ -11,7 +11,6 @@ addpath ../lib/
 addpath ../lib/operators/
 addpath ../lib/measurement-operator/nufft/
 addpath ../lib/utils/
-% addpath ../lib/CubeHelix/
 addpath ../lib/faceted-wavelet-transform/src
 addpath ../src/
 addpath ../src/spmd/
@@ -19,7 +18,7 @@ addpath ../src/spmd/dr/
 addpath ../src/spmd/weighted/
 
 fprintf("Nuclear norm parameter=%e\n", gamma0);
-fprintf("Regularization parameter=%e\n", gamma);
+fprintf("Regularization parameter=%e\n", gamma1);
 fprintf('Channel number %d\n', ch);
 fprintf('Index number %d\n', subInd);
 fprintf('Reduction version %d\n', reduction_version);
@@ -37,14 +36,8 @@ usingPrecondition = true;
 rw = -1;
 window_type = 'triangular';
 
-% Qx = 5;
-% Qy = 3;
-% Qc2 = 15;    % to see later
-
 d = 512;
 flag_algo = algo_version;
-% parallel_version = 'spmd4_cst';
-% bool_weights = true; % for the spmd4_new version (50% overlap version)
 
 param_real_data.image_size_Nx = 2560; % 2560;
 param_real_data.image_size_Ny = 1536; % 1536;
@@ -83,7 +76,7 @@ end
 delete(gcp('nocreate'));
 Q = Qx*Qy; 
 numworkers = Q + Qc2;
-cirrus_cluster = parcluster('local');
+cirrus_cluster = parcluster('SlurmProfile1'); % 'local'
 cirrus_cluster.NumWorkers = numworkers;
 cirrus_cluster.NumThreads = 1;
 ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
@@ -220,7 +213,7 @@ if algo_version == 1
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
     param_HSI.gamma0 = gamma0;
-    param_HSI.gamma = gamma;  %convergence parameter L1 (soft th parameter)
+    param_HSI.gamma1 = gamma1;  %convergence parameter L1 (soft th parameter)
     param_HSI.rel_val = 1e-6; % stopping criterion
     param_HSI.max_iter = 100000; % max number of iterations
 
@@ -260,7 +253,7 @@ if algo_version == 1
     
     reweight_step_count = 0;
     initfilename = ['./results/facetHyperSARA_dr_co_w_real_' ...
-                num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_' num2str(param_HSI.gamma) '_' num2str(reweight_step_count) '.mat'];
+                num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_' num2str(param_HSI.gamma1) '_' num2str(reweight_step_count) '.mat'];
         
     % spectral tesselation (non-overlapping)
     epsilon_spmd = cell(Qc2, 1);
@@ -278,30 +271,32 @@ if algo_version == 1
     
     clear epsilon epsilon1
     
-    if  rw >= 0 
-        load(['results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma) '_' num2str(rw) '.mat']);
+    %! [P.-A.] warm-start not active here: just need to change initfilename to do activate it
+    %! (initialization details handled within the solver)
+    % if  rw >= 0 
+    %     load(['results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma1) '_' num2str(rw) '.mat']);
         
-        if adapt_eps_flag
-            epsilon_spmd = epsilon1;
-        else
-            epsilon_spmd = epsilon;
-        end
-        param_HSI.init_xsol = param.init_xsol;
-        param_HSI.init_g = param.init_g;
-        param_HSI.init_v0 = param.init_v0;
-        param_HSI.init_v1 = param.init_v1;
-        param_HSI.init_weights0 = param.init_weights0;
-        param_HSI.init_weights1 = param.init_weights1;
-        param_HSI.init_v2 = param.init_v2;
-        param_HSI.init_proj = param.init_proj;
-        param_HSI.init_t_block = param.init_t_block;
-        param_HSI.init_t_start = param.init_t_start+1;
-        param_HSI.reweight_alpha = param.reweight_alpha;
-        param_HSI.init_reweight_step_count = param.init_reweight_step_count;
-        param_HSI.init_reweight_last_iter_step = param.init_reweight_last_iter_step;
-        param_HSI.reweight_steps = (param_HSI.init_t_start+param_HSI.reweight_step_size: param_HSI.reweight_step_size :param_HSI.max_iter+(2*param_HSI.reweight_step_size));
-        param_HSI.step_flag = 0;
-    end
+    %     if adapt_eps_flag
+    %         epsilon_spmd = epsilon1;
+    %     else
+    %         epsilon_spmd = epsilon;
+    %     end
+    %     param_HSI.init_xsol = param.init_xsol;
+    %     param_HSI.init_g = param.init_g;
+    %     param_HSI.init_v0 = param.init_v0;
+    %     param_HSI.init_v1 = param.init_v1;
+    %     param_HSI.init_weights0 = param.init_weights0;
+    %     param_HSI.init_weights1 = param.init_weights1;
+    %     param_HSI.init_v2 = param.init_v2;
+    %     param_HSI.init_proj = param.init_proj;
+    %     param_HSI.init_t_block = param.init_t_block;
+    %     param_HSI.init_t_start = param.init_t_start+1;
+    %     param_HSI.reweight_alpha = param.reweight_alpha;
+    %     param_HSI.init_reweight_step_count = param.init_reweight_step_count;
+    %     param_HSI.init_reweight_last_iter_step = param.init_reweight_last_iter_step;
+    %     param_HSI.reweight_steps = (param_HSI.init_t_start+param_HSI.reweight_step_size: param_HSI.reweight_step_size :param_HSI.max_iter+(2*param_HSI.reweight_step_size));
+    %     param_HSI.step_flag = 0;
+    % end
     
     % solvers
     mkdir('results/')
@@ -312,6 +307,6 @@ if algo_version == 1
     reduction_version, realdatablocks, fouRed_gamma, typeStr, Ny, Nx);
     
     save(['results/results_facethyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-        '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma), '_gamma0=', num2str(gamma0), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(adapt_eps_flag),'.mat'], '-v7.3', ...
+        '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma1), '_gamma0=', num2str(gamma0), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(adapt_eps_flag),'.mat'], '-v7.3', ...
         'xsol', 'param_HSI', 't', 'rel_fval', 'nuclear', 'l21', 'norm_res_out', 'end_iter');
 end
