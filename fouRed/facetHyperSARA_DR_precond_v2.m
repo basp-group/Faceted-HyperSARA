@@ -176,8 +176,8 @@ end
 
 % define reference spatial facets (no overlap)
 Q = Qx*Qy;
-rg_y = domain_decomposition(Qy, M);
-rg_x = domain_decomposition(Qx, N);
+rg_y = split_range(Qy, M);
+rg_x = split_range(Qx, N);
 I = zeros(Q, 2);
 dims = zeros(Q, 2);
 for qx = 1:Qx
