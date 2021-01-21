@@ -136,13 +136,13 @@ for k = 1:numel(Qc)
             sum_runtime_sqr = sum_runtime_sqr + sum(end_iter(end_iter > 0).^2);
 
             atime_l21(k) = atime_l21(k) + sum(t_l21(t_l21 > 0));
-            atime_nuclear(k) = atime_nuclear(k) + sum(t_nuclear(t_nuclear > 0));
+            atime_nuclear(k) = atime_nuclear(k) + sum(t_nuclear(t_nuclear > 0)); % only one spatial facet, so no average here
             atime_master(k) = atime_master(k) + sum(t_master(t_master > 0));
             atime_data(k) = atime_data(k) + sum(t_data(t_data > 0));
             sum_l21_sqr = sum_l21_sqr + sum(t_l21(t_l21 > 0).^2);
             sum_nuclear_sqr = sum_nuclear_sqr + sum(t_nuclear(t_nuclear > 0).^2);
             sum_master_sqr = sum_master_sqr + sum(t_master(t_master > 0).^2);
-            sum_data_sqr = sum_data_sqr + sum(t_data(t_data > 0).^2);
+            sum_data_sqr = sum_data_sqr + (ncores_data^2)*sum(t_data(t_data > 0).^2); % results from data cores have already been averaged over data cores -> need to be taken into account in the variances
 
             % average number of iterations over all sub-problems
             iteration_number(k) = iteration_number(k) + sum(end_iter > 0);

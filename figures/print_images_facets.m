@@ -123,10 +123,10 @@ for k = 1:numel(Qx)
             aruntime(k) = total_runtime(k)/iteration_number(k); % average runtime per iteration
             vruntime(k) = var(end_iter(end_iter > 0));
             %
-            atime_facet(k) = mean(t_facet(t_facet > 0));
-            vtime_facet(k) = var(t_facet(t_facet > 0));
+            atime_facet(k) = mean(t_facet(t_facet > 0));          % t_facet already averaged over the Q facets
+            vtime_facet(k) = (Qx(k)^4)*var(t_facet(t_facet > 0)); % multiplicative factor to account for the initial averaging
             atime_data(k) = mean(t_data(t_data > 0));
-            vtime_data(k) = var(t_data(t_data > 0));
+            vtime_data(k) = (ncores_data^2)*var(t_data(t_data > 0));
             %
             a_ = Qx(k)^2*t_facet(t_facet > 0) + ncores_data*t_data(t_data > 0);
             total_cpu_time(k) = sum(a_);
