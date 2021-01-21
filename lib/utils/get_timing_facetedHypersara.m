@@ -1,4 +1,4 @@
-function [aruntime, vruntime, acpu_time, vcpu_time] = get_timing_facetedHypersara(results_filename, metric_filename, ncores_facets)
+function [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, metric_filename, ncores_facets)
 % results_file : dictionary a strings, pointing to the mat corresponding to
 % the different (spectral faceting) sub-cubes.
 
@@ -18,7 +18,7 @@ iteration_number = 0;
 
 for ind = 1:Qc
     load(results_filename{ind}, 't_facet', 't_data', 'end_iter', 'param')
-    ncores_data = param.num_workers; % number of cpu assigned to the data fidelity terms
+    ncores_data = param.num_workers - ncores_facets; % number of cpu assigned to the data fidelity terms
     
     % compute mean and variance over all the files? just 1 for now
     aruntime = aruntime + sum(end_iter(end_iter > 0)); % average runtime per iteration, over all sub-problems
