@@ -1,4 +1,4 @@
-function [aruntime, vruntime, acpu_time, vcpu_time] = get_timing_facetedHypersara(results_filename, nfacets, metric_filename)
+function [aruntime, vruntime, acpu_time, vcpu_time] = get_timing_facetedHypersara(results_filename, metric_filename, ncores_facets)
 % results_file : dictionary a strings, pointing to the mat corresponding to
 % the different (spectral faceting) sub-cubes.
 
@@ -26,7 +26,7 @@ for ind = 1:Qc
 
     atime_facet = atime_facet + sum(t_facet(t_facet > 0));
     atime_data = atime_data + sum(t_data(t_data > 0));
-    sum_facet_sqr = sum_facet_sqr + (nfacets^2)*sum(t_facet(t_facet > 0).^2);
+    sum_facet_sqr = sum_facet_sqr + (ncores_facets^2)*sum(t_facet(t_facet > 0).^2);
     sum_data_sqr = sum_data_sqr + (ncores_data^2)*sum(t_data(t_data > 0).^2);
 
     % average number of iterations over all sub-problems
@@ -41,6 +41,7 @@ end
 % iteration_number = round(iteration_number / Qc);
 % only report average iteration number over all sub-problems
 % average per iteration per sub-cube
+aruntime = aruntime/iteration_number;
 atime_facet = atime_facet/iteration_number;
 atime_data = atime_data/iteration_number;
 %
