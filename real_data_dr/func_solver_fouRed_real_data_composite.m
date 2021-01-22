@@ -12,10 +12,10 @@ addpath ../lib/operators/
 addpath ../lib/measurement-operator/nufft/
 addpath ../lib/utils/
 addpath ../lib/faceted-wavelet-transform/src
-addpath ../src/
-addpath ../src/spmd/
-addpath ../src/spmd/dr/
-addpath ../src/spmd/weighted/
+addpath ../src_mnras/
+addpath ../src_mnras/spmd/
+addpath ../src_mnras/spmd/dr/
+addpath ../src_mnras/spmd/weighted/
 
 fprintf("Nuclear norm parameter=%e\n", gamma0);
 fprintf("Regularization parameter=%e\n", gamma1);
@@ -76,7 +76,7 @@ end
 delete(gcp('nocreate'));
 Q = Qx*Qy; 
 numworkers = Q + Qc2;
-cirrus_cluster = parcluster('SlurmProfile1'); % 'local' 'SlurmProfile1'
+cirrus_cluster = parcluster('local'); % 'local' 'SlurmProfile1'
 cirrus_cluster.JobStorageLocation= jobpath;
 cirrus_cluster.NumWorkers = numworkers;
 cirrus_cluster.NumThreads = 1;
@@ -200,13 +200,13 @@ if flag_algo < 2
     Psi_full = @(x_wave) HS_forward_sparsity(x_wave,Psiw,Ny,Nx);
     Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,bb);
     
-elseif flag_algo == 2
-    [Psi, Psit] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-    [Psiw, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);    
+% elseif flag_algo == 2
+%     [Psi, Psit] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
+%     [Psiw, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);    
 end
 
 %% L21 + Nuclear (facet-based version)
-if algo_version == 1
+if flag_algo == 1
     disp('Split L21 + Nuclear + wavelets')    
     %% HSI parameter structure sent to the  HSI algorithm
     param_HSI.verbose = 2; % print log or not
@@ -238,7 +238,7 @@ if algo_version == 1
 
     param_HSI.use_reweight_eps = 1; % reweighting w.r.t the relative change of the solution
     param_HSI.reweight_max_reweight_itr = param_HSI.max_iter - param_HSI.reweight_step_size;
-    param_HSI.reweight_rel_obj = 5e-4; % criterion for performing reweighting
+    param_HSI.reweight_rel_val = 5e-4; % criterion for performing reweighting
     param_HSI.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
 
     param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
@@ -253,7 +253,7 @@ if algo_version == 1
     param_HSI.initsol = xsol;
     
     reweight_step_count = 0;
-    initfilename = ['./results/facetHyperSARA_dr_co_w_real_' ...
+    initfilename = ['./results/', name, '_dr_co_w_real_' ...
                 num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_' num2str(param_HSI.gamma1) '_' num2str(reweight_step_count) '.mat'];
         
     % spectral tesselation (non-overlapping)
@@ -272,33 +272,6 @@ if algo_version == 1
     
     clear epsilon epsilon1
     
-    %! [P.-A.] warm-start not active here: just need to change initfilename to do activate it
-    %! (initialization details handled within the solver)
-    % if  rw >= 0 
-    %     load(['results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma1) '_' num2str(rw) '.mat']);
-        
-    %     if adapt_eps_flag
-    %         epsilon_spmd = epsilon1;
-    %     else
-    %         epsilon_spmd = epsilon;
-    %     end
-    %     param_HSI.init_xsol = param.init_xsol;
-    %     param_HSI.init_g = param.init_g;
-    %     param_HSI.init_v0 = param.init_v0;
-    %     param_HSI.init_v1 = param.init_v1;
-    %     param_HSI.init_weights0 = param.init_weights0;
-    %     param_HSI.init_weights1 = param.init_weights1;
-    %     param_HSI.init_v2 = param.init_v2;
-    %     param_HSI.init_proj = param.init_proj;
-    %     param_HSI.init_t_block = param.init_t_block;
-    %     param_HSI.init_t_start = param.init_t_start+1;
-    %     param_HSI.reweight_alpha = param.reweight_alpha;
-    %     param_HSI.init_reweight_step_count = param.init_reweight_step_count;
-    %     param_HSI.init_reweight_last_iter_step = param.init_reweight_last_iter_step;
-    %     param_HSI.reweight_steps = (param_HSI.init_t_start+param_HSI.reweight_step_size: param_HSI.reweight_step_size :param_HSI.max_iter+(2*param_HSI.reweight_step_size));
-    %     param_HSI.step_flag = 0;
-    % end
-    
     % solvers
     mkdir('results/')
 
@@ -307,7 +280,7 @@ if algo_version == 1
     Qx, Qy, Qc2, wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, initfilename, name, ...
     reduction_version, realdatablocks, fouRed_gamma, typeStr, Ny, Nx);
     
-    save(['results/results_facethyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
+    save(['results/results_', name, '_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
         '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma1), '_gamma0=', num2str(gamma0), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(adapt_eps_flag),'.mat'], '-v7.3', ...
         'xsol', 'param_HSI', 't', 'rel_fval', 'nuclear', 'l21', 'norm_res_out', 'end_iter');
 end

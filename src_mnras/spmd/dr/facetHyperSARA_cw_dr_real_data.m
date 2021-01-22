@@ -379,7 +379,7 @@ else
         norm_res{Q+k} = norm_res_tmp;
     end
     clear norm_res_tmp
-    fprintf('norm_res initialized \n\n')`
+    fprintf('norm_res initialized \n\n')
 end
 
 sz_y = cell(K, 1);
