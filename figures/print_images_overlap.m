@@ -114,9 +114,9 @@ for k = 1:numel(overlap_size)
     vruntime(k) = var(end_iter(end_iter > 0));
     %
     atime_facet(k) = mean(t_facet(t_facet > 0));
-    vtime_facet(k) = var(t_facet(t_facet > 0));
+    vtime_facet(k) = (Q^2)*var(t_facet(t_facet > 0)); % t_facet already averaged over facet cores -> multiplicative factor to retrieve the true variance
     atime_data(k) = mean(t_data(t_data > 0));
-    vtime_data(k) = var(t_data(t_data > 0));
+    vtime_data(k) = (ncores_data^2)*var(t_data(t_data > 0));
     %
     a_ = Q*t_facet(t_facet > 0) + ncores_data*t_data(t_data > 0); % average cpu time per iteration
     total_cpu_time(k) = sum(a_);

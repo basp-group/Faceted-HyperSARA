@@ -797,9 +797,6 @@ for t = t_start : param.max_iter
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
                     reweight_alphap, crop_l21, crop_nuclear, w);
                     reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
-            else
-                % compute residual image on the data nodes
-                res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
             end
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
@@ -839,6 +836,13 @@ for t = t_start : param.max_iter
                 m.weights1(q,1) = weights1_(q);
                 m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
                 m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
+            end
+            % compute residual image on the data nodes
+            xsol = m.xsol;
+            spmd
+                if labindex > Qp.Value
+                    res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
+                end
             end
             % data nodes
             for k = 1:K
