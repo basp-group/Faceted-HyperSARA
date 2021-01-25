@@ -37,5 +37,17 @@ std_res = squeeze(std(res, 0, [1,2]));
 astd_res = mean(std_res);
 sstd_res = std(std_res);
 
+skew_res = squeeze(skewness(res,0,[1,2]));
+askew_res = mean(skew_res);
+sskew_res = std(skew_res);
+
 save("metric_rw25.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res', ...
-    'std_res', 'astd_res', 'sstd_res')
+    'std_res', 'astd_res', 'sstd_res', 'skew_res', 'askew_res', 'sskew_res')
+
+%% Print results
+fprintf("astd_res = %1.2e, sstd_res = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
+   astd_res, sstd_res, akurtosis_res, skurtosis_res, askew_res, sskew_res)
+% fprintf(" aruntime (s) = %.2f, vruntime (s) = %1.2e, acpu_time (s) = %.2f, vcpu_time (s) = %1.2e \n", ...
+%    aruntime(k), sqrt(vruntime(k)), acpu_time(k), sqrt(vcpu_time(k)));
+% fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
+%    total_runtime(k)/3600, total_cpu_time(k)/3600)
