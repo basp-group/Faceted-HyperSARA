@@ -13,6 +13,7 @@ filename_pattern = @(ind) fullfile('/lustre/home/shared/sc004/mnras_faceted_corr
      num2str(ind),'_gam0=0.01_gam=5e-06_rw=20.mat']);
 
 nfacets = 15; % Qy = 3, Qx = 5, ncores_data = 15
+ncores_data = 15;
 files = 1:16; % [2:5, 7:16];
 Qc = numel(files);   % number of spectral sub-cubes
 results_filename = strings(Qc, 1);
@@ -23,7 +24,7 @@ for id = 1:Qc % 1:nfile
     results_filename(id) = filename_pattern(files(id));
 end
 
-[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, nfacets);
+[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, nfacets,ncores_data);
 
 fprintf("HyperSARA: Qc = %i, iteration_number = %i \n", ...
         Qc, iteration_number/Qc)

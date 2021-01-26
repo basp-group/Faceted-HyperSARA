@@ -1,4 +1,4 @@
-function [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, ncores_facets)
+function [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, ncores_facets, ncores_data)
 % results_file : dictionary a strings, pointing to the mat corresponding to
 % the different (spectral faceting) sub-cubes.
 
@@ -21,8 +21,8 @@ iteration_number = 0;
 % skew_res = [];
 
 for ind = 1:Qc
-    load(results_filename(ind), 't_facet', 't_data', 'end_iter', 'param') % 'res'
-    ncores_data = param.num_workers - ncores_facets; % number of cpu assigned to the data fidelity terms
+    load(results_filename(ind), 't_facet', 't_data', 'end_iter') % 'param' 'res'
+%     ncores_data = param.num_workers - ncores_facets; % number of cpu assigned to the data fidelity terms
     
 %     std_res = [std_res; std(res,0,[1,2])];
 %     kurt_res = [kurt_res; kurtosis(res,0,[1,2])];

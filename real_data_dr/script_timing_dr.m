@@ -10,9 +10,10 @@ addpath ../lib/utils
 res_path = '/lustre/home/shared/sc004/PURE_MJ/new_results/final_real_data/facethyperSARA_res_norm_it6300_reweight20_gamma5e-06_gamma0_0.01_2b_fouRed2_perc15_adpteps0.fits';
 results_filename = "/lustre/home/shared/sc004/adrianj/new_results/facethyperSARA_dr_co_w_real_1_16_5e-06_20.mat";
 nfacets = 15; % Qy = 3, Qx = 5, ncores_data = 15
+ncores_data = 15;
 output_filename = 'timing_faceted_hypersara.mat';
 
-[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, nfacets);
+[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, nfacets, ncores_data);
 
 fprintf("HyperSARA: Qc = %i, iteration_number = %i \n", ...
         Qc, iteration_number/Qc)
