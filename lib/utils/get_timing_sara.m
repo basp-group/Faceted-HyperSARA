@@ -1,4 +1,4 @@
-function [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_metric_sara(results_filename, metric_filename)
+function [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_sara(results_filename)
     % results_file : dictionary a strings, pointing to the mat corresponding to
     % the different (spectral faceting) sub-cubes.
     
@@ -19,16 +19,16 @@ function [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_tim
     iteration_number = 0;
     ncores_l11 = 9; % number of SARA dictionaries
     
-    std_res = zeros(Qc, 1);
-    kurt_res = zeros(Qc, 1);
-    skew_res = zeros(Qc, 1);
+%     std_res = zeros(Qc, 1);
+%     kurt_res = zeros(Qc, 1);
+%     skew_res = zeros(Qc, 1);
     
     for ind = 1:Qc
         load(results_filename{ind}, 't_l11', 't_master', 't_data', 'end_iter')
         
-        std_res(ind) = std(res,0);
-        kurt_res(ind) = kurtosis(res,0);
-        skew_res(ind) = skewness(res,0);
+%         std_res(ind) = std(res,0);
+%         kurt_res(ind) = kurtosis(res,0);
+%         skew_res(ind) = skewness(res,0);
         
         % compute mean and variance over all the files? just 1 for now
         aruntime = aruntime + sum(end_iter(end_iter > 0)); % average runtime per iteration, over all sub-problems
@@ -51,9 +51,9 @@ function [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_tim
     end
     
     % average std / kurtosis for the residual
-    astd_res = mean(std_res);
-    akurt_res = mean(kurt_res);
-    askew_res = mean(skew_res);
+%     astd_res = mean(std_res);
+%     akurt_res = mean(kurt_res);
+%     askew_res = mean(skew_res);
     
     % iteration_number = round(iteration_number / Qc);
     % only report average iteration number over all sub-problems
@@ -74,8 +74,8 @@ function [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_tim
     for k = 1:numel(Qc)
         fprintf("Qc = %i, iteration_number = %i \n", ...
             Qc, iteration_number/Qc)
-        fprintf("aSTD=%1.2e, aKURT = %1.2e, aSKEW = %1.2e \n", ...
-        astd_res, akurt_res, askew_res)
+%         fprintf("aSTD=%1.2e, aKURT = %1.2e, aSKEW = %1.2e \n", ...
+%         astd_res, akurt_res, askew_res)
         fprintf(" aruntime (s) = %.2f, std_runtime (s) = %1.2e, acpu_time (s) = %.2f, std_cpu_time (s) = %1.2e \n", ...
             aruntime, sqrt(vruntime), acpu_time, sqrt(vcpu_time));
         fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
@@ -83,10 +83,10 @@ function [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_tim
     end
     
     %% Saving results
-    save(metric_filename, '-v7.3', 'aruntime', 'vruntime', 'acpu_time', ...
-        'vcpu_time', 'iteration_number', ...
-        'atime_l11', 'atime_master', 'atime_data', ...
-        'vtime_l11', 'vtime_master', 'vtime_data', ...
-        'total_runtime', 'total_cpu_time', 'std_res', 'kurt_res', 'skew_res');
+%     save(metric_filename, '-v7.3', 'aruntime', 'vruntime', 'acpu_time', ...
+%         'vcpu_time', 'iteration_number', ...
+%         'atime_l11', 'atime_master', 'atime_data', ...
+%         'vtime_l11', 'vtime_master', 'vtime_data', ...
+%         'total_runtime', 'total_cpu_time', 'std_res', 'kurt_res', 'skew_res');
     end
     

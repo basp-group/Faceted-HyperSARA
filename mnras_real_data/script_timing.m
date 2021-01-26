@@ -23,8 +23,7 @@ for id = 1:Qc % 1:nfile
     results_filename{id} = filename_pattern(files(id));
 end
 
-[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, ... 
-    iteration_number] = get_timing_facetedHypersara(results_filename, output_filename, nfacets);
+[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_metric_facetedHypersara(results_filename, ncores_facets);
 
 fprintf("HyperSARA: Qc = %i, iteration_number = %i \n", ...
         Qc, iteration_number/Qc)
@@ -112,7 +111,7 @@ save("metric_sara.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res
 % end
 % output_filename = 'timing_faceted_sara.mat';
 %
-% [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_sara(results_filename, metric_filename);
+% [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_sara(results_filename);
 % 
 % if L < ... % if all sub-cubes not available
 %     % estimate total cpu time based on number of iterations and average
