@@ -7,21 +7,10 @@ addpath ../lib/utils
 %      num2str(ind),'_gam0=0.01_gam=5e-06_rw=20.mat']);
 
 %% Faceted HyperSARA
-res_path = '/lustre/home/shared/sc004/mnras_faceted_corrected/final_real_data/res_FacetedHyperSARA_4-8GHz_NEW.fits';
-filename_pattern = @(ind) fullfile('/lustre/home/shared/sc004/mnras_faceted_corrected/final_real_data', ...
-    ['fhs_cw_rd_triangular_Nx=2560_Ny=1536_L=30_Qx=5_Qy=3_Qc=1_overlap=512_ind=',...
-     num2str(ind),'_gam0=0.01_gam=5e-06_rw=20.mat']);
-
+res_path = '/lustre/home/shared/sc004/PURE_MJ/new_results/final_real_data/facethyperSARA_res_norm_it6300_reweight20_gamma5e-06_gamma0_0.01_2b_fouRed2_perc15_adpteps0.fits';
+results_filename = "/lustre/home/shared/sc004/adrianj/new_results/facethyperSARA_dr_co_w_real_1_16_5e-06_20.mat";
 nfacets = 15; % Qy = 3, Qx = 5, ncores_data = 15
-files = 1:16; % [2:5, 7:16];
-Qc = numel(files);   % number of spectral sub-cubes
-results_filename = strings(Qc, 1);
-% output_filename = '/lustre/home/shared/sc004/mnras_faceted_corrected/final_real_data/timing_faceted_hypersara.mat';
 output_filename = 'timing_faceted_hypersara.mat';
-
-for id = 1:Qc % 1:nfile
-    results_filename(id) = filename_pattern(files(id));
-end
 
 [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, nfacets);
 
@@ -48,7 +37,7 @@ askew_res = mean(skew_res);
 sskew_res = std(skew_res);
 clear res
 
-save("metric_fhs.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res', ...
+save("metric_fhs_dr.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res', ...
     'std_res', 'astd_res', 'sstd_res', 'skew_res', 'askew_res', 'sskew_res', ...
     'aruntime', 'vruntime', 'acpu_time', 'vcpu_time', ...
     'iteration_number', ...
@@ -75,7 +64,7 @@ fprintf("astd_res = %1.2e, sstd_res = %1.2e, akurt = %1.2e, skurt = %1.2e, askew
 %% SARA (only placeholders for now)
 
 % load full (normalised) residual cube
-res_path = '/lustre/home/shared/sc004/mnras_faceted_corrected/final_real_data/res_SARA_4-8GHz.fits';
+res_path = '/lustre/home/shared/sc004/PURE_MJ/res_sara_ddr.fits';
 res = fitsread(res_path);
 
 kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
@@ -95,7 +84,7 @@ clear res
 fprintf("SARA: astd_res = %1.2e, sstd_res = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
    astd_res, sstd_res, akurtosis_res, skurtosis_res, askew_res, sskew_res)
 
-save("metric_sara.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res', ...
+save("metric_sara_dr.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res', ...
    'std_res', 'astd_res', 'sstd_res', 'skew_res', 'askew_res', 'sskew_res')
 %    , ...
 %    'aruntime', 'vruntime', 'acpu_time', 'vcpu_time', ...

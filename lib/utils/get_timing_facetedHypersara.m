@@ -21,7 +21,7 @@ iteration_number = 0;
 % skew_res = [];
 
 for ind = 1:Qc
-    load(results_filename{ind}, 't_facet', 't_data', 'end_iter', 'param') % 'res'
+    load(results_filename(ind), 't_facet', 't_data', 'end_iter', 'param') % 'res'
     ncores_data = param.num_workers - ncores_facets; % number of cpu assigned to the data fidelity terms
     
 %     std_res = [std_res; std(res,0,[1,2])];
