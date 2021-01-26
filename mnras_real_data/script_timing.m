@@ -23,7 +23,7 @@ for id = 1:Qc % 1:nfile
     results_filename{id} = filename_pattern(files(id));
 end
 
-[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_metric_facetedHypersara(results_filename, nfacets);
+[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, nfacets);
 
 fprintf("HyperSARA: Qc = %i, iteration_number = %i \n", ...
         Qc, iteration_number/Qc)
