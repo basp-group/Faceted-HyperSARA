@@ -35,7 +35,6 @@ fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
 
 % load full (normalised) residual cube
 res = fitsread(res_path);
-res = flipud(res);
 
 kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
 akurtosis_res = mean(kurtosis_res);
@@ -48,6 +47,7 @@ sstd_res = std(std_res);
 skew_res = squeeze(skewness(res,0,[1,2]));
 askew_res = mean(skew_res);
 sskew_res = std(skew_res);
+clear res
 
 save("metric_fhs.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res', ...
     'std_res', 'astd_res', 'sstd_res', 'skew_res', 'askew_res', 'sskew_res', ...
@@ -58,8 +58,6 @@ save("metric_fhs.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res'
 % Print results
 fprintf("astd_res = %1.2e, sstd_res = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
    astd_res, sstd_res, akurtosis_res, skurtosis_res, askew_res, sskew_res)
-clear res
-
 
 % This part was only needed when interpolating results (missing cubes)
 % if Qc < 16 % if all sub-cubes not available
@@ -76,6 +74,34 @@ clear res
 % end
 
 %% SARA (only placeholders for now)
+
+% load full (normalised) residual cube
+res_path = '/lustre/home/shared/sc004/mnras_faceted_corrected/final_real_data/res_SARA_4-8GHz.fits';
+res = fitsread(res_path);
+
+kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
+akurtosis_res = mean(kurtosis_res);
+skurtosis_res = std(kurtosis_res);
+
+std_res = squeeze(std(res, 0, [1,2]));
+astd_res = mean(std_res);
+sstd_res = std(std_res);
+
+skew_res = squeeze(skewness(res,0,[1,2]));
+askew_res = mean(skew_res);
+sskew_res = std(skew_res);
+clear res
+
+% Print results
+fprintf("SARA: astd_res = %1.2e, sstd_res = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
+   astd_res, sstd_res, akurtosis_res, skurtosis_res, askew_res, sskew_res)
+
+save("metric_sara.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res', ...
+   'std_res', 'astd_res', 'sstd_res', 'skew_res', 'askew_res', 'sskew_res')
+%    , ...
+%    'aruntime', 'vruntime', 'acpu_time', 'vcpu_time', ...
+%    'iteration_number', ...
+%    'total_runtime', 'total_cpu_time')
 
 %! to be modified
 % filename_pattern = @(ind) fullfile('/lustre/home/shared/sc004/mnras_faceted_corrected/final_real_data', ...
