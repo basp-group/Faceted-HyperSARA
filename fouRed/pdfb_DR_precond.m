@@ -28,7 +28,7 @@ FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
 IFT2 = @(x) fftshift(ifft2(ifftshift(x))) * sqrt(numel(x));
 
 monitor_step = 500;
-reweight_monitor_step = 1;
+reweight_monitor_step = 5;
 
 % number of nodes
 R = length(H);
@@ -73,8 +73,8 @@ if init_flag
     vy2 = v2;
     proj = init_m.proj;
     t_block = init_m.t_block;
-    reweight_last_step_iter = init_m.reweight_last_step_iter;
-    reweight_step_count = init_m.reweight_step_count+1;
+    reweight_last_step_iter = param.init_reweight_last_iter_step;
+    reweight_step_count = param.init_reweight_step_count;
     count_eps_update_down = init_m.count_eps_update_down;
     count_eps_update_up = init_m.count_eps_update_up;
     rel_fval = init_m.rel_fval;
@@ -82,9 +82,12 @@ if init_flag
     g1 = init_m.g1;
     g2 = init_m.g2;
     flag = init_m.flag;
-    t_start = init_m.t_start;
+    t_start = param.init_t_start;
     reweight_alpha= init_m.reweight_alpha;
-    peak_psf = init_m.peak_psf;
+%     peak_psf = init_m.peak_psf;
+    t_master = init_m.t_master;
+    t_l11 = init_m.t_l11;
+    t_data = init_m.t_data;
 else
     %% optional input arguments
     % if ~isfield(param, 'nu1')
@@ -212,53 +215,55 @@ else
     count_eps_update_up = 0;
 
     rel_fval = zeros(param.max_iter, 1);
-
     end_iter = zeros(param.max_iter, 1);
+    t_master = zeros(param.max_iter, 1);
+    t_l11 = zeros(param.max_iter, 1);
+    t_data = zeros(param.max_iter, 1);
     
-    %% initialization
-    % psf
-    dirac=zeros(Ny,Nx);
-    dirac(Ny/2,Nx/2)=1;
-    dirac_uv=A(dirac);
-    for q = 1:R        
-        if reduction_version == 1
-            if flagW
-                tmp = FT2(real(At(H{q} * dirac_uv(W{q}))));
-            else
-                tmp = FT2(real(At(H{q} * dirac_uv)));
-            end
-            tmp = tmp(:);
-            tmp2{q} = T{q} .* tmp(Wm{q});
-        elseif reduction_version == 2
-            if flagW
-                tmp2{q} = T{q} .* (H{q} * dirac_uv(W{q}));
-            else
-                tmp2{q} = T{q} .* (H{q} * dirac_uv);
-            end
-        end
-    end
-    
-    g_f2 = zeros(No, 1);
-    for q = 1 : R
-        if reduction_version == 1   % H is self-adjoint in this case
-            tmp = zeros(size(Wm{q}));
-            tmp(Wm{q}) = T{q} .* tmp2{q};
-            if flagW
-                g_f2(W{q}) = g_f2(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
-            else
-                g_f2 = g_f2 + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
-            end
-        elseif reduction_version == 2
-            if flagW
-                g_f2(W{q}) = g_f2(W{q}) + H{q}' * (T{q} .* tmp2{q});
-            else
-                g_f2 = g_f2 + H{q}' * (T{q} .* tmp2{q});
-            end
-        end
-    end
-    psf = real(At(g_f2));
-    peak_psf = max(psf(:));
-    fprintf('Peak psf: %e\n', peak_psf)
+%     %% initialization
+%     % psf
+%     dirac=zeros(Ny,Nx);
+%     dirac(Ny/2,Nx/2)=1;
+%     dirac_uv=A(dirac);
+%     for q = 1:R        
+%         if reduction_version == 1
+%             if flagW
+%                 tmp = FT2(real(At(H{q} * dirac_uv(W{q}))));
+%             else
+%                 tmp = FT2(real(At(H{q} * dirac_uv)));
+%             end
+%             tmp = tmp(:);
+%             tmp2{q} = T{q} .* tmp(Wm{q});
+%         elseif reduction_version == 2
+%             if flagW
+%                 tmp2{q} = T{q} .* (H{q} * dirac_uv(W{q}));
+%             else
+%                 tmp2{q} = T{q} .* (H{q} * dirac_uv);
+%             end
+%         end
+%     end
+%     
+%     g_f2 = zeros(No, 1);
+%     for q = 1 : R
+%         if reduction_version == 1   % H is self-adjoint in this case
+%             tmp = zeros(size(Wm{q}));
+%             tmp(Wm{q}) = T{q} .* tmp2{q};
+%             if flagW
+%                 g_f2(W{q}) = g_f2(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+%             else
+%                 g_f2 = g_f2 + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+%             end
+%         elseif reduction_version == 2
+%             if flagW
+%                 g_f2(W{q}) = g_f2(W{q}) + H{q}' * (T{q} .* tmp2{q});
+%             else
+%                 g_f2 = g_f2 + H{q}' * (T{q} .* tmp2{q});
+%             end
+%         end
+%     end
+%     psf = real(At(g_f2));
+%     peak_psf = max(psf(:));
+%     fprintf('Peak psf: %e\n', peak_psf)
 
     % initial primal gradient like step
     g1 = zeros(size(xsol));
@@ -327,9 +332,11 @@ for t = t_start:param.max_iter
     tm = tic;
     
     %% primal update
+    tw = tic;
     ysol = hardt(xsol - tau*(omega1 * g1 + omega2 * g2));
     prev_xsol = xsol;
     xsol = xsol + lambda0 * (ysol - xsol);
+    t_master(t) = toc(tw);
     
     norm_prevsol = norm(prev_xsol(:));
     % solution relative change
@@ -355,11 +362,7 @@ for t = t_start:param.max_iter
 %         norm1{k} = sum(abs(r1{k}));
 %     end
     for k = 1:P
-        if k == 9
-            f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, prev_xsol, 1e-4, weights{k}, sigma1, lambda1);
-        else
-            f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, prev_xsol, gamma, weights{k}, sigma1, lambda1);
-        end
+        f(k) = parfeval(@run_par_waverec, 4, v1{k}, Psit{k}, Psi{k}, prev_xsol, gamma, weights{k}, sigma1, lambda1);
     end
 
     %% L2 ball projection update: dual variables update
@@ -374,7 +377,7 @@ for t = t_start:param.max_iter
     epsilon_check_c = 0;
     residual_check_a = 0;
     epsilon_check_a = 0;
-
+    tw = tic;
     for q = 1:R        
         if reduction_version == 1
             if flagW
@@ -409,29 +412,31 @@ for t = t_start:param.max_iter
         res{q} = y{q} - r2{q};
         norm2{q} = norm(res{q});
         
-        residual_check = norm2{q};
-        epsilon_check = epsilon{q};
+%         residual_check = norm2{q};
+%         epsilon_check = epsilon{q};
         
-%         if realdatablocks == 2
-%             if q == 1
-%                 residual_check_c = norm2{q};
-%                 epsilon_check_c = epsilon{q};
-%             else
-%                 residual_check_a = norm2{q};
-%                 epsilon_check_a = epsilon{q};
-%             end
-%             
-%         elseif realdatablocks == 9
-%             if q == 1 || q == 2
-%                 residual_check_c = residual_check_c + norm2{q}^2;
-%                 epsilon_check_c = epsilon_check_c + epsilon{q}^2;
-%             else
-%                 residual_check_a = residual_check_a + norm2{q}^2;
-%                 epsilon_check_a = epsilon_check_a + epsilon{q}^2;
-%             end
-%         end
-        
+        if realdatablocks == 2
+            if q == 1
+                residual_check_c = norm2{q};
+                epsilon_check_c = epsilon{q};
+            else
+                residual_check_a = norm2{q};
+                epsilon_check_a = epsilon{q};
+            end
+            
+        elseif realdatablocks == 9
+            if q == 1 || q == 2
+                residual_check_c = sqrt(residual_check_c + norm2{q}^2);
+                epsilon_check_c = sqrt(epsilon_check_c + epsilon{q}^2);
+            else
+                residual_check_a = sqrt(residual_check_a + norm2{q}^2);
+                epsilon_check_a = sqrt(epsilon_check_a + epsilon{q}^2);
+            end
+        end      
     end
+    t_data(t) = toc(tw);
+    residual_check = sqrt(residual_check_a^2 + residual_check_c^2);
+    epsilon_check = sqrt(epsilon_check_a^2 + epsilon_check_c^2);
     
 %     if realdatablocks == 9
 %         epsilon_check_c = sqrt(epsilon_check_c);
@@ -478,10 +483,11 @@ for t = t_start:param.max_iter
 %     end
     
     for k = 1:P
-        [idx, v1_, u1_, l1_] = fetchNext(f);
+        [idx, v1_, u1_, l1_, t_l11_] = fetchNext(f);
         v1{idx} = v1_;
         u1{idx} = u1_;
-        norm1{idx} = l1_;    
+        norm1{idx} = l1_;
+        t_l11(t) = t_l11(t) + t_l11_;
         g1 = g1 + u1{idx};
     end
     
@@ -503,10 +509,10 @@ for t = t_start:param.max_iter
             end
         end
     end
-    g2 = real(At(sigma2 * uu));
-    
+    g2 = real(At(sigma2 * uu));   
     end_iter(t) = toc(tm);
-          
+    t_l11(t) = t_l11(t)/P; % average compute time for the dual variable
+    fprintf('Iter = %i, Time = %e, t_master = %e, t_l11 = %e, t_data = %e, Rel_error = %e \n',t, end_iter(t), t_master(t), t_data(t), t_l11(t), rel_fval(t));      
     %% stopping criterion and logs
  
     % log
@@ -548,56 +554,40 @@ for t = t_start:param.max_iter
         res_im = real(At(g_f2));
         
         if wterm
-            prev_file = ['results/8basis/xsol_ch', num2str(param.chInd), '_prec_it', num2str(t-monitor_step), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+            prev_file = ['results/xsol_ch', num2str(param.chInd), '_prec_it', num2str(t-monitor_step), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
                 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.fits'];
             if isfile(prev_file)
                 delete(prev_file)
             end
-            fitswrite(xsol, ['results/8basis/xsol_ch', num2str(param.chInd), '_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+            fitswrite(xsol, ['results/xsol_ch', num2str(param.chInd), '_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
                 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.fits']);
             
-            prev_file = ['results/8basis/res_ch', num2str(param.chInd), '_prec_it', num2str(t-monitor_step), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+            prev_file = ['results/res_ch', num2str(param.chInd), '_prec_it', num2str(t-monitor_step), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
                 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.fits'];
             if isfile(prev_file)
                 delete(prev_file)
             end
-            fitswrite(res_im, ['results/8basis/res_ch', num2str(param.chInd), '_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+            fitswrite(res_im, ['results/res_ch', num2str(param.chInd), '_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
                 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.fits']);
-            
-            prev_file = ['results/8basis/conv_dr_ch', num2str(param.chInd), '_prec_it', num2str(t-monitor_step), '_gamma', num2str(gamma)...
-                '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.mat'];
-            if isfile(prev_file)
-                delete(prev_file)
-            end
-            save(['results/8basis/conv_dr_ch', num2str(param.chInd), '_prec_it', num2str(t), '_gamma', num2str(gamma)...
-                '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.mat'], '-v7.3', 'rel_fval', 'end_iter')
         else
-            prev_file = ['results/8basis/xsol_ch', num2str(param.chInd), '_prec_it', num2str(t-monitor_step), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+            prev_file = ['results/xsol_ch', num2str(param.chInd), '_prec_it', num2str(t-monitor_step), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
                 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits'];
             if isfile(prev_file)
                 delete(prev_file)
             end
-            fitswrite(xsol, ['results/8basis/xsol_ch', num2str(param.chInd), '_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+            fitswrite(xsol, ['results/xsol_ch', num2str(param.chInd), '_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
                 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
             
-            prev_file = ['results/8basis/res_ch', num2str(param.chInd), '_prec_it', num2str(t-monitor_step), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+            prev_file = ['results/res_ch', num2str(param.chInd), '_prec_it', num2str(t-monitor_step), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
                 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits'];
             if isfile(prev_file)
                 delete(prev_file)
             end
-            fitswrite(res_im, ['results/8basis/res_ch', num2str(param.chInd), '_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
+            fitswrite(res_im, ['results/res_ch', num2str(param.chInd), '_prec_it', num2str(t), '_gamma', num2str(gamma), '_', num2str(realdatablocks),...
                 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
-            
-            prev_file = ['results/8basis/conv_dr_ch', num2str(param.chInd), '_prec_it', num2str(t-monitor_step), '_gamma', num2str(gamma)...
-                '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'.mat'];
-            if isfile(prev_file)
-                delete(prev_file)
-            end
-            save(['results/8basis/conv_dr_ch', num2str(param.chInd), '_prec_it', num2str(t), '_gamma', num2str(gamma)...
-                '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
         end
     end
-    fprintf('Time for iteration %i: %3.3f, Rel_error = %e \n',t, end_iter(t), rel_fval(t));
+    
 %     norm_conv(t) = norm(xsol(:) - xstar(:));
 %     fprintf('convergence metric: %f\n', norm_conv(t));
     
@@ -661,33 +651,34 @@ for t = t_start:param.max_iter
 %         sigma1 = 1/op_norm(@(x) weights_mat .* Psitw(x), @(x) Psiw(weights_mat .* x), [Ny, Nx], 1e-8, 200, 0);
         
         if reweight_step_count == 0 || reweight_step_count == 1 || ~mod(reweight_step_count,reweight_monitor_step)
-            % Calculate residual image
-            g_f2 = zeros(No, 1);
-            for q = 1 : R
-                if reduction_version == 1   % H is self-adjoint in this case
-                    tmp = zeros(size(Wm{q}));
-                    tmp(Wm{q}) = T{q} .* res{q};
-                    if flagW
-                        g_f2(W{q}) = g_f2(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
-                    else
-                        g_f2 = g_f2 + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
-                    end
-                elseif reduction_version == 2
-                    if flagW
-                        g_f2(W{q}) = g_f2(W{q}) + H{q}' * (T{q} .* res{q});
-                    else
-                        g_f2 = g_f2 + H{q}' * (T{q} .* res{q});
-                    end
-                end
-            end
-            res_im = real(At(g_f2));
+%             % Calculate residual image
+%             g_f2 = zeros(No, 1);
+%             for q = 1 : R
+%                 if reduction_version == 1   % H is self-adjoint in this case
+%                     tmp = zeros(size(Wm{q}));
+%                     tmp(Wm{q}) = T{q} .* res{q};
+%                     if flagW
+%                         g_f2(W{q}) = g_f2(W{q}) + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+%                     else
+%                         g_f2 = g_f2 + H{q} * A(real(IFT2(reshape(tmp, Ny, Nx))));
+%                     end
+%                 elseif reduction_version == 2
+%                     if flagW
+%                         g_f2(W{q}) = g_f2(W{q}) + H{q}' * (T{q} .* res{q});
+%                     else
+%                         g_f2 = g_f2 + H{q}' * (T{q} .* res{q});
+%                     end
+%                 end
+%             end
+%             res_im = real(At(g_f2));
             
             % parallel for all bases
             parfor k = 1:P
                 d_val = abs(Psit{k}(xsol));
-                res_val = Psit{k}(res_im/peak_psf);
-                noise_val = std(res_val);
-                weights{k} = noise_val * max(reweight_alpha, 1) ./ (noise_val * max(reweight_alpha, 1) + d_val);
+%                 res_val = Psit{k}(res_im/peak_psf);
+%                 noise_val = std(res_val);
+%                 weights{k} = noise_val * max(reweight_alpha, 1) ./ (noise_val * max(reweight_alpha, 1) + d_val);
+                weights{k} = reweight_alpha ./ (reweight_alpha + d_val);
 %                 weights{k} = max(reweight_alpha, noise_val) ./ (max(reweight_alpha, noise_val) + d_val);
 %                 kstd = 3*1.4826*mad(res_val);
 %                 weights{k} = 1 ./ (1e-10 + d_val/(reweight_alpha * gamma));
@@ -695,29 +686,29 @@ for t = t_start:param.max_iter
             end
 
             reweight_alpha = reweight_alpha_ff * reweight_alpha;
+            param.reweight_alpha = reweight_alpha;
+            param.init_reweight_step_count = reweight_step_count+1;
+            param.init_reweight_last_iter_step = t;
+            param.init_t_start = t+1;
             
             if wterm
-                fitswrite(xsol, ['results/8basis/xsol_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
+                fitswrite(xsol, ['results/xsol_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
                     '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.fits']);
-                fitswrite(res_im, ['results/8basis/res_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
+                fitswrite(res_im, ['results/res_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
                     '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.fits']);
-                save(['results/8basis/conv_dr_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
-                    '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
             else
-                fitswrite(xsol, ['results/8basis/xsol_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
+                fitswrite(xsol, ['results/xsol_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
                     '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
-                fitswrite(res_im, ['results/8basis/res_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
+                fitswrite(res_im, ['results/res_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
                     '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.fits']);
-                save(['results/8basis/conv_dr_ch', num2str(param.chInd),'_prec_it', num2str(t), '_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
-                    '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'.mat'], '-v7.3', 'rel_fval', 'end_iter')
             end
            
             if wterm
-                m = matfile(['./results/8basis/SARA_ch', num2str(param.chInd),'_prec_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
+                m = matfile(['./results/SARA_ch', num2str(param.chInd),'_prec_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
                     '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '.mat'], ...
                     'Writable', true);
             else
-                m = matfile(['./results/8basis/SARA_ch', num2str(param.chInd),'_prec_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
+                m = matfile(['./results/SARA_ch', num2str(param.chInd),'_prec_reweight', num2str(reweight_step_count), '_rw_alpha', num2str(reweight_alpha), '_gamma', num2str(gamma)...
                     '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '.mat'], ...
                     'Writable', true);
             end
@@ -734,18 +725,18 @@ for t = t_start:param.max_iter
             m.v2 = v2;
             m.proj = proj;
             m.t_block = t_block;
-            m.reweight_last_step_iter = t;
-            m.reweight_step_count = reweight_step_count;
             m.count_eps_update_down = count_eps_update_down;
             m.count_eps_update_up = count_eps_update_up;
             m.rel_fval = rel_fval;
             m.end_iter = end_iter;
+            m.t_l11 = t_l11;
+            m.t_master = t_master;
+            m.t_data = t_data;
             m.g1 = g1;
             m.g2 = g2;
-            m.flag = flag;
-            m.t_start = t;  
+            m.flag = flag;  
             m.reweight_alpha = reweight_alpha;
-            m.peak_psf = peak_psf;
+%             m.peak_psf = peak_psf;
         end
        
         reweight_last_step_iter = t;
@@ -820,11 +811,13 @@ end
 
 end
 
-function [v1_, u1_, l1_] = run_par_waverec(v1_, Psit, Psi, prev_xsol, gamma, weights_, sigma1, lambda1)
+function [v1_, u1_, l1_, t_l11_] = run_par_waverec(v1_, Psit, Psi, prev_xsol, gamma, weights_, sigma1, lambda1)
+    tw = tic;
     r1_ = v1_ + Psit(prev_xsol);
     vy1_ =  r1_ - sign(r1_) .* max(abs(r1_) - gamma * weights_/ sigma1, 0);
     v1_ = v1_ + lambda1 * (vy1_ - v1_);
     u1_ = Psi(v1_);
+    t_l11_ = toc(tw);
     % local L11 norm of current solution
     l1_ = norm(r1_(:),1);
 end

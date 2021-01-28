@@ -17,16 +17,13 @@ end
 addpath ../fouRed
 addpath ../lib/
 addpath ../lib/operators/
-addpath ../lib/nufft/
+addpath ../lib/measurement-operator/nufft/
 addpath ../lib/utils/
-addpath ../lib/CubeHelix/
-% addpath ../lib/Proximity_operators/code/matlab/indicator/
-% addpath ../lib/Proximity_operators/code/matlab/multi/
-addpath ../sdwt2/
-addpath ../src/
-addpath ../src/spmd/
-addpath ../src/spmd/dr/
-addpath ../src/spmd/weighted/
+addpath ../lib/faceted-wavelet-transform/src
+addpath ../src_mnras/
+addpath ../src_mnras/spmd/
+addpath ../src_mnras/spmd/dr/
+addpath ../src_mnras/spmd/weighted/
 
 fprintf("Nuclear norm parameter=%e\n", gamma0);
 fprintf("Regularization parameter=%e\n", gamma);
@@ -58,13 +55,15 @@ flag_algo = algo_version;
 % parallel_version = 'spmd4_cst';
 % bool_weights = true; % for the spmd4_new version (50% overlap version)
 
-if lowRes
-    param_real_data.image_size_Nx = 2560; % 2560;
-    param_real_data.image_size_Ny = 2560; % 1536;
-else
-    param_real_data.image_size_Nx = 4096; % 2560;
-    param_real_data.image_size_Ny = 4096; % 1536;
-end
+% if lowRes
+%     param_real_data.image_size_Nx = 2560; % 2560;
+%     param_real_data.image_size_Ny = 2560; % 1536;
+% else
+%     param_real_data.image_size_Nx = 4096; % 2560;
+%     param_real_data.image_size_Ny = 4096; % 1536;
+% end
+param_real_data.image_size_Nx = 2560;
+param_real_data.image_size_Ny = 1536;
 nChannels = length(ch); % total number of "virtual" channels (i.e., after
 % concatenation) for the real dataset considered
 % nBlocks = realdatablocks;        % number of data blocks (needs to be known beforehand,
@@ -106,27 +105,28 @@ for i = 1:nChannels
 %     W{i,1} = tmp.W{1,1};
 %     tmp = load(['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
 %         num2str(reduction_version), '_perc', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
-%     DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
-%     num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
+    DRfilename = [datadir, '/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
+    num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
 %     tmp = load(['../../extract_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
 %         num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'], 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
-    if wterm
-        if lowRes
-            DRfilename = [datadir, '/ESO137_LOW_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '=', num2str(ch(i)), '.mat'];
-        else
-            DRfilename = [datadir, '/ESO137_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '=', num2str(ch(i)), '.mat'];
-        end
-        fprintf('Read dimensionality reduction file: %s\n', DRfilename)
-        tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'A', 'At', 'epsilon');
-    else
-        if lowRes
-            DRfilename = [datadir, '/ESO137_LOW_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '=', num2str(ch(i)), '.mat'];
-        else
-            DRfilename = [datadir, '/ESO137_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '=', num2str(ch(i)), '.mat'];
-        end
-        fprintf('Read dimensionality reduction file: %s\n', DRfilename)
-        tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
-    end
+%     if wterm
+%         if lowRes
+%             DRfilename = [datadir, '/ESO137_LOW_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '=', num2str(ch(i)), '.mat'];
+%         else
+%             DRfilename = [datadir, '/ESO137_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_w', num2str(levelG), '_', num2str(levelC), '=', num2str(ch(i)), '.mat'];
+%         end
+%         fprintf('Read dimensionality reduction file: %s\n', DRfilename)
+%         tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'A', 'At', 'epsilon');
+%     else
+%         if lowRes
+%             DRfilename = [datadir, '/ESO137_LOW_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '=', num2str(ch(i)), '.mat'];
+%         else
+%             DRfilename = [datadir, '/ESO137_DR_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '=', num2str(ch(i)), '.mat'];
+%         end
+%         fprintf('Read dimensionality reduction file: %s\n', DRfilename)
+%         tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
+%     end
+    tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
     H{i,1} = tmp.H{1,1};
     W{i,1} = tmp.W{1,1};
     yT{i,1} = tmp.yT{1,1};
@@ -462,7 +462,7 @@ elseif algo_version == 2
     param_pdfb.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
     param_pdfb.l2_upper_bound = epsilon{1};
 
-    param_pdfb.reweight_alpha = 10; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+    param_pdfb.reweight_alpha = 0.8^10; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_pdfb.reweight_alpha_ff = rw_alpha;
     param_pdfb.total_reweights = rw_tot; % -1 if you don't want reweighting
     param_pdfb.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
@@ -475,8 +475,9 @@ elseif algo_version == 2
     param_pdfb.use_reweight_eps = 1; % reweighting w.r.t the relative change of the solution
     param_pdfb.reweight_max_reweight_itr = param_pdfb.max_iter - param_pdfb.reweight_step_size;
     param_pdfb.reweight_rel_obj = 1e-4; % criterion for performing reweighting
-    param_pdfb.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
+    param_pdfb.reweight_min_steps_rel_obj = 100; % min num of iter between reweights
     
+    param_pdfb.ppd_max_iter = 300;
     param_pdfb.rw_tol = 5000;
     
 %     param_pdfb.initsol = xsol;

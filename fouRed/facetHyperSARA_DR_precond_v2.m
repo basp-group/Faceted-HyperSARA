@@ -437,7 +437,7 @@ else
     reweight_last_step_iter = 0;
     fprintf('reweight_last_iter_step initialized \n\n')
 end
-rw_counts = 1;
+rw_counts = reweight_step_count + 1;
 
 
 %% Reweighting parameters
@@ -765,7 +765,8 @@ for t = t_start : param.max_iter
     is_converged_ppd = ((t - reweight_last_step_iter) >= param.ppd_min_iter) && (((rel_val(t) <= param.reweight_rel_val) && ...
     (norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c) && ...
     (norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a)) || ...
-    ((t - reweight_last_step_iter) >= param.ppd_max_iter));
+    (reweight_step_count ~=0 && (t - reweight_last_step_iter) >= param.ppd_max_iter) ||...
+    reweight_step_count ~=0 && (t - reweight_last_step_iter) >= 5000);
         
     if is_converged_ppd && (reweight_step_count < param.total_reweights) % corresponds to the PPD stopping criterion
 %     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
@@ -817,7 +818,7 @@ for t = t_start : param.max_iter
         fitswrite(res, ['results/', name, '_res_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma1), '_gamma0_', num2str(param.gamma0), ...
             '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
                 
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,1))
             % Save parameters (matfile solution)
             mkdir('./results/')
             m = matfile(['./results/', name, '_dr_co_w_real_' ...

@@ -248,11 +248,11 @@ if flag_algo == 1
     param_HSI.ind = 1:16;
     
     param_HSI.ppd_min_iter = 100;
-    param_HSI.ppd_max_iter = 2000;
+    param_HSI.ppd_max_iter = 500;
     
     param_HSI.initsol = xsol;
     
-    reweight_step_count = 0;
+    reweight_step_count = -1;
     initfilename = ['./results/', name, '_dr_co_w_real_' ...
                 num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_' num2str(param_HSI.gamma1) '_' num2str(reweight_step_count) '.mat'];
         
