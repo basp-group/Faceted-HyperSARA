@@ -71,4 +71,18 @@ d1 = sqrt(sum(z.^2,2));
 upsilon = sig*reweight_alpha;
 weights1 = upsilon ./ (upsilon + d1);
 
+% parfor k = 1:P
+%     d_val = abs(Psit{k}(xsol));
+%     res_val = Psit{k}(res_im/peak_psf);
+%     noise_val = std(res_val);
+%     weights{k} = noise_val * max(reweight_alpha, 1) ./ (noise_val * max(reweight_alpha, 1) + d_val);
+% %                 weights{k} = max(reweight_alpha, noise_val) ./ (max(reweight_alpha, noise_val) + d_val);
+% %                 kstd = 3*1.4826*mad(res_val);
+% %                 weights{k} = 1 ./ (1e-10 + d_val/(reweight_alpha * gamma));
+% %                 weights{k}(d_val > max(d_val) * reweight_abs_of_max) = 0;
+% end
+% 
+% reweight_alpha = reweight_alpha_ff * reweight_alpha;
+
+
 end

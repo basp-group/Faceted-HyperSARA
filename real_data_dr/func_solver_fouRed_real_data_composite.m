@@ -1,4 +1,4 @@
-function func_solver_fouRed_real_data_composite(datadir, gamma0, gamma, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag)
+function func_solver_fouRed_real_data_composite(datadir, name, Qx, Qy, Qc2, gamma0, gamma1, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag, jobpath)
 
 if fouRed_type == 1
     typeStr = 'perc';
@@ -6,30 +6,19 @@ elseif fouRed_type == 2
     typeStr = 'th';
 end
 
-diaryFname = ['diary_ch', num2str(ch(1)), '_', num2str(ch(end)), '_ind', num2str(subInd(1)), '_', num2str(subInd(end)), ...
-    '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_algo', num2str(algo_version), '_', typeStr, num2str(fouRed_gamma), '.txt'];
-    
-if exist(diaryFname, 'file')
-    delete(diaryFname)
-end
-diary(diaryFname)
-
 addpath ../fouRed
 addpath ../lib/
 addpath ../lib/operators/
-addpath ../lib/nufft/
+addpath ../lib/measurement-operator/nufft/
 addpath ../lib/utils/
-addpath ../lib/CubeHelix/
-addpath ../lib/Proximity_operators/code/matlab/indicator/
-addpath ../lib/Proximity_operators/code/matlab/multi/
-addpath ../sdwt2/
-addpath ../src/
-addpath ../src/spmd/
-addpath ../src/spmd/dr/
-addpath ../src/spmd/weighted/
+addpath ../lib/faceted-wavelet-transform/src
+addpath ../src_mnras/
+addpath ../src_mnras/spmd/
+addpath ../src_mnras/spmd/dr/
+addpath ../src_mnras/spmd/weighted/
 
 fprintf("Nuclear norm parameter=%e\n", gamma0);
-fprintf("Regularization parameter=%e\n", gamma);
+fprintf("Regularization parameter=%e\n", gamma1);
 fprintf('Channel number %d\n', ch);
 fprintf('Index number %d\n', subInd);
 fprintf('Reduction version %d\n', reduction_version);
@@ -47,14 +36,8 @@ usingPrecondition = true;
 rw = -1;
 window_type = 'triangular';
 
-Qx = 5;
-Qy = 3;
-Qc2 = 6;    % to see later
-
 d = 512;
 flag_algo = algo_version;
-% parallel_version = 'spmd4_cst';
-% bool_weights = true; % for the spmd4_new version (50% overlap version)
 
 param_real_data.image_size_Nx = 2560; % 2560;
 param_real_data.image_size_Ny = 1536; % 1536;
@@ -75,11 +58,11 @@ Ky = 7; % number of neighbours for nufft
 [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
 
 % spectral tesselation (non-overlapping)
-tau_ch = 0.6;
+tau_ch = 0.5;
 nChannels1 = tau_ch*nChannels;
 nChannels2 = (1-tau_ch)*nChannels;
-rg_c1 = domain_decomposition(Qc2, nChannels1); % to be modified % only for data reduction
-rg_c2 = domain_decomposition(Qc2, nChannels2); % to be modified % only for data reduction
+rg_c1 = split_range(Qc2, nChannels1); % to be modified % only for data reduction
+rg_c2 = split_range(Qc2, nChannels2); % to be modified % only for data reduction
 cell_c_chunks = cell(Qc2, 1);
 nchannel_per_worker = zeros(Qc2, 1);
 
@@ -93,7 +76,8 @@ end
 delete(gcp('nocreate'));
 Q = Qx*Qy; 
 numworkers = Q + Qc2;
-cirrus_cluster = parcluster('cirrus R2019a');
+cirrus_cluster = parcluster('local'); % 'local' 'SlurmProfile1'
+cirrus_cluster.JobStorageLocation= jobpath;
 cirrus_cluster.NumWorkers = numworkers;
 cirrus_cluster.NumThreads = 1;
 ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
@@ -216,13 +200,13 @@ if flag_algo < 2
     Psi_full = @(x_wave) HS_forward_sparsity(x_wave,Psiw,Ny,Nx);
     Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,bb);
     
-elseif flag_algo == 2
-    [Psi, Psit] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-    [Psiw, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);    
+% elseif flag_algo == 2
+%     [Psi, Psit] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
+%     [Psiw, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);    
 end
 
 %% L21 + Nuclear (facet-based version)
-if algo_version == 1
+if flag_algo == 1
     disp('Split L21 + Nuclear + wavelets')    
     %% HSI parameter structure sent to the  HSI algorithm
     param_HSI.verbose = 2; % print log or not
@@ -230,19 +214,19 @@ if algo_version == 1
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
     param_HSI.gamma0 = gamma0;
-    param_HSI.gamma = gamma;  %convergence parameter L1 (soft th parameter)
-    param_HSI.rel_obj = 1e-10; % stopping criterion
-    param_HSI.max_iter = 10000; % max number of iterations
+    param_HSI.gamma1 = gamma1;  %convergence parameter L1 (soft th parameter)
+    param_HSI.rel_val = 1e-6; % stopping criterion
+    param_HSI.max_iter = 100000; % max number of iterations
 
     param_HSI.use_adapt_eps = adapt_eps_flag; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
-    param_HSI.adapt_eps_start = 300; % minimum num of iter before stating adjustment
+    param_HSI.adapt_eps_start = 500; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
     param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
-    param_HSI.adapt_eps_rel_obj = 5e-4; % bound on the relative change of the solution
+    param_HSI.adapt_eps_rel_val = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
 
-    param_HSI.reweight_alpha = (0.8)^10; %1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+    param_HSI.reweight_alpha = 1; %1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_HSI.reweight_alpha_ff = 0.8;
     param_HSI.total_reweights = 50; % -1 if you don't want reweighting
     param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
@@ -254,21 +238,23 @@ if algo_version == 1
 
     param_HSI.use_reweight_eps = 1; % reweighting w.r.t the relative change of the solution
     param_HSI.reweight_max_reweight_itr = param_HSI.max_iter - param_HSI.reweight_step_size;
-    param_HSI.reweight_rel_obj = 5e-4; % criterion for performing reweighting
+    param_HSI.reweight_rel_val = 5e-4; % criterion for performing reweighting
     param_HSI.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
 
     param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_min_iter = 1; % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid
     param_HSI.precondition = usingPrecondition;
-    param_HSI.rw_tol = 5000;
     param_HSI.ind = 1:16;
+    
+    param_HSI.ppd_min_iter = 100;
+    param_HSI.ppd_max_iter = 500;
     
     param_HSI.initsol = xsol;
     
-    reweight_step_count = 0;
-    initfilename = ['./results/facetHyperSARA_dr_co_w_real_' ...
-                num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_' num2str(param_HSI.gamma) '_' num2str(reweight_step_count) '.mat'];
+    reweight_step_count = -1;
+    initfilename = ['./results/', name, '_dr_co_w_real_' ...
+                num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_' num2str(param_HSI.gamma1) '_' num2str(reweight_step_count) '.mat'];
         
     % spectral tesselation (non-overlapping)
     epsilon_spmd = cell(Qc2, 1);
@@ -286,41 +272,15 @@ if algo_version == 1
     
     clear epsilon epsilon1
     
-    if  rw >= 0 
-        load(['results/result_HyperSARA_spmd4_cst_weighted_rd_' num2str(param_HSI.gamma) '_' num2str(rw) '.mat']);
-        
-        if adapt_eps_flag
-            epsilon_spmd = epsilon1;
-        else
-            epsilon_spmd = epsilon;
-        end
-        param_HSI.init_xsol = param.init_xsol;
-        param_HSI.init_g = param.init_g;
-        param_HSI.init_v0 = param.init_v0;
-        param_HSI.init_v1 = param.init_v1;
-        param_HSI.init_weights0 = param.init_weights0;
-        param_HSI.init_weights1 = param.init_weights1;
-        param_HSI.init_v2 = param.init_v2;
-        param_HSI.init_proj = param.init_proj;
-        param_HSI.init_t_block = param.init_t_block;
-        param_HSI.init_t_start = param.init_t_start+1;
-        param_HSI.reweight_alpha = param.reweight_alpha;
-        param_HSI.init_reweight_step_count = param.init_reweight_step_count;
-        param_HSI.init_reweight_last_iter_step = param.init_reweight_last_iter_step;
-        param_HSI.reweight_steps = (param_HSI.init_t_start+param_HSI.reweight_step_size: param_HSI.reweight_step_size :param_HSI.max_iter+(2*param_HSI.reweight_step_size));
-        param_HSI.step_flag = 0;
-    end
-    
     % solvers
     mkdir('results/')
-    
+
     [xsol,param_HSI,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
     facetHyperSARA_DR_precond_v2(yTp, epsilon_spmd, Ap, Atp, Hp, Wp, aWp, Tp, Wmp, param_HSI, ...
-    Qx, Qy, Qc2, wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, initfilename, ...
+    Qx, Qy, Qc2, wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, initfilename, name, ...
     reduction_version, realdatablocks, fouRed_gamma, typeStr, Ny, Nx);
     
-    save(['results/results_facethyperSARA_fouRed_ch', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-        '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma), '_gamma0=', num2str(gamma0), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(adapt_eps_flag),'.mat'], '-v7.3', ...
+    save(['results/results_', name, '_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
+        '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma1), '_gamma0=', num2str(gamma0), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(adapt_eps_flag),'.mat'], '-v7.3', ...
         'xsol', 'param_HSI', 't', 'rel_fval', 'nuclear', 'l21', 'norm_res_out', 'end_iter');
-diary off
 end
