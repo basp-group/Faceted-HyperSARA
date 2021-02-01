@@ -2,9 +2,6 @@ clc;
 format compact
 addpath ../lib/utils
 
-% filename_pattern = @(ind) fullfile('../data', ...
-%     ['fhs_cw_rd_triangular_Nx=2560_Ny=1536_L=30_Qx=5_Qy=3_Qc=1_overlap=512_ind=',...
-%      num2str(ind),'_gam0=0.01_gam=5e-06_rw=20.mat']);
 
 %% Faceted HyperSARA
 res_path = '/lustre/home/shared/sc004/PURE_MJ/new_results/final_real_data/facethyperSARA_res_norm_it6300_reweight20_gamma5e-06_gamma0_0.01_2b_fouRed2_perc15_adpteps0.fits';
@@ -24,6 +21,7 @@ fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
 
 % load full (normalised) residual cube
 res = fitsread(res_path);
+n_channels = size(res, 3);
 
 kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
 akurtosis_res = mean(kurtosis_res);
@@ -81,37 +79,55 @@ askew_res = mean(skew_res);
 sskew_res = std(skew_res);
 clear res
 
+%% ! to be modified
+n_available_channels = 1;
+n_channels = 30; % total number of channels in the cube
+% filename_pattern = @(ind) fullfile('/lustre/home/shared/sc004/PURE_MJ/monoSARA', ...
+%     ['SARA_ch', num2str(ind), '_prec_reweight20_rw_alpha0.028147_gamma5e-06_2b_fouRed2_perc15']);
+
+filename_pattern = @(ind) fullfile('../mnras_faceted_corrected/final_dr/monoSARA', ...
+    ['SARA_ch', num2str(ind), '_prec_reweight20_rw_alpha0.028147_gamma5e-06_2b_fouRed2_perc15.mat']);
+
+results_filename = strings(n_available_channels, 1);
+for id = 1:n_available_channels
+    results_filename(id) = filename_pattern(id);
+end
+output_filename = 'timing_faceted_sara.mat';
+
+%%
+[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_sara(results_filename);
+
+if n_available_channels < n_channels % if all channels not available
+    % estimate total cpu time based on number of iterations and average
+    % time per iteration per subcube
+    tcpu = total_cpu_time + (n_channels-n_available_channels)*(iteration_number/n_available_channels)*acpu_time;
+     
+    fprintf("SARA, iteration_number = %i \n", ...
+        iteration_number)
+    fprintf(" aruntime (s) = %.2f, std_runtime (s) = %1.2e, acpu_time (s) = %.2f, std_cpu_time (s) = %1.2e \n", ...
+        aruntime, sqrt(vruntime), acpu_time, sqrt(vcpu_time));
+    fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
+        total_runtime/3600, tcpu/3600)
+end
+
+
 % Print results
 fprintf("SARA: astd_res = %1.2e, sstd_res = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
    astd_res, sstd_res, akurtosis_res, skurtosis_res, askew_res, sskew_res)
 
 save("metric_sara_dr.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res', ...
-   'std_res', 'astd_res', 'sstd_res', 'skew_res', 'askew_res', 'sskew_res')
-%    , ...
-%    'aruntime', 'vruntime', 'acpu_time', 'vcpu_time', ...
-%    'iteration_number', ...
-%    'total_runtime', 'total_cpu_time')
+   'std_res', 'astd_res', 'sstd_res', 'skew_res', 'askew_res', 'sskew_res', ...
+   'aruntime', 'vruntime', 'acpu_time', 'vcpu_time', ...
+   'iteration_number', ...
+   'total_runtime', 'total_cpu_time')
 
-%! to be modified
-% filename_pattern = @(ind) fullfile('/lustre/home/shared/sc004/mnras_faceted_corrected/final_real_data', ...
-%     ['fhs_cw_rd_triangular_Nx=2560_Ny=1536_L=30_Qx=5_Qy=3_Qc=1_overlap=512_ind=',...
-%      num2str(ind),'_gam0=0.01_gam=5e-06_rw=20.mat']);
-% for id = 1:Qc % 1:nfile
-%     results_filename{id} = filename_pattern(files(id));
-% end
-% output_filename = 'timing_faceted_sara.mat';
-%
-% [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_sara(results_filename);
-% 
-% if L < ... % if all sub-cubes not available
-%     % estimate total cpu time based on number of iterations and average
-%     % time per iteration per subcube
-%     tcpu = total_cpu_time + (...-L)*(iteration_number/Qc)*acpu_time;
-%       
-%     fprintf("SARA, iteration_number = %i \n", ...
-%         iteration_number)
-%     fprintf(" aruntime (s) = %.2f, std_runtime (s) = %1.2e, acpu_time (s) = %.2f, std_cpu_time (s) = %1.2e \n", ...
-%         aruntime, sqrt(vruntime), acpu_time, sqrt(vcpu_time));
-%     fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
-%         total_runtime/3600, tcpu/3600)
-% end
+%%
+% taking into account the reference 10h from the previous submission (consistency reasons)
+iteration_number = 10000; % from log file of previous run
+tcpu = acpu_time*iteration_number + (n_channels-n_available_channels)*(iteration_number/n_available_channels)*acpu_time;     
+fprintf("SARA, iteration_number = %i \n", ...
+    iteration_number)
+fprintf(" aruntime (s) = %.2f, std_runtime (s) = %1.2e, acpu_time (s) = %.2f, std_cpu_time (s) = %1.2e \n", ...
+    aruntime, sqrt(vruntime), acpu_time, sqrt(vcpu_time));
+fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
+    aruntime*iteration_number/3600, tcpu/3600)

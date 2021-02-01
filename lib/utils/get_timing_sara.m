@@ -24,7 +24,7 @@ function [aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_tim
 %     skew_res = zeros(Qc, 1);
     
     for ind = 1:Qc
-        load(results_filename{ind}, 't_l11', 't_master', 't_data', 'end_iter')
+        load(results_filename(ind), 't_l11', 't_master', 't_data', 'end_iter')
         
 %         std_res(ind) = std(res,0);
 %         kurt_res(ind) = kurtosis(res,0);
