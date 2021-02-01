@@ -733,7 +733,7 @@ for t = t_start : param.max_iter
             res(:,:,c_chunks{k}) = res_{Q+k};
         end
         %% --
-        fitswrite(res, ['results/', name, '_xsol_it', num2str(t), '_gamma', num2str(param.gamma1), '_gamma0_', num2str(param.gamma0), '_', num2str(realdatablocks),...
+        fitswrite(res, ['results/', name, '_res_it', num2str(t), '_gamma', num2str(param.gamma1), '_gamma0_', num2str(param.gamma0), '_', num2str(realdatablocks),...
             'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);        
     end
     
