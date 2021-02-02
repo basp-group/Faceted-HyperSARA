@@ -59,8 +59,8 @@ save("metric_fhs.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res'
     'total_runtime', 'total_cpu_time')
 
 % Print results
-fprintf("astd_res = %1.2e, sstd_res = %1.2e, std_ares = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
-   astd_res, sstd_res, std_ares, akurtosis_res, skurtosis_res, askew_res, sskew_res)
+fprintf("std_res [1st, last] = [%1.2e, %1.2e], astd_res = %1.2e, sstd_res = %1.2e, std_ares = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
+   std_res(1), std_res(end), astd_res, sstd_res, std_ares, akurtosis_res, skurtosis_res, askew_res, sskew_res)
 
 % This part was only needed when interpolating results (missing cubes)
 % if Qc < 16 % if all sub-cubes not available
@@ -99,8 +99,8 @@ sskew_res = std(skew_res);
 clear res ares
 
 % Print results
-fprintf("SARA: astd_res = %1.2e, sstd_res = %1.2e, std_ares = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
-   astd_res, sstd_res, std_ares, akurtosis_res, skurtosis_res, askew_res, sskew_res)
+fprintf("SARA: std_res [1st, last] = [%1.2e, %1.2e], astd_res = %1.2e, sstd_res = %1.2e, std_ares = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
+   std_res(1), std_res(end), astd_res, sstd_res, std_ares, akurtosis_res, skurtosis_res, askew_res, sskew_res)
 
 %%
 n_available_channels = 1;
