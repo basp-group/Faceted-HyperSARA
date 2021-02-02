@@ -107,7 +107,7 @@ n_available_channels = 1;
 n_channels = 480; % total number of channels in the cube
 results_filename = strings(n_available_channels, 1);
 
-filename_pattern = @(ind) fullfile('/luste/home/shared/sc004mnras_faceted_corrected/final_real_data', ...
+filename_pattern = @(ind) fullfile('/luste/home/shared/sc004/mnras_faceted_corrected/final_real_data', ...
     ['sara_Nx=2560_Ny=1536_L=1_Qx=5_Qy=3_ind=', num2str(ind), '_ch=1_gam=5e-06_rw=20.mat']);
 % for id = 1:n_available_channels
 %     results_filename(id) = filename_pattern(id);
