@@ -677,7 +677,7 @@ for t = t_start : param.max_iter
     norm_residual_check_a = sqrt(norm_residual_check_a);
     
     %% Display
-    if ~mod(t,500)
+    if ~mod(t,100)
         
         %% compute value of the priors in parallel
         spmd
@@ -715,26 +715,28 @@ for t = t_start : param.max_iter
             end
         end
         
-        for q = 1:Q
-            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-        end
-        fitswrite(xsol, ['results/', name, '_xsol_it', num2str(t), '_gamma', num2str(param.gamma1), '_gamma0_', num2str(param.gamma0), '_', num2str(realdatablocks),...
-            'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
-        
-        % Calculate residual images
-        res = zeros(size(xsol));
-        spmd
-            if labindex > Qp.Value
-                res_ = compute_residual_images_dr_block_new(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp, Wmp, reduction_version);
+        if ~mod(t,500)
+            for q = 1:Q
+                xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
             end
+            fitswrite(xsol, ['results/', name, '_xsol_it', num2str(t), '_gamma', num2str(param.gamma1), '_gamma0_', num2str(param.gamma0), '_', num2str(realdatablocks),...
+                'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
+            
+            % Calculate residual images
+            res = zeros(size(xsol));
+            spmd
+                if labindex > Qp.Value
+                    res_ = compute_residual_images_dr_block_new(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp, Wmp, reduction_version);
+                end
+            end
+            %% -- TO BE CHANGED (see if necessary to have the full res_ on the master node)
+            for k = 1 : K
+                res(:,:,c_chunks{k}) = res_{Q+k};
+            end
+            %% --
+            fitswrite(res, ['results/', name, '_res_it', num2str(t), '_gamma', num2str(param.gamma1), '_gamma0_', num2str(param.gamma0), '_', num2str(realdatablocks),...
+                'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);        
         end
-        %% -- TO BE CHANGED (see if necessary to have the full res_ on the master node)
-        for k = 1 : K
-            res(:,:,c_chunks{k}) = res_{Q+k};
-        end
-        %% --
-        fitswrite(res, ['results/', name, '_res_it', num2str(t), '_gamma', num2str(param.gamma1), '_gamma0_', num2str(param.gamma0), '_', num2str(realdatablocks),...
-            'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);        
     end
     
     %% Global stopping criteria

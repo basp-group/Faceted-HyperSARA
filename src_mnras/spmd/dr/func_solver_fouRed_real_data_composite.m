@@ -33,7 +33,7 @@ fprintf('Adapt epsilon: %d\n', adapt_eps_flag);
 
 % compute_Anorm = true;
 usingPrecondition = true;
-rw = -1;
+
 window_type = 'triangular';
 
 d = 512;
@@ -215,18 +215,18 @@ if flag_algo == 1
     param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
     param_HSI.gamma0 = gamma0;
     param_HSI.gamma1 = gamma1;  %convergence parameter L1 (soft th parameter)
-    param_HSI.rel_val = 1e-6; % stopping criterion
+    param_HSI.rel_val = 1e-10; % stopping criterion
     param_HSI.max_iter = 100000; % max number of iterations
 
     param_HSI.use_adapt_eps = adapt_eps_flag; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
-    param_HSI.adapt_eps_start = 500; % minimum num of iter before stating adjustment
+    param_HSI.adapt_eps_start = 300; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
     param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
     param_HSI.adapt_eps_rel_val = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
 
-    param_HSI.reweight_alpha = 1; %1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+    param_HSI.reweight_alpha = (0.8)^10; %1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_HSI.reweight_alpha_ff = 0.8;
     param_HSI.total_reweights = 50; % -1 if you don't want reweighting
     param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised

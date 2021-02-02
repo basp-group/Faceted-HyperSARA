@@ -33,7 +33,7 @@ fprintf('Adapt epsilon: %d\n', adapt_eps_flag);
 
 % compute_Anorm = true;
 usingPrecondition = true;
-rw = -1;
+
 window_type = 'triangular';
 
 d = 512;
@@ -215,11 +215,11 @@ if flag_algo == 1
     param_HSI.nu2 = Anorm; % bound on the norm of the operator A*G
     param_HSI.gamma0 = gamma0;
     param_HSI.gamma1 = gamma1;  %convergence parameter L1 (soft th parameter)
-    param_HSI.rel_val = 1e-6; % stopping criterion
+    param_HSI.rel_val = 1e-10; % stopping criterion
     param_HSI.max_iter = 100000; % max number of iterations
 
     param_HSI.use_adapt_eps = adapt_eps_flag; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
-    param_HSI.adapt_eps_start = 500; % minimum num of iter before stating adjustment
+    param_HSI.adapt_eps_start = 300; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
     param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates

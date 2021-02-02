@@ -1,6 +1,6 @@
 function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, rel_fval,...
     norm_res, adapt_eps_tol_in, adapt_eps_tol_out, adapt_eps_steps, ...
-    adapt_eps_rel_obj, adapt_eps_change_percentage, l2_upper_bound)
+    adapt_eps_change_percentage, l2_upper_bound)
 % Adaptive update of the l2-ball constraint.
 %
 % Update of the l2-ball constraints of radius epsilon (adaptive 
