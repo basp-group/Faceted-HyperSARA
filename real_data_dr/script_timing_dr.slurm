@@ -1,5 +1,5 @@
 #!/bin/bash
-# #SBATCH --job-name=facet-hypersara
+# #SBATCH --job-name=dr-metrics
 #SBATCH --time=00:30:00
 # #SBATCH --exclusive
 #SBATCH --nodes=1
@@ -31,5 +31,5 @@ module load matlab/R2019a  # version to be checked on cirrus
 # > logs/hypersara_N=${Nx}_L=${L}_p=${p}_snr=${snr}.log
 
 $HOME/matlab_wrapper_2019_fix \
-"script_timing" \
-> log_timing_cyga.txt
+"script_timing_dr" \
+> log_timing_cyga_dr.txt
