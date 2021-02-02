@@ -24,7 +24,7 @@ res = fitsread(res_path);
 ares = mean(res, 3);
 n_channels = size(res, 3);
 
-std_ares = std(ares);
+std_ares = std(ares(:));
 
 kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
 akurtosis_res = mean(kurtosis_res);
@@ -70,7 +70,7 @@ res_path = '/lustre/home/shared/sc004/PURE_MJ/res_sara_ddr.fits';
 res = fitsread(res_path);
 ares = mean(res, 3);
 
-std_ares = std(ares);
+std_ares = std(ares(:));
 
 kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
 akurtosis_res = mean(kurtosis_res);

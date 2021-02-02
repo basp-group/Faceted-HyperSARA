@@ -37,7 +37,7 @@ fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
 res = fitsread(res_path);
 ares = mean(res, 3);
 
-std_ares = std(ares);
+std_ares = std(ares(:));
 
 kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
 akurtosis_res = mean(kurtosis_res);
@@ -83,7 +83,7 @@ res_path = '/lustre/home/shared/sc004/mnras_faceted_corrected/final_real_data/re
 res = fitsread(res_path);
 ares = mean(res, 3);
 
-std_ares = std(ares);
+std_ares = std(ares(:));
 
 kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
 akurtosis_res = mean(kurtosis_res);
