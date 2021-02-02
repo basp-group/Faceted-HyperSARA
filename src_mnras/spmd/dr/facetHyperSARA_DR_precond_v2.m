@@ -754,7 +754,7 @@ for t = t_start : param.max_iter
             if labindex > Qp.Value
                 [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_val(t), norm_res, ...
                     adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_val.Value, ...
-                    adapt_eps_change_percentage.Value);
+                    adapt_eps_change_percentage.Value, l2_upper_bound);
             end
         end
     end
