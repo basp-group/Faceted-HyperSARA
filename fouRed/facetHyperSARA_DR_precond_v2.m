@@ -548,7 +548,7 @@ if init_flag
         fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
     end
 end
-
+fprintf("Adaptive epsilon: %d, adaptive epsilon start at: %d\n\n", param.use_adapt_eps, param.adapt_eps_start)
 start_loop = tic;
 % profile on
 for t = t_start : param.max_iter
@@ -753,7 +753,7 @@ for t = t_start : param.max_iter
         spmd
             if labindex > Qp.Value
                 [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_val(t), norm_res, ...
-                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_val.Value, ...
+                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
                     adapt_eps_change_percentage.Value, l2_upper_bound);
             end
         end
