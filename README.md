@@ -2,19 +2,21 @@
 
 **Description:** Matlab codes associated with the method described in 
 
->P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech, A. Repetti, A. Jackson, J.-P. Thiran, Y. Wiaux -
-<strong>Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA)</strong>, submitted, <a href="https://researchportal.hw.ac.uk/en/publications/parallel-faceted-imaging-in-radio-interferometry-via-proximal-spl">preprint available online</a>, Jan. 2020.  
+>P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech, A. Repetti, A. Jackson, J.-P. Thiran, Y. Wiaux, Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA), submitted, [preprint available online](https://arxiv.org/abs/2003.07358), Jan. 2020.  
 
-**Authors:** P.-A. Thouvenin (pierre-antoine.thouvenin@centralelille.fr), A. Abdulaziz (aa61@hw.ac.uk), M. Jiang (ming.jiang@epfl.ch).
+**Authors:** P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech.
 
 **Documentation:** a full documentation is currently under development, and will be made available in the present repository.
 
-**Dependencies:** the present codes includes a slightly modified version of the MATLAB NUFFT algorithm available at http://web.eecs.umich.edu/~fessler/irt/fessler.tgz, described in
+**Dependencies:** the present codes depend on the content of the `measurement-operator` github repository, loaded as a github `submodule`. This module contains codes associated with the following publications
 
-> J. A. Fessler and B. P. Sutton - 
-<strong>Nonuniform Fast Fourier Transforms Using Min-Max Interpolation</strong>, <em>IEEE Trans. Image Process.</em>, vol. 51, n. 2, pp. 560--574, Feb. 2003.
+> J. A. Fessler and B. P. Sutton, Nonuniform Fast Fourier Transforms Using Min-Max Interpolation, *IEEE Trans. Image Process.*, vol. 51, n. 2, pp. 560--574, Feb. 2003.
+>
+> A. Dabbech, L. Wolz, L. Pratley, J. D. McEwen and Y. Wiaux, [The w-effect in interferometric imaging: from a fast sparse measurement operator to superresolution](http://dx.doi.org/10.1093/mnras/stx1775), *Mon. Not. Roy. Astron. Soc.*, 471(4):4300-4313, 2017.
+> 
+> A. Onose, A. Dabbech and Y. Wiaux, [An accelerated splitting algorithm for radio-interferometric imaging: when natural and uniform weighting meet](http://dx.doi.org/10.1093/mnras/stx755), *Mon. Not. Roy. Astron. Soc.*, 469(1):938-949, 2017.
 
-**Installation** To properly clone the project with the submodules, you may need to do follow one of set of instructions:
+**Installation**: To properly clone the project with the submodules, you may need to do follow one of set of instructions:
 
 - updating from an existing `Faceted-Hyper-SARA` repository:
 
