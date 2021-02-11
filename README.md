@@ -24,6 +24,7 @@
 git pull
 git submodule sync --recursive # update submodule address, in case the url has changed
 git submodule update --init --recursive # update the content of the submodules
+# git submodule update --remote # if only a submodule has changed
 ```
 
 If you get an access error, fix the `.gitmodules` file as follows
