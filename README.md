@@ -1,6 +1,6 @@
 # Parallel faceted imaging in radio interferometry via proximal splitting
 
-**Description:** Matlab codes associated with the method described in 
+**Description:** Matlab codes associated with the method described in
 
 >P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech, A. Repetti, A. Jackson, J.-P. Thiran, Y. Wiaux, Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA), submitted, [preprint available online](https://arxiv.org/abs/2003.07358), Jan. 2020.  
 
