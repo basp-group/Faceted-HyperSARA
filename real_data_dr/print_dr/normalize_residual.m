@@ -7,7 +7,6 @@ load('psf_normalization.mat')
 
 %%
 % renormalize residual images (DR)
-
 res = fitsread('facethyperSARA_res_it7000_gamma5e-06_gamma0_0.0001_2b_fouRed2_perc15_adpteps0.fits');
 res = res./reshape(scale_factors, [1, 1, 30]);
 fitswrite(res, 'res_hs_1e-4.fits');
