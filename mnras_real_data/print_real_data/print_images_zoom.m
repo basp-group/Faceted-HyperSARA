@@ -8,8 +8,9 @@ addpath ../../lib/print
 %% Parameters
 load_images = 1;
 load_residuals = 1;
-fig_size = [1250, 1250];
-shift_colorbar = [0,0,0,0]; % + [left, bottom, width, height] to place it where you want
+fig_size = [1250, 1250]; % only change wrt Abdullah's code
+shift_colorbar = [0,-2.5e-2,0,0]; % + [left, bottom, width, height] to place it where you want
+% [-0.065 -0.026 0.015 0.055]
 pixel_shift_colorbar = 30;
 extension = '.pdf';
 map_img = cubehelix(2048);
@@ -17,9 +18,9 @@ fontsize=60;
 
 %% Load images
 if load_images
-    xhs = fitsread('x_fhs_reduced_dr.fits');
-    xl1 = fitsread('xl1_reduced_dr.fits');
-    xclean = fitsread('xclean_reduced_dr.fits');
+    xhs = fitsread('x_fhs_reduced.fits');
+    xl1 = fitsread('xl1_reduced.fits');
+    xclean = fitsread('xclean_reduced.fits');
 end
 [N1, N2, c] = size(xhs);
 
@@ -28,9 +29,9 @@ xclean(:,:,2) = xclean(:,:,2) * 8.3285;
 
 %% Load residuals
 if load_residuals
-    rhs = fitsread('r_fhs_reduced_dr.fits');
-    rl1 = fitsread('rl1_reduced_dr.fits');
-    rclean = fitsread('rclean_reduced_dr.fits');
+    rhs = fitsread('r_fhs_reduced.fits');
+    rl1 = fitsread('rl1_reduced.fits');
+    rclean = fitsread('rclean_reduced.fits');
 end
 
 %% Take only the effective window of the image
@@ -38,11 +39,11 @@ end
 % a2 = 250; %down
 % b1 = 220; %left
 % b2 = 100;
-% 
+%
 % xhs1 = xhs(a1:end-a2,b1:end-b2,:);
 % xl11 = xl1(a1:end-a2,b1:end-b2,:);
 % xclean1 = xclean(a1:end-a2,b1:end-b2,:);
-% 
+%
 % rhs1 = rhs(a1:end-a2,b1:end-b2,:);
 % rl11 = rl1(a1:end-a2,b1:end-b2,:);
 % rclean1 = rclean(a1:end-a2,b1:end-b2,:);
@@ -54,9 +55,7 @@ end
 % Plot parameters
 %=========================================================================%
 mkdir figs
-% psf_flux = [40.7 7.97 1];
-load('flux_psf.mat')
-psf_flux = [flux(1:2), 1];
+psf_flux = [40.7 7.97 1];
 
 
 %% Plot the east hot spot
@@ -84,7 +83,9 @@ for band = 1:size(xhs,3)
     close
 
     %
-    % ...
+    [f, h] = display_zoom(xclean_z1(:,:,band), fig_size, pixel_shift_colorbar, psf_flux(band).*clim_log, map_img, fontsize, round(psf_flux(band).*[0.01,0.02,0.03,0.04],2));
+    export_fig(['figs/xclean_z11_ch', num2str(band),extension], '-transparent','-q101')
+    close
 end
 
 %% Plot the west hot spot
@@ -97,8 +98,8 @@ len = 120;
 
 xhs_z1 = xhs(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
 xl1_z1 = xl1(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
-% xclean_z1 = xclean(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
-% xclean_z1(xclean_z1 < 0) = 0;
+xclean_z1 = xclean(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
+xclean_z1(xclean_z1 < 0) = 0;
 
 for band = 1:size(xhs,3)
     [f, h] = display_zoom(xhs_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
@@ -109,16 +110,16 @@ for band = 1:size(xhs,3)
     [f, h] = display_zoom(xl1_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
     export_fig(['figs/xl1_z31_ch', num2str(band),extension], '-transparent','-q101')
     close
-
+    
     %
-    % [f, h] = display_zoom(xclean_z1(:,:,band), fig_size, pixel_shift_colorbar, psf_flux(band).*clim_log, map_img, fontsize, round(psf_flux(band) .* [0.01,0.02,0.03,0.04],2));
-    % export_fig(['figs/xclean_z31_ch', num2str(band),extension], '-transparent','-q101')
-    % close
+    [f, h] = display_zoom(xclean_z1(:,:,band), fig_size, pixel_shift_colorbar, psf_flux(band).*clim_log, map_img, fontsize, round(psf_flux(band).*[0.01,0.02,0.03,0.04],2));
+    export_fig(['figs/xclean_z31_ch', num2str(band),extension], '-transparent','-q101')
+    close
 end
 
 %% Plot the inner core
 clim_log = [1e-5  0.02];
-tickLabel = [1e-4,1e-3,1e-2];
+tickLabel = [1e-4,1e-3]; %[1e-4,1e-3,1e-2];
 %clim_log_cl = psf_flux * [0.00005  0.0015]; % clean
 %tickLabel_cl = round(psf_flux(band) .*[1e-4,1e-3]);
 cen = [764 1298];
@@ -126,8 +127,8 @@ len = 57;
 
 xhs_z1 = xhs(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
 xl1_z1 = xl1(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
-% xclean_z1 = xclean(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
-% xclean_z1(xclean_z1 < 0) = 0;
+xclean_z1 = xclean(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
+xclean_z1(xclean_z1 < 0) = 0;
 
 for band = 1 : size(xhs,3)
     [f, h] = display_zoom(xhs_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
@@ -138,9 +139,16 @@ for band = 1 : size(xhs,3)
     [f, h] = display_zoom(xl1_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
     export_fig(['figs/xl1_z21_ch', num2str(band),extension], '-transparent','-q101')
     close
-
+    
     %
-    % [f, h] = display_zoom(xclean_z1(:,:,band), fig_size, pixel_shift_colorbar, psf_flux(band) .* clim_log, map_img, fontsize, round(psf_flux(band) .* [1e-4,1e-3],4));
-    % export_fig(['figs/xclean_z21_ch', num2str(band),extension], '-transparent','-q101')
-    % close
+    [f, h] = display_zoom(xclean_z1(:,:,band), fig_size, pixel_shift_colorbar, psf_flux(band).*clim_log, map_img, fontsize, round(psf_flux(band).*tickLabel,4));
+    % if band == 1
+    %     set(h,'XTick',[3e-3,5e-2],'XTickLabel',{'3e-3','5e-2'});
+    % elseif band == 2
+    %     set(h,'XTick',[1e-3,1e-2],'XTickLabel',{'1e-3','1e-2'});
+    % else
+    %     set(h,'XTick',[1e-4,1e-3],'XTickLabel',{'1e-4','1e-3'});
+    % end
+    export_fig(['figs/xclean_z21_ch', num2str(band),extension], '-transparent','-q101')
+    close
 end
