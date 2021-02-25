@@ -45,3 +45,16 @@ git clone --recurse-submodules https://github.com/basp-group-private/Faceted-Hyp
 ```
 
 In the long term, the `Faceted-Hyper-SARA` project might be updated to use `subtrees` instead of `submodules` (though it seems to require a recent version of git (not installed by default on `CIRRUS`)).
+
+## Note: reading selected channels from a large `.fits` file in Matlab
+
+```matlab
+% extract first and last channels from the fits file
+info        = fitsinfo('filename.fits');
+rowend      = info.PrimaryData.Size(1);
+colend      = info.PrimaryData.Size(2);
+sliceend    = info.PrimaryData.Size(3);
+data = fitsread('filename.fits','primary',...
+          'Info', info,...
+          'PixelRegion',{[1 1 rowend], [1 1 colend], [1 sliceend-1 sliceend]});
+```
