@@ -69,10 +69,12 @@ b1 = 220; %left
 b2 = 100;
 
 xhs = xhs(a1:end-a2,b1:end-b2,:);
+xhs_avg = xhs_avg(a1:end-a2,b1:end-b2,:);
 xl1 = xl1(a1:end-a2,b1:end-b2,:);
 xclean = xclean(a1:end-a2,b1:end-b2,:);
 
 rhs = rhs(a1:end-a2,b1:end-b2,:);
+rhs_avg = rhs_avg(a1:end-a2,b1:end-b2,:);
 rl1 = rl1(a1:end-a2,b1:end-b2,:);
 rclean = rclean(a1:end-a2,b1:end-b2,:);
 
