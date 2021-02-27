@@ -52,6 +52,7 @@ if load_images
     xclean = fitsread('xclean_reduced_dr.fits');
 end
 xhs = flipud(xhs);
+xhs_avg = flipud(xhs_avg);
 xclean(xclean < 0) = 0;
 [N1, N2, c] = size(xhs);
 
@@ -63,6 +64,7 @@ if load_residuals
     rclean = fitsread('rclean_reduced_dr.fits');
 end
 rhs = flipud(rhs);
+rhs_avg = flipud(rhs_avg);
 
 %% Take only the effective window of the image
 a1 = 200; %up

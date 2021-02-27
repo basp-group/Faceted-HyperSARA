@@ -27,7 +27,7 @@ format compact
 % xhs = zeros(size(x,1),size(x,2),3);
 % xhs(:,:,1:2) = x(:,:,[1,end]);
 % xhs(:,:,3) = mean(x, 3);
-% fitswrite(xhs, 'xhs_avg_reduced.fits')
+% fitswrite(xhs, 'x_fhs_avg_reduced.fits')
 
 %%
 
