@@ -69,7 +69,7 @@ fprintf("std_res [1st, last] = [%1.2e, %1.2e], astd_res = %1.2e, sstd_res = %1.2
 %% CLEAN
 
 % load full (normalised) residual cube
-res_path = 'JC-CLEAN_res.fits'; % /lustre/home/shared/sc004/PURE_MJ/
+res_path = 'r_fhs_dr.fits'; %'res_sara_ddr.fits'; %'res_FacetedHyperSARA_average.fits'; %'JC-CLEAN_res.fits'; % /lustre/home/shared/sc004/PURE_MJ/
 res = fitsread(res_path);
 ares = mean(res, 3);
 
