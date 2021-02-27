@@ -27,14 +27,17 @@ function [f, h] = display_zoom(x, fig_size, pixel_shift_colorbar, clim_log, map_
     pos = get(ax,'Position');
     pos(3) = aspect(1)/aspect(2)*pos(4);
     set(ax,'Position',pos);
+    pause(0.1)
     set(h,'Units', 'pixels')
     pos_h = get(h,'Position');
     pos_h = [pos(1)+pos(3)+pixel_shift_colorbar, pos_h(2), 2*pos_h(3), pos(4)];
     set(h,'Position',pos_h);
+    pause(0.1)
     set(ax,'Units','normalized');
     pos = get(ax,'Position');
     annotation(f,'rectangle',...
     [pos(1), pos(2), im.Parent.InnerPosition(3), pos(4)],...
     'Color',[1 1 1],...
     'LineWidth',4);
+    pause(0.5)
 end
