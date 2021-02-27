@@ -30,5 +30,5 @@ module load matlab/R2019a  # version to be checked on cirrus
 # > logs/hypersara_N=${Nx}_L=${L}_p=${p}_snr=${snr}.log
 
 $HOME/matlab_wrapper_2019_fix \
-"generate_avg_cube \
+"generate_avg_cube" \
 > log_avg.txt
