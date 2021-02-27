@@ -47,6 +47,7 @@ map_img = cubehelix(2048);
 %% Load images
 if load_images
     xhs = fitsread('x_fhs_reduced_dr.fits');
+    xhs_avg = fitsread('x_fhs_avg_reduced.fits');
     xl1 = fitsread('xl1_reduced_dr.fits');
     xclean = fitsread('xclean_reduced_dr.fits');
 end
@@ -57,6 +58,7 @@ xclean(xclean < 0) = 0;
 %% Load residuals
 if load_residuals
     rhs = fitsread('r_fhs_reduced_dr.fits');
+    rhs_avg = fitsread('r_fhs_avg_reduced.fits');
     rl1 = fitsread('rl1_reduced_dr.fits');
     rclean = fitsread('rclean_reduced_dr.fits');
 end
@@ -105,7 +107,7 @@ for band = 1:size(xhs,3)
     [f, h] = display_real_images(xhs_avg(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize);
     pause(0.5)
     set(h,'XTick',[1e-5 1e-4 1e-3]);
-    export_fig(['figs/xhs_ch', num2str(band),extension], '-transparent', '-q101')
+    export_fig(['figs/xhs_avg_ch', num2str(band),extension], '-transparent', '-q101')
     close
     
     [f, h] = display_real_images(xl1(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize);

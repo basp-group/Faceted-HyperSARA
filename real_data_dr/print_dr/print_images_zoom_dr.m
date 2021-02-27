@@ -18,12 +18,14 @@ fontsize=60;
 %% Load images
 if load_images
     xhs = fitsread('x_fhs_reduced_dr.fits');
+    xhs_avg = fitsread('x_fhs_avg_reduced.fits');
     xl1 = fitsread('xl1_reduced_dr.fits');
     xclean = fitsread('xclean_reduced_dr.fits');
 end
 [N1, N2, c] = size(xhs);
-
 xhs = flipud(xhs);
+xhs_avg = flipud(xhs_avg);
+
 xclean(:,:,1) = xclean(:,:,1) * 42.1827;
 xclean(:,:,2) = xclean(:,:,2) * 8.3285;
 xclean(xclean < 0) = 0;
@@ -90,20 +92,23 @@ cen = [1110 422];
 len = 120;
 
 xhs_z1 = xhs(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
+xhs_avg_z1 = xhs_avg(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
 xl1_z1 = xl1(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
 xclean_z1 = xclean(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
 
 for band = 1:size(xhs,3)
-%     [f, h] = display_zoom(xhs_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
-%     pause(0.5)
-%     export_fig(['figs/xhs_z31_ch', num2str(band),extension],'-transparent','-q101')
-%     
-%     %
-%     [f, h] = display_zoom(xl1_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
-%     pause(0.5)
-%     export_fig(['figs/xl1_z31_ch', num2str(band),extension], '-transparent','-q101')
+    [f, h] = display_zoom(xhs_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
+    pause(0.5)
+    export_fig(['figs/xhs_z31_ch', num2str(band),extension],'-transparent','-q101')
+    
+    [f, h] = display_zoom(xhs_avg_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
+    pause(0.5)
+    export_fig(['figs/xhs_avg_z31_ch', num2str(band),extension],'-transparent','-q101')
+    
+    [f, h] = display_zoom(xl1_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
+    pause(0.5)
+    export_fig(['figs/xl1_z31_ch', num2str(band),extension], '-transparent','-q101')
 
-    %
     [f, h] = display_zoom(xclean_z1(:,:,band), fig_size, pixel_shift_colorbar, psf_flux(band).*clim_log, map_img, fontsize, round(psf_flux(band) .* tickLabel,2));
     pause(0.5)
     export_fig(['figs/xclean_z31_ch', num2str(band),extension], '-transparent','-q101')
@@ -119,20 +124,23 @@ cen = [764 1298];
 len = 57;
 
 xhs_z1 = xhs(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
+xhs_avg_z1 = xhs_avg(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
 xl1_z1 = xl1(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
 xclean_z1 = xclean(cen(1)-len/2:cen(1)+len/2,cen(2)-len/2:cen(2)+len/2,:);
 
 for band = 1 : size(xhs,3)
-%     [f, h] = display_zoom(xhs_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
-%     pause(0.5)
-%     export_fig(['figs/xhs_z21_ch', num2str(band),extension], '-transparent','-q101')
-%     
-%     %
-%     [f, h] = display_zoom(xl1_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
-%     pause(0.5)
-%     export_fig(['figs/xl1_z21_ch', num2str(band),extension], '-transparent','-q101')
+    [f, h] = display_zoom(xhs_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
+    pause(0.5)
+    export_fig(['figs/xhs_z21_ch', num2str(band),extension], '-transparent','-q101')
+    
+    [f, h] = display_zoom(xhs_avg_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
+    pause(0.5)
+    export_fig(['figs/xhs_avg_z21_ch', num2str(band),extension], '-transparent','-q101')
+    
+    [f, h] = display_zoom(xl1_z1(:,:,band), fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel);
+    pause(0.5)
+    export_fig(['figs/xl1_z21_ch', num2str(band),extension], '-transparent','-q101')
 
-    %
     [f, h] = display_zoom(xclean_z1(:,:,band), fig_size, pixel_shift_colorbar, psf_flux(band) .* clim_log, map_img, fontsize, round(psf_flux(band) .* tickLabel,4));
     pause(0.5)
     export_fig(['figs/xclean_z21_ch', num2str(band),extension], '-transparent','-q101')

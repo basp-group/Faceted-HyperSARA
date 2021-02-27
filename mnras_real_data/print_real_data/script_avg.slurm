@@ -2,7 +2,7 @@
 #SBATCH --job-name=avg
 #SBATCH --time=00:30:00
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=8
+#SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=1
 # #SBATCH --cpus-per-task=36
 
