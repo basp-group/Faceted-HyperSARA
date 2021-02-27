@@ -66,6 +66,32 @@ fprintf("std_res [1st, last] = [%1.2e, %1.2e], astd_res = %1.2e, sstd_res = %1.2
 %         total_runtime/3600, tcpu/3600)
 % end
 
+%% CLEAN
+
+% load full (normalised) residual cube
+res_path = 'JC-CLEAN_res.fits'; % /lustre/home/shared/sc004/PURE_MJ/
+res = fitsread(res_path);
+ares = mean(res, 3);
+
+std_ares = std(ares(:));
+
+kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
+akurtosis_res = mean(kurtosis_res);
+skurtosis_res = std(kurtosis_res);
+
+std_res = squeeze(std(res, 0, [1,2]));
+astd_res = mean(std_res);
+sstd_res = std(std_res);
+
+skew_res = squeeze(skewness(res,0,[1,2]));
+askew_res = mean(skew_res);
+sskew_res = std(skew_res);
+clear res
+
+% Print results
+fprintf("std_res [1st, last] = [%1.2e, %1.2e], astd_res = %1.2e, sstd_res = %1.2e, std_ares = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
+   std_res(1), std_res(end), astd_res, sstd_res, std_ares, akurtosis_res, skurtosis_res, askew_res, sskew_res)
+
 %% SARA (only placeholders for now)
 
 % load full (normalised) residual cube

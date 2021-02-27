@@ -100,6 +100,12 @@ for band = 1:size(xhs,3)
     export_fig(['figs/xhs_ch', num2str(band),extension], '-transparent', '-q101')
     close
     
+    [f, h] = display_real_images(xhs_avg(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize);
+    pause(0.5)
+    set(h,'XTick',[1e-5 1e-4 1e-3]);
+    export_fig(['figs/xhs_ch', num2str(band),extension], '-transparent', '-q101')
+    close
+    
     [f, h] = display_real_images(xl1(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize);
     pause(0.5)
     set(h,'XTick',[1e-5 1e-4 1e-3]);
@@ -158,6 +164,21 @@ for band = 1:size(xhs,3)
             'XTick',[-1e-3 0 1e-3])
     end
     export_fig(['figs/rhs_ch', num2str(band),extension],'-transparent', '-q101')
+    close
+    
+    % average cube faceted hypersara, no DR
+    [f, h] = display_real_residual(rhs_avg(:,:,band), fig_size, clim_log(band,:), map_img, fontsize);
+    if band ==1
+        set(h,'XTick',[-0.01 0 0.01])
+        h.Ruler.Exponent = -2;
+    elseif band==2
+        set(h,...
+            'XTick',[-3e-3 0 3e-3])
+    elseif band==3
+        set(h,...
+            'XTick',[-1e-3 0 1e-3])
+    end
+    export_fig(['figs/rhs_avg_ch', num2str(band),extension],'-transparent', '-q101')
     close
     
     % sara
