@@ -14,6 +14,8 @@ pixel_shift_colorbar = 30;
 extension = '.pdf';
 map_img = cubehelix(2048);
 fontsize=60;
+load('flux_psf.mat')
+psf_flux = [flux(1:2), 1];
 
 %% Load images
 if load_images
@@ -26,9 +28,9 @@ end
 xhs = flipud(xhs);
 xhs_avg = flipud(xhs_avg);
 
-xclean(:,:,1) = xclean(:,:,1) * 42.1827;
-xclean(:,:,2) = xclean(:,:,2) * 8.3285;
+% mutliply by l1 norm of clean-beam, contained in flux
 xclean(xclean < 0) = 0;
+xclean = xclean.*reshape(psf_flux, [1, 1, 3]);
 
 %% Take only the effective window of the image
 % a1 = 200; %up
@@ -51,10 +53,6 @@ xclean(xclean < 0) = 0;
 % Plot parameters
 %=========================================================================%
 mkdir figs
-% psf_flux = [40.7 7.97 1];
-load('flux_psf.mat')
-psf_flux = [flux(1:2), 1];
-
 
 %% Plot the east hot spot
 % clim_log = [0.0005,0.14]; % HS and SARA

@@ -4,6 +4,7 @@ format compact;
 addpath ../../../CubeHelix
 addpath ../../../export_fig_master
 addpath ../../lib/print
+addpath ../../mnras_faceted_corrected/final_real_data/
 
 %% Parameters
 load_images = 1;

@@ -43,6 +43,8 @@ fig_size = [1000, 1000]; % only change wrt Abdullah's code
 shift_colorbar = [0,eps,0,0]; % + [left, bottom, width, height] to place it where you want % -1.5e-2
 extension = '.pdf';
 map_img = cubehelix(2048);
+load('flux_psf.mat')
+psf_flux = [flux(1:2), 1];
 
 %% Load images
 if load_images
@@ -54,6 +56,8 @@ end
 xhs = flipud(xhs);
 xhs_avg = flipud(xhs_avg);
 xclean(xclean < 0) = 0;
+% mutliply by l1 norm of clean-beam, contained in flux
+xclean = xclean.*reshape(psf_flux, [1, 1, 3]);
 [N1, N2, c] = size(xhs);
 
 %% Load residuals
@@ -88,8 +92,6 @@ rclean = rclean(a1:end-a2,b1:end-b2,:);
 % Plot parameters
 %=========================================================================%
 mkdir figs
-load('flux_psf.mat')
-psf_flux = [flux(1:2), 1];
 
 %% Plot full images
 
@@ -119,13 +121,15 @@ for band = 1:size(xhs,3)
     close
 end
 
+%%
 % CLEAN
 % clim_log = [5e-6 0.02;  %band 1
 %             5e-6 0.02;  %band end
 %             1e-6 1e-2]; %band average
-clim_log = [1e-6 0.0003;  %band 1
-    1e-6 0.0003;  %band end
-    1e-6 0.003];  %band average
+clim_log = [5e-6 0.01;  %band 1
+    5e-6 0.01;  %band end
+    1e-6 0.01];  %band average
+fontsize=20;
 
 for band = 1:size(xhs,3)
     [f, h] = display_real_images(xclean(:,:,band), fig_size, shift_colorbar, psf_flux(band).*clim_log(band,:), map_img, fontsize);
