@@ -4,9 +4,11 @@ format compact;
 addpath ../../../CubeHelix
 addpath ../../../export_fig_master
 addpath ../../lib/print
+addpath ../../mnras_faceted_corrected/final_dr/
+
 
 %%
-% addpath ../../mnras_faceted_corrected/final_dr_gamma5e-6
+% addpath ../../mnras_faceted_corrected/final_dr/gamma5e-6
 % filename = 'facethyperSARA_xsol_it10752_reweight20_gamma5e-06_gamma0_0.001_2b_fouRed2_perc15_adpteps0.fits';
 % info        = fitsinfo(filename);
 % rowend      = info.PrimaryData.Size(1);
