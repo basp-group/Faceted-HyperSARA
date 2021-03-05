@@ -4,16 +4,13 @@ function [u_ab, v_ab, na, antennas] = generate_uv_coverage(T, hrs, dl, cov_type,
 switch cov_type                              
     % VLA coverage ---------------------------------------- %
     case 'vlaa'                                             
-        fileID = fopen('vlaa.itrf-copie.txt') ;                 
-        save_cov_file = ['gen_uv_tracks/ant_vla_pos.mat'];      
+        fileID = fopen('vlaa.itrf.txt') ;                      
     % ASKA coverage --------------------------------------- %
     case 'askap'                                            
-        fileID = fopen('askap.itrf-copie.txt') ;                
-        save_cov_file = ['gen_uv_tracks/ant_askap_pos.mat'];    
+        fileID = fopen('askap.itrf.txt') ;                  
     % MeerKAT coverage ------------------------------------ %
     case 'meerkat'                                         
         fileID = fopen('MeerKAT.enu.txt') ;                     
-        save_cov_file = ['gen_uv_tracks/ant_meerkat_pos.mat'];  
     % random cont. antenna positions                        %
     case 'random'        
         na = varargin{1};
@@ -25,8 +22,7 @@ switch cov_type
             end                                                     
             uv(alpha,:) = uv_ ;                                     
         end                                                    
-        antenna_position = 1e06*[uv, zeros(na,1)] ;           
-        save_cov_file = ['gen_uv_tracks/rand_pos.mat'];         
+        antenna_position = 1e06*[uv, zeros(na,1)] ;                    
 end                                                     
 % ----------------------------------------------------- %
 if strcmp(cov_type, 'rand_ant') == 0

@@ -38,3 +38,6 @@ docs/_*
 abd_hypersara2
 *local_cluster_jobs*
 *pref_*
+*dr_reweight*/
+data/dr
+mnras_faceted_corrected/

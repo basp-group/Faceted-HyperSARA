@@ -111,7 +111,7 @@ if flag_metric
         atime_l11 = atime_l11 + sum(t_l11(t_l11 > 0));
         atime_master = atime_master + sum(t_master(t_master > 0));
         atime_data = atime_data + sum(t_data(t_data > 0));
-        sum_l11_sqr = sum_l11_sqr + sum(t_l11(t_l11 > 0).^2);
+        sum_l11_sqr = sum_l11_sqr + (ncores_l11^2)*sum(t_l11(t_l11 > 0).^2);
         sum_master_sqr = sum_master_sqr + sum(t_master(t_master > 0).^2);
         sum_data_sqr = sum_data_sqr + sum(t_data(t_data > 0).^2);
         

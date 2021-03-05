@@ -101,22 +101,10 @@ v1 = v1/2;
 %scatter(u1,v1,'r.')
 
 %%
-for i = 1:length(ch)
+for i = 1:nChannels
     
     uw{i} = (f(i)/f(1)) * u1;
     vw{i} = (f(i)/f(1)) * v1;
-
-%     [A, At, Gw{i}, ~] = op_nufft([vw{i} uw{i}], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
-% 
-%     % use the absolute values to speed up the search
-%     Gw_a = abs(Gw{i});
-% 
-%     b_l = length(uw{i});
-%     % check if eack line is entirely zero
-%     W{i} = Gw_a' * ones(b_l, 1) ~= 0;
-% 
-%     % store only what we need from G
-%     G{i} = Gw{i}(:, W{i});
 
     %% compute uniform weights (sampling density) for the preconditioning
     [aWw] = util_gen_preconditioning_matrix(uw{i}, vw{i}, param_precond);

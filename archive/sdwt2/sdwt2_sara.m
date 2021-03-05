@@ -38,7 +38,8 @@ id = 0;
 
 % Compute total number of wavelet coefficients
 p = prod(Ncoefs, 2);
-s = 3*sum(p(1:end)) - 2*sum(p(J+1:J+1:end)) - 2*p(end); % number of coeffs with the Dirac basis
+% s = 3*sum(p(1:end)) - 2*sum(p(J+1:J+1:end)) - 2*p(end); % number of coeffs with the Dirac basis
+s = 3*sum(p(1:end)) - 2*sum(p(J+1:J+1:end));
 SPsitLx = zeros(s, 1);
 
 % Renormalize wavelet coefficients (use of several dictionaries)
@@ -62,11 +63,11 @@ for m = 1:M-1
     % define the portion of x_overlap to be exploited for the dictionary considered
     %x_overlap_tmp = x_overlap(crop_offset(1)+1:end, crop_offset(2)+1:end);
     %[lo, hi] = wfilters(wavelet{m}, 'd'); % decomposition filters
-    sm = 3*sum(p((m-1)*(J+1)+1:m*(J+1)-1)) + p(m*(J+1));    
+    sm = 3*sum(p((m-1)*(J+1)+1:m*(J+1)-1)) + p(m*(J+1));
     SPsitLx(id+1:id+sm) = sdwt2(x_overlap(LId(1,m):szS(1),LId(2,m):szS(2)), status, wavelet{m}, J, Ncoefs((m-1)*(J+1)+1:m*(J+1),:));
     id = id + sm;
 end
-
-SPsitLx(id+1:end) = col(x_overlap(LId(1,M):end,LId(2,M):end));
+SPsitLx(id+1:end) = col(sdwt2(x_overlap(LId(1,M):szS(1),LId(2,M):szS(2)), status, wavelet{M}, J, Ncoefs((M-1)*(J+1)+1:M*(J+1),:)));
+% SPsitLx(id+1:end) = col(x_overlap(LId(1,M):end,LId(2,M):end));
 
 end

@@ -66,8 +66,6 @@ sparam.Noy = oy*Ny; % number of pixels in the image
 
 %%
 % param_data.cov_type = 'vlaa';
-
-% T = 200;
 % hrs = 6;
 
 % [u1, v1, na, antennas] = generate_uv_coverage2(T, hrs, param_data.cov_type);
@@ -125,7 +123,7 @@ v1 = v1/2;
 % size(u1)
 
 %%
-for i = ch
+for i = 1:nChannels
     
     uw{i} = (f(i)/f(1)) * u1;
     vw{i} = (f(i)/f(1)) * v1;

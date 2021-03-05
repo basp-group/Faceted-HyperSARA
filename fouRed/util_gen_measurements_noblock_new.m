@@ -1,10 +1,10 @@
-function [y0, y, Nm, sigma_noise, noise] = util_gen_measurements_noblock_new(x, G, A, input_sigma)
+function [y0, y, Nm, sigma_noise, noise] = util_gen_measurements_noblock_new(x, G, A, W, input_sigma)
 
 c = size(x,3);
 y_full = [];
 for i = 1 : c
     Fx = A(x(:,:,i));
-    y0{i} = G{i} * Fx;
+    y0{i} = G{i} * Fx(W{i});
     y_full = [y_full; y0{i}];
 end
 
