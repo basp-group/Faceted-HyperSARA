@@ -6,7 +6,7 @@ addpath ../../lib/utils
 %% Faceted HyperSARA
 % res_path = '/lustre/home/shared/sc004/PURE_MJ/new_results/final_real_data/facethyperSARA_res_norm_it6300_reweight20_gamma5e-06_gamma0_0.01_2b_fouRed2_perc15_adpteps0.fits';
 % results_filename = "/lustre/home/shared/sc004/adrianj/new_results/facethyperSARA_dr_co_w_real_1_16_5e-06_20.mat";
-res_path = '../mnras_faceted_corrected/final_dr/r_fhs_dr.fits';
+res_path = '../mnras_faceted_corrected/final_dr/r_fhs_dr_5e-4.fits';
 results_filename = "../mnras_faceted_corrected/final_dr/gamma5e-6/facethyperSARA_dr_co_w_real_1_16_5e-06_0.001_15_adpteps0_22.mat";        
             
 nfacets = 15; % Qy = 3, Qx = 5, ncores_data = 15
@@ -23,6 +23,7 @@ fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
     total_runtime/3600, total_cpu_time/3600)
 
 % load full (normalised) residual cube
+%%
 res = fitsread(res_path);
 ares = mean(res, 3);
 n_channels = size(res, 3);
@@ -69,7 +70,7 @@ fprintf("std_res [1st, last] = [%1.2e, %1.2e], astd_res = %1.2e, sstd_res = %1.2
 %% CLEAN
 
 % load full (normalised) residual cube
-res_path = 'r_fhs_dr.fits'; %'res_sara_ddr.fits'; %'res_FacetedHyperSARA_average.fits'; %'JC-CLEAN_res.fits'; % /lustre/home/shared/sc004/PURE_MJ/
+res_path = 'r_fhs_dr_5e-4.fits';%'r_fhs_dr.fits'; %'res_sara_ddr.fits'; %'res_FacetedHyperSARA_average.fits'; %'JC-CLEAN_res.fits'; % /lustre/home/shared/sc004/PURE_MJ/
 res = fitsread(res_path);
 ares = mean(res, 3);
 
@@ -176,8 +177,9 @@ tab = load("timing_dr.txt"); % iter, runtime, t_facet, t_data, rel_var
 
 nfacets = 15; % Qy = 3, Qx = 5, ncores_data = 15
 ncores_data = 15;
+niter = 10500;
 
-total_runtime = sum(tab(:,2));
+total_runtime = sum(tab(1:niter,2));
 aruntime = mean(tab(:,2));
 std_runtime = std(tab(:,2));
 atime_facet = mean(tab(:,3));
@@ -189,10 +191,8 @@ std_data = std(tab(:,4));
 iteration_number = size(tab,1);
 cpu_time = nfacets*tab(:,3) + ncores_data*tab(:,4);
 
-total_cpu_time = nfacets*sum(tab(:,3)) ...
-    + ncores_data*sum(tab(:,4));
-% sum_cpu_sqr = sum_cpu_sqr + sum((ncores_facets*tab(:,3) ...
-%     + ncores_data*tab(:,4)).^2);
+total_cpu_time = nfacets*sum(tab(1:niter,3)) ...
+    + ncores_data*sum(tab(1:niter,4));
 acpu_time = mean(cpu_time);
 std_cpu_time = std(cpu_time);
 

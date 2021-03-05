@@ -19,7 +19,7 @@ psf_flux = [flux(1:2), 1];
 
 %% Load images
 if load_images
-    xhs = fitsread('x_fhs_reduced_dr.fits');
+    xhs = fitsread('x_fhs_reduced_dr_5e-4.fits');
     xhs_avg = fitsread('x_fhs_avg_reduced.fits');
     xl1 = fitsread('xl1_reduced_dr.fits');
     xclean = fitsread('xclean_reduced_dr.fits');
