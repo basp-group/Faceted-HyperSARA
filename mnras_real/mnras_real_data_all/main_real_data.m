@@ -59,6 +59,9 @@ function main_real_data(Qx, Qy, Qc, ...
 %%
 format compact;
 
+rootgroup = settings();
+rootgroup.matlab.general.matfile.SaveFormat.PersonalValue = 'v7.3';
+
 disp('MNRAS (real data) configuration')
 disp(['Algorithm version: ', algo_version]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
@@ -289,9 +292,8 @@ if generate_eps_nnls
     end
     %! TO BE UPDATED
     save(['eps_ind=' num2str(ind) '.mat'],'-v7.3', 'eps_b');
-else
     %! TO BE UPDATED
-    load(['eps_ind=' num2str(ind) '.mat']);
+    %load(['eps_ind=' num2str(ind) '.mat']);
 end
 
 %% Solver
@@ -315,7 +317,7 @@ if flag_solveMinimization
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 500; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
-    param_HSI.adapt_eps_tol_out = 1.005; % tolerance outside the l2 ball
+    param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
     param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data

@@ -1,5 +1,5 @@
 function [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ch, init_file_name, name, x0)
+    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ch, init_file_name, name)
 
 % This function solves:
 %
@@ -166,7 +166,7 @@ else
 end
 
 if init_flag
-    SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));  
+    %SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));  
     norm_residual_check = 0;
     norm_epsilon_check = 0;
     for i = 1 : c
@@ -182,7 +182,7 @@ if init_flag
         fprintf('Iter %i\n',t_start-1);
         fprintf('l11-norm = %e, rel_val = %e\n', l11(t_start-1), rel_val(t_start-1));
         fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-        fprintf(' SNR = %e\n', SNR);
+        %fprintf(' SNR = %e\n', SNR);
     end
 end
 
@@ -220,7 +220,6 @@ Ftx = zeros(size(xsol));
 % Main loop. Sequential.
 %maxNumCompThreads(12);
 % util_create_pool(15); %! ask Abdullah here
-% total number of workers (Q: facets workers, K: data workers)
 numworkers = 12;
 cirrus_cluster = parcluster('local');
 cirrus_cluster.NumWorkers = numworkers;
@@ -338,7 +337,7 @@ for t = t_start : param.max_iter
     if ~mod(t,100)
 
         % SNR
-        SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
+        %SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
         
         % Log
         if (param.verbose >= 1)
@@ -349,7 +348,7 @@ for t = t_start : param.max_iter
             % fprintf(' epsilon_c = %e, residual_c = %e\n', epsilon_check_c, residual_check_c);
             % fprintf(' epsilon_a = %e, residual_a = %e\n', epsilon_check_a, residual_check_a);
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-            fprintf(' SNR = %e\n', SNR);
+            %fprintf(' SNR = %e\n', SNR);
 
             for i = 1 : length(epsilon_check)
                fprintf(['eps_b' num2str(i) '= %e, res_b' num2str(i) '= %e\n'], epsilon_check(i), residual_check(i));
@@ -432,7 +431,7 @@ for t = t_start : param.max_iter
         (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
         norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check && ...
         t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr) || ...
-        (t - reweight_last_step_iter > 3000)
+        (t - reweight_last_step_iter > 300)
         
         fprintf('Reweighting: %i\n\n', reweight_step_count);
         for k = 1 : P
@@ -500,7 +499,7 @@ for t = t_start : param.max_iter
                 fprintf('Backup iter: %i\n',t);
                 fprintf('l11-norm = %e, rel_val = %e\n', l11(t), rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-                fprintf(' SNR = %e\n', SNR);
+                %fprintf(' SNR = %e\n', SNR);
             end
         end
        

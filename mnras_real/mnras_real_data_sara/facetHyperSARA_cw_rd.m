@@ -184,15 +184,17 @@ end
 
 % total number of workers (Q: facets workers, K: data workers)
 numworkers = Q + K;
-cirrus_cluster = parcluster('local');
+cirrus_cluster = parcluster('SlurmProfile1');
+%cirrus_cluster.JobStorageLocation= '/lustre/home/sc004/aa61/FacetedHyperSARA_clean/mnras_real_data/local_cluster_jobs/';
 cirrus_cluster.NumWorkers = numworkers;
 cirrus_cluster.NumThreads = 1;
+%cirrus_cluster.AdditionalProperties.ProcsPerNode = 16;
 ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
 if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
     exit(1);
 end
 % maxNumCompThreads(param.num_workers);
-parpool(cirrus_cluster, numworkers);
+parpool(cirrus_cluster, numworkers, 'IdleTimeout', 500);
 
 % define parallel constants (known by each worker)
 Qyp = parallel.pool.Constant(Qy);
@@ -762,7 +764,7 @@ for t = t_start : param.max_iter
     
     %% Reweighting (in parallel)
     %! TO BE CHECKED
-    if (param.step_flag && rel_fval(t) < param.reweight_rel_obj && ...
+    if (param.use_reweight_steps && param.step_flag && rel_val(t) < param.reweight_rel_obj && ...
         norm_residual_check_C <= param.adapt_eps_tol_out*norm_epsilon_check_C && ...
         norm_residual_check_A <= param.adapt_eps_tol_out*norm_epsilon_check_A && t > 300)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
@@ -774,8 +776,8 @@ for t = t_start : param.max_iter
             (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
             t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr && ...
             norm_residual_check_C <= param.adapt_eps_tol_out*norm_epsilon_check_C && ...
-            norm_residual_check_C <= param.adapt_eps_tol_out*norm_epsilon_check_C) || ...
-            (t - reweight_last_step_iter > 3000)
+            norm_residual_check_A <= param.adapt_eps_tol_out*norm_epsilon_check_A) || ...
+            (t - reweight_last_step_iter > 300)
     %!----
     % if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
     %     (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
@@ -797,9 +799,9 @@ for t = t_start : param.max_iter
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
                     reweight_alphap, crop_l21, crop_nuclear, w);
                     reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
-            else
+            %else
                 % compute residual image on the data nodes
-                res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
+            %    res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
             end
         end
         reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
@@ -839,6 +841,13 @@ for t = t_start : param.max_iter
                 m.weights1(q,1) = weights1_(q);
                 m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
                 m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
+            end
+            % compute residual image on the data nodes
+	    xsol = m.xsol;
+	    spmd
+		if labindex > Qp.Value
+			res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
+		end
             end
             % data nodes
             for k = 1:K
@@ -881,7 +890,8 @@ for t = t_start : param.max_iter
             if (param.verbose >= 1)
                 fprintf('Backup iter: %i\n',t);
                 fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
-                fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+                fprintf(' epsilon C = %e, residual C = %e\n', norm_epsilon_check_C, norm_residual_check_C);
+                fprintf(' epsilon A = %e, residual A = %e\n', norm_epsilon_check_A, norm_residual_check_A);
             end
         end 
         

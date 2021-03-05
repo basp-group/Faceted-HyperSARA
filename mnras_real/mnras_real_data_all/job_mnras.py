@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import csv, subprocess, os
+import time
 
 parameter_file_full_path = "job_params_mnras.csv"
 
@@ -10,10 +11,10 @@ with open(parameter_file_full_path, "r") as csvfile:
 
     for job in reader:
 
-        slurm_command = """sbatch --job-name={5}_{1} --ntasks-per-node={19} \
-            -e {5}_{0}_L={1}_Qx={2}_Qy={3}_Qc={4}_id={8}_overlap={9}_gamma={18}_rw={20}.err \
-            -o {5}_{0}_L={1}_Qx={2}_Qy={3}_Qc={4}_id={8}_overlap={9}_gamma={18}_rw={20}.out \
-            -v --export=ALL,imgname={0},nchannels={1},Qx={2},Qy={3},Qc={4},algoversion={5},wintype={6},ncdata={7},ind={8},overlapsize={9},nreweights={10},gencube={11},gencov={12},genvis={13},genundersampledcube={14},computenorm={15},solve={16},covpath={17},gam={18},ncpus={19},rw={20} \
+        slurm_command = """sbatch --job-name={6} \
+            -e {6}_Qx={0}_Qy={1}_Qc={2}_overlap={7}_gam0={12}_gam={13}_alpha={15}_rw={14}.err \
+            -o {6}_Qx={0}_Qy={1}_Qc={2}_overlap={7}_gam0={12}_gam={13}_alpha={15}_rw={14}.out \
+            -v --export=ALL,Qx={0},Qy={1},Qc={2},algoversion={3},wintype={4},ncdata={5},ind={6},overlapsize={7},nreweights={8},extractdata={9},computenorm={10},solve={11},gam0={12},gam={13},rw={14},alpha={15},ncpus={16} \
             run_fhs_mnras.slurm""".format(*job)
 
         # print(slurm_command) # Uncomment this line when testing to view the sbatch command
@@ -22,5 +23,7 @@ with open(parameter_file_full_path, "r") as csvfile:
         exit_status = subprocess.call(slurm_command, shell=True)
         if exit_status is 1:  # Check to make sure the job submitted
             print("Job {0} failed to submit".format(slurm_command))
+
+        time.sleep(10)
 
 print("Submission complete.")
