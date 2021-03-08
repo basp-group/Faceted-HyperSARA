@@ -60,7 +60,7 @@ function [xsol,param,t,rel_val,nuclear,l21,norm_res_out,end_iter] = ...
 %   > .adapt_eps_tol_in (0.99)       tolerance inside the l2 ball
 %   > .adapt_eps_tol_out (1.001)     tolerance outside the l2 ball
 %   > .adapt_eps_steps (100)         min num of iter between consecutive updates
-%   > .adapt_eps_rel_val (5e-4)      bound on the relative change of the solution
+%   > .adapt_eps_rel_var (5e-4)      bound on the relative change of the solution
 %   > .adapt_eps_change_percentage  (0.5*(sqrt(5)-1)) weight of the update w.r.t the l2 norm of the residual data
 %
 %
@@ -358,7 +358,7 @@ elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
 adapt_eps_tol_in = parallel.pool.Constant(param.adapt_eps_tol_in);
 adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
 adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
-adapt_eps_rel_val = parallel.pool.Constant(param.adapt_eps_rel_val);
+adapt_eps_rel_var = parallel.pool.Constant(param.adapt_eps_rel_var);
 adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
 
 xhat_i = Composite();
@@ -749,7 +749,7 @@ for t = t_start : param.max_iter
     end
     
     %% Update epsilons (in parallel)
-    if param.use_adapt_eps && t > param.adapt_eps_start
+    if param.use_adapt_eps && t > param.adapt_eps_start && (rel_val(t) < param.adapt_eps_rel_var)
         spmd
             if labindex > Qp.Value
                 [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_val(t), norm_res, ...
@@ -824,7 +824,7 @@ for t = t_start : param.max_iter
             % Save parameters (matfile solution)
             mkdir('./results/')
             m = matfile(['./results/', name, '_dr_co_w_real_' ...
-                num2str(param.ind(1)), '_', num2str(param.ind(end)), '_' num2str(param.gamma1) '_' num2str(reweight_step_count) '.mat'], ...
+                num2str(param.ind(1)), '_', num2str(param.ind(end)), '_', num2str(param.gamma1), '_' num2str(param.gamma0), '_adpteps', num2str(param.use_adapt_eps), '_', num2str(reweight_step_count) '.mat'], ...
                 'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
@@ -930,7 +930,7 @@ spmd
 end
 
 m = matfile(['./results/', name, '_' ...
-              num2str(param.ind(1)), '_', num2str(param.ind(end)), '_' num2str(reweight_step_count) '.mat'], ...
+              num2str(param.ind(1)), '_', num2str(param.ind(end)), '_', num2str(param.gamma1), '_' num2str(param.gamma0), '_adpteps', num2str(param.use_adapt_eps), '_' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
 m.res = zeros(size(xsol));
 m.g = zeros(size(xsol));

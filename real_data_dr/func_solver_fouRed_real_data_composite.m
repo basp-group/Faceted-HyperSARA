@@ -221,9 +221,9 @@ if flag_algo == 1
     param_HSI.use_adapt_eps = adapt_eps_flag; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 300; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
-    param_HSI.adapt_eps_tol_out = 1.04; % tolerance outside the l2 ball
+    param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
-    param_HSI.adapt_eps_rel_val = 5e-4; % bound on the relative change of the solution
+    param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
 
     param_HSI.reweight_alpha = (0.8)^10; %1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
@@ -247,14 +247,14 @@ if flag_algo == 1
     param_HSI.precondition = usingPrecondition;
     param_HSI.ind = 1:16;
     
-    param_HSI.ppd_min_iter = 100;
+    param_HSI.ppd_min_iter = 500;
     param_HSI.ppd_max_iter = 500;
     
     param_HSI.initsol = xsol;
     
     reweight_step_count = -1;
     initfilename = ['./results/', name, '_dr_co_w_real_' ...
-                num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_' num2str(param_HSI.gamma1) '_' num2str(reweight_step_count) '.mat'];
+                num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_', num2str(param_HSI.gamma1), '_' num2str(param_HSI.gamma0), '_adpteps', num2str(param_HSI.use_adapt_eps), '_' num2str(reweight_step_count) '.mat'];
         
     % spectral tesselation (non-overlapping)
     epsilon_spmd = cell(Qc2, 1);
