@@ -16,12 +16,3 @@ if param.type == 'sigma'
         end
     end
 end
-
-
-
-
-
-
-
-
-
