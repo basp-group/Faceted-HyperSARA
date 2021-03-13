@@ -1,4 +1,30 @@
 function func_solver_fouRed_real_data_composite(datadir, name, Qx, Qy, Qc2, gamma0, gamma1, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag, jobpath)
+% Global imaging solver for DR real data 
+%   version "composite", parcluster initialised outside the main solver
+%-------------------------------------------------------------------------%
+% Input:
+% > datadir: directory of data, string
+% > name: filename for savings, string
+% > Qx: number of facets along dimension x [1]
+% > Qy: number of facets along dimension y [1]
+% > Qc2: number of datab computing processes [1]
+% > gamma0: parameter for nuclear norm, [1]
+% > gamma1: parameter for l2,1 norm, [1]
+% > ch: vector of channel indices [L]
+% > subInd: vector of interlaced subproblem indices [S]
+% > reduction_version: reduction version, 
+%       1: old one (not used any more)
+%       2: current one
+% > algo_version: version of algorithm
+%       1. hyperspectral version
+% > realdatablocks: number of data blocks
+% > fouRed_gamma: level of reduction
+% > fouRed_type: type of reduction, supplementary information for
+% fouRed_gamma
+%       1: remove smallest singular values based on "fouRed_gamma" percentage 
+%       2: remove smallest singular values based on "fouRed_gamma"-sigma 
+% > adapt_eps_flag: flag of adaptive epsilon strategy
+% > jobpath: path of job (for runnings on cluster)
 
 if fouRed_type == 1
     typeStr = 'perc';

@@ -1,3 +1,5 @@
+% from 9 data blocks to 2 data blocks (a, c configuration)
+
 nChannels = 32;
 nBlocks = 2;
 c_config_block_index = 2;
@@ -11,37 +13,6 @@ new_file_2b_y = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data//CYG_
 new_file_2b_u = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_u.mat', 'Writable', true);
 new_file_2b_v = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_v.mat', 'Writable', true);
 new_file_2b_nW = matfile('/home/basphw/mjiang/Data/mjiang/extract_real_data/CYG_2b_nW.mat', 'Writable', true);
-
-y = cell(nChannels, 1);
-for l = 1:numel(y)
-    y{l} = cell(nBlocks, 1);
-end
-save('CYG_2b_y.mat', 'y', '-v7.3');
-clear y;
-
-% u
-u = cell(nChannels, 1);
-for l = 1:numel(u)
-    u{l} = cell(nBlocks, 1);
-end
-save('CYG_2b_u.mat', 'u', '-v7.3');
-clear u;
-
-% v
-v = cell(nChannels, 1);
-for l = 1:numel(v)
-    v{l} = cell(nBlocks, 1);
-end
-save('CYG_2b_v.mat', 'v', '-v7.3');
-clear v;
-
-% nWw: scaling NUFFT
-nW = cell(nChannels, 1);
-for l = 1:numel(nW)
-    nW{l} = cell(nBlocks, 1);
-end
-save('CYG_2b_nW.mat', 'nW', '-v7.3');
-clear nW;
 
 for l = 1:nChannels
     y_tmp = new_file_y.y(l,1);

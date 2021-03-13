@@ -1,8 +1,9 @@
+% script to extract necessary data from raw data
 %% Real data extraction
 addpath ../lib/utils/
 addpath ../fouRed/
 addpath ../lib/operators
-addpath ../lib/nufft
+addpath ../lib/measurement-operator/nufft
 % addpath ../data_mnras_dr
 
 visibility_file_name = '/home/basphw/mjiang/Data/pthouvenin/basp_sharing/Ming/data_mnras_dr/CYG_data_raw_ind=';

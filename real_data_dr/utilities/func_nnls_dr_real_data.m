@@ -1,6 +1,17 @@
 function func_nnls_dr_real_data(chInd, reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma)
-% chInd = 1;
-% reduction_version = 2;
+% Generate and save non-calibrated DR data from raw data
+%-------------------------------------------------------------------------%
+% Input:
+% > chInd: vector of channel indices [L]
+% > reduction_version: reduction version, 
+%       1: old one (not used any more)
+%       2: current one
+% > realdatablocks: number of data blocks
+% > enable_klargestpercent: activate strategy of reduction of removing  
+% smallest k percent singular values, otherwise strategy of reduction of
+% removing (statitical notion) k-sigma smallest singular values
+% > fouRed_gamma: level of reduction
+
 fprintf('Channel number %d\n', chInd);
 fprintf('Reduction version %d\n', reduction_version);
 fprintf('Data blocks: %d\n', realdatablocks);
@@ -8,7 +19,7 @@ fprintf('Data blocks: %d\n', realdatablocks);
 addpath ../lib/utils/
 addpath ../fouRed/
 addpath ../lib/operators
-addpath ../lib/nufft
+addpath ../lib/measurement-operator/nufft/
 % addpath ../data_mnras_dr
 
 Nx = 2560;
@@ -200,39 +211,10 @@ T{1} = Tl;
 aW{1} = aWl;
 Wm{1} = Wml;
 epsilon{1} = norm_res;
-% sing{1} = singl;
 
-% % save on workstation
-% save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon');
-% save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');
-% save(['/home/basphw/mjiang/Data/mjiang/real_data_dr/CYG_old_DR=', num2str(chInd), '.mat'],'-v7.3', 'H', 'T', 'aW', 'Wm');
-
-% % save in EPFL
-% save(['./CYG_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon');
-% save(['./CYG_H_9b=', num2str(chInd), '.mat'],'-v7.3', 'H');
-% save(['./CYG_DR=', num2str(chInd), '.mat'],'-v7.3', 'H', 'T', 'aW', 'Wm');
-% save(['./CYG_DR_9b=', num2str(chInd), '.mat'],'-v7.3', 'yT', 'T', 'aW', 'Wm', 'epsilon');
-
-% save on cirrus
-% Hfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_H_cal_', num2str(realdatablocks), 'b_ind6=', num2str(chInd), '.mat'];
-% if ~isfile(Hfilename)
-%     save(Hfilename, '-v7.3', 'H', 'W')
-% end
-% SVfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_SV_cal_', num2str(realdatablocks), 'b_ind6=', num2str(chInd), '.mat'];
-% if ~isfile(SVfilename)
-%     save(SVfilename, '-v7.3', 'sing');
-% end
 DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
     num2str(reduction_version), '_perc', num2str(fouRed_gamma),'=', num2str(chInd), '.mat'];
 if ~isfile(DRfilename)
     save(DRfilename, '-v7.3', 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon');
 end
-% Epsfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_eps_cal_', num2str(realdatablocks), 'b_ind6_fouRed',...
-%     num2str(reduction_version), '_th', num2str(fouRed_gamma),'=', num2str(chInd), '.mat'];
-% if ~isfile(Epsfilename)
-%     save(Epsfilename, '-v7.3', 'epsilon');
-% end
 fprintf('Dimensionality reduction and epsilon estimation are finished\n')
-% save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_G_epsilon=', num2str(chInd), '.mat'],'-v7.3', 'epsilon_new');
-% save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_G_yT=', num2str(chInd), '.mat'],'-v7.3', 'yT');
-% save(['/lustre/home/shared/sc004/dr_2b_result_real_data/CYG_G_DR=', num2str(chInd), '.mat'],'-v7.3', 'T', 'aW', 'Wm');

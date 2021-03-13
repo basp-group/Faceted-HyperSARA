@@ -1,9 +1,26 @@
 function func_extract_dr_cal_real_data(chInd, subInd, reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma, fouRed_type)
+% Generate and save calibrated DR data from raw data and calibrated G matrices 
+%-------------------------------------------------------------------------%
+% Input:
+% > chInd: vector of channel indices [L]
+% > subInd: vector of interlaced subproblem indices [S]
+% > reduction_version: reduction version, 
+%       1: old one (not used any more)
+%       2: current one
+% > realdatablocks: number of data blocks
+% > enable_klargestpercent: activate strategy of reduction of removing  
+% smallest k percent singular values, otherwise strategy of reduction of
+% removing (statitical notion) k-sigma smallest singular values
+% > fouRed_gamma: level of reduction
+% > fouRed_type: type of reduction, supplementary information for
+% fouRed_gamma
+%       1: remove smallest singular values based on "fouRed_gamma" percentage 
+%       2: remove smallest singular values based on "fouRed_gamma"-sigma 
 
-addpath ../lib/utils/
-addpath ../fouRed/
-addpath ../lib/operators
-addpath ../lib/nufft
+addpath ../../lib/utils/
+addpath ../../fouRed/
+addpath ../../lib/operators
+addpath ../../lib/measurement-operator/nufft
 
 fprintf('Channel number: %d\n', chInd);
 fprintf('Index number: %d\n', subInd);
@@ -166,7 +183,7 @@ for j = 1:realdatablocks
     peak = max(max(abs(Hl{j})));
     Hl{j} = Hl{j} .* (abs(Hl{j}) > peak * precision);
     
-    if reduction_version == 1    
+    if reduction_version == 1    % Due to complex modeling and not better performance, reduction version 1 is not used any more!
     %     fast matrix probing (using psf)
         dirac2D = zeros(Ny, Nx);
         dirac2D(ceil((Ny+1)/2), ceil((Nx+1)/2)) = 1;
