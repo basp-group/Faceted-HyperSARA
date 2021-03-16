@@ -15,7 +15,7 @@ cd $SLURM_SUBMIT_DIR
 mkdir results/
 
 # module purge             # remove all previously loaded modules
-module load matlab/R2019a  # version to be checked on cirrus
+module load matlab/R2020b  # version to be checked on cirrus
 
 echo  "main_real_data("$Qx", "$Qy", "$Qc",'"$algoversion"', '"$wintype"', "$ncdata", "$ind", "$overlapsize", "$nreweights", "$extractdata", "$computenorm", "$solve", "$gam0","$gam","$rw","$alpha")"  > temporary_file_${ind}.m
 matlab -nodisplay < temporary_file_${ind}.m > ${ind}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_overlap=${overlapsize}_gam0=${gam0}_gam=${gam}_alpha=${alpha}_rw=${rw}.txt
