@@ -185,7 +185,7 @@ end
 % total number of workers (Q: facets workers, K: data workers)
 numworkers = Q + K;
 cirrus_cluster = parcluster('SlurmProfile1');
-job_path= ['/lustre/home/sc004/aa61/FacetedHyperSARA_clean/mnras_real_data_all/local_cluster_jobs/' num2str(param.ind) '/'];
+job_path= ['/lustre/home/sc004/pthouven/Faceted-Hyper-SARA/mnras_real/mnras_real_data_all/local_cluster_jobs/' num2str(param.ind) '/'];
 mkdir(job_path);
 cirrus_cluster.JobStorageLocation=job_path;
 cirrus_cluster.NumWorkers = numworkers;

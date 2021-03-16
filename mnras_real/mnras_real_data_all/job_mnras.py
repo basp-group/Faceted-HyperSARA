@@ -3,7 +3,7 @@
 import csv, subprocess, os
 import time
 
-parameter_file_full_path = "job_params_mnras.csv"
+parameter_file_full_path = "job_test.csv" #"job_params_mnras.csv"
 
 with open(parameter_file_full_path, "r") as csvfile:
 

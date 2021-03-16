@@ -72,16 +72,16 @@ disp(['Extracting real data: ', num2str(extract_raw_data)]);
 disp(['Computing operator norm: ', num2str(flag_computeOperatorNorm)]);
 disp(['Solving problem: ', num2str(flag_solveMinimization)]);
 
-addpath ../lib/generate_data/
-addpath ../lib/operators/
-addpath ../lib/measurement-operator/nufft/
-addpath ../lib/utils/
-addpath ../lib/faceted-wavelet-transform/src
-addpath ../data/
-addpath ../src_mnras/
+addpath ../../lib/generate_data/
+addpath ../../lib/operators/
+addpath ../../lib/measurement-operator/nufft/
+addpath ../../lib/utils/
+addpath ../../lib/faceted-wavelet-transform/src
+addpath ../../data/
+addpath ../../src_mnras/
 % only cw version used in this script
-addpath ../src_mnras/spmd
-addpath ../src_mnras/spmd/weighted
+addpath ../../src_mnras/spmd
+addpath ../../src_mnras/spmd/weighted
 
 %! TO BE CHANGED (paths, flags, ...)
 % setting paths to results and reference image cube
@@ -89,7 +89,7 @@ generate_eps_nnls = false;
 save_data = false; 
 save_full_operator = false;
 %extract_raw_data = false;
-data_path = '../data/';
+data_path = '../../data/';
 results_path = fullfile('results/');
 mkdir(data_path)
 mkdir(results_path)
