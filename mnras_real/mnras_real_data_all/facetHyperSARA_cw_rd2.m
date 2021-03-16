@@ -1,7 +1,7 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter] = ...
     facetHyperSARA_cw_rd2(y, epsilon, ...
     A, At, pU, G, W, param, Qx, Qy, K, wavelet, ...
-    L, nlevel, c_chunks, c, d, window_type, init_file_name, name)
+    L, nlevel, c_chunks, c, d, window_type, init_file_name, name, init_option)
 %facetHyperSARA_cw: faceted HyperSARA (real data version, MNRAS experiment)
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -373,16 +373,18 @@ else
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-
-            % weights initialized from initial primal variable, dual variables to 0
-            [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
+ 
+            if init_option < 0
+                % weights initialized from initial primal variable, dual variables to 0
+                [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
                 Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
                 offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
-
-            % weights and dual variables initialized from initial primal variable
-            % [v0, v1, weights0, weights1] = initialize_dual_and_weights2(x_overlap, ...
-            %     Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            %     offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
+            else
+                % weights and dual variables initialized from initial primal variable
+                [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights2(x_overlap, ...
+                    Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                    offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
+            end
         end
     end
     fprintf('v0, v1, weigths0, weights1 initialized \n\n')
