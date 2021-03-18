@@ -740,6 +740,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
+    %! TO BE UPDATED (should rely on relative variation between consecutive reweights, not ppd iterations !)
     if t>1 && reweight_step_count >= param.total_reweights && (rel_val(t) < param.rel_val && ...
         (norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c) && ...
         (norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a) || ...
@@ -747,6 +748,7 @@ for t = t_start : param.max_iter
         flag = 1;
         break;
     end
+    %! --
     
     %% Update epsilons (in parallel)
     if param.use_adapt_eps && t > param.adapt_eps_start && (rel_val(t) < param.adapt_eps_rel_var)

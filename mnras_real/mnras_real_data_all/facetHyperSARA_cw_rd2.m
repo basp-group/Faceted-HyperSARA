@@ -746,7 +746,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criterion
-    %! -- TO BE CHECKED
+    %! TO BE UPDATED (should rely on relative variation between consecutive reweights, not ppd iterations !)
     if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
             (norm_residual_check_C <= param.adapt_eps_tol_out*norm_epsilon_check_C) && ...
             (norm_residual_check_A <= param.adapt_eps_tol_out*norm_epsilon_check_A)
