@@ -1,7 +1,7 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter] = ...
     facetHyperSARA_cw_rd2(y, epsilon, ...
     A, At, pU, G, W, param, Qx, Qy, K, wavelet, ...
-    L, nlevel, c_chunks, c, d, window_type, init_file_name, name, init_option)
+    L, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_nonZeroPrimal, flag_homotopy)
 %facetHyperSARA_cw: faceted HyperSARA (real data version, MNRAS experiment)
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -68,7 +68,7 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter] = ...
 % > L           size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
 % > nlevel      decomposition depth [1]
 % > c_chunks    indices of the bands handled by each data node {K, 1}
-% > c           total number of specrtal channels [1]
+% > c           total number of spectral channels [1]
 % > d           size of the fixed overlap for the faceted nuclear norm 
 %               [1, 2]
 % > window_type type of apodization window affecting the faceted nuclear
@@ -137,9 +137,6 @@ norm_residual_check_C = 0;
 norm_epsilon_check_A = Inf; % check for A configuration
 norm_residual_check_A = 0;
 
-% norm_epsilon_check = Inf;
-% norm_residual_check = 0;
-
 % size of the oversampled Fourier space (vectorized)
 No = size(W{1}{1}{1}, 1);
 
@@ -167,9 +164,6 @@ clear rg_y rg_x;
 [~, dims_overlap_ref, I_overlap, dims_overlap, status, offset, offsetL, ...
     offsetR, Ncoefs, temLIdxs, temRIdxs] = sdwt2_setup([M, N], I, dims, nlevel, wavelet, L);
 
-% id_dirac = find(ismember(wavelet, 'self'), 1);
-% dirac_present = ~isempty(id_dirac);
-
 rg_yo = split_range(Qy, M, d);
 rg_xo = split_range(Qx, N, d);
 Io = zeros(Q, 2);
@@ -183,6 +177,7 @@ for qx = 1:Qx
 end
 
 % total number of workers (Q: facets workers, K: data workers)
+%! -- TO BE CHECKED (to be created out of the solver to simplify?)
 numworkers = Q + K;
 cirrus_cluster = parcluster('SlurmProfile1');
 job_path= ['/lustre/home/sc004/pthouven/Faceted-Hyper-SARA/mnras_real/mnras_real_data_all/local_cluster_jobs/' num2str(param.ind) '/'];
@@ -196,6 +191,7 @@ if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
 end
 % maxNumCompThreads(param.num_workers);
 parpool(cirrus_cluster, numworkers, 'IdleTimeout', 500);
+%! --
 
 % define parallel constants (known by each worker)
 Qyp = parallel.pool.Constant(Qy);
@@ -300,10 +296,11 @@ for q = 1:Q
 end
 %%-- end initialisation auxiliary variables for sdwt2
 
-%Initializations.
+% Initializations.
 init_flag = isfile(init_file_name);
 if init_flag
     init_m = matfile(init_file_name);
+    fprintf('Resume from file %s\n\n', init_file_name)
 end
 
 if init_flag
@@ -312,9 +309,12 @@ if init_flag
     epsilon = init_m.epsilon;
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
-    % xsol = zeros(M,N,c);
-    xsol = param.xsol_Arwa;
-    param.xsol_Arwa = []; 
+    if flag_nonZeroPrimal
+        xsol = param.xsol_Arwa;
+        param.xsol_Arwa = []; 
+    else
+        xsol = zeros(M,N,c);
+    end
     fprintf('xsol initialized \n\n')
 end
 
@@ -334,9 +334,10 @@ else
     fprintf('g initialized \n\n')
 end
 
+%! -- TO BE CHECKED
 %% Reweighting parameters
-% sig_bar = param.sig_bar;
-% sig = param.sig;
+sig_bar = param.sig_bar;
+sig = param.sig;
 reweight_alpha = param.reweight_alpha;
 reweight_alphap = Composite();
 for q = 1:Q
@@ -344,6 +345,24 @@ for q = 1:Q
 end
 reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
 reweight_steps = param.reweight_steps;
+
+if isfield(param,'init_reweight_step_count')
+    reweight_step_count = param.init_reweight_step_count;
+    fprintf('reweight_step_count uploaded\n\n')
+else
+    reweight_step_count = 0;
+    fprintf('reweight_step_count initialized \n\n')
+end
+
+if isfield(param,'init_reweight_last_iter_step')
+    reweight_last_step_iter = param.init_reweight_last_iter_step;
+    fprintf('reweight_last_iter_step uploaded \n\n')
+else
+    reweight_last_step_iter = 0;
+    fprintf('reweight_last_iter_step initialized \n\n')
+end
+rw_counts = 1;
+%! --
 
 % Primal / prior nodes (l21/nuclear norm dual variables)
 v0_ = Composite();
@@ -367,24 +386,27 @@ else
     spmd
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
-            %! TO BE CHECKED
-            % [v0_, v1_, weights0_, weights1_] = initialize_dual_overlap(Ncoefs_q, max_dims-crop_nuclear, c, nlevelp.Value);
-
+            %!-- TO BE CHECKED
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+
+            %! weights initialized from initial primal variable (set to 1 if primal=0), dual variables to 0
+            [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
+            Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
+            offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
  
-            if init_option < 0
-                % weights initialized from initial primal variable, dual variables to 0
-                [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
-                Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
-                offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
-            else
-                % weights and dual variables initialized from initial primal variable
-                [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights2(x_overlap, ...
-                    Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
-            end
+            %! archive: to be deleted once above isntructions have been checked
+            % [v0_, v1_, weights0_, weights1_] = initialize_dual_overlap(Ncoefs_q, max_dims-crop_nuclear, c, nlevelp.Value);
+            % % weights initialized from initial primal variable, dual variables to 0
+            % [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
+            % Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
+            % offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
+            % % weights and dual variables initialized from initial primal variable
+            % [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights2(x_overlap, ...
+            %     Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+            %     offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
+            %!--
         end
     end
     fprintf('v0, v1, weigths0, weights1 initialized \n\n')
@@ -411,7 +433,6 @@ pUp = Composite();
 Wp = Composite();
 epsilonp = Composite();
 
-% [09/10/2019] fixing bug in initialization of norm_res (warm-restart)
 norm_res = Composite();
 if init_flag
     for k = 1:K
@@ -490,23 +511,6 @@ else
     fprintf('v2, proj, t_block initialized \n\n')
 end
 
-if isfield(param,'init_reweight_step_count')
-    reweight_step_count = param.init_reweight_step_count;
-    fprintf('reweight_step_count uploaded\n\n')
-else
-    reweight_step_count = 0;
-    fprintf('reweight_step_count initialized \n\n')
-end
-
-if isfield(param,'init_reweight_last_iter_step')
-    reweight_last_step_iter = param.init_reweight_last_iter_step;
-    fprintf('reweight_last_iter_step uploaded \n\n')
-else
-    reweight_last_step_iter = 0;
-    fprintf('reweight_last_iter_step initialized \n\n')
-end
-rw_counts = 1;
-
 %Step sizes computation
 %Step size for the dual variables
 sigma0 = 1.0/param.nu0;
@@ -549,8 +553,6 @@ else
     fprintf('rel_val, end_iter, t_facet and t_data initialized \n\n')
 end
 
-%! TO BE CHANGED
-%! check warm-start worked as expected
 if init_flag
     spmd
         if labindex > Qp.Value
@@ -734,7 +736,6 @@ for t = t_start : param.max_iter
             nuclear = nuclear + nuclear_norm{q};
         end
         %% --
-        
         % Log
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
@@ -745,7 +746,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criterion
-    %! TO BE CHECKED
+    %! -- TO BE CHECKED
     if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
             (norm_residual_check_C <= param.adapt_eps_tol_out*norm_epsilon_check_C) && ...
             (norm_residual_check_A <= param.adapt_eps_tol_out*norm_epsilon_check_A)
@@ -755,6 +756,7 @@ for t = t_start : param.max_iter
         flag = 1;
         break;
     end
+    %! --
     
     %% Update epsilons (in parallel)
     if param.use_adapt_eps && (t > param.adapt_eps_start) && (rel_val(t) < param.adapt_eps_rel_var)
@@ -768,22 +770,23 @@ for t = t_start : param.max_iter
     end
     
     %% Reweighting (in parallel)
-    %! TO BE CHECKED
+    %! -- TO BE CHECKED
     if (param.use_reweight_steps && param.step_flag && rel_val(t) < param.reweight_rel_obj && ...
         norm_residual_check_C <= param.adapt_eps_tol_out*norm_epsilon_check_C && ...
         norm_residual_check_A <= param.adapt_eps_tol_out*norm_epsilon_check_A && t > 300)
         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
         param.step_flag = 0;
     end
+    %! --
 
-    %! TO BE CHECKED
+    %! -- TO BE CHECKED
     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
             (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
             t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr && ...
             norm_residual_check_C <= param.adapt_eps_tol_out*norm_epsilon_check_C && ...
             norm_residual_check_A <= param.adapt_eps_tol_out*norm_epsilon_check_A) || ...
             (t - reweight_last_step_iter > 300)
-    %!----
+    %! --
     % if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
     %     (param.use_reweight_eps && rel_fval(t) < param.reweight_rel_obj && ...
     %     t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr && ...
@@ -799,17 +802,27 @@ for t = t_start : param.max_iter
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
-                [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
+                % [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
+                %     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
+                %     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
+                %     reweight_alphap, crop_l21, crop_nuclear, w);
+
+                %! -- TO BE CHECKED (using new reweighting with proper floor level)
+                [weights1_, weights0_] = update_weights_overlap2(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                    reweight_alphap, crop_l21, crop_nuclear, w);
-                    reweight_alphap = reweight_alpha_ffp.Value * reweight_alphap;
-            %else
-                % compute residual image on the data nodes
-            %    res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
+                    reweight_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+                if flag_homotopy
+                    reweight_alphap = max(reweight_alpha_ffp.Value*reweight_alphap, 1);
+                end
+                %! --
             end
         end
-        reweight_alpha = param.reweight_alpha_ff .* reweight_alpha; % on the master node
+        %! -- TO BE CHECKED
+        if flag_homotopy
+            reweight_alpha = max(reweight_alpha_ff * reweight_alpha, 1);
+        end
+        %! --
         param.reweight_alpha = reweight_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
@@ -847,7 +860,7 @@ for t = t_start : param.max_iter
                 m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
                 m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
             end
-            % compute residual image on the data nodes
+        % compute residual image on the data nodes
 	    xsol = m.xsol;
 	    spmd
 		if labindex > Qp.Value
@@ -981,7 +994,7 @@ for k = 1:K
     epsilonp{Q+k} = [];
     m.norm_res(k,1) = norm_res(Q+k);
 end
-epsilon = m.epsilon; % see if necessary
+epsilon = m.epsilon;
 m.xsol = xsol;
 norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
 
@@ -1035,8 +1048,5 @@ if (param.verbose > 0)
         fprintf('epsilon A = %e, residual A = %e\n', norm_epsilon_check_A,norm_residual_check_A);
     end
 end
-
-% end_iter = end_iter(end_iter > 0);
-% rel_val = rel_val(1:numel(end_iter));
 
 end
