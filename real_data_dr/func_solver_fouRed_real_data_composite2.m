@@ -1,4 +1,4 @@
-function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gamma0, gamma1, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag, jobpath,init_option)
+function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gamma0, gamma1, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag, jobpath, flag_nonZeroPrimal, flag_homotopy)
     % Global imaging solver for DR real data 
     %   version "composite", parcluster initialised outside the main solver
     %-------------------------------------------------------------------------%
@@ -280,7 +280,8 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
         
         reweight_step_count = -1;
         initfilename = ['./results/', name, '_dr_co_w_real_' ...
-                    num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_', num2str(param_HSI.gamma1), '_' num2str(param_HSI.gamma0), '_adpteps', num2str(param_HSI.use_adapt_eps), '_' num2str(reweight_step_count) '_' num2str(init_option) '.mat'];
+                    num2str(param_HSI.ind(1)), '_', num2str(param_HSI.ind(end)), '_', num2str(param_HSI.gamma1), '_' num2str(param_HSI.gamma0), '_adpteps', num2str(param_HSI.use_adapt_eps), '_' num2str(reweight_step_count) '_' ... 
+                    '_primal=' num2str(flag_nonZeroPrimal), '_homotopy=', num2str(flag_homotopy) '.mat'];
             
         % spectral tesselation (non-overlapping)
         epsilon_spmd = cell(Qc2, 1);
@@ -307,7 +308,6 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
         reduction_version, realdatablocks, fouRed_gamma, typeStr, Ny, Nx);
         
         save(['results/results_', name, '_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-            '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma1), '_gamma0=', num2str(gamma0), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(adapt_eps_flag),'_initoption', num2str(init_option),'.mat'], '-v7.3', ...
+            '_Qc=', num2str(Qc2), '_gamma=', num2str(gamma1), '_gamma0=', num2str(gamma0), '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(adapt_eps_flag),'_primal=' num2str(flag_nonZeroPrimal), '_homotopy=', num2str(flag_homotopy),'.mat'], '-v7.3', ...
             'xsol', 'param_HSI', 't', 'rel_fval', 'nuclear', 'l21', 'norm_res_out', 'end_iter');
     end
-    
