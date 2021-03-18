@@ -172,11 +172,6 @@ for qx = 1:Qx
 end
 clear rg_y rg_x;
 
-% instantiate auxiliary variables for faceted wavelet transforms involved
-% in SARA (sdwt2)
-[~, dims_overlap_ref, I_overlap, dims_overlap, status, offset, offsetL, ...
-    offsetR, Ncoefs, temLIdxs, temRIdxs] = sdwt2_setup([M, N], I, dims, nlevel, wavelet, L);
-
 rg_yo = split_range(Qy, M, d);
 rg_xo = split_range(Qx, N, d);
 Io = zeros(Q, 2);
@@ -188,7 +183,12 @@ for qx = 1:Qx
         dims_o(q, :) = [rg_yo(qy,2)-rg_yo(qy,1)+1, rg_xo(qx,2)-rg_xo(qx,1)+1];
     end
 end
+clear rg_y rg_x rg_yo rg_xo;
 
+% instantiate auxiliary variables for faceted wavelet transforms involved
+% in SARA (sdwt2)
+[~, dims_overlap_ref, I_overlap, dims_overlap, status, offset, offsetL, ...
+    offsetR, Ncoefs, temLIdxs, temRIdxs] = sdwt2_setup([M, N], I, dims, nlevel, wavelet, L);
 % define parallel constants (known by each worker)
 Qyp = parallel.pool.Constant(Qy);
 Qxp = parallel.pool.Constant(Qx);
@@ -214,6 +214,7 @@ if init_flag
     fprintf('Resume from file %s\n\n', init_file_name)
 end
 
+%! -- TO BE CHECKED (primal initialization)
 if init_flag
     xsol = init_m.xsol;
     param = init_m.param;
@@ -222,12 +223,15 @@ if init_flag
 else
     if flag_primal
         xsol = param.initsol;
-        param.initsol = [];
     else
         xsol = zeros(M,N,c);
     end
+    if isfield(param, 'initsol')
+        param.initsol = [];
+    end
     fprintf('xsol initialized \n\n')
 end
+%! --
 
 g_q = Composite();
 xsol_q = Composite();
@@ -293,7 +297,7 @@ else
     spmd
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
-            %! TO BE CHECKED
+            %! -- TO BE CHECKED
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
@@ -331,7 +335,7 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 
 xhat_i = Composite();
 epsilonp = Composite();
-l2_upper_bound = Composite();
+% l2_upper_bound = Composite();
 
 if init_flag
     spmd
@@ -379,11 +383,10 @@ end
 for k = 1:K
     epsilonp{Q+k} = epsilon{k};
     epsilon{k} = [];
-    l2_upper_bound{Q+k} = param.l2_upper_bound{k};
+    % % l2_upper_bound{Q+k} = param.l2_upper_bound{k};
 end
 
 clear epsilon
-
 
 % Step size primal
 tau = 0.33;
@@ -655,7 +658,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criteria
-    %! TO BE UPDATED (should rely on relative variation between consecutive reweights, not ppd iterations !)
+    % TODO: TO BE UPDATED (later: should rely on relative variation between consecutive reweights)
     if t>1 && reweight_step_count >= param.total_reweights && (rel_val(t) < param.rel_val && ...
         (norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c) && ...
         (norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a) || ...
@@ -666,17 +669,18 @@ for t = t_start : param.max_iter
     %! --
     
     %% Update epsilons (in parallel)
-    if param.use_adapt_eps && t > param.adapt_eps_start && (rel_val(t) < param.adapt_eps_rel_var)
+    if param.use_adapt_eps && (t > param.adapt_eps_start) && (rel_val(t) < param.adapt_eps_rel_var)
         spmd
             if labindex > Qp.Value
                 [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_val(t), norm_res, ...
                     adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
-                    adapt_eps_change_percentage.Value, l2_upper_bound);
+                    adapt_eps_change_percentage.Value); %,l2_upper_bound
             end
         end
     end
     
     %% Reweighting (in parallel)
+    %! -- TO BE CHECKED
 %     if (param.step_flag && t>500) % rel_fval(t) < param.reweight_rel_var)
 %         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
 %         param.step_flag = 0;
@@ -686,6 +690,7 @@ for t = t_start : param.max_iter
     (norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a)) || ...
     (reweight_step_count ~= 0 && (t - reweight_last_step_iter) >= param.ppd_max_iter) ||...
     (reweight_step_count == 0 && (t - reweight_last_step_iter) >= 5000));
+    %! --
         
     if is_converged_ppd && (reweight_step_count < param.total_reweights) % corresponds to the PPD stopping criterion
 %     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...

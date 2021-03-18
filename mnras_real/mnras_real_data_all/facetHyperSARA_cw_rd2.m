@@ -218,6 +218,7 @@ if init_flag
     fprintf('Resume from file %s\n\n', init_file_name)
 end
 
+%! -- TO BE CHECKED (primal initialization)
 if init_flag
     xsol = init_m.xsol;
     param = init_m.param;
@@ -225,13 +226,16 @@ if init_flag
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
     if flag_primal
-        xsol = param.xsol_Arwa;
-        param.xsol_Arwa = []; 
+        xsol = param.xsol_Arwa; 
     else
         xsol = zeros(M,N,c);
     end
+    if isfield(param, 'xsol_Arwa')
+        param.xsol_Arwa = [];
+    end
     fprintf('xsol initialized \n\n')
 end
+%! --
 
 g_q = Composite();
 xsol_q = Composite();
@@ -493,9 +497,9 @@ if init_flag
     spmd
         if labindex <= Qp.Value
             % compute values for the prior terms
-            % x_overlap = zeros([max_dims, size(xsol_q, 3)]);
-            % x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-            % x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
+            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+            x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
                 offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                 offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
@@ -529,7 +533,7 @@ for t = t_start : param.max_iter
     start_iter = tic;
     
     spmd
-        if labindex <= Q
+        if labindex <= Qp.Value
             % primal/prior nodes (1:Q)
             
             % update primal variable
@@ -662,7 +666,7 @@ for t = t_start : param.max_iter
     end
     
     %% Global stopping criterion
-    %! TO BE UPDATED (should rely on relative variation between consecutive reweights, not ppd iterations !)
+    % TODO: TO BE UPDATED (later: should rely on relative variation between consecutive reweights)
     if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
             (norm_residual_check_C <= param.adapt_eps_tol_out*norm_epsilon_check_C) && ...
             (norm_residual_check_A <= param.adapt_eps_tol_out*norm_epsilon_check_A)
