@@ -193,12 +193,14 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
     wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; % wavelet basis to be used
     filter_length = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
 
+    %! -- TO BE CHECKED
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
     [sig, sig_bar, max_psf, ~, ~, ~] = ...
     compute_reweighting_lower_bound_dr(yTp, Wp, Tp, Hp, Ap, Atp, Ny, Nx, ...
     nChannels, wlt_basis, filter_length, nlevel, Q, cell_c_chunks);
-    
+    %! --
+
     %% L21 + Nuclear (facet-based version)
     if flag_algo == 1
         disp('Split L21 + Nuclear + wavelets')    
@@ -220,7 +222,7 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
         param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
         param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
         
-        %! TO BE CHECKED: see where reweight_alpha needs to start from        
+        %! -- TO BE CHECKED: see where reweight_alpha needs to start from        
         if flag_homotopy
             param_HSI.reweight_alpha = 10;
             param_HSI.reweight_alpha_ff = (1/param_HSI.reweight_alpha)^(1/6); % reach the floor level in 6 reweights (see if a different number would be appropriate)
@@ -230,6 +232,7 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
             param_HSI.reweight_alpha = 1;
             param_HSI.reweight_alpha_ff = 1;
         end
+        %! --
 
         param_HSI.total_reweights = 50; % -1 if you don't want reweighting
         param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised

@@ -83,7 +83,7 @@ addpath ../../src_mnras/
 addpath ../../src_mnras/spmd
 addpath ../../src_mnras/spmd/weighted
 
-%! TO BE CHANGED (paths, flags, ...)
+%! TO BE UPDATED IF NEEDED (paths, flags, ...)
 % setting paths to results and reference image cube
 generate_eps_nnls = false;
 save_data = false; 
@@ -130,7 +130,6 @@ param_block_structure.fpartition = [icdf('norm', 0.25, 0, pi/4), 0, icdf('norm',
 param_block_structure.use_manual_partitioning = 1;
 
 %% Generate/load real data
-%! TO BE CHECKED / CHANGED
 %if flag_extractData
     % visibility_file_name = '/home/h019/aa16/S-band/CYG-S.mat';
     visibility_file_name = {'5','7'};
@@ -227,13 +226,11 @@ param_block_structure.use_manual_partitioning = 1;
 %    load('CYG_data.mat');
 %    [A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
 %end
-
 ch = (1 : size(yb,2));
 nChannels = size(yb,2)
-%!-----------
 
 %% Setup name of results file
-%! TO BE CHANGED
+%! TO BE CHANGED if needed
 data_name_function = @(nchannels) strcat('y_cygA_Nx=',num2str(Nx),'_Ny=',num2str(Ny), '_L=', num2str(nchannels),'.mat');
 
 results_name_function = @(nchannels) strcat('Final_fhs_', algo_version,'_',window_type,'_Nx=',num2str(Nx), '_Ny=',num2str(Ny), ...
@@ -258,10 +255,7 @@ data_name = data_name_function(nChannels);
 results_name = results_name_function(nChannels);
 %!-----------
 
-
 %% Compute operator norm
-%! TO BE CHANGED (paths, ...) add computation of the operator norm w/o 
-%! preconditioning?
 if flag_computeOperatorNorm
     % Compute full measurement operator spectral norm
     F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
@@ -275,7 +269,6 @@ else
     %    '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')));
     load(['Anorm_ind=' num2str(ind) '.mat']); 
 end
-%!----------
 
 %% Generate initial eps_b by performing imaging with NNLS on each data block separately
 if generate_eps_nnls
@@ -293,26 +286,25 @@ if generate_eps_nnls
             [~,eps_b{i}{j}] = fb_nnls_blocks(yb{i}{j}, A, At, G{i}{j}, W{i}{j}, param_nnls);
         end
     end
-    %! TO BE UPDATED
     save(['eps_ind=' num2str(ind) '.mat'],'-v7.3', 'eps_b');
-    %! TO BE UPDATED
-    %load(['eps_ind=' num2str(ind) '.mat']);
 end
 
 %% Solver
 if flag_solveMinimization
     % Definition of the SARA dictionary
     nlevel = 4; % depth of the wavelet decompositions
-    %! always specify Dirac basis ('self') in last position if used in the
-    %! SARA dictionary 
+    % always specify Dirac basis ('self') in last position if used in the
+    % SARA dictionary 
     wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; 
     filter_length = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
 
+    %! -- TO BE CHECKED
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
     [sig, sig_bar, max_psf, ~, ~, ~] = compute_reweighting_lower_bound(yb, W, G, A, At, Ny, Nx, oy, ox, ...
     nChannels, wlt_basis, filter_length, nlevel);
     % mu = nuclear_norm/l21_norm;
+    %! --
     
     %% HSI parameter structure sent to the  HSI algorithm
     param_HSI.verbose = 2; % print log or not
@@ -331,7 +323,7 @@ if flag_solveMinimization
     param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
-    %! TO BE CHECKED: see where reweight_alpha needs to start from
+    %! -- TO BE CHECKED: see where reweight_alpha needs to start from
     if flag_homotopy
         param_HSI.reweight_alpha = 10;
         param_HSI.reweight_alpha_ff = (1/param_HSI.reweight_alpha)^(1/6); % reach the floor level in 6 reweights (see if a different number would be appropriate)
@@ -341,6 +333,7 @@ if flag_solveMinimization
         param_HSI.reweight_alpha = 1;
         param_HSI.reweight_alpha_ff = 1;
     end
+    %! --
     param_HSI.total_reweights = nReweights; % -1 if you don't want reweighting
     param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
     param_HSI.sig = sig; % estimate of the noise level in SARA space
@@ -368,7 +361,7 @@ if flag_solveMinimization
     disp('Faceted HyperSARA')
     disp('-----------------------------------------')
 
-    %! spectral tesselation (non-overlapping)
+    % spectral tesselation (non-overlapping)
     rg_c = split_range(ncores_data, ch(end));
     cell_c_chunks = cell(ncores_data, 1);
     y_spmd = cell(ncores_data, 1);

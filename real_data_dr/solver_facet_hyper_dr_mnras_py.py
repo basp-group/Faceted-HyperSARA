@@ -14,12 +14,16 @@ gamma = 5e-6
 subInd = "[1:16]"
 fouRed_gamma = 15
 adpteps = 0
-initoption = 0
+primal = 0
+homotopy = 0
 
 # qsub_command = "sbatch -J solver_facet_hyper_dr_mnras_gamma0{5}_gamma{6} --export datadir='{0}',name='{1}',Qx={2},Qy={3},Qc={4},gamma0={5},gamma={6},subInd={7},fouRed_gamma={8},adpteps={9} solver_facet_hyper_dr_composite_mnras.slurm".format(datadir, name, Qx, Qy, Qc, gamma0, gamma, subInd, fouRed_gamma, adpteps)
 
+# mnras current option
+# qsub_command = "sbatch -J solver_facet_hyper_dr_mnras_gamma0{5}_gamma{6} --export datadir='{0}',name='{1}',Qx={2},Qy={3},Qc={4},gamma0={5},gamma={6},subInd={7},fouRed_gamma={8},adpteps={9},initoption={10} solver_facet_hyper_dr_composite_mnras.slurm".format(datadir, name, Qx, Qy, Qc, gamma0, gamma, subInd, fouRed_gamma, adpteps,initoption)
+
 # new option
-qsub_command = "sbatch -J solver_facet_hyper_dr_mnras_gamma0{5}_gamma{6} --export datadir='{0}',name='{1}',Qx={2},Qy={3},Qc={4},gamma0={5},gamma={6},subInd={7},fouRed_gamma={8},adpteps={9},initoption={10} solver_facet_hyper_dr_composite_mnras.slurm".format(datadir, name, Qx, Qy, Qc, gamma0, gamma, subInd, fouRed_gamma, adpteps,initoption)
+qsub_command = "sbatch -J solver_facet_hyper_dr_mnras_gamma0{5}_gamma{6} --export datadir='{0}',name='{1}',Qx={2},Qy={3},Qc={4},gamma0={5},gamma={6},subInd={7},fouRed_gamma={8},adpteps={9},primal={10},homotopy={11} solver_facet_hyper_dr_composite_mnras.slurm".format(datadir, name, Qx, Qy, Qc, gamma0, gamma, subInd, fouRed_gamma, adpteps, primal, homotopy)
 
 print(qsub_command) # Uncomment this line when testing to view the qsub command
 
