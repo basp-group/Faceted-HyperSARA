@@ -230,9 +230,6 @@ else
     else
         xsol = zeros(M,N,c);
     end
-    if isfield(param, 'xsol_Arwa')
-        param.xsol_Arwa = [];
-    end
     fprintf('xsol initialized \n\n')
 end
 %! --
@@ -246,8 +243,14 @@ if init_flag
     end
     fprintf('g uploaded \n\n')
 else
+    if isfield(param, 'xsol_Arwa')
+        xweights = param.xsol_Arwa;
+        param.xsol_Arwa = [];
+    end
+    xw_q = Composite();
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        xw_q{q} = xweights(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
         g_q{q} = zeros([dims(q, :), c]);
     end
     fprintf('g initialized \n\n')
@@ -306,8 +309,8 @@ else
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
             %!-- TO BE CHECKED
-            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
-            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+            x_overlap = zeros([max_dims, size(xw_q, 3)]);
+            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xw_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
             %! weights initialized from initial primal variable (set to 1 if primal=0), dual variables to 0

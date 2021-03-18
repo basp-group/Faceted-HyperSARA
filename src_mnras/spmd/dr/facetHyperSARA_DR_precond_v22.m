@@ -170,7 +170,6 @@ for qx = 1:Qx
         dims(q, :) = [rg_y(qy,2)-rg_y(qy,1)+1, rg_x(qx,2)-rg_x(qx,1)+1];
     end
 end
-clear rg_y rg_x;
 
 rg_yo = split_range(Qy, M, d);
 rg_xo = split_range(Qx, N, d);
@@ -226,9 +225,6 @@ else
     else
         xsol = zeros(M,N,c);
     end
-    if isfield(param, 'initsol')
-        param.initsol = [];
-    end
     fprintf('xsol initialized \n\n')
 end
 %! --
@@ -240,14 +236,18 @@ if init_flag
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
         g_q{q} = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
     end
-    clear xsol
     fprintf('g uploaded \n\n')
 else
+    if isfield(param, 'initsol')
+        xweights = param.initsol;
+        param.initsol = [];
+    end
+    xw_q = Composite();
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
+        xw_q{q} = xweights(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
         g_q{q} = zeros([dims(q, :), c]);
     end
-    clear xsol
     fprintf('g initialized \n\n')
 end
 
@@ -298,8 +298,8 @@ else
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
             %! -- TO BE CHECKED
-            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
-            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+            x_overlap = zeros([max_dims, size(xw_q, 3)]);
+            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xw_q;
             x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
  
             %! weights initialized from initial primal variable (set to 1 if primal=0), dual variables to 0
