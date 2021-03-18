@@ -332,8 +332,15 @@ if flag_solveMinimization
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
     %! TO BE CHECKED: see where reweight_alpha needs to start from
-    param_HSI.reweight_alpha = (0.8)^alpha; 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
-    param_HSI.reweight_alpha_ff = 0.8;
+    if flag_homotopy
+        param_HSI.reweight_alpha = 10;
+        param_HSI.reweight_alpha_ff = (1/param_HSI.reweight_alpha)^(1/6); % reach the floor level in 6 reweights (see if a different number would be appropriate)
+        % param_HSI.reweight_alpha_ff = 0.8;
+        % param_HSI.reweight_alpha = (0.8)^alpha; % 1 % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+    else
+        param_HSI.reweight_alpha = 1;
+        param_HSI.reweight_alpha_ff = 1;
+    end
     param_HSI.total_reweights = nReweights; % -1 if you don't want reweighting
     param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
     param_HSI.sig = sig; % estimate of the noise level in SARA space

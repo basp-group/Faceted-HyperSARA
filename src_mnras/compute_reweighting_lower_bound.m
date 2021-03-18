@@ -21,36 +21,17 @@ end
 [~,S0,~] = svd(reshape(dirty_image, [N, nChannels]),'econ');
 nuclear_norm = sum(abs(diag(S0)));
 
-% TODO: do it directly in parallel with faceted SARA?
+% set-up global SARA dictionary
 dwtmode('zpd')
 [~, Psitw] = op_sp_wlt_basis(wavelet_basis, nlevel, Ny, Nx);
 [~, s] = n_wavelet_coefficients(filters_length(1:end-1), [Ny, Nx], 'zpd', nlevel);
 s = s+N; % total number of SARA coefficients (adding number of elements from Dirac basis)
 Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,s);
-
-%! the number of elements reported below is only valid for the periodic
-%('per') boundary condition (implicitly assumed to be used in HS_forward_sparsity)
-% TODO: enable other different boundary conditions
 l21_norm = sum(sqrt(sum(Psit_full(dirty_image).^2, 2))); 
 
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
 % SARA space) involved in the reweighting scheme
-B = zeros(N, nChannels);
-dirac = zeros(Ny, Nx);
-dirac(floor([Ny, Nx]/2) + 1) = 1;
-AD = A(dirac);
-max_psf = zeros(nChannels, 1);
-for l = 1:nChannels
-    temp = zeros(No, 1);
-    z = zeros(No, 1);
-    for b = 1:numel(y{l})
-        noise = (randn(size(y{l}{b})) + 1i*randn(size(y{l}{b})))/sqrt(2);
-        temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * noise;
-        z(W{l}{b}) = z(W{l}{b}) + G{l}{b}' * (G{l}{b} * AD(W{l}{b}));  
-    end
-    B(:,l) = reshape(At(temp),[N,1]);
-    max_psf(l) = max(reshape(At(z),[N,1]));     
-end
+[B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny);
 B = B./reshape(max_psf, [1, nChannels]);
 [~,S0,~] = svd(B,'econ');
 sig = std(diag(S0));

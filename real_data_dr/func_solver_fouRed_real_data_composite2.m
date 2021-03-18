@@ -87,8 +87,8 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
     tau_ch = 0.5;
     nChannels1 = tau_ch*nChannels;
     nChannels2 = (1-tau_ch)*nChannels;
-    rg_c1 = split_range(Qc2, nChannels1); % to be modified % only for data reduction
-    rg_c2 = split_range(Qc2, nChannels2); % to be modified % only for data reduction
+    rg_c1 = split_range(Qc2, nChannels1); % only for data reduction
+    rg_c2 = split_range(Qc2, nChannels2); % only for data reduction
     cell_c_chunks = cell(Qc2, 1);
     nchannel_per_worker = zeros(Qc2, 1);
     
@@ -127,8 +127,6 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
             for i = 1: ch_len
                 ch_ind = chunk(i);
                 fprintf('\nChannel number: %d\n', ch(ch_ind))
-            %     DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
-            %     num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(i)), '.mat'];
                 DRfilename = [datadir, '/CYG_DR_cal_', num2str(realdatablocks), 'b_ind', num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),'=', num2str(ch(ch_ind)), '.mat'];
                 fprintf('Read dimensionality reduction file: %s\n', DRfilename)
                 tmp = load(DRfilename, 'H', 'W', 'yT', 'T', 'aW', 'Wm');
@@ -179,14 +177,6 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
     
     if compute_Anorm
         fprintf('\nCompute the operator norm: \n')
-    %     spmd
-    %         if labindex > Q
-    %             if reduction_version == 2
-    %                 Fp = afclean( @(x) HS_operatorGtPhi(x, Hp, Wp, Ap, Tp, aWp));
-    %                 Ftp = afclean( @(y) HS_operatorGtPhi_t(y, Hp, Wp, Atp, Tp, aWp));
-    %             end
-    %         end
-    %     end
         Anorm = pow_method_op_composite(Hp, Wp, Ap, Atp, Tp, aWp, Q, Qc2, nchannel_per_worker, [Ny Nx]);
         save(Anormfile,'-v7.3', 'Anorm');
     else
@@ -201,35 +191,13 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
     %% Sparsity operator definition
     nlevel = 4; % wavelet level
     wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; % wavelet basis to be used
-    L = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
-    
-    if flag_algo < 2
-        
-        [Psi1, Psit1] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-        P = length(Psi1);
-    
-        for k = 1 : P
-            f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
-            f = sprintf('%s%i},Ny,Nx);', f,k);
-            Psi{k} = eval(f);
-    
-            b(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
-    
-            ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
-            Psit{k} = eval(ft);
-        end
-    
-        %% Full sparsity operator
-        [Psiw, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-        bb = size(Psitw(zeros(Ny,Nx,1)),1);
-    
-        Psi_full = @(x_wave) HS_forward_sparsity(x_wave,Psiw,Ny,Nx);
-        Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,bb);
-        
-    % elseif flag_algo == 2
-    %     [Psi, Psit] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-    %     [Psiw, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);    
-    end
+    filter_length = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
+
+    % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
+    % SARA space) involved in the reweighting scheme
+    [sig, sig_bar, max_psf, ~, ~, ~] = ...
+    compute_reweighting_lower_bound_dr(yTp, Wp, Tp, Hp, Ap, Atp, Ny, Nx, ...
+    nChannels, wlt_basis, filter_length, nlevel, Q, cell_c_chunks);
     
     %% L21 + Nuclear (facet-based version)
     if flag_algo == 1
@@ -251,12 +219,24 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
         param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
         param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
         param_HSI.adapt_eps_change_percentage = 0.5*(sqrt(5)-1); % the weight of the update w.r.t the l2 norm of the residual data
-    
-        param_HSI.reweight_alpha = (0.8)^10; %1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
-        param_HSI.reweight_alpha_ff = 0.8;
+        
+        %! TO BE CHECKED: see where reweight_alpha needs to start from        
+        if flag_homotopy
+            param_HSI.reweight_alpha = 10;
+            param_HSI.reweight_alpha_ff = (1/param_HSI.reweight_alpha)^(1/6); % reach the floor level in 6 reweights (see if a different number would be appropriate)
+            % param_HSI.reweight_alpha = (0.8)^10; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+            % param_HSI.reweight_alpha_ff = 0.8;
+        else
+            param_HSI.reweight_alpha = 1;
+            param_HSI.reweight_alpha_ff = 1;
+        end
+
         param_HSI.total_reweights = 50; % -1 if you don't want reweighting
         param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
-    
+        param_HSI.sig = sig; % estimate of the noise level in SARA space
+        param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
+        param_HSI.max_psf = max_psf;
+
         param_HSI.use_reweight_steps = 0; % reweighting by fixed steps
         param_HSI.reweight_step_size = 300; % reweighting step size
         param_HSI.reweight_steps = [5000: param_HSI.reweight_step_size :10000];
@@ -304,7 +284,7 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
     
         [xsol,param_HSI,t,rel_fval,nuclear,l21,norm_res_out,end_iter] = ...
         facetHyperSARA_DR_precond_v2(yTp, epsilon_spmd, Ap, Atp, Hp, Wp, aWp, Tp, Wmp, param_HSI, ...
-        Qx, Qy, Qc2, wlt_basis, L, nlevel, cell_c_chunks, nChannels, d, window_type, initfilename, name, ...
+        Qx, Qy, Qc2, wlt_basis, filter_length, nlevel, cell_c_chunks, nChannels, d, window_type, initfilename, name, ...
         reduction_version, realdatablocks, fouRed_gamma, typeStr, Ny, Nx);
         
         save(['results/results_', name, '_', num2str(ch(1)), '_', num2str(ch(end)), '_', num2str(algo_version), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...

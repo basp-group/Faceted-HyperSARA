@@ -31,7 +31,8 @@ crop_l21 = Composite();
 
 Q = Qx*Qy;
 
-% initialize composite variables and constants
+% initialize composite variables and constants for the faceted prior (l21
+% and nuclear norms)
 for q = 1:Q
     Iq{q} = I(q, :);
     dims_q{q} = dims(q, :);
@@ -71,6 +72,7 @@ for q = 1:Q
     dims_oq{q} = dims_o(q, :);
 end
 
+% define apodization window for the faceted nuclear norm prior
 w = Composite();
 for q = 1:Q
     [qy, qx] = ind2sub([Qy, Qx], q);
