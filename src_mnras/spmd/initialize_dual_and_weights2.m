@@ -1,6 +1,6 @@
 function [v0, v1, weights0, weights1] = initialize_dual_and_weights2(x_overlap, ...
     I, offset, status, nlevel, wavelet, Ncoefs, dims_overlap_ref, ...
-    offsetL, offsetR, reweight_alpha, crop_l21, crop_nuclear, w)
+    offsetL, offsetR, reweight_alpha, crop_l21, crop_nuclear, w, sig, sig_bar)
 % Initialize dual variables (constant overlap). 
 % ![DOCUMENTATION TO BE UPDATED]
 %
@@ -45,9 +45,9 @@ v0 = w.*x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :);
 sol = reshape(v0, [numel(v0)/size(v0, 3), size(x_overlap, 3)]);
 [~,S00,~] = svd(sol,'econ');
 d0 = abs(diag(S00));
-% upsilon_bar = sig_bar*reweight_alpha;
-% weights0 = upsilon_bar ./ (upsilon_bar + d0);
-weights0 = reweight_alpha ./ (reweight_alpha + d0);
+upsilon_bar = sig_bar*reweight_alpha;
+weights0 = upsilon_bar ./ (upsilon_bar + d0);
+% weights0 = reweight_alpha ./ (reweight_alpha + d0);
 
 % l21 norm
 zerosNum = dims_overlap_ref + offsetL + offsetR; % offset for the zero-padding
@@ -59,9 +59,9 @@ for l = 1:size(x_, 3)
     v1(:,l) = sdwt2_sara_faceting(x_(:, :, l), I, offset, status, nlevel, wavelet, Ncoefs);
 end  
 d1 = sqrt(sum(v1.^2,2));
-% upsilon = sig*reweight_alpha;
-% weights1 = upsilon ./ (upsilon + d1);
-weights1 = reweight_alpha ./ (reweight_alpha + d1);
+upsilon = sig*reweight_alpha;
+weights1 = upsilon ./ (upsilon + d1);
+% weights1 = reweight_alpha ./ (reweight_alpha + d1);
 % weights1 = ones(sz, 1);
 
 end

@@ -1,7 +1,7 @@
 function [xsol,param,t,rel_val,nuclear,l21,end_iter] = ...
     facetHyperSARA_DR_precond_v22(yp, epsilon, Ap, Atp, Hp, Wp, pUp, Tp, Wmp, param, ...
     Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name, name, ...
-    reduction_version, realdatablocks, fouRed_gamma, typeStr, M, N, flag_nonZeroPrimal, flag_homotopy)
+    reduction_version, realdatablocks, fouRed_gamma, typeStr, M, N, flag_primal, flag_homotopy)
 %facetHyperSARA_cst_overlap_weighted_dr_real_data: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -220,7 +220,7 @@ if init_flag
     epsilon = init_m.epsilon;
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
-    if flag_nonZeroPrimal
+    if flag_primal
         xsol = param.initsol;
         param.initsol = [];
     else
@@ -301,7 +301,7 @@ else
             %! weights initialized from initial primal variable (set to 1 if primal=0), dual variables to 0
             [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
             Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
-            offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
+            offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
 
             %! archive: to be deleted once above isntructions have been checked
             % [v0_, v1_, weights0_, weights1_] = initialize_dual_overlap(Ncoefs_q, max_dims-crop_nuclear, c, nlevelp.Value);

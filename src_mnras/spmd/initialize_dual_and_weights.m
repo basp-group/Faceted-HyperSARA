@@ -1,6 +1,6 @@
 function [v0, v1, weights0, weights1] = initialize_dual_and_weights(x_overlap, ...
     I, offset, status, nlevel, wavelet, Ncoefs, dims_o, c, dims_overlap_ref, ...
-    offsetL, offsetR, reweight_alpha, crop_l21, crop_nuclear, w)
+    offsetL, offsetR, reweight_alpha, crop_l21, crop_nuclear, w, sig, sig_bar)
 % Initialize dual variables (constant overlap). 
 % ![DOCUMENTATION TO BE UPDATED]
 %
@@ -45,16 +45,15 @@ flag_zero = (norm(x_overlap(:)) == 0);
 
 % nuclear norm
 v0 = zeros(prod(dims_o), c);
-sol = w.*x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :);
 if flag_zero
     weights0 = ones(min(prod(dims_o), c), 1);
 else
+    sol = w.*x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :);
     sol = reshape(sol, [numel(sol)/size(sol, 3), size(x_overlap, 3)]);
     [~,S00,~] = svd(sol,'econ');
     d0 = abs(diag(S00));
-    % upsilon_bar = sig_bar*reweight_alpha;
-    % weights0 = upsilon_bar ./ (upsilon_bar + d0);
-    weights0 = reweight_alpha ./ (reweight_alpha + d0);
+    upsilon_bar = sig_bar*reweight_alpha;
+    weights0 = upsilon_bar ./ (upsilon_bar + d0);
 end
 
 % l21 norm
@@ -70,9 +69,8 @@ else
         z(:, l) = sdwt2_sara_faceting(x_(:, :, l), I, offset, status, nlevel, wavelet, Ncoefs);
     end
     d1 = sqrt(sum(z.^2,2));
-    % upsilon = sig*reweight_alpha;
-    % weights1 = upsilon ./ (upsilon + d1);
-    weights1 = reweight_alpha ./ (reweight_alpha + d1);
+    upsilon = sig*reweight_alpha;
+    weights1 = upsilon ./ (upsilon + d1);
 end
 
 end
