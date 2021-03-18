@@ -351,57 +351,12 @@ if flag_solveMinimization
     %! SARA dictionary 
     wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; 
     L = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
-    
-    % estimate mu: ratio between nuclear and l21 norm priors applied to
-    % the dirty image
-    dirty_image = zeros([Ny, Nx, nChannels]);
-    for l = 1:nChannels
-        temp = zeros(oy*Ny*ox*Nx, 1);
-        for b = 1:numel(G{l})
-            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * y{l}{b};
-        end
-        dirty_image(:,:,l) = At(temp);
-    end
-    [~,S0,~] = svd(reshape(dirty_image, [Nx*Ny, nChannels]),'econ');
-    nuclear_norm = sum(abs(diag(S0)));
-    
-    %TODO: do it directly in parallel with faceted SARA
-    dwtmode('zpd')
-    [~, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-    [~, s] = n_wavelet_coefficients(L(1:end-1), [Ny, Nx], 'zpd', nlevel);
-    s = s+N; % total number of SARA coefficients
-    Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,s);
-    %! the number of elements reported below is only valid for the periodic
-    %('per') boundary condition (implicitly assumed to be used in HS_forward_sparsity)
-    % TODO: enable other different boundary conditions
-    l21_norm = sum(sqrt(sum(Psit_full(dirty_image).^2, 2))); 
-    mu = nuclear_norm/l21_norm;
-    clear dirty_image l21_norm nuclear_norm
-    
+
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
-    B = zeros(size(X0));
-    id_center = floor([Ny, Nx]/2) + 1;
-    dirac = zeros(Ny, Nx);
-    dirac(id_center) = 1;
-    AD = A(dirac);
-    be = zeros(nChannels, 1);
-    for l = 1:nChannels
-        temp = zeros(oy*Ny*ox*Nx, 1);
-        z = zeros(oy*Ny*ox*Nx, 1);
-        for b = 1:numel(y{l})
-            noise = (randn(size(y{l}{b})) + 1i*randn(size(y{l}{b})))/sqrt(2);
-            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * noise;
-            z(W{l}{b}) = z(W{l}{b}) + G{l}{b}' * (G{l}{b} * AD(W{l}{b}));  
-        end
-        B(:,l) = reshape(At(temp),[Ny*Nx,1]);
-        be(l) = max(reshape(At(z),[Ny*Nx,1]));     
-    end
-    B = B/max(be);
-    [~ ,S0,~] = svd(B,'econ');
-    sig = std(diag(S0));
-    sig_bar = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
-    clear B S0 be z temp AD dirac id_center Psitw Psit_full Psi1 Psit1
+    [sig, sig_bar, max_psf, ~, ~, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
+    nChannels, wlt_basis, L, nlevel);
+    % mu = nuclear_norm/l21_norm;
     
     %% HSI parameter structure sent to the  HSI algorithm
     param_HSI.verbose = 2; % print log or not

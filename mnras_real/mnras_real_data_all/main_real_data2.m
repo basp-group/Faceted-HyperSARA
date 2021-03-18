@@ -307,6 +307,12 @@ if flag_solveMinimization
     %! SARA dictionary 
     wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; 
     filter_length = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
+
+    % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
+    % SARA space) involved in the reweighting scheme
+    [sig, sig_bar, max_psf, ~, ~, ~] = compute_reweighting_lower_bound(yb, W, G, A, At, Ny, Nx, oy, ox, ...
+    nChannels, wlt_basis, filter_length, nlevel);
+    % mu = nuclear_norm/l21_norm;
     
     %% HSI parameter structure sent to the  HSI algorithm
     param_HSI.verbose = 2; % print log or not
@@ -325,12 +331,14 @@ if flag_solveMinimization
     param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
+    %! TO BE CHECKED: see where reweight_alpha needs to start from
     param_HSI.reweight_alpha = (0.8)^alpha; 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     param_HSI.reweight_alpha_ff = 0.8;
     param_HSI.total_reweights = nReweights; % -1 if you don't want reweighting
     param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
-    % param_HSI.sig = sig; % estimate of the noise level in SARA space
-    % param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
+    param_HSI.sig = sig; % estimate of the noise level in SARA space
+    param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
+    param_HSI.max_psf = max_psf;
 
     param_HSI.use_reweight_steps = 0; % reweighting by fixed steps
     param_HSI.reweight_step_size = 300; % reweighting step size
