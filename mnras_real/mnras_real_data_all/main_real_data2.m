@@ -1,7 +1,7 @@
 function main_real_data2(Qx, Qy, Qc, ...
     algo_version, window_type, ncores_data, ind, overlap_size, ...
     nReweights, extract_raw_data, flag_computeOperatorNorm, ...
-    flag_solveMinimization, gam0, gam, rw, alpha, flag_primal, flag_homotopy)
+    flag_solveMinimization, gam0, gam, rw, alpha, flag_primal, flag_homotopy, flag_computeLowerBounds)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -302,8 +302,13 @@ if flag_solveMinimization
     %! -- TO BE CHECKED
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
-    [sig, sig_bar, max_psf, ~, ~, ~] = compute_reweighting_lower_bound(yb, W, G, A, At, Ny, Nx, oy, ox, ...
-    nChannels, wlt_basis, filter_length, nlevel);
+    if flag_computeLowerBounds
+        [sig, sig_bar, max_psf, ~, ~, ~] = compute_reweighting_lower_bound(yb, W, G, A, At, Ny, Nx, oy, ox, ...
+        nChannels, wlt_basis, filter_length, nlevel);
+        save('lower_bounds.mat', 'sig', 'sig_bar', 'max_psf');
+    else
+        load('lower_bounds.mat');
+    end
     % mu = nuclear_norm/l21_norm;
     %! --
     
