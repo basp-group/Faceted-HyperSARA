@@ -82,6 +82,7 @@ addpath ../../src_mnras/
 % only cw version used in this script
 addpath ../../src_mnras/spmd
 addpath ../../src_mnras/spmd/weighted
+addpath /lustre/home/shared/sc004/mnras_faceted_corrected/
 
 %! TO BE UPDATED IF NEEDED (paths, flags, ...)
 % setting paths to results and reference image cube
@@ -263,7 +264,7 @@ if flag_computeOperatorNorm
     Anorm = pow_method_op(F, Ft, [Ny Nx nchans]);
     %save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
     %    '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm');
-    % save(['Anorm_ind=' num2str(ind) '.mat'],'-v7.3', 'Anorm');
+    save(['Anorm_ind=' num2str(ind) '.mat'],'-v7.3', 'Anorm');
 else
     %load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),...
     %    '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')));
