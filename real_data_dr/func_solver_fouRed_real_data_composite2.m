@@ -1,4 +1,4 @@
-function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gamma0, gamma1, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag, jobpath, flag_primal, flag_homotopy)
+function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gamma0, gamma1, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag, jobpath, flag_primal, flag_homotopy, flag_computeLowerBounds)
     % Global imaging solver for DR real data 
     %   version "composite", parcluster initialised outside the main solver
     %-------------------------------------------------------------------------%
@@ -196,9 +196,14 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
     %! -- TO BE CHECKED
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
-    [sig, sig_bar, max_psf, ~, ~, ~] = ...
-    compute_reweighting_lower_bound_dr(yTp, Wp, Tp, Hp, Ap, Atp, Ny, Nx, ...
-    nChannels, wlt_basis, filter_length, nlevel, Q, cell_c_chunks);
+    if flag_computeLowerBounds
+        [sig, sig_bar, max_psf, ~, ~, ~] = ...
+        compute_reweighting_lower_bound_dr(yTp, Wp, Tp, Hp, Ap, Atp, Ny, Nx, ...
+        nChannels, wlt_basis, filter_length, nlevel, Q, cell_c_chunks);
+        save('lower_bounds.mat', 'sig', 'sig_bar', 'max_psf');
+    else
+        load('lower_bounds.mat');
+    end
     %! --
 
     %% L21 + Nuclear (facet-based version)
