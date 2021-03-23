@@ -1,5 +1,5 @@
 function [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = ...
-    compute_reweighting_lower_bound_dr(yTp, Wp, Tp, Hp, Ap, Atp, Ny, Nx, ...
+    compute_reweighting_lower_bound_dr(yTp, Wp, Tp, Hp, Ap, Atp, Ny, Nx, No, ...
     nChannels, wavelet_basis, filters_length, nlevel, Q, cell_c_chunks)
 
 %! TO BE DOCUMENTED
@@ -11,7 +11,7 @@ n_data_workers = length(cell_c_chunks);
 spmd
     if labindex > Q % data cores       
         local_dirty_image = HS_operatorGtPhi_t(yTp, Hp, Wp, Atp, Tp, []);
-        [local_B, local_max_psf] = create_dirty_noise_dr(yTp, Ap, Atp, Hp, Tp, Wp, Nx, Ny);
+        [local_B, local_max_psf] = create_dirty_noise_dr(yTp, Ap, Atp, Hp, Tp, Wp, Nx, Ny, No);
     end
 end
 

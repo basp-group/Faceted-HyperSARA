@@ -75,6 +75,7 @@ disp(['Solving problem: ', num2str(flag_solveMinimization)]);
 addpath ../../lib/generate_data/
 addpath ../../lib/operators/
 addpath ../../lib/measurement-operator/nufft/
+% addpath ../../lib/measurement-operator/lib/operators
 addpath ../../lib/utils/
 addpath ../../lib/faceted-wavelet-transform/src
 addpath ../../data/

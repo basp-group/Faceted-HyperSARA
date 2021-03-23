@@ -1,4 +1,4 @@
-function [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny)
+function [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No)
 
 %! to be documented
 %! create "dirty" noise matrix
@@ -6,7 +6,6 @@ function [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny)
 nChannels = numel(y);
 max_psf = zeros(nChannels, 1);
 B = zeros(Nx*Ny, nChannels);
-No = size(G{1}{1}, 2);
 dirac = zeros(Ny, Nx);
 dirac(floor([Ny, Nx]/2) + 1) = 1;
 AD = A(dirac);

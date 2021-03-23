@@ -197,8 +197,9 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
     if flag_computeLowerBounds
+        No = oy*Ny*ox*Nx;
         [sig, sig_bar, max_psf, ~, ~, ~] = ...
-        compute_reweighting_lower_bound_dr(yTp, Wp, Tp, Hp, Ap, Atp, Ny, Nx, ...
+        compute_reweighting_lower_bound_dr(yTp, Wp, Tp, Hp, Ap, Atp, Ny, Nx, No, ...
         nChannels, wlt_basis, filter_length, nlevel, Q, cell_c_chunks);
         save('lower_bounds.mat', 'sig', 'sig_bar', 'max_psf');
     else
