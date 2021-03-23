@@ -11,7 +11,7 @@ spmd
     if labindex > Q % data cores   
         %! this instructions would need to be fixed (the function does not take as an input a structure similar to the data y, which is a problem)    
         % local_dirty_image = HS_operatorGtPhi_t(yTp, Hp, Wp, Atp, Tp, []);
-        local_dirty_image = create_dirty_image_dr(y, At, H, T, W, Nx, Ny, No);
+        local_dirty_image = create_dirty_image_dr(yTp, Atp, Hp, Tp, Wp, Nx, Ny, No);
         [local_B, local_max_psf] = create_dirty_noise_dr(yTp, Ap, Atp, Hp, Tp, Wp, Nx, Ny, No);
     end
 end
