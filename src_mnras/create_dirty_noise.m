@@ -9,6 +9,7 @@ B = zeros(Nx*Ny, nChannels);
 dirac = zeros(Ny, Nx);
 dirac(floor([Ny, Nx]/2) + 1) = 1;
 AD = A(dirac);
+N = Nx*Ny;
 
 for l = 1:nChannels
     b_l = zeros(No, 1);

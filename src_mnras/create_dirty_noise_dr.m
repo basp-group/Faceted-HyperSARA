@@ -8,6 +8,7 @@ max_psf = zeros(nChannels, 1);
 B = zeros(Nx*Ny, nChannels);
 dirac = zeros(Ny, Nx);
 dirac(floor([Ny, Nx]/2) + 1) = 1;
+N = Nx*Ny;
 AD = A(dirac);
 
 for l = 1:nChannels
