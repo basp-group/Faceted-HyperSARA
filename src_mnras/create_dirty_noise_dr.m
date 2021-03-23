@@ -1,4 +1,4 @@
-function [B, max_psf] = create_dirty_noise_dr(y, A, At, H, T, W, Nx, Ny, Noß)
+function [B, max_psf] = create_dirty_noise_dr(y, A, At, H, T, W, Nx, Ny, No)
 
 %! to be documented
 %! create "dirty" noise matrix
