@@ -360,7 +360,7 @@ else
             %! starting from nonzero xsol)
             % x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             % x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-            % x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            % x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
             % [v1_, weights1_] = initialize_dual_l21_rd(x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :), ...
             % offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, ...

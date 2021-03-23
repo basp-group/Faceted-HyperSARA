@@ -300,7 +300,7 @@ else
             %! -- TO BE CHECKED
             x_overlap = zeros([max_dims, size(xw_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xw_q;
-            x_overlap = comm2d_update_ghost_cells(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
  
             %! weights initialized from initial primal variable (set to 1 if primal=0), dual variables to 0
             [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
