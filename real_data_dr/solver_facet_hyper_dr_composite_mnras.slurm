@@ -40,4 +40,3 @@ rm temporary_file.m
 rm -r ../lib/measurement-operator/nufft_${SLURM_JOB_ID}
 
 module unload matlab/R2019b
-ß
