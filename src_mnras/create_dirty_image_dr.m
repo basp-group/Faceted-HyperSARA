@@ -4,7 +4,7 @@ function dirty_image = create_dirty_image_dr(y, At, H, T, W, Nx, Ny, No)
 %! create "dirty" noise matrix
 
 nChannels = numel(y);
-dirty_image = zeros(Nx, Ny, nChannels);
+dirty_image = zeros(Ny, Nx, nChannels);
 
 for l = 1:nChannels
     d_l = zeros(No, 1);
