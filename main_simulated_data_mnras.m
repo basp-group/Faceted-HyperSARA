@@ -2,7 +2,8 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
     algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
     flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
     flag_computeOperatorNorm, flag_solveMinimization, ...
-    cube_path, coverage_path, gam, rw)
+    cube_path, coverage_path, gam, rw, flag_primal, flag_homotopy, ... 
+    flag_computeLowerBounds)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -366,58 +367,20 @@ if flag_solveMinimization
     %! always specify Dirac basis ('self') in last position if used in the
     %! SARA dictionary 
     wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; 
-    L = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
+    filter_length = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
     
-    % estimate mu: ratio between nuclear and l21 norm priors applied to
-    % the dirty image
-    dirty_image = zeros([Ny, Nx, nchans]);
-    for l = 1:nchans
-        temp = zeros(oy*Ny*ox*Nx, 1);
-        for b = 1:numel(G{l})
-            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * y{l}{b};
-        end
-        dirty_image(:,:,l) = At(temp);
-    end
-    [~,S0,~] = svd(reshape(dirty_image, [Nx*Ny, nchans]),'econ');
-    nuclear_norm = sum(abs(diag(S0)));
-    
-    %TODO: do it directly in parallel with faceted SARA
-    dwtmode('zpd')
-    [~, Psitw] = op_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-    [~, s] = n_wavelet_coefficients(L(1:end-1), [Ny, Nx], 'zpd', nlevel);
-    s = s+N; % total number of SARA coefficients
-    Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,s);
-    %! the number of elements reported below is only valid for the periodic
-    %('per') boundary condition (implicitly assumed to be used in HS_forward_sparsity)
-    % TODO: enable other different boundary conditions
-    l21_norm = sum(sqrt(sum(Psit_full(dirty_image).^2, 2))); 
-    mu = nuclear_norm/l21_norm;
-    clear dirty_image l21_norm nuclear_norm
-    
+    %! -- TO BE CHECKED
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
-    B = zeros(size(X0));
-    id_center = floor([Ny, Nx]/2) + 1;
-    dirac = zeros(Ny, Nx);
-    dirac(id_center) = 1;
-    AD = A(dirac);
-    be = zeros(nchans, 1);
-    for l = 1:nchans
-        temp = zeros(oy*Ny*ox*Nx, 1);
-        z = zeros(oy*Ny*ox*Nx, 1);
-        for b = 1:numel(y{l})
-            noise = (randn(size(y{l}{b})) + 1i*randn(size(y{l}{b})))/sqrt(2);
-            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * noise;
-            z(W{l}{b}) = z(W{l}{b}) + G{l}{b}' * (G{l}{b} * AD(W{l}{b}));  
-        end
-        B(:,l) = reshape(At(temp),[Ny*Nx,1]);
-        be(l) = max(reshape(At(z),[Ny*Nx,1]));     
+    if flag_computeLowerBounds
+        [sig, sig_bar, max_psf, ~, ~, ~] = compute_reweighting_lower_bound(yb, W, G, A, At, Ny, Nx, oy, ox, ...
+        nChannels, wlt_basis, filter_length, nlevel);
+        save('lower_bounds.mat', 'sig', 'sig_bar', 'max_psf');
+    else
+        load('lower_bounds.mat');
     end
-    B = B/max(be);
-    [~ ,S0,~] = svd(B,'econ');
-    sig = std(diag(S0));
-    sig_bar = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nchans])).^2,2)));
-    clear B S0 be z temp AD dirac id_center Psitw Psit_full Psi1 Psit1
+    % mu = nuclear_norm/l21_norm;
+    %! --
     
     %% HSI parameter structure sent to the  HSI algorithm
     param_HSI.verbose = 2; % print log or not
@@ -436,13 +399,30 @@ if flag_solveMinimization
     param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
-    param_HSI.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
-    param_HSI.reweight_alpha_ff = 0.8;
-    param_HSI.total_reweights = nReweights; %30; % -1 if you don't want reweighting
-    param_HSI.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
+    %! -- TO BE CHECKED: see where reweight_alpha needs to start from
+    if flag_homotopy
+        param_HSI.reweight_alpha = 10;
+        param_HSI.reweight_alpha_ff = (1/param_HSI.reweight_alpha)^(1/6); % reach the floor level in 6 reweights (see if a different number would be appropriate)
+        % param_HSI.reweight_alpha_ff = 0.8;
+        % param_HSI.reweight_alpha = (0.8)^alpha; % 1 % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+    else
+        param_HSI.reweight_alpha = 1;
+        param_HSI.reweight_alpha_ff = 1;
+    end
+    %! --
+    param_HSI.total_reweights = nReweights; % -1 if you don't want reweighting
+    param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
     param_HSI.sig = sig; % estimate of the noise level in SARA space
     param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
-    param_HSI.use_reweight_steps = 1; % reweighting by fixed steps
+    param_HSI.max_psf = max_psf;
+
+    % param_HSI.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
+    % param_HSI.reweight_alpha_ff = 0.8;
+    % param_HSI.total_reweights = nReweights; %30; % -1 if you don't want reweighting
+    % param_HSI.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
+    % param_HSI.sig = sig; % estimate of the noise level in SARA space
+    % param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
+    % param_HSI.use_reweight_steps = 1; % reweighting by fixed steps
     param_HSI.reweight_step_size = 300; % reweighting step size
     param_HSI.reweight_steps = (5000: param_HSI.reweight_step_size :10000);
     param_HSI.step_flag = 1;
@@ -480,7 +460,6 @@ if flag_solveMinimization
         W_spmd{i} = W(cell_c_chunks{i});
         G_spmd{i} = G(cell_c_chunks{i});
     end
-
     param_HSI.ind = ind;
 
     clear y epsilon aW W G
@@ -499,7 +478,7 @@ if flag_solveMinimization
             [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
+                wlt_basis, filter_length, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
         case 's2'
             % alternative implementation (gather primal variables and data on the same nodes)
@@ -507,28 +486,28 @@ if flag_solveMinimization
             [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA2(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
+                wlt_basis, filter_length, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
         
         case 'cw'
             % same as spmd_sct, weight correction (apodization window in this case)
             [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA_cw(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
+                wlt_basis, filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
             
         case 'w' % 'weighted' 
             % same overlap for nuclear and l21, with weight correction (apodization window or ones)
             [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA_w(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), window_type, fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [29/10/2020] ok
+                wlt_basis, filter_length, nlevel, cell_c_chunks, channels(end), window_type, fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [29/10/2020] ok
 
         case 'no'
             % same as spmd4, but no overlap for the facets on which the nuclear norms are taken
             [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA_no(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-                wlt_basis, L, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
+                wlt_basis, filter_length, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
 
         otherwise
             error('Unknown solver version.')
@@ -548,5 +527,7 @@ if flag_solveMinimization
         '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
         '_ind=', num2str(ind), ...
         '_overlap=', num2str(overlap_size), ...
+        '_primal=', num2str(flag_primal), ...
+        '_homotopy=', num2str(flag_homotopy), ...
         '.fits')))
 end
