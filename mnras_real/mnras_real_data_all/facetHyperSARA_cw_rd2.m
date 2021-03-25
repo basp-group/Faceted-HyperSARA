@@ -211,7 +211,7 @@ offsetp = parallel.pool.Constant(offset);
     dims_overlap_ref, I_overlap, dims_overlap, status, offsetL, offsetR, ...
     Ncoefs, temLIdxs, temRIdxs, window_type, d);
 
-% Initializations.
+% Initializations
 init_flag = isfile(init_file_name);
 if init_flag
     init_m = matfile(init_file_name);
@@ -783,12 +783,12 @@ for t = t_start : param.max_iter
                 m.xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
                 m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = g_q{q};
             end
-        % compute residual image on the data nodes
-	    xsol = m.xsol;
-	    spmd
-		if labindex > Qp.Value
-			res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
-		end
+            % compute residual image on the data nodes
+            xsol = m.xsol;
+            spmd
+                if labindex > Qp.Value
+                    res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
+                end
             end
             % data nodes
             for k = 1:K
