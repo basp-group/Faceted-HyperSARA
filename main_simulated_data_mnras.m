@@ -100,13 +100,17 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 % cube_path = cubepath(6);
 % coverage_path = 'data/uv_coverage_p=1';
 % 
-% if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
-%     nlevel = 4;
-%     overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
-% end
+% %if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
+% %    nlevel = 4;
+% %    overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
+% %end
 % 
 % rw = 1;
-% overlap_size = 341; % 256;
+% %overlap_size = 341; % 256;
+% flag_primal = 0;
+% flag_homotopy = 0;
+% flag_computeLowerBounds = 1;
+% overlap_fraction = 0.5;
 %
 % % TODO: add warm-restart for this version of the main script
 
@@ -201,11 +205,13 @@ else
     nchans = nChannels;
 end
 channels = 1:nchans;
+overlap_size = ((1 - overlap_fraction)/overlap_fraction)*floor([Ny, Nx]./[Qy, Nx]);
 
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
     num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr),'.mat');
 
+%! TO BE CHECKED
 results_name_function = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels),'_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
     '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
@@ -352,7 +358,7 @@ if generate_eps_nnls
         eps_b{i} = cell(length(G{i}),1);
         for j = 1 : length(G{i})
             % printf('solving for band %i\n\n',i)
-            [~,eps_b{i}{j}] = fb_nnls_blocks(yb{i}{j}, A, At, G{i}{j}, W{i}{j}, param_nnls);
+            [~,eps_b{i}{j}] = fb_nnls_blocks(y{i}{j}, A, At, G{i}{j}, W{i}{j}, param_nnls);
         end
     end
     mkdir('data/')
@@ -373,13 +379,13 @@ if flag_solveMinimization
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
     if flag_computeLowerBounds
-        [sig, sig_bar, max_psf, ~, ~, ~] = compute_reweighting_lower_bound(yb, W, G, A, At, Ny, Nx, oy, ox, ...
+        [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
         nChannels, wlt_basis, filter_length, nlevel);
-        save('lower_bounds.mat', 'sig', 'sig_bar', 'max_psf');
+        save('lower_bounds.mat', 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image');
     else
         load('lower_bounds.mat');
     end
-    % mu = nuclear_norm/l21_norm;
+    mu = nuclear_norm/l21_norm;
     %! --
     
     %% HSI parameter structure sent to the  HSI algorithm
@@ -394,7 +400,7 @@ if flag_solveMinimization
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 200; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
-    param_HSI.adapt_eps_tol_out = 1.001; % tolerance outside the l2 ball
+    param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
     param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
