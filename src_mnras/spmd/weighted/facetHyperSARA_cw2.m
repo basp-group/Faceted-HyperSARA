@@ -35,7 +35,7 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 %   > .gamma    regularization parameter (l21 norm)
 %
 %   reweighting
-%   > .reweight_alpha_ff   (0.9)        
+%   > .reweighting_alpha_ff   (0.9)        
 %   > .total_reweights      (30)     -1 if you don't want reweighting
 %   > .use_reweight_steps    (1)     reweighting by fixed steps
 %   > .step_flag = 1;
@@ -88,7 +88,7 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 % < proj        projected 
 % < t_block     index of the last iteration where the weigths have been
 %               updated
-% < reweight_alpha  last value of the reweigthing parameter [1]
+% < reweighting_alpha  last value of the reweigthing parameter [1]
 % < epsilon         updated value of th l2-ball radii {...}
 % < t               index of the last iteration step [1]
 % < rel_val        relative variation
@@ -246,12 +246,12 @@ end
 % Reweighting parameters
 sig_bar = param.sig_bar;
 sig = param.sig;
-reweight_alpha = param.reweight_alpha;
-reweight_alphap = Composite();
+reweighting_alpha = param.reweighting_alpha;
+reweighting_alphap = Composite();
 for q = 1:Q
-    reweight_alphap{q} = reweight_alpha;
+    reweighting_alphap{q} = reweighting_alpha;
 end
-reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
+reweightings_alpha_ffp = parallel.pool.Constant(param.reweighting_alpha_ff);
 reweight_steps = param.reweight_steps;
 
 if isfield(param,'init_reweight_step_count')
@@ -277,6 +277,7 @@ v0_ = Composite();
 weights0_ = Composite();
 v1_ = Composite();
 weights1_ = Composite();
+xlast_reweight_q = Composite(); %! assumes backup file exactly saved at the time a reweighting step occured (initialized to xsol_q)
 if init_flag
     for q = 1:Q
         v0_(q) = init_m.v0(q,1);
@@ -287,6 +288,7 @@ if init_flag
     spmd
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
+            xlast_reweight_q = xsol_q;
         end
     end
     fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
@@ -294,6 +296,7 @@ else
     spmd
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
+            xlast_reweight_q = xsol_q;
             %!-- TO BE CHECKED           
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
@@ -302,12 +305,12 @@ else
             % weights initialized from initial primal variable, dual variables to 0
             [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
                 Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
-                offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+                offsetLq, offsetRq, reweighting_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
 
             % weights and dual variables initialized from initial primal variable
             % [v0, v1, weights0, weights1] = initialize_dual_and_weights2(x_overlap, ...
             %     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            %     offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
+            %     offsetLq, offsetRq, reweighting_alphap, crop_l21, crop_nuclear, w);
             %!--
         end
     end
@@ -430,7 +433,7 @@ beta0 = parallel.pool.Constant(param.gamma0/sigma0);
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
 % Variables for the stopping criterion
-flag = 0;
+flag_convergence = 0;
 
 if isfield(param, 'init_t_start')
     t_start = param.init_t_start;
@@ -663,20 +666,32 @@ for t = t_start : param.max_iter
         end
     end
     
-    %% Global stopping criterion
+    %% Check convergence pdfb (inner solver)
     %! to be revised
-    if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
-            (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
-    % if ((t>1) && (reweight_step_count >= param.total_reweights)) && ((rel_val(t) < param.rel_var && ...
-    %     (norm(residual_check) < param.adapt_eps_tol_out*norm(epsilon_check))) || ...
-    %     (t - reweight_last_step_iter >= param.ppd_max_iter))
-        flag = 1;
-        break;
-    end
-    %! --
-    
+    % if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
+    %         (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
+    % % if ((t>1) && (reweight_step_count >= param.total_reweights)) && ((rel_val(t) < param.rel_var && ...
+    % %     (norm(residual_check) < param.adapt_eps_tol_out*norm(epsilon_check))) || ...
+    % %     (t - reweight_last_step_iter >= param.ppd_max_iter))
+    %     flag_convergence = 1;
+    %     break;
+    % end
+
+    % param.reweight_min_steps_rel_obj    min pdfb iter
+    % param.reweight_rel_var              pdfb rel variation
+    % adapt_eps_tol_out                   tol data fidelity
+
+    pdfb_converged = (t - reweight_last_step_iter > param.pdfb_min_ter) && ...                                               % minimum number of pdfb iterations
+        ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
+            (rel_val(t) < param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
+        );
+
     %% Update epsilons (in parallel)
-    if param.use_adapt_eps && (t > param.adapt_eps_start) && (rel_val(t) < param.adapt_eps_rel_var)
+    flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update 
+    (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
+    (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
+    
+    if flag_epsilonUpdate
         spmd
             if labindex > Qp.Value
                 [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_val(t), norm_res, ...
@@ -685,21 +700,17 @@ for t = t_start : param.max_iter
             end
         end
     end
+    %! --
     
     %% Reweighting (in parallel)
     %! -- TO BE CHECKED
-    if (param.step_flag && t>500) % rel_fval(t) < param.reweight_rel_var)
-        reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
-        param.step_flag = 0;
-    end
-
-    if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
-            (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
-            norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check && ...
-            t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr) || ...
-            (t - reweight_last_step_iter > 3000)
-        %! --
-
+    % if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
+    %         (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
+    %         norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check && ...
+    %         t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr) || ...
+    %         (t - reweight_last_step_iter > 3000)
+    if pdfb_converged
+    %! --
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
         % compute SNR
@@ -714,6 +725,33 @@ for t = t_start : param.max_iter
             psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
         end
         SNR_average = mean(psnrh);
+
+        % Evaluate relative variation for the reweighting scheme
+        spmd 
+            if labindex <= Qp.Value
+                rel_x_reweighting_q = norm(xlast_reweight_q(:) - xsol_q(:))^2;
+                norm_x_reweighting_q = norm(xlast_reweight_q(:))^2;
+                xlast_reweight_q = xsol_q;
+            end
+        end
+        rel_x_reweighting = 0;
+        norm_x_reweighting = 0;    
+        for q = 1:Q
+            rel_x_reweighting = rel_x_reweighting + rel_x_reweighting_q{q};
+            norm_x_reweighting = norm_x_reweighting + norm_x_reweighting_q{q};
+        end
+        rel_x_reweighting = sqrt(rel_x_reweighting/norm_x_reweighting);
+
+        reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
+            reweight_step_count >  param.reweighting_min_ter && ...   % minimum number of reweighting iterations
+            ( reweight_step_count <= param.reweighting_max_ter || ... % maximum number of reweighting iterations reached  
+            rel_x_reweighting <= param.reweighting_rel_var ...        % relative variation
+            );
+
+        if reweighting_converged
+            flag_convergence = 1;
+            break;
+        end
         
         spmd
             if labindex <= Qp.Value
@@ -724,15 +762,15 @@ for t = t_start : param.max_iter
                 % [weights1_, weights0_] = update_weights_overlap(x_overlap, size(v1_), ...
                 %     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                 %     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                %     reweight_alphap, crop_l21, crop_nuclear, w);
+                %     reweighting_alphap, crop_l21, crop_nuclear, w);
 
                     %! -- TO BE CHECKED (using new reweighting with proper floor level)
                     [weights1_, weights0_] = update_weights_overlap2(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                    reweight_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+                    reweighting_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
                     if flag_homotopy
-                        reweight_alphap = max(reweight_alpha_ffp.Value*reweight_alphap, 1);
+                        reweighting_alphap = max(reweightings_alpha_ffp.Value*reweighting_alphap, 1);
                     end
                     %! --
             else
@@ -742,10 +780,10 @@ for t = t_start : param.max_iter
         end
         %! -- TO BE CHECKED
         if flag_homotopy
-            reweight_alpha = max(param.reweight_alpha_ff * reweight_alpha, 1);
+            reweighting_alpha = max(param.reweighting_alpha_ff * reweighting_alpha, 1);
         end
         %! --
-        param.reweight_alpha = reweight_alpha;
+        param.reweighting_alpha = reweighting_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1; 
@@ -930,7 +968,7 @@ m.xsol = xsol;
 norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
 
 % Update param structure and save
-param.reweight_alpha = reweight_alpha;
+param.reweighting_alpha = reweighting_alpha;
 param.init_reweight_step_count = reweight_step_count;
 param.init_reweight_last_iter_step = t;
 param.init_t_start = t+1;
@@ -970,7 +1008,7 @@ norm_epsilon_check = sqrt(norm_epsilon_check);
 norm_residual_check = sqrt(norm_residual_check);
 
 if (param.verbose > 0)
-    if (flag == 1)
+    if (flag_convergence == 1)
         fprintf('Solution found\n');
         fprintf('Iter %i\n',t);
         fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));

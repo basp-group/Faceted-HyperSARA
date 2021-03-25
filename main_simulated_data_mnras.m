@@ -388,7 +388,7 @@ end
 
 %% Solver
 if flag_solveMinimization
-    % Definition of the SARA dictionary
+    % wavelets
     nlevel = 4; % depth of the wavelet decompositions
     %! always specify Dirac basis ('self') in last position if used in the
     %! SARA dictionary 
@@ -408,15 +408,21 @@ if flag_solveMinimization
     mu = nuclear_norm/l21_norm;
     %! --
     
-    %% HSI parameter structure sent to the  HSI algorithm
+    % HSI parameter structure sent to the  HSI algorithm
     param_HSI.verbose = 2; % print log or not
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
-    param_HSI.gamma0 = 1;
-    param_HSI.gamma = gam;    %1e-2*mu;  %convergence parameter L1 (soft th parameter)
-    param_HSI.rel_var = 1e-5;  % stopping criterion
-    param_HSI.max_iter = 15000; % max number of iterations
+    param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator
+    param_HSI.gamma0 = 1;  % regularization parameter nuclear norm
+    param_HSI.gamma = gam; % regularization parameter l21-norm (soft th parameter)
+
+    % pdfb
+    param_HSI.pdfb_min_iter = 300;
+    param_HSI.pdfb_max_iter = 3000;
+    param_HSI.pdfb_rel_var = 5e-4;
+    param_HSI.pdfb_fidelity_tolerance = 1.01;  
     
+    % epsilon update scheme
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
     param_HSI.adapt_eps_start = 200; % minimum num of iter before stating adjustment
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
@@ -425,45 +431,33 @@ if flag_solveMinimization
     param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
-    %! -- TO BE CHECKED: see where reweight_alpha needs to start from
+    %! -- TO BE CHECKED: see where reweighting_alpha needs to start from
+    % reweighting
+    param_HSI.reweighting_max_ter = nReweights; % maximum number of reweighting iterations reached  
+    param_HSI.reweighting_rel_var = 1e-5;       % relative variation (reweighting)
     if flag_homotopy
-        param_HSI.reweight_alpha = 10;
-        param_HSI.reweight_alpha_ff = (1/param_HSI.reweight_alpha)^(1/6); % reach the floor level in 6 reweights (see if a different number would be appropriate)
+        param_HSI.reweighting_alpha = 10;
+        param_HSI.reweighting_min_ter = 5; % minimum number of reweighting iterations
+        param_HSI.reweight_alpha_ff = (1/param_HSI.reweighting_alpha)^(1/param_HSI.reweighting_min_ter); % reach the floor level after reweighting_min_ter reweights (see if a different number would be appropriate)
+        % 0.63 -> otherwise need 10 reweights minimum
+        %
         % param_HSI.reweight_alpha_ff = 0.8;
-        % param_HSI.reweight_alpha = (0.8)^alpha; % 1 % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
     else
-        param_HSI.reweight_alpha = 1;
+        param_HSI.reweighting_min_ter = 1; % minimum number of reweighting iterations
+        param_HSI.reweighting_alpha = 1;
         param_HSI.reweight_alpha_ff = 1;
     end
     %! --
-    param_HSI.total_reweights = nReweights; % -1 if you don't want reweighting
-    param_HSI.reweight_abs_of_max = Inf; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
     param_HSI.sig = sig; % estimate of the noise level in SARA space
     param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
     param_HSI.max_psf = max_psf;
 
-    % param_HSI.reweight_alpha = 1; % the parameter associated with the weight update equation and decreased after each reweight by percentage defined in the next parameter
-    % param_HSI.reweight_alpha_ff = 0.8;
-    % param_HSI.total_reweights = nReweights; %30; % -1 if you don't want reweighting
-    % param_HSI.reweight_abs_of_max = 1; % (reweight_abs_of_max * max) this is assumed true signal and hence will have weights equal to zero => it wont be penalised
-    % param_HSI.sig = sig; % estimate of the noise level in SARA space
-    % param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
-    % param_HSI.use_reweight_steps = 1; % reweighting by fixed steps
-    param_HSI.reweight_step_size = 300; % reweighting step size
-    param_HSI.reweight_steps = (5000: param_HSI.reweight_step_size :10000);
-    param_HSI.step_flag = 1;
-
-    param_HSI.use_reweight_eps = 0; % reweighting w.r.t the relative change of the solution
-    param_HSI.reweight_max_reweight_itr = param_HSI.max_iter - param_HSI.reweight_step_size;
-    param_HSI.reweight_rel_var = 5e-4; % criterion for performing reweighting
-    param_HSI.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
-    
+    % ellipsoid projection parameters (when preconditioning is active)
     param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_min_iter = 1; % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid   
     
-    %% faceted HyperSARA
-    param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator A*G
+    % faceted HyperSARA
     param_HSI.num_workers = Qx*Qy + ncores_data;
 
     disp('Faceted HyperSARA')
