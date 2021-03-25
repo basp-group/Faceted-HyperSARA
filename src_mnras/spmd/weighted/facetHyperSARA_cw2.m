@@ -1,7 +1,7 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA_cw2(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    L, nlevel, c_chunks, c, d, window_type, init_file_name, name, varargin)
+    L, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -152,8 +152,8 @@ for qx = 1:Qx
 end
 clear rg_y rg_x;
 
-rg_yo = split_range(Qy, M, d);
-rg_xo = split_range(Qx, N, d);
+rg_yo = split_range(Qy, M, d(1));
+rg_xo = split_range(Qx, N, d(2));
 Io = zeros(Q, 2);
 dims_o = zeros(Q, 2);
 for qx = 1:Qx
@@ -301,12 +301,12 @@ else
 
             % weights initialized from initial primal variable, dual variables to 0
             [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
-                Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
+                Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
                 offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
 
             % weights and dual variables initialized from initial primal variable
             % [v0, v1, weights0, weights1] = initialize_dual_and_weights2(x_overlap, ...
-            %     Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+            %     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             %     offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w);
             %!--
         end
@@ -479,7 +479,7 @@ if init_flag
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                 offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
         end
     end
@@ -627,7 +627,7 @@ for t = t_start : param.max_iter
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
                 [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                    offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                    offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                     offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
             end
         end
@@ -742,7 +742,7 @@ for t = t_start : param.max_iter
         end
         %! -- TO BE CHECKED
         if flag_homotopy
-            reweight_alpha = max(reweight_alpha_ff * reweight_alpha, 1);
+            reweight_alpha = max(param.reweight_alpha_ff * reweight_alpha, 1);
         end
         %! --
         param.reweight_alpha = reweight_alpha;
@@ -809,7 +809,7 @@ for t = t_start : param.max_iter
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
                 [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                    offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                    offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                     offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
                 end
             end
@@ -872,7 +872,7 @@ spmd
         x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
         
         [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-            offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+            offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
     else
         res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);

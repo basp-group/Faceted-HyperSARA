@@ -1,9 +1,9 @@
-function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
-    algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
-    flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
-    flag_computeOperatorNorm, flag_solveMinimization, ...
-    cube_path, coverage_path, gam, rw, flag_primal, flag_homotopy, ... 
-    flag_computeLowerBounds)
+% function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
+%     algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
+%     flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
+%     flag_computeOperatorNorm, flag_solveMinimization, ...
+%     cube_path, coverage_path, gam, rw, flag_primal, flag_homotopy, ... 
+%     flag_computeLowerBounds)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -77,49 +77,49 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 
 %% PARAMETERS FOR DEBUGGING
 
-% image_name = 'W28_1024_m39'; %'W28_512_m39'; %'M31'; %'W28_512_m39';
-% nChannels = 60; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
-% Qx = 2;
-% Qy = 1;
-% Qc = 1;
-% p = 0.3; % percentage
-% nReweights = 1;
-% input_snr = 40; % input SNR (in dB)
-% algo_version = 'cw'; % 'cst_weighted';
-% window_type = 'triangular'; % 'hamming', 'pc'
-% ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
-% ind = 1;  % index from "spectral" facet
-% gam = 1e-5;
-% flag_generateCube = 0;
-% flag_generateCoverage = 0;
-% flag_generateVisibilities = 0;
-% flag_generateUndersampledCube = 1; % Default 15 channels cube with line emissions
-% flag_computeOperatorNorm = 0;
-% flag_solveMinimization = true;
-% cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
-% cube_path = cubepath(6);
-% coverage_path = 'data/uv_coverage_p=1';
-% 
-% %if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
-% %    nlevel = 4;
-% %    overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
-% %end
-% 
-% rw = 1;
-% %overlap_size = 341; % 256;
-% flag_primal = 0;
-% flag_homotopy = 0;
-% flag_computeLowerBounds = 1;
-% overlap_fraction = 0.5;
+image_name = 'W28_512'; %'W28_512_m39'; %'M31'; %'W28_512_m39';
+nChannels = 3; %60; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
+Qx = 2;
+Qy = 1;
+Qc = 1;
+p = 0; % percentage
+nReweights = 1;
+input_snr = 40; % input SNR (in dB)
+algo_version = 'cw'; % 'cst_weighted';
+window_type = 'triangular'; % 'hamming', 'pc'
+ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
+ind = 1;  % index from "spectral" facet
+gam = 1e-5;
+flag_generateCube = 1;
+flag_generateCoverage = 0;
+flag_generateVisibilities = 1;
+flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
+flag_computeOperatorNorm = 1;
+flag_solveMinimization = true;
+cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
+cube_path = cubepath(nChannels);
+coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
+
+%if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
+%    nlevel = 4;
+%    overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
+%end
+
+rw = 1;
+%overlap_size = 341; % 256;
+flag_primal = 0;
+flag_homotopy = 0;
+flag_computeLowerBounds = 1;
+overlap_fraction = 0.5;
 %
 % % TODO: add warm-restart for this version of the main script
 
 %%
 format compact;
 
-if overlap_size == 0
-    algo_version = 'no';
-end
+% if overlap_size == 0
+%     algo_version = 'no';
+% end
 
 disp('MNRAS configuration')
 disp(['Algorithm version: ', algo_version]);
@@ -127,7 +127,7 @@ disp(['Reference image: ', image_name]);
 disp(['nchannels: ', num2str(nChannels)]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
-disp(['Overlap size: ', num2str(overlap_size)]);
+% disp(['Overlap size: ', num2str(overlap_size)]);
 disp(['Number of data points p per frequency (as a fraction of image size): ', num2str(p)]);
 disp(['Input SNR: ', num2str(input_snr)]);
 disp(['Generating image cube: ', num2str(flag_generateCube)]);
@@ -152,7 +152,7 @@ end
 
 
 % setting paths to results and reference image cube
-coverage_path = strcat(coverage_path, '.fits');
+% coverage_path = strcat(coverage_path, '.fits');
 % cube_path = strcat(cube_path, '.fits');
 data_path = 'data/';
 results_path = fullfile('results/', image_name);
@@ -162,7 +162,8 @@ mkdir(data_path)
 mkdir(results_path)
 
 %% 
-rng(1234)
+seed = 1;
+rng(seed);
 % T = 1500; % to be set depending on the value of p
 % hrs = 6;
 % kernel = 'minmax:tuned'; % 'kaiser', 'minmax:tuned'
@@ -174,7 +175,8 @@ if flag_generateCube
     % frequency bandwidth from 1 to 2 GHz
     f = linspace(1,2,nChannels);
     emission_lines = 0; % insert emission lines on top of the continuous spectra
-    [x0,X0] = Generate_cube(reference_cube_path,f,emission_lines);
+    % [x0,X0] = Generate_cube(reference_cube_path,f,emission_lines);
+    [x0,X0] = Generate_cube_W28(reference_cube_path,f,emission_lines);
     [Ny, Nx, nChannels] = size(x0);
     if flag_generateUndersampledCube
         % undersampling factor for the channels
@@ -205,7 +207,8 @@ else
     nchans = nChannels;
 end
 channels = 1:nchans;
-overlap_size = ((1 - overlap_fraction)/overlap_fraction)*floor([Ny, Nx]./[Qy, Nx]);
+overlap_size = floor(((1 - overlap_fraction)/overlap_fraction)*[Ny, Nx]./[Qy, Nx]);
+overlap_size(overlap_size<=1) = 0;
 
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
@@ -215,21 +218,21 @@ data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
 results_name_function = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels),'_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
     '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
-    '_overlap=', num2str(overlap_size), ...
+    '_overlap=', strjoin(strsplit(num2str(overlap_size)), ...
     '_p=',num2str(p), ...
     '_snr=', num2str(input_snr),'.mat');
 
 temp_results_name = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
     '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
-    '_overlap=', num2str(overlap_size), ...
+    '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_'), ...
     '_p=',num2str(p), ...
     '_snr=', num2str(input_snr));
 
 warm_start = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
     '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
-    '_overlap=', num2str(overlap_size), '_', num2str(ind), '_', num2str(gam), '_', num2str(rw), '.mat');
+    '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_', num2str(ind), '_', num2str(gam), '_', num2str(rw), '.mat');
 
 data_name = data_name_function(nChannels);
 results_name = results_name_function(nChannels);
@@ -285,13 +288,27 @@ if flag_generateCoverage
     fitswrite([u, v, ones(numel(u), 1)], coverage_path)
     fitsdisp(coverage_path);
 else
-    uvw = fitsread(coverage_path);
-    u = uvw(:, 1);
-    v = uvw(:, 2);
-    % u = u*f(1)/f(end);
-    % v = v*f(1)/f(end);
+    % uvw = fitsread(coverage_path);
+    % u = uvw(:, 1);
+    % v = uvw(:, 2);
+    % disp('Coverage loaded successfully')
+
+    coverage_path	
+    load(coverage_path);
+    size(uvw)
+    u1 = uvw(:, 1);
+    v1 = uvw(:, 2);
+    r = sqrt(u1.^2 + v1.^2);
+    size(r(r>pi));
+    bmax = max(r);
+    v1 = v1 * pi/(bmax * 1);
+    u1 = u1 * pi/(bmax * 1);
+    u = u1/2;
+    v = v1/2; 
+    
+    size(u)
     disp('Coverage loaded successfully')
-    clear uvw
+    clear uvw u1 v1
 end
 
 % setup measurement operator
@@ -320,7 +337,10 @@ clear u v u1 v1 uw vw aWw nW nWw param_block_structure param_precond;
 if flag_generateVisibilities % generate only full spectral dataset
     param_l2_ball.type = 'sigma';
     param_l2_ball.sigma_ball = 2;
-    [y0, y, Nm, sigma_noise] = util_gen_measurements(x0, G, W, A, input_snr);
+    % [y0, y, Nm, sigma_noise] = util_gen_measurements(x0, G, W, A, input_snr);
+    %! see if it realy needs to be hard-coded this way!
+    sigma_noise = 0.1
+    [y0, y, Nm] = util_gen_measurements_sigma(x0, G, W, A, sigma_noise, seed);
     [epsilon,epsilons] = util_gen_data_fidelity_bounds(y, Nm, param_l2_ball, sigma_noise); 
 
     if save_data
@@ -435,7 +455,7 @@ if flag_solveMinimization
 
     param_HSI.use_reweight_eps = 0; % reweighting w.r.t the relative change of the solution
     param_HSI.reweight_max_reweight_itr = param_HSI.max_iter - param_HSI.reweight_step_size;
-    param_HSI.reweight_rel_var = 1e-4; 5e-4; % criterion for performing reweighting
+    param_HSI.reweight_rel_var = 5e-4; % criterion for performing reweighting
     param_HSI.reweight_min_steps_rel_obj = 300; % min num of iter between reweights
     
     param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
@@ -507,7 +527,7 @@ if flag_solveMinimization
             [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                 facetHyperSARA_cw2(y_spmd, epsilon_spmd, ...
                 A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
-                filter_lenght, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)));
+                filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)), flag_homotopy);
 
             
         case 'w' % 'weighted' 
