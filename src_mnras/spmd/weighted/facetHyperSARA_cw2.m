@@ -40,7 +40,7 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 %   > .pdfb_fidelity_tolerance     tolerance to check data constraints are satisfied
 %
 %   reweighting       
-%   > .reweighting_max_iter  (30)    maximum number of reweighting steps
+%   > .reweighting_max_iter  (30)    maximum number of reweighting steps %! (weights updated reweighting_max_iter - 1 times)
 %   > .reweighting_min_iter          minimum number of reweighting steps (to reach "noise" level)
 %   > .reweighting_rel_var  (1e-4)   relative variation
 %   > .reweighting_alpha             starting reweighting parameter (> 1)
@@ -113,7 +113,7 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 %SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place. Constant overlap for the nuclear norm assuming d
 % is smaller than the smallest overlap for the sdwt2 (the other option 
-% would also change the communication process (ghost cells and reduction 
+% would also change the communication process (borders and reduction 
 % operation)). d <= (power(2, nlevel)-1)*(max(filter_length(:)-1))
 
 %% NOTE:
@@ -256,7 +256,7 @@ if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
     fprintf('reweight_step_count uploaded\n\n')
 else
-    reweight_step_count = 0;
+    reweight_step_count = 1;
     fprintf('reweight_step_count initialized \n\n')
 end
 
@@ -264,7 +264,7 @@ if isfield(param,'init_reweight_last_iter_step')
     reweight_last_step_iter = param.init_reweight_last_iter_step;
     fprintf('reweight_last_iter_step uploaded \n\n')
 else
-    reweight_last_step_iter = 0;
+    reweight_last_step_iter = 1;
     fprintf('reweight_last_iter_step initialized \n\n')
 end
 %! --
@@ -471,7 +471,7 @@ if init_flag
     norm_epsilon_check = sqrt(norm_epsilon_check);
     norm_residual_check = sqrt(norm_residual_check);
 
-    %% compute value of the priors in parallel
+    % compute value of the priors in parallel
     spmd
         if labindex <= Qp.Value
             % compute values for the prior terms
@@ -520,7 +520,6 @@ fprintf('START THE LOOP MNRAS ver \n\n')
 
 for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     
-    %fprintf('Iter %i\n',t);
     start_iter = tic;
     
     spmd
@@ -537,7 +536,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 labSend(xhat_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
             end
             
-            % update ghost cells (versions of xhat with overlap)
+            % update borders (-> versions of xhat with overlap)
             tw = tic;
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
@@ -562,8 +561,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 g_q(:,:,c_chunksp.Value{i}) = g_q(:,:,c_chunksp.Value{i}) + labReceive(Qp.Value+i);
             end
         else
-            % data nodes (Q+1:Q+K) (no data blocking, just frequency for
-            % the moment)
+            % data nodes (Q+1:Q+K) (no parallelisation over data blocks, just frequency)
             % retrieve xhat_i from the prior/primal nodes
             for q = 1:Qp.Value
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
@@ -664,22 +662,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     end
     
     %% Check convergence pdfb (inner solver)
-    %! to be revised
-    % if t>1 && rel_val(t) < param.rel_var && reweight_step_count > param.total_reweights && ...
-    %         (norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check)
-    % % if ((t>1) && (reweight_step_count >= param.total_reweights)) && ((rel_val(t) < param.rel_var && ...
-    % %     (norm(residual_check) < param.adapt_eps_tol_out*norm(epsilon_check))) || ...
-    % %     (t - reweight_last_step_iter >= param.ppd_max_iter))
-    %     flag_convergence = 1;
-    %     break;
-    % end
-
-    % param.reweight_min_steps_rel_obj    min pdfb iter
-    % param.reweight_rel_var              pdfb rel variation
-    % adapt_eps_tol_out                   tol data fidelity
-
-    pdfb_converged = (t - reweight_last_step_iter > param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
-        ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
+    %! -- TO BE CHECKED
+    pdfb_converged = (t - reweight_last_step_iter + 1 > param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
+        ( t - reweight_last_step_iter + 1 >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
             (rel_val(t) < param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
         );
 
@@ -700,14 +685,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     %! --
     
     %% Reweighting (in parallel)
-    %! -- TO BE CHECKED
-    % if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
-    %         (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
-    %         norm_residual_check <= param.adapt_eps_tol_out*norm_epsilon_check && ...
-    %         t - reweight_last_step_iter > param.reweight_min_steps_rel_obj && t < param.reweight_max_reweight_itr) || ...
-    %         (t - reweight_last_step_iter > 3000)
     if pdfb_converged
-    %! --
         fprintf('Reweighting: %i\n\n', reweight_step_count);
 
         % compute SNR
@@ -761,15 +739,15 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 %     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
                 %     reweighting_alphap, crop_l21, crop_nuclear, w);
 
-                    %! -- TO BE CHECKED (using new reweighting with proper floor level)
-                    [weights1_, weights0_] = update_weights_overlap2(x_overlap, size(v1_), ...
-                    Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
-                    Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                    reweighting_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
-                    if flag_homotopy
-                        reweighting_alphap = max(reweightings_alpha_ffp.Value*reweighting_alphap, 1);
-                    end
-                    %! --
+                %! -- TO BE CHECKED (using new reweighting with proper floor level)
+                [weights1_, weights0_] = update_weights_overlap2(x_overlap, size(v1_), ...
+                Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
+                Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
+                reweighting_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+                if flag_homotopy
+                    reweighting_alphap = max(reweightings_alpha_ffp.Value*reweighting_alphap, 1);
+                end
+                %! --
             else
                 % compute residual image on the data nodes
                 res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
@@ -786,8 +764,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         param.init_t_start = t+1; 
         
         if (reweight_step_count >= param.reweighting_max_iter)
-            param.reweight_max_reweight_itr = t+1;
-            % fprintf('\n\n No more reweights \n\n');
+            fprintf('\n\n No more reweights \n\n');
         end
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
@@ -878,10 +855,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
             end
         end 
-        
-        % reweight_step_count = reweight_step_count + 1;
-        % reweight_last_step_iter = t;
-        % rw_counts = rw_counts + 1; 
         
         if (reweight_step_count >= param.reweighting_max_iter)
             fprintf('\n\n No more reweights \n\n');
