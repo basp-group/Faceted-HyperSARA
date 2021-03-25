@@ -14,7 +14,7 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 %%
 % Input: 
 %
-% > y           blocks of visivilities {L}{nblocks_l}
+% > y           blocks of visibilities {L}{nblocks_l}
 % > epsilon     l2-ball norms {L}{nblocks_l}
 % > A           measurement operator
 % > At          adjoint of the measurement operator
