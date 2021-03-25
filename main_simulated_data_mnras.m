@@ -90,11 +90,11 @@ window_type = 'triangular'; % 'hamming', 'pc'
 ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
 ind = 1;  % index from "spectral" facet
 gam = 1e-5;
-flag_generateCube = 1;
+flag_generateCube = 0;
 flag_generateCoverage = 0;
-flag_generateVisibilities = 1;
+flag_generateVisibilities = 0;
 flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-flag_computeOperatorNorm = 1;
+flag_computeOperatorNorm = 0;
 flag_solveMinimization = true;
 cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
 cube_path = cubepath(nChannels);
@@ -408,19 +408,20 @@ if flag_solveMinimization
     mu = nuclear_norm/l21_norm;
     %! --
     
-    % HSI parameter structure sent to the  HSI algorithm
+    %% HSI parameter structure sent to the  HSI algorithm
     param_HSI.verbose = 2; % print log or not
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator
     param_HSI.gamma0 = 1;  % regularization parameter nuclear norm
     param_HSI.gamma = gam; % regularization parameter l21-norm (soft th parameter)
+    param_HSI.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
 
     % pdfb
-    param_HSI.pdfb_min_iter = 300;
-    param_HSI.pdfb_max_iter = 3000;
-    param_HSI.pdfb_rel_var = 5e-4;
-    param_HSI.pdfb_fidelity_tolerance = 1.01;  
+    param_HSI.pdfb_min_iter = 300; % minimum number of iterations
+    param_HSI.pdfb_max_iter = 3000; % maximum number of iterations
+    param_HSI.pdfb_rel_var = 5e-4; % relative variation tolerance
+    param_HSI.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied 
     
     % epsilon update scheme
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
@@ -433,33 +434,31 @@ if flag_solveMinimization
     
     %! -- TO BE CHECKED: see where reweighting_alpha needs to start from
     % reweighting
-    param_HSI.reweighting_max_ter = nReweights; % maximum number of reweighting iterations reached  
+    param_HSI.reweighting_max_iter = nReweights; % maximum number of reweighting iterations reached  
     param_HSI.reweighting_rel_var = 1e-5;       % relative variation (reweighting)
     if flag_homotopy
         param_HSI.reweighting_alpha = 10;
-        param_HSI.reweighting_min_ter = 5; % minimum number of reweighting iterations
-        param_HSI.reweight_alpha_ff = (1/param_HSI.reweighting_alpha)^(1/param_HSI.reweighting_min_ter); % reach the floor level after reweighting_min_ter reweights (see if a different number would be appropriate)
+        param_HSI.reweighting_min_iter = 5; % minimum number of reweighting iterations
+        param_HSI.reweighting_alpha_ff = (1/param_HSI.reweighting_alpha)^(1/param_HSI.reweighting_min_iter); % reach the floor level after reweighting_min_iter reweights (see if a different number would be appropriate)
         % 0.63 -> otherwise need 10 reweights minimum
         %
         % param_HSI.reweight_alpha_ff = 0.8;
     else
-        param_HSI.reweighting_min_ter = 1; % minimum number of reweighting iterations
+        param_HSI.reweighting_min_iter = 1; % minimum number of reweighting iterations
         param_HSI.reweighting_alpha = 1;
-        param_HSI.reweight_alpha_ff = 1;
+        param_HSI.reweighting_alpha_ff = 1;
     end
     %! --
-    param_HSI.sig = sig; % estimate of the noise level in SARA space
-    param_HSI.sig_bar = sig_bar; % estimate of the noise level in "SVD" space
+    param_HSI.reweighting_sig = sig; % estimate of the noise level in SARA space
+    param_HSI.reweighting_sig_bar = sig_bar; % estimate of the noise level in "SVD" space
     param_HSI.max_psf = max_psf;
 
     % ellipsoid projection parameters (when preconditioning is active)
     param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_min_iter = 1; % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid   
-    
-    % faceted HyperSARA
-    param_HSI.num_workers = Qx*Qy + ncores_data;
 
+    %%
     disp('Faceted HyperSARA')
     disp('-----------------------------------------')
 

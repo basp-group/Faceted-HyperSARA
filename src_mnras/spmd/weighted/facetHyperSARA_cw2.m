@@ -1,7 +1,7 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA_cw2(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    L, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, varargin)
+    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -24,26 +24,29 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 % > param       algorithm parameters (struct)
 %
 %   general
-%   > .verbose           print log or not
-%   > .rel_var   (1e-5)  stopping criterion
-%   > .max_iter (10000)  max number of iterations
+%   > .verbose  print log or not
 %
 %   convergence
 %   > .nu0 = 1
 %   > .nu1      upper bound on the norm of the operator Psi
-%   > .nu2      norm of the faceting operator (= 1)
+%   > .nu2      upper bound on the norm of the measurement operator
+%   > .gamma0   regularization parameter (nuclear norm)
 %   > .gamma    regularization parameter (l21 norm)
 %
-%   reweighting
-%   > .reweighting_alpha_ff   (0.9)        
-%   > .total_reweights      (30)     -1 if you don't want reweighting
-%   > .use_reweight_steps    (1)     reweighting by fixed steps
-%   > .step_flag = 1;
-%   > .reweight_max_reweight_itr     param_HSI.max_iter - param_HSI.reweight_step_size;
-%   > .reweight_rel_var   (1e-4)     criterion for performing reweighting
-%   > .reweight_min_steps_rel_var (300) minimum number of iterations between consecutive reweights
-%   > .sig                           noise level (wavelet space)
-%   > sig_bar                        noise level (singular value space)
+%   pdfb
+%   > .pdfb_min_iter               minimum number of iterations
+%   > .pdfb_max_iter               maximum number of iterations
+%   > .pdfb_rel_var                relative variation tolerance
+%   > .pdfb_fidelity_tolerance     tolerance to check data constraints are satisfied
+%
+%   reweighting       
+%   > .reweighting_max_iter  (30)    maximum number of reweighting steps
+%   > .reweighting_min_iter          minimum number of reweighting steps (to reach "noise" level)
+%   > .reweighting_rel_var  (1e-4)   relative variation
+%   > .reweighting_alpha             starting reweighting parameter (> 1)
+%   > .reweighting_alpha_ff  (0.9)   multiplicative parameter update (< 1) 
+%   > .reweighting_sig               noise level (wavelet space)
+%   > .reweighting_sig_bar           noise level (singular value space)
 %
 %   projection onto ellipsoid (preconditioning)
 %   > .elipse_proj_max_iter (20)     max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
@@ -59,14 +62,13 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 %   > .adapt_eps_rel_var (5e-4)      bound on the relative change of the solution
 %   > .adapt_eps_change_percentage  (0.5*(sqrt(5)-1)) weight of the update w.r.t the l2 norm of the residual data
 %
-%
 % > X0          ground truth wideband image [M*N, L]
 % > Qx          number of facets along dimension x [1]
 % > Qy          number of facets along dimension y [1]
-% > K           number of datab computing processes [1]
+% > K           number of Matlab data fidelity processes [1]
 % > wavelet     wavelet doctionaries considered (should contain 'self' by
 %               default in last position)
-% > L           size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
+% > filter_length           size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
 % > nlevel      decomposition depth [1]
 % > c_chunks    indices of the bands handled by each data node {K, 1}
 % > c           total number of spectral channels [1]
@@ -112,7 +114,7 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 % term in a single place. Constant overlap for the nuclear norm assuming d
 % is smaller than the smallest overlap for the sdwt2 (the other option 
 % would also change the communication process (ghost cells and reduction 
-% operation)). d <= (power(2, nlevel)-1)*(max(L(:)-1))
+% operation)). d <= (power(2, nlevel)-1)*(max(filter_length(:)-1))
 
 %% NOTE:
 % this version relies on a specialised version of sdwt2, slightly less
@@ -168,7 +170,7 @@ clear rg_yo rg_xo;
 % instantiate auxiliary variables for faceted wavelet transforms involved
 % in SARA (sdwt2)
 [~, dims_overlap_ref, I_overlap, dims_overlap, status, offset, offsetL, ...
-    offsetR, Ncoefs, temLIdxs, temRIdxs] = sdwt2_setup([M, N], I, dims, nlevel, wavelet, L);
+    offsetR, Ncoefs, temLIdxs, temRIdxs] = sdwt2_setup([M, N], I, dims, nlevel, wavelet, filter_length);
 
 % total number of workers (Q: facets workers, K: data workers)
 numworkers = Q + K;
@@ -212,15 +214,12 @@ if init_flag
     xsol = init_m.xsol;
     param = init_m.param;
     epsilon = init_m.epsilon;
-    xsol_norm = norm(xsol(:));
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
     if ~isempty(varargin)
         xsol = varargin{0};
-        xsol_norm = norm(xsol(:));
     else
         xsol = zeros(M,N,c);
-        xsol_norm = 0;
     end
     fprintf('xsol initialized \n\n')
 end
@@ -244,15 +243,14 @@ end
 
 %! -- TO BE CHECKED
 % Reweighting parameters
-sig_bar = param.sig_bar;
-sig = param.sig;
+sig_bar = param.reweighting_sig_bar;
+sig = param.reweighting_sig;
 reweighting_alpha = param.reweighting_alpha;
 reweighting_alphap = Composite();
 for q = 1:Q
     reweighting_alphap{q} = reweighting_alpha;
 end
 reweightings_alpha_ffp = parallel.pool.Constant(param.reweighting_alpha_ff);
-reweight_steps = param.reweight_steps;
 
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
@@ -269,7 +267,6 @@ else
     reweight_last_step_iter = 0;
     fprintf('reweight_last_iter_step initialized \n\n')
 end
-rw_counts = 1;
 %! --
 
 % Primal / prior nodes (l21/nuclear norm dual variables)
@@ -451,10 +448,10 @@ if init_flag
     t_data = init_m.t_data;
     fprintf('rel_val, end_iter, t_facet and t_data uploaded \n\n')
 else
-    rel_val = zeros(param.max_iter, 1);
-    end_iter = zeros(param.max_iter, 1);
-    t_facet = zeros(param.max_iter, 1);
-    t_data = zeros(param.max_iter, 1);
+    rel_val = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    end_iter = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    t_facet = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    t_data = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
     fprintf('rel_val, end_iter, t_facet and t_data initialized \n\n')
 end
 
@@ -521,7 +518,7 @@ start_loop = tic;
 
 fprintf('START THE LOOP MNRAS ver \n\n')
 
-for t = t_start : param.max_iter
+for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     
     %fprintf('Iter %i\n',t);
     start_iter = tic;
@@ -681,7 +678,7 @@ for t = t_start : param.max_iter
     % param.reweight_rel_var              pdfb rel variation
     % adapt_eps_tol_out                   tol data fidelity
 
-    pdfb_converged = (t - reweight_last_step_iter > param.pdfb_min_ter) && ...                                               % minimum number of pdfb iterations
+    pdfb_converged = (t - reweight_last_step_iter > param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
         ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
             (rel_val(t) < param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
         );
@@ -743,8 +740,8 @@ for t = t_start : param.max_iter
         rel_x_reweighting = sqrt(rel_x_reweighting/norm_x_reweighting);
 
         reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
-            reweight_step_count >  param.reweighting_min_ter && ...   % minimum number of reweighting iterations
-            ( reweight_step_count <= param.reweighting_max_ter || ... % maximum number of reweighting iterations reached  
+            reweight_step_count >  param.reweighting_min_iter && ...   % minimum number of reweighting iterations
+            ( reweight_step_count <= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
             rel_x_reweighting <= param.reweighting_rel_var ...        % relative variation
             );
 
@@ -788,7 +785,7 @@ for t = t_start : param.max_iter
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1; 
         
-        if (reweight_step_count >= param.total_reweights)
+        if (reweight_step_count >= param.reweighting_max_iter)
             param.reweight_max_reweight_itr = t+1;
             % fprintf('\n\n No more reweights \n\n');
         end
@@ -796,7 +793,7 @@ for t = t_start : param.max_iter
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
             m = matfile([name, '_', ...
-              num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+              num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
@@ -886,14 +883,13 @@ for t = t_start : param.max_iter
         % reweight_last_step_iter = t;
         % rw_counts = rw_counts + 1; 
         
-        if (reweight_step_count >= param.total_reweights)
+        if (reweight_step_count >= param.reweighting_max_iter)
             fprintf('\n\n No more reweights \n\n');
             break;
         end
 
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
-        rw_counts = rw_counts + 1; 
     end
 end
 toc(start_loop)
@@ -918,7 +914,7 @@ spmd
 end
 
 m = matfile([name, '_', ...
-              num2str(param.ind) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+              num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
 m.param = param;
 m.res = zeros(size(xsol));
