@@ -68,7 +68,7 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 % > K           number of Matlab data fidelity processes [1]
 % > wavelet     wavelet doctionaries considered (should contain 'self' by
 %               default in last position)
-% > filter_length           size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
+% > filter_length  size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
 % > nlevel      decomposition depth [1]
 % > c_chunks    indices of the bands handled by each data node {K, 1}
 % > c           total number of spectral channels [1]
@@ -138,7 +138,7 @@ No = size(W{1}{1}{1}, 1);
 % number of pixels (spatial dimensions)
 [M, N] = size(At(zeros(No, 1)));
 
-%%-- instantiate auxiliary variables for sdwt2
+% -- instantiate auxiliary variables for sdwt2
 % define reference 2D facets (no overlap)
 Q = Qx*Qy;
 rg_y = split_range(Qy, M);

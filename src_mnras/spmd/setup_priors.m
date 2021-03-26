@@ -5,6 +5,8 @@ function [Iq, dims_q, dims_oq, dims_overlap_ref_q, I_overlap_q, ...
     dims_overlap_ref, I_overlap, dims_overlap, status, offsetL, offsetR, ...
     Ncoefs, temLIdxs, temRIdxs, window_type, d)
 
+%! change: d contains already 2 elements (overlap along each dimension)
+
 % define composite variables (local to a given worker)
 % /!\ only simple indexing allowed into Composite objects from the master
 % node
@@ -98,7 +100,7 @@ for q = 1:Q
     end
     
     % define the weights (depends on the position of the facet inside the grid)
-    w{q} =  generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), [d,d]);
+    w{q} =  generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), d);
 end
 
 end
