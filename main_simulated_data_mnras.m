@@ -77,8 +77,8 @@
 
 %% PARAMETERS FOR DEBUGGING
 
-image_name = 'W28_512'; %'W28_512_m39'; %'M31'; %'W28_512_m39';
-nChannels = 3; %60; % (needs to be > 60 to avoid bugs with the version implemented by Abdullah)
+image_name = 'W28_512';
+nChannels = 3; % 60;
 Qx = 2;
 Qy = 1;
 Qc = 1;
@@ -87,8 +87,8 @@ nReweights = 1;
 input_snr = 40; % input SNR (in dB)
 algo_version = 'cw'; % 'cst_weighted';
 window_type = 'triangular'; % 'hamming', 'pc'
-ncores_data = 1; %number of cores assigned to the data fidelity terms (groups of channels)
-ind = 1;  % index from "spectral" facet
+ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
+ind = 1;  % index of the spectral facet to be reconstructed
 gam = 1e-5;
 flag_generateCube = 0;
 flag_generateCoverage = 0;
@@ -99,11 +99,6 @@ flag_solveMinimization = true;
 cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
 cube_path = cubepath(nChannels);
 coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
-
-%if strcmp(algo_version, 'cst_weighted') || strcmp(algo_version, 'cst')
-%    nlevel = 4;
-%    overlap_size = (power(2, nlevel)-1)*(2*8 - 2); % assuming db8 largest wavelet filter
-%end
 
 rw = 1;
 %overlap_size = 341; % 256;
@@ -116,10 +111,6 @@ overlap_fraction = 0.5;
 
 %%
 format compact;
-
-% if overlap_size == 0
-%     algo_version = 'no';
-% end
 
 disp('MNRAS configuration')
 disp(['Algorithm version: ', algo_version]);
@@ -146,8 +137,6 @@ if strcmp(algo_version, "hypersara")
 else
     addpath src_mnras/spmd
     addpath src_mnras/spmd/weighted
-%     addpath src_mnras/spmd/standard
-%     addpath src_mnras/spmd/no
 end
 
 
@@ -350,16 +339,33 @@ else
 end
 
 %% Compute operator norm
-if flag_computeOperatorNorm
-    % Compute full measurement operator spectral norm
-    F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
-    Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-    Anorm = pow_method_op(F, Ft, [Ny Nx nchans]);
-    save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
-        '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
+if strcmp(algo_version, 'sara')
+    % Compute measurement operator spectral norm for each channel individually
+    if flag_computeOperatorNorm
+        %Anorm_ch(i) = pow_method_op(@(x) sqrt(cell2mat(aW{i})) .* (Gw{i}*A(x)), @(x) real(At(Gw{i}' * (sqrt(cell2mat(aW{i})) .* x))), [Ny Nx 1]);
+        F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
+        Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
+        Anorm = pow_method_op(F, Ft, [Ny Nx nchans]);
+        save(fullfile(results_path,strcat('Anorm_sara_N=',num2str(Nx), ...
+            '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ch), '.mat')),'-v7.3', 'Anorm');
+        % save(['Anorm_ch=' num2str(ch) '.mat'],'-v7.3', 'Anorm_ch');
+    else
+        % load(['Anorm_ch=' num2str(ch) '.mat']);
+        load(fullfile(results_path,strcat('Anorm_sara_N=',num2str(Nx), ...
+        '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ch), '.mat')));
+    end
 else
-    load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
-        num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
+    if flag_computeOperatorNorm
+        % Compute full measurement operator spectral norm
+        F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
+        Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
+        Anorm = pow_method_op(F, Ft, [Ny Nx nchans]);
+        save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
+            '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
+    else
+        load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
+            num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
+    end
 end
     
 %% Generate initial epsilons by performing imaging with NNLS on each data block separately
@@ -455,77 +461,94 @@ if flag_solveMinimization
     param_HSI.elipse_proj_min_iter = 1; % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid   
 
-    %%
-    disp('Faceted HyperSARA')
-    disp('-----------------------------------------')
+    %! change meaning of Anorm when using SARA (different computation strategy)
+    if strcmp(algo_version, 'sara')
+        disp('SARA')
+        disp('-----------------------------------------')
+        dwtmode('zpd')
 
-    % spectral tesselation (non-overlapping)
-    rg_c = split_range(ncores_data, channels(end));
-    cell_c_chunks = cell(ncores_data, 1);
-    y_spmd = cell(ncores_data, 1);
-    epsilon_spmd = cell(ncores_data, 1);
-    aW_spmd = cell(ncores_data, 1);
-    W_spmd = cell(ncores_data, 1);
-    G_spmd = cell(ncores_data, 1);
+        [Psi1, Psit1] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
+        P = length(Psi1);
+        for k = 1 : P
+            f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
+            f = sprintf('%s%i},Ny,Nx);', f,k);
+            Psi{k} = eval(f);
+            b(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
+            ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
+            Psit{k} = eval(ft);
+        end
 
-    for i = 1:ncores_data
-        cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
-        y_spmd{i} = y(cell_c_chunks{i});
-        epsilon_spmd{i} = epsilons(cell_c_chunks{i});
-        aW_spmd{i} = aW(cell_c_chunks{i});
-        W_spmd{i} = W(cell_c_chunks{i});
-        G_spmd{i} = G(cell_c_chunks{i});
-    end
-    param_HSI.ind = ind;
+        %! [P.-A.] make sure elements are properly selected
+        %! check backup files have the proper name (i.e., consistent with what is taken in the solver)
+        %! check format of x0, and see if it fits in the solver (need to extract some channels?)
+        [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
+            sara2(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI, ch, fullfile(results_path,warm_start(nChannels)), ...
+            fullfile(results_path,temp_results_name(nChannels)), x0, flag_homotopy, ncores_data); %! in this case, ncores_data corresponds to the number of workers for the wavelet transform (9 maximum)
 
-    clear y epsilon aW W G
-    %%
-    
-    switch algo_version   
-        case 'hypersara'
-            % TODO: to be debugged
-            % reference HyperSARA version
-            [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
-                hyperSARA2(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
-                wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)), flag_homotopy);
+        time_iter_average = mean(end_iter);
+        % disp(['snr_x: ', num2str(snr_x)]);
+        disp(['Average time per iteration: ', num2str(time_iter_average)]);
+
+        mkdir('results/')
+        save(fullfile(results_path, results_name),'-v7.3','xsol', 'X0', ...
+        'param', 'epsilon', 'rel_val', 'l11', 'norm_res', ...
+        'end_iter', 'time_iter_average', 't_l11','t_master', 'res'); % , 'snr_x', 'snr_x_average'
+        fitswrite(xsol,fullfile(results_path, strcat('x_sara_', algo_version, ...
+        '_', window_type, ...
+        '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
+        '_ind=', num2str(ind), ...
+        '_overlap=', num2str(overlap_size), ...
+        '.fits')))
+    else
+        disp('Faceted HyperSARA')
+        disp('-----------------------------------------')
+
+        % spectral tesselation (non-overlapping)
+        rg_c = split_range(ncores_data, channels(end));
+        cell_c_chunks = cell(ncores_data, 1);
+        y_spmd = cell(ncores_data, 1);
+        epsilon_spmd = cell(ncores_data, 1);
+        aW_spmd = cell(ncores_data, 1);
+        W_spmd = cell(ncores_data, 1);
+        G_spmd = cell(ncores_data, 1);
+
+        for i = 1:ncores_data
+            cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+            y_spmd{i} = y(cell_c_chunks{i});
+            epsilon_spmd{i} = epsilons(cell_c_chunks{i});
+            aW_spmd{i} = aW(cell_c_chunks{i});
+            W_spmd{i} = W(cell_c_chunks{i});
+            G_spmd{i} = G(cell_c_chunks{i});
+        end
+        clear y epsilon aW W G
         
-        case 'cw'
-            [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-                facetHyperSARA_cw2(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
-                filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)), flag_homotopy);
+        %%
+        switch algo_version 
+            case 'hypersara'
+                % reference HyperSARA version
+                [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
+                    hyperSARA2(y_spmd, epsilon_spmd, ...
+                    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
+                    wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)), flag_homotopy);
 
-        case 'no'
-            % TODO: to be debugged
-            % no overlap for the facets on which the nuclear norms are taken
-            [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-                facetHyperSARA_cw2(y_spmd, epsilon_spmd, ...
-                A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
-                filter_length, nlevel, cell_c_chunks, channels(end), [0, 0], 'none', fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)), flag_homotopy);
+            case 'cw'
+                [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
+                    facetHyperSARA_cw2(y_spmd, epsilon_spmd, ...
+                    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
+                    filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)), flag_homotopy);
 
-        %! not maintained now, see if update is really worth it
-        % case 's'
-        %     % TODO: update solver
-        %     % reference version, overlap between the facets underlying the nuclear norms
-        %     [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-        %         facetHyperSARA(y_spmd, epsilon_spmd, ...
-        %         A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-        %         wlt_basis, filter_length, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
-
-        % case 's2'
-        %     % TODO: update solver
-        %     % alternative implementation (gather primal variables and data on the same nodes)
-        %     % gather image and data on the same nodes (extra communications compared to spmd4 for reweigthing and monitoring variables)
-        %     [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-        %         facetHyperSARA2(y_spmd, epsilon_spmd, ...
-        %         A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, ...
-        %         wlt_basis, filter_length, nlevel, cell_c_chunks, channels(end), fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels))); % [10/10/2019] ok
-
-        otherwise
-            error('Unknown solver version.')
+            case 'no'
+                % TODO: to be debugged in this setting (-> no overlap case obtained by setting overlap to 0 in each direction)
+                % no overlap for the facets on which the nuclear norms are taken
+                [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
+                    facetHyperSARA_cw2(y_spmd, epsilon_spmd, ...
+                    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
+                    filter_length, nlevel, cell_c_chunks, channels(end), [0, 0], 'none', fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)), flag_homotopy);
+            otherwise
+                error('Unknown solver version.')
+        end
     end
-
+    
     time_iter_average = mean(end_iter);
     disp(['snr_x: ', num2str(snr_x)]);
     disp(['asnr_x: ', num2str(snr_x_average)]);

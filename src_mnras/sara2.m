@@ -1,5 +1,5 @@
 function [xsol,param,v1,v2,g,weights1,proj,t_block,reweighting_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, varargin)
+    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, varargin)
 
 % This function solves:
 %
@@ -19,7 +19,7 @@ No = size(W{1}{1}, 1);
 %maxNumCompThreads(12);
 % util_create_pool(15);
 % total number of workers (Q: facets workers, K: data workers)
-numworkers = 12;
+% numworkers = 12;
 cirrus_cluster = parcluster('local');
 cirrus_cluster.NumWorkers = numworkers;
 cirrus_cluster.NumThreads = 1;
