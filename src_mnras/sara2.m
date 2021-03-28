@@ -186,12 +186,12 @@ if init_flag
     t_data = init_m.t_data;
     fprintf('rel_val, l11, end_iter, t_master, t_l11, and t_data uploaded \n\n')
 else
-    rel_val = zeros(param.max_iter, 1);
+    rel_val = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
     l11 = NaN;
-    end_iter = zeros(param.max_iter, 1);
-    t_master = zeros(param.max_iter, 1);
-    t_l11 = zeros(param.max_iter, 1);
-    t_data = zeros(param.max_iter, 1);
+    end_iter = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    t_master = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    t_l11 = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    t_data = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
     fprintf('rel_val, l11, end_iter, t_master, t_l11, and t_data initialized \n\n')
 end
 
@@ -352,11 +352,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
         % SNR
         SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
-        psnrh = zeros(c,1);
-        for i = 1:c
-            psnrh(i) = 20*log10(norm(x0(:,i))/norm(x0(:,i)-reshape(xsol(:,:,i), [M*N, 1])));
-        end
-        SNR_average = mean(psnrh);
         
         % Log
         if (param.verbose >= 1)
@@ -367,7 +362,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             % fprintf(' epsilon_c = %e, residual_c = %e\n', epsilon_check_c, residual_check_c);
             % fprintf(' epsilon_a = %e, residual_a = %e\n', epsilon_check_a, residual_check_a);
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-            fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+            fprintf(' SNR = %e\n\n', SNR);
         end
     end
 
@@ -439,11 +434,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
             % compute SNR
             SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
-            psnrh = zeros(c,1);
-            for i = 1:c
-                psnrh(i) = 20*log10(norm(x0(:,i))/norm(x0(:,i)-reshape(xsol(:,:,i), [M*N, 1])));
-            end
-            SNR_average = mean(psnrh);
 
             % Save parameters (matfile solution)
             % m = matfile([name, '_', ...
@@ -463,7 +453,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             m.v1 = v1;
             m.weights1 = weights1;
             m.res = res;
-            % m.SNR = SNR;
+            m.SNR = SNR;
             % m.SNR_average = SNR_average;
             m.l11 = l11;
             m.end_iter = end_iter;
@@ -478,7 +468,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 fprintf('Backup iter: %i\n',t);
                 fprintf('l11-norm = %e, rel_val = %e\n', l11, rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-                fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+                fprintf(' SNR = %e\n\n', SNR);
             end
         end
 
@@ -529,13 +519,7 @@ m.param = param;
 
 % compute SNR
 SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
-psnrh = zeros(c,1);
-for i = 1:c
-    psnrh(i) = 20*log10(norm(x0(:,i))/norm(x0(:,i)-reshape(xsol(:,:,i), [M*N, 1])));
-end
-SNR_average = mean(psnrh);
-% m.SNR = SNR;
-% m.SNR_average = SNR_average;
+m.SNR = SNR;
 m.end_iter = end_iter;
 m.t_l11 = t_l11;
 m.t_master = t_master;
@@ -554,7 +538,7 @@ if (param.verbose > 0)
     fprintf(' L11-norm = %e, relative variation = %e\n', l11, rel_val(t));
     fprintf(' Final residual = %e\n', residual_check);
     fprintf(' epsilon = %e\n', epsilon_check);
-    fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+    fprintf('SNR = %e\n\n', SNR);
 end
 end
 

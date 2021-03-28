@@ -106,6 +106,10 @@ flag_primal = 0;
 flag_homotopy = 0;
 flag_computeLowerBounds = 1;
 overlap_fraction = 0.5;
+
+%! to test SARA: take Qc = nChannels
+algo_version = 'sara';
+Qc = nChannels;
 %
 % % TODO: add warm-restart for this version of the main script
 
@@ -118,7 +122,7 @@ disp(['Reference image: ', image_name]);
 disp(['nchannels: ', num2str(nChannels)]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
-disp(['Overlap size: ', num2str(overlap_size)]);
+% disp(['Overlap size: ', num2str(overlap_size)]);
 disp(['Number of data points p per frequency (as a fraction of image size): ', num2str(p)]);
 disp(['Input SNR: ', num2str(input_snr)]);
 disp(['Generating image cube: ', num2str(flag_generateCube)]);
@@ -195,6 +199,7 @@ if ind > 0
 else
     nchans = nChannels;
 end
+%! define problem dimensions and overlap size
 channels = 1:nchans;
 overlap_size = floor(((1 - overlap_fraction)/overlap_fraction)*[Ny, Nx]./[Qy, Nx]);
 overlap_size(overlap_size<=1) = 0;
@@ -334,9 +339,22 @@ if flag_generateVisibilities % generate only full spectral dataset
     end
     clear y0 Nm epsilon sigma_noise;
 else
+    %! if spectral faceting or SARA, only load the portion of the data
+    %needed for the analysis
     load(fullfile(data_path,data_name), 'y', 'epsilons');
+    % need to completely restructure data format to avoid reloading
+    % everything
+    %m = matfile(fullfile(data_path,data_name));
+    %y = cell(numel(id{ind}),1);
+    %epsilons = cell(numel(id{ind}),1);
+    %for k = 1:numel(id{ind})
+    %    y(k) = cell2mat(m.y(id{ind},1));
+    %    epsilons(k) = m.epsilons(id{ind}(k),1);
+    %end
     disp('Data loaded successfully')
 end
+y = y(id{ind});
+epsilons = epsilons(id{ind});
 
 %% Compute operator norm
 if strcmp(algo_version, 'sara')
@@ -347,12 +365,12 @@ if strcmp(algo_version, 'sara')
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
         Anorm = pow_method_op(F, Ft, [Ny Nx nchans]);
         save(fullfile(results_path,strcat('Anorm_sara_N=',num2str(Nx), ...
-            '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ch), '.mat')),'-v7.3', 'Anorm');
+            '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm');
         % save(['Anorm_ch=' num2str(ch) '.mat'],'-v7.3', 'Anorm_ch');
     else
         % load(['Anorm_ch=' num2str(ch) '.mat']);
         load(fullfile(results_path,strcat('Anorm_sara_N=',num2str(Nx), ...
-        '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ch), '.mat')));
+        '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')));
     end
 else
     if flag_computeOperatorNorm
@@ -386,7 +404,6 @@ if generate_eps_nnls
     end
     mkdir('data/')
     save('data/eps.mat','-v7.3', 'eps_b');
-    % load('data/eps.mat');
 end
 
 %% Solver
@@ -403,10 +420,10 @@ if flag_solveMinimization
     % SARA space) involved in the reweighting scheme
     if flag_computeLowerBounds
         [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
-        nChannels, wlt_basis, filter_length, nlevel);
-        save('lower_bounds.mat', 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image');
+        nchans, wlt_basis, filter_length, nlevel);
+        save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image');
     else
-        load('lower_bounds.mat');
+        load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat']);
     end
     mu = nuclear_norm/l21_norm;
     %! --
@@ -461,7 +478,7 @@ if flag_solveMinimization
     param_HSI.elipse_proj_min_iter = 1; % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
     param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid   
 
-    %! change meaning of Anorm when using SARA (different computation strategy)
+    %%
     if strcmp(algo_version, 'sara')
         disp('SARA')
         disp('-----------------------------------------')
@@ -478,28 +495,25 @@ if flag_solveMinimization
             Psit{k} = eval(ft);
         end
 
-        %! [P.-A.] make sure elements are properly selected
-        %! check backup files have the proper name (i.e., consistent with what is taken in the solver)
-        %! check format of x0, and see if it fits in the solver (need to extract some channels?)
         [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-            sara2(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI, ch, fullfile(results_path,warm_start(nChannels)), ...
+            sara2(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI, fullfile(results_path,warm_start(nChannels)), ...
             fullfile(results_path,temp_results_name(nChannels)), x0, flag_homotopy, ncores_data); %! in this case, ncores_data corresponds to the number of workers for the wavelet transform (9 maximum)
-
+        
         time_iter_average = mean(end_iter);
-        % disp(['snr_x: ', num2str(snr_x)]);
         disp(['Average time per iteration: ', num2str(time_iter_average)]);
 
         mkdir('results/')
         save(fullfile(results_path, results_name),'-v7.3','xsol', 'X0', ...
         'param', 'epsilon', 'rel_val', 'l11', 'norm_res', ...
-        'end_iter', 'time_iter_average', 't_l11','t_master', 'res'); % , 'snr_x', 'snr_x_average'
-        fitswrite(xsol,fullfile(results_path, strcat('x_sara_', algo_version, ...
+        'end_iter', 'time_iter_average', 't_l11','t_master', 'res');
+        fitswrite(xsol,fullfile(results_path, strcat('x_', algo_version, ...
         '_', window_type, ...
         '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
         '_ind=', num2str(ind), ...
         '_overlap=', num2str(overlap_size), ...
         '.fits')))
     else
+        %%
         disp('Faceted HyperSARA')
         disp('-----------------------------------------')
 
