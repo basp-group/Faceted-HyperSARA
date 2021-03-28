@@ -23,7 +23,7 @@ function [v0, weights0] = initialize_nuclear_serial(x, reweighting_alpha, sig_ba
 
 [M, N, c] = size(x);
 
-v0 = zeros(M, N, c);
+v0 = zeros(M*N, c);
 
 x0 = reshape(x, [M*N, c]);
 [~,S0,~] = svd(x0,'econ');

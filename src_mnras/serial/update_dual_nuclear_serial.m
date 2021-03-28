@@ -26,7 +26,7 @@ function [v0, g0] = update_dual_nuclear_serial(v0, xhat, weights0, beta0, sigma0
 %%
 
 [M, N, L] = size(xhat);
-xhatm = reshape(xhat, numel(xhat)/L, L);
+xhatm = reshape(xhat, M*N, L);
 [U0, S0, V0] = svd(v0 + xhatm,'econ');
 v0 = v0 + xhatm - (U0*diag(max(diag(S0) - beta0 * weights0, 0))*V0');
 g0 = sigma0*reshape(v0, M, N, L);

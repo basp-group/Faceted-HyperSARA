@@ -557,7 +557,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         spmd
             if labindex > 2
                 [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, norm_res, ...
-                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_var.Value, ...
+                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
                     adapt_eps_change_percentage.Value);
             end
         end
@@ -571,10 +571,10 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
         fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count, rel_x_reweighting);
         
-        reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
+        reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >  param.reweighting_min_iter && ...   % minimum number of reweighting iterations
             ( reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
-            rel_x_reweighting <= param.reweighting_rel_var ...        % relative variation
+            rel_x_reweighting <= param.reweighting_rel_var ...         % relative variation
             );
 
         if reweighting_converged
@@ -616,9 +616,11 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             SNR_average = mean(psnrh);
 
             % Save parameters (matfile solution)
-            m = matfile([name, '_', ...
-              num2str(param.cube_id), '_', num2str(param.gamma), '_', num2str(reweight_step_count), '.mat'], ...
-              'Writable', true);
+            % m = matfile([name, '_', ...
+            %   num2str(param.cube_id), '_', num2str(param.gamma), '_', num2str(reweight_step_count), '.mat'], ...
+            %   'Writable', true);
+            m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+                'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
             m.g = g;
@@ -692,9 +694,11 @@ spmd
     end
 end
 
-m = matfile([name, '_', ...
-            num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
-            'Writable', true);
+% m = matfile([name, '_', ...
+%             num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+%             'Writable', true);
+m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+    'Writable', true);
 m.param = param;
 m.res = zeros(size(xsol));
 m.g = g;

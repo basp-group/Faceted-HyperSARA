@@ -127,7 +127,7 @@ disp(['Reference image: ', image_name]);
 disp(['nchannels: ', num2str(nChannels)]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
-% disp(['Overlap size: ', num2str(overlap_size)]);
+disp(['Overlap size: ', num2str(overlap_size)]);
 disp(['Number of data points p per frequency (as a fraction of image size): ', num2str(p)]);
 disp(['Input SNR: ', num2str(input_snr)]);
 disp(['Generating image cube: ', num2str(flag_generateCube)]);
@@ -146,8 +146,8 @@ if strcmp(algo_version, "hypersara")
 else
     addpath src_mnras/spmd
     addpath src_mnras/spmd/weighted
-    addpath src_mnras/spmd/standard
-    addpath src_mnras/spmd/no
+%     addpath src_mnras/spmd/standard
+%     addpath src_mnras/spmd/no
 end
 
 
@@ -229,10 +229,7 @@ temp_results_name = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N
     '_p=',num2str(p), ...
     '_snr=', num2str(input_snr));
 
-warm_start = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
-    '_L=',num2str(nchannels), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
-    '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
-    '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_'), '_', num2str(ind), '_', num2str(gam), '_', num2str(rw), '.mat');
+warm_start = @(nchannels) strcat(temp_results_name(nchannels),'_rw=', num2str(rw), '.mat');
 
 data_name = data_name_function(nChannels);
 results_name = results_name_function(nChannels);
@@ -542,7 +539,7 @@ if flag_solveMinimization
         '_', window_type, ...
         '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
         '_ind=', num2str(ind), ...
-        '_overlap=', num2str(overlap_size), ...
+        '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_'), ...
         '_primal=', num2str(flag_primal), ...
         '_homotopy=', num2str(flag_homotopy), ...
         '.fits')))

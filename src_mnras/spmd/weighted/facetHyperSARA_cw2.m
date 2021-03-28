@@ -666,8 +666,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     
     %% Check convergence pdfb (inner solver)
     %! -- TO BE CHECKED
-    pdfb_converged = (t - reweight_last_step_iter + 1 > param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
-        ( t - reweight_last_step_iter + 1 >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
+    pdfb_converged = (t - reweight_last_step_iter + 1 > param.pdfb_min_iter) && ...                                          % minimum number of pdfb iterations
+        ( t - reweight_last_step_iter + 1 >= param.pdfb_max_iter || ...                                                      % maximum number of pdfb iterations reached
             (rel_val(t) < param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
         );
 
@@ -707,10 +707,10 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
         fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count, rel_x_reweighting);
 
-        reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
+        reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >  param.reweighting_min_iter && ...   % minimum number of reweighting iterations
             ( reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
-            rel_x_reweighting <= param.reweighting_rel_var ...        % relative variation
+            rel_x_reweighting <= param.reweighting_rel_var ...         % relative variation
             );
 
         if reweighting_converged
@@ -768,8 +768,10 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             SNR_average = mean(psnrh);
 
             % Save parameters (matfile solution)
-            m = matfile([name, '_', ...
-              num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+%             m = matfile([name, '_', ...
+%               num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+%               'Writable', true);
+            m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
@@ -870,9 +872,11 @@ spmd
     end
 end
 
-m = matfile([name, '_', ...
-              num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
-              'Writable', true);
+% m = matfile([name, '_', ...
+%               num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+%               'Writable', true);
+m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+    'Writable', true);
 m.param = param;
 m.res = zeros(size(xsol));
 m.g = zeros(size(xsol));
