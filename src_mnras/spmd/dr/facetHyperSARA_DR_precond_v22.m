@@ -206,7 +206,7 @@ offsetp = parallel.pool.Constant(offset);
     dims_overlap_ref, I_overlap, dims_overlap, status, offsetL, offsetR, ...
     Ncoefs, temLIdxs, temRIdxs, window_type, d);
 
-% Initializations.
+% Initializations
 init_flag = isfile(init_file_name);
 if init_flag
     init_m = matfile(init_file_name);
@@ -252,21 +252,22 @@ else
 end
 
 %! -- TO BE CHECKED
-%% Reweighting parameters
-sig_bar = param.sig_bar;
-sig = param.sig;
-reweight_alpha = param.reweight_alpha;
-reweight_alphap = Composite();
+% Reweighting parameters
+sig_bar = param.reweighting_sig_bar;
+sig = param.reweighting_sig;
+reweighting_alpha = param.reweighting_alpha;
+reweighting_alphap = Composite();
 for q = 1:Q
-    reweight_alphap{q} = reweight_alpha;
+    reweighting_alphap{q} = reweighting_alpha;
 end
-reweight_alpha_ffp = parallel.pool.Constant(param.reweight_alpha_ff);
+reweighting_alpha_ffp = parallel.pool.Constant(param.reweighting_alpha_ff);
+
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
     fprintf('reweight_step_count uploaded\n\n')
 else
-    param.init_reweight_step_count = 0;
-    reweight_step_count = 0;
+    param.init_reweight_step_count = 1;
+    reweight_step_count = 1;
     fprintf('reweight_step_count initialized \n\n')
 end
 
@@ -274,14 +275,14 @@ if isfield(param,'init_reweight_last_iter_step')
     reweight_last_step_iter = param.init_reweight_last_iter_step;
     fprintf('reweight_last_iter_step uploaded \n\n')
 else
-    param.init_reweight_last_iter_step = 0;
-    reweight_last_step_iter = 0;
+    param.init_reweight_last_iter_step = 1;
+    reweight_last_step_iter = 1;
     fprintf('reweight_last_iter_step initialized \n\n')
 end
-rw_counts = reweight_step_count + 1;
 %! --
 
 % Primal / prior nodes (l21/nuclear norm dual variables)
+xlast_reweight_q = Composite(); %! assumes backup file exactly saved at the time a reweighting step occured (initialized to xsol_q)
 if init_flag
     spmd
         if labindex <= Qp.Value
@@ -290,6 +291,7 @@ if init_flag
             weights0_ = cell2mat(init_m.weights0(labindex,1));
             weights1_ = cell2mat(init_m.weights1(labindex,1));
             max_dims = max(dims_overlap_ref_q, dims_oq);
+            xlast_reweight_q = xsol_q;
         end
     end
     fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
@@ -297,6 +299,7 @@ else
     spmd
         if labindex <= Qp.Value
             max_dims = max(dims_overlap_ref_q, dims_oq);
+            xlast_reweight_q = xsol_q;
             %! -- TO BE CHECKED
             x_overlap = zeros([max_dims, size(xw_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xw_q;
@@ -304,8 +307,8 @@ else
  
             %! weights initialized from initial primal variable (set to 1 if primal=0), dual variables to 0
             [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
-            Iq, offset_q, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
-            offsetLq, offsetRq, reweight_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+            Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
+            offsetLq, offsetRq, reweighting_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
 
             %! archive: to be deleted once above isntructions have been checked
             % [v0_, v1_, weights0_, weights1_] = initialize_dual_overlap(Ncoefs_q, max_dims-crop_nuclear, c, nlevelp.Value);
@@ -399,7 +402,7 @@ beta0 = parallel.pool.Constant(param.gamma0 * param.nu0); % only needed on the "
 beta1 = parallel.pool.Constant(param.gamma1 * param.nu1);
 
 % Variables for the stopping criterion
-flag = 0;
+flag_convergence = 0;
 
 if isfield(param, 'init_t_start')
     t_start = param.init_t_start;
@@ -417,13 +420,14 @@ if init_flag
     t_data = init_m.t_data;
     fprintf('rel_val, end_iter, t_facet and t_data uploaded \n\n')
 else
-    rel_val = zeros(param.max_iter, 1);
-    end_iter = zeros(param.max_iter, 1);
-    t_facet = zeros(param.max_iter, 1);
-    t_data = zeros(param.max_iter, 1);
+    rel_val = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    end_iter = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    t_facet = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    t_data = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
     fprintf('rel_val, end_iter, t_facet and t_data initialized \n\n')
 end
 
+%! check warm-start worked as expected
 if init_flag
     spmd
         if labindex > Qp.Value
@@ -447,7 +451,7 @@ if init_flag
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
             x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                 offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
         end
     end
@@ -469,10 +473,11 @@ if init_flag
 end
 fprintf("Adaptive epsilon: %d, adaptive epsilon start at: %d\n\n", param.use_adapt_eps, param.adapt_eps_start)
 start_loop = tic;
+
 % profile on
-for t = t_start : param.max_iter
+for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     
-    %fprintf('Iter %i\n',t);
+
     start_iter = tic;
     
     spmd
@@ -489,7 +494,7 @@ for t = t_start : param.max_iter
                 labSend(xhat_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
             end
             
-            % update ghost cells (versions of xhat with overlap)
+            % update borders (-> versions of xhat with overlap)
             tw = tic;
             x_overlap = zeros([max_dims, size(xsol_q, 3)]);
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
@@ -514,8 +519,7 @@ for t = t_start : param.max_iter
                 g_q(:,:,c_chunksp.Value{i}) = g_q(:,:,c_chunksp.Value{i}) + labReceive(Qp.Value+i);
             end            
         else
-            % data nodes (Q+1:Q+K) (no data blocking, just frequency for
-            % the moment)
+            % data nodes (Q+1:Q+K) (no parallelisation over data blocks, just frequency)
             % retrieve xhat_i from the prior/primal nodes
             for q = 1:Qp.Value
                 xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
@@ -566,7 +570,7 @@ for t = t_start : param.max_iter
         t_data(t) = t_data(t) + t_op{i};
     end
     t_data(t) = t_data(t)/K;
-    fprintf('Iter = %i, Time = %e, t_facet = %e, t_data = %e, Rel_error = %e\n',t,end_iter(t),t_facet(t),t_data(t),rel_val(t));
+    fprintf('Iter = %i, time = %e, t_facet = %e, t_data = %e, rel_var = %e\n',t,end_iter(t),t_facet(t),t_data(t),rel_val(t));
     
     %% Retrieve value of the monitoring variables (residual norms + epsilons)
     norm_epsilon_check_c = 0;
@@ -604,7 +608,7 @@ for t = t_start : param.max_iter
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
                 [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                    offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                    offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                     offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
             end
         end
@@ -656,51 +660,61 @@ for t = t_start : param.max_iter
                 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);        
         end
     end
-    
-    %% Global stopping criteria
-    % TODO: TO BE UPDATED (later: should rely on relative variation between consecutive reweights)
-    if t>1 && reweight_step_count >= param.total_reweights && (rel_val(t) < param.rel_val && ...
-        (norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c) && ...
-        (norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a) || ...
-        (t - reweight_last_step_iter >= param.ppd_max_iter))
-        flag = 1;
-        break;
-    end
-    %! --
-    
+
+    %% Check convergence pdfb (inner solver)
+    %! -- TO BE CHECKED
+    pdfb_converged = (t - reweight_last_step_iter + 1 > param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
+        ( t - reweight_last_step_iter + 1 >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
+            (rel_val(t) < param.pdfb_rel_var && ...
+            norm_residual_check_a <= param.pdfb_fidelity_tolerance*norm_epsilon_check_a && ...
+            norm_residual_check_c <= param.pdfb_fidelity_tolerance*norm_epsilon_check_c) ... % relative variation and data fidelity within tolerance
+        ); %! take 5000 iterations in this case
+
     %% Update epsilons (in parallel)
-    if param.use_adapt_eps && (t > param.adapt_eps_start) && (rel_val(t) < param.adapt_eps_rel_var)
+    flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update 
+    (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
+    (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
+    
+    if flag_epsilonUpdate
         spmd
             if labindex > Qp.Value
                 [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_val(t), norm_res, ...
                     adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
-                    adapt_eps_change_percentage.Value); %,l2_upper_bound
+                    adapt_eps_change_percentage.Value);
             end
         end
     end
-    
-    %% Reweighting (in parallel)
-    %! -- TO BE CHECKED
-%     if (param.step_flag && t>500) % rel_fval(t) < param.reweight_rel_var)
-%         reweight_steps = (t: param.reweight_step_size :param.max_iter+(2*param.reweight_step_size));
-%         param.step_flag = 0;
-%     end
-    is_converged_ppd = ((t - reweight_last_step_iter) >= param.ppd_min_iter) && (((rel_val(t) <= param.reweight_rel_val) && ...
-    (norm_residual_check_c <= param.adapt_eps_tol_out*norm_epsilon_check_c) && ...
-    (norm_residual_check_a <= param.adapt_eps_tol_out*norm_epsilon_check_a)) || ...
-    (reweight_step_count ~= 0 && (t - reweight_last_step_iter) >= param.ppd_max_iter) ||...
-    (reweight_step_count == 0 && (t - reweight_last_step_iter) >= 5000));
     %! --
-        
-    if is_converged_ppd && (reweight_step_count < param.total_reweights) % corresponds to the PPD stopping criterion
-%     if (param.use_reweight_steps && t == reweight_steps(rw_counts) && t < param.reweight_max_reweight_itr) || ...
-%             (param.use_reweight_eps && rel_val(t) < param.reweight_rel_var && ...
-%             t - reweight_last_step_iter > param.reweight_min_steps_rel_var && t < param.reweight_max_reweight_itr) % corresponds to the PPD stopping criterion 
-        fprintf('Reweighting: %i\n\n', reweight_step_count);
-        
-        % get xsol back from the workers
+    
+    %% Reweighting (in parallel)   
+    if pdbf_converged 
+        % Evaluate relative variation for the reweighting scheme
+        spmd 
+            if labindex <= Qp.Value
+                rel_x_reweighting_q = norm(xlast_reweight_q(:) - xsol_q(:))^2;
+                norm_x_reweighting_q = norm(xlast_reweight_q(:))^2;
+                xlast_reweight_q = xsol_q;
+            end
+        end
+        rel_x_reweighting = 0;
+        norm_x_reweighting = 0;    
         for q = 1:Q
-            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+            rel_x_reweighting = rel_x_reweighting + rel_x_reweighting_q{q};
+            norm_x_reweighting = norm_x_reweighting + norm_x_reweighting_q{q};
+        end
+        rel_x_reweighting = sqrt(rel_x_reweighting/norm_x_reweighting);
+
+        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count, rel_x_reweighting);
+
+        reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
+            reweight_step_count >  param.reweighting_min_iter && ...   % minimum number of reweighting iterations
+            ( reweight_step_count <= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
+            rel_x_reweighting <= param.reweighting_rel_var ...        % relative variation
+            );
+
+        if reweighting_converged
+            flag_convergence = 1;
+            break;
         end
         
         spmd
@@ -718,9 +732,9 @@ for t = t_start : param.max_iter
                 [weights1_, weights0_] = update_weights_overlap2(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                    reweight_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+                    reweighting_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
                 if flag_homotopy
-                    reweight_alphap = max(reweight_alpha_ffp.Value*reweight_alphap, 1);
+                    reweighting_alphap = max(reweighting_alpha_ffp.Value*reweighting_alphap, 1);
                 end
                 %! --
             else
@@ -731,10 +745,10 @@ for t = t_start : param.max_iter
         end
         %! -- TO BE CHECKED
         if flag_homotopy
-            reweight_alpha = max(reweight_alpha_ff * reweight_alpha, 1);
+            reweighting_alpha = max(param.reweighting_alpha_ff * reweighting_alpha, 1);
         end
         %! --   
-        param.reweight_alpha = reweight_alpha;
+        param.reweighting_alpha = reweighting_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1;
@@ -808,7 +822,7 @@ for t = t_start : param.max_iter
                 x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                 x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
                 [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                    offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                    offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
                     offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
                 end
             end
@@ -829,14 +843,13 @@ for t = t_start : param.max_iter
             end
         end 
 
-        if (reweight_step_count >= param.total_reweights)
+        if (reweight_step_count >= param.reweighting_max_iter)
             fprintf('\n\n No more reweights \n\n');
-            break;
-        end 
+            break; %! TO BE CHECKED
+        end
         
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
-        rw_counts = rw_counts + 1;
     end
 end
 toc(start_loop)
@@ -853,7 +866,7 @@ spmd
         x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
         
         [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-            offset, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+            offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
     else
         res_ = compute_residual_images_dr_block_new(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Tp, Ap, Atp, Hp, Wp, Wmp, reduction_version); % *_dr w/o data blocking
@@ -911,7 +924,7 @@ m.xsol = xsol;
 % norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
 % 
 % Update param structure and save
-param.reweight_alpha = reweight_alpha;
+param.reweighting_alpha = reweighting_alpha;
 param.init_reweight_step_count = reweight_step_count;
 param.init_reweight_last_iter_step = t;
 param.init_t_start = t+1;
@@ -958,21 +971,16 @@ norm_epsilon_check_a = sqrt(norm_epsilon_check_a);
 norm_residual_check_a = sqrt(norm_residual_check_a);
 
 if (param.verbose > 0)
-    if (flag == 1)
+    if (flag_convergence == 1)
         fprintf('Solution found\n');
-        fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
-        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-        fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
-        fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
     else
         fprintf('Maximum number of iterations reached\n');
-        fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
-        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-        fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
-        fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
     end
+    fprintf('Iter %i\n',t);
+    fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
+    fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+    fprintf('epsilon_c = %e, residual_c = %e\n', norm_epsilon_check_c, norm_residual_check_c);
+    fprintf('epsilon_a = %e, residual_a = %e\n', norm_epsilon_check_a, norm_residual_check_a);
 end
 
 end

@@ -713,6 +713,7 @@ m.v0 = v0_{1};
 m.v1 = v1_{2};
 m.weights0 = weights0_{1};
 m.weights1 = weights1_{2};
+
 % Retrieve variables from workers
 % data nodes
 for k = 1:K

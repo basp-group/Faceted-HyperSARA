@@ -260,6 +260,7 @@ if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
     fprintf('reweight_step_count uploaded\n\n')
 else
+    param.init_reweight_step_count = 1;
     reweight_step_count = 1;
     fprintf('reweight_step_count initialized \n\n')
 end
@@ -268,6 +269,7 @@ if isfield(param,'init_reweight_last_iter_step')
     reweight_last_step_iter = param.init_reweight_last_iter_step;
     fprintf('reweight_last_iter_step uploaded \n\n')
 else
+    param.init_reweight_last_iter_step = 1;
     reweight_last_step_iter = 1;
     fprintf('reweight_last_iter_step initialized \n\n')
 end
@@ -606,7 +608,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         t_data(t) = t_data(t) + t_op{i};
     end
     t_data(t) = t_data(t)/K;
-    fprintf('Iter = %i, Time = %e, t_facet = %e, t_data = %e\n',t,end_iter(t),t_facet(t),t_data(t));
+    fprintf('Iter = %i, time = %e, t_facet = %e, t_data = %e, rel_var = %e\n',t,end_iter(t),t_facet(t),t_data(t),rel_va(t));
     
     %% Retrieve value of the monitoring variables (residual norms + epsilons)
     norm_epsilon_check = 0;
@@ -680,7 +682,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         spmd
             if labindex > Qp.Value
                 [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_val(t), norm_res, ...
-                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, adapt_eps_rel_var.Value, ...
+                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
                     adapt_eps_change_percentage.Value);
             end
         end
@@ -689,21 +691,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     
     %% Reweighting (in parallel)
     if pdfb_converged
-        fprintf('Reweighting: %i\n\n', reweight_step_count);
-
-        % compute SNR
-        % get xsol back from the workers
-        for q = 1:Q
-            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-        end
-        sol = reshape(xsol(:),numel(xsol(:))/c,c);
-        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(c,1);
-        for i = 1:c
-            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-        end
-        SNR_average = mean(psnrh);
-
         % Evaluate relative variation for the reweighting scheme
         spmd 
             if labindex <= Qp.Value
@@ -719,6 +706,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             norm_x_reweighting = norm_x_reweighting + norm_x_reweighting_q{q};
         end
         rel_x_reweighting = sqrt(rel_x_reweighting/norm_x_reweighting);
+
+        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count, rel_x_reweighting);
 
         reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >  param.reweighting_min_iter && ...   % minimum number of reweighting iterations
@@ -771,6 +760,19 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         end
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+            % compute SNR
+            % get xsol back from the workers
+            for q = 1:Q
+                xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+            end
+            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+            psnrh = zeros(c,1);
+            for i = 1:c
+                psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+            end
+            SNR_average = mean(psnrh);
+
             % Save parameters (matfile solution)
             m = matfile([name, '_', ...
               num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
@@ -836,20 +838,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 l21 = l21 + l21_norm{q};
                 nuclear = nuclear + nuclear_norm{q};
             end
-            
-            % SNR
-            % get xsol back from the workers
-            for q = 1:Q
-                xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-            end
-            sol = reshape(xsol(:),numel(xsol(:))/c,c);
-            SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-            psnrh = zeros(c,1);
-            for i = 1:c
-                psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-            end
-            SNR_average = mean(psnrh);
-            
+                        
             % Log
             if (param.verbose >= 1)
                 fprintf('Backup iter: %i\n',t);
@@ -861,7 +850,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         
         if (reweight_step_count >= param.reweighting_max_iter)
             fprintf('\n\n No more reweights \n\n');
-            break;
+            break; %! TO BE CHECKED
         end
 
         reweight_step_count = reweight_step_count + 1;
@@ -982,17 +971,13 @@ norm_residual_check = sqrt(norm_residual_check);
 if (param.verbose > 0)
     if (flag_convergence == 1)
         fprintf('Solution found\n');
-        fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
-        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
-        fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     else
         fprintf('Maximum number of iterations reached\n');
-        fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
-        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
-        fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
+    fprintf('Iter %i\n',t);
+    fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
+    fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
+    fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
 end
 
 end_iter = end_iter(end_iter > 0);
