@@ -1,9 +1,9 @@
-% function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
-%     algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
-%     flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
-%     flag_computeOperatorNorm, flag_solveMinimization, ...
-%     cube_path, coverage_path, gam, rw, flag_primal, flag_homotopy, ... 
-%     flag_computeLowerBounds)
+function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
+    algo_version, window_type, ncores_data, ind, overlap_fraction, nReweights, ...
+    flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
+    flag_computeOperatorNorm, flag_solveMinimization, ...
+    cube_path, coverage_path, gam, rw, flag_primal, flag_homotopy, ... 
+    flag_computeLowerBounds)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -19,20 +19,6 @@
 %     p (double): [description]
 %     input_snr (double): input SNR value (in dB)
 %     algo_version (string): selected version of the solver:
-%        - 's'             'standard': overlap of the faceted nuclear norm 
-%                          equal to the
-%                          one needed for the faceted SARA dictionary, w/o 
-%                          spatial weights (apodization window)
-%        - 's2'            'standard2': alternative parallellization scheme 
-%                          compared to 'standard' (gather image and data on 
-%                          the same nodes)
-%        - 'c'             'constant': constant overlap for the faceted 
-%                          nuclear norm, w/o spatial weights (apodization 
-%                          window)
-%        - 'w'             'weighted': overlap of the faceted nuclear norm 
-%                          equal to the one needed for the faceted SARA 
-%                          dictionary,  using spatial weights (apodization 
-%                          window)
 %        - 'cw'            cst_weighted: constant overlap taken for the 
 %                          faceted nuclear norm, using spatial weights 
 %                          (apodization window)
@@ -77,41 +63,39 @@
 
 %% PARAMETERS FOR DEBUGGING
 
-image_name = 'W28_512';
-nChannels = 3; % 60;
-Qx = 2;
-Qy = 1;
-Qc = 1;
-p = 0; % percentage
-nReweights = 1;
-input_snr = 40; % input SNR (in dB)
-algo_version = 'cw'; % 'cst_weighted';
-window_type = 'triangular'; % 'hamming', 'pc'
-ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
-ind = 1;  % index of the spectral facet to be reconstructed
-gam = 1e-5;
-flag_generateCube = 0;
-flag_generateCoverage = 0;
-flag_generateVisibilities = 0;
-flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-flag_computeOperatorNorm = 0;
-flag_solveMinimization = true;
-cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
-cube_path = cubepath(nChannels);
-coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
-
-rw = 1;
-%overlap_size = 341; % 256;
-flag_primal = 0;
-flag_homotopy = 0;
-flag_computeLowerBounds = 1;
-overlap_fraction = 0.5;
-
-%! to test SARA: take Qc = nChannels
-algo_version = 'sara';
-Qc = nChannels;
-%
-% % TODO: add warm-restart for this version of the main script
+% image_name = 'W28_512';
+% nChannels = 3; % 60;
+% Qx = 2;
+% Qy = 1;
+% Qc = 1;
+% p = 0; % percentage
+% nReweights = 1;
+% input_snr = 40; % input SNR (in dB)
+% algo_version = 'cw'; % 'cst_weighted';
+% window_type = 'triangular'; % 'hamming', 'pc'
+% ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
+% ind = 1;  % index of the spectral facet to be reconstructed
+% gam = 1e-5;
+% flag_generateCube = 0;
+% flag_generateCoverage = 0;
+% flag_generateVisibilities = 0;
+% flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
+% flag_computeOperatorNorm = 0;
+% flag_solveMinimization = true;
+% cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
+% cube_path = cubepath(nChannels);
+% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
+% 
+% rw = 1;
+% %overlap_size = 341; % 256;
+% flag_primal = 0;
+% flag_homotopy = 1;
+% flag_computeLowerBounds = 1;
+% overlap_fraction = 0.5;
+% 
+% %! to test SARA: take Qc = nChannels
+% % algo_version = 'sara';
+% % Qc = nChannels;
 
 %%
 format compact;
@@ -190,6 +174,9 @@ else
 end
 
 %% Generate spectral facets (interleaved sampling)
+if strcmp(algo_version, 'sara')
+    Qc = nChannels; %! handle each channel separately
+end
 id = split_range_interleaved(Qc, nChannels);
 if ind > 0
     x0 = x0(:,:,id{ind});
@@ -199,7 +186,6 @@ if ind > 0
 else
     nchans = nChannels;
 end
-%! define problem dimensions and overlap size
 channels = 1:nchans;
 overlap_size = floor(((1 - overlap_fraction)/overlap_fraction)*[Ny, Nx]./[Qy, Nx]);
 overlap_size(overlap_size<=1) = 0;
@@ -452,9 +438,8 @@ if flag_solveMinimization
     param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
-    %! -- TO BE CHECKED: see where reweighting_alpha needs to start from
-    % reweighting
-    param_HSI.reweighting_max_iter = nReweights; % maximum number of reweighting iterations reached  
+    %! -- TO BE CHECKED
+    param_HSI.reweighting_max_iter = nReweights+1; % maximum number of reweighting iterations reached  
     param_HSI.reweighting_rel_var = 1e-5;       % relative variation (reweighting)
     if flag_homotopy
         param_HSI.reweighting_alpha = 10;
@@ -551,13 +536,12 @@ if flag_solveMinimization
                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
                     filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)), flag_homotopy);
 
-            case 'no'
-                % TODO: to be debugged in this setting (-> no overlap case obtained by setting overlap to 0 in each direction)
-                % no overlap for the facets on which the nuclear norms are taken
-                [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-                    facetHyperSARA_cw2(y_spmd, epsilon_spmd, ...
-                    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
-                    filter_length, nlevel, cell_c_chunks, channels(end), [0, 0], 'none', fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)), flag_homotopy);
+%             case 'no'
+%                 % no overlap for the facets on which the nuclear norms are taken
+%                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
+%                     facetHyperSARA_cw2(y_spmd, epsilon_spmd, ...
+%                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
+%                     filter_length, nlevel, cell_c_chunks, channels(end), [0, 0], 'none', fullfile(results_path,warm_start(nChannels)), fullfile(results_path,temp_results_name(nChannels)), flag_homotopy);
             otherwise
                 error('Unknown solver version.')
         end
