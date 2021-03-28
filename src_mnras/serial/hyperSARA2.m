@@ -566,19 +566,11 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     
     %% Reweighting (in parallel)
     if pdfb_converged 
-        fprintf('Reweighting: %i\n\n', reweight_step_count);
-
-        % compute SNR
-        sol = reshape(xsol(:),numel(xsol(:))/c,c);
-        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(c,1);
-        for i = 1:c
-            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-        end
-        SNR_average = mean(psnrh);
-
         rel_x_reweighting = norm(xlast_reweight(:) - xsol(:))/norm(xlast_reweight(:));
         xlast_reweight = xsol;
+
+        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count, rel_x_reweighting);
+        
         reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >  param.reweighting_min_iter && ...   % minimum number of reweighting iterations
             ( reweight_step_count <= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
@@ -617,9 +609,19 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         end  
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+
+            % compute SNR
+            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+            psnrh = zeros(c,1);
+            for i = 1:c
+                psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+            end
+            SNR_average = mean(psnrh);
+
             % Save parameters (matfile solution)
             m = matfile([name, '_', ...
-              num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
+              num2str(param.cube_id), '_', num2str(param.gamma), '_', num2str(reweight_step_count), '.mat'], ...
               'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
@@ -657,16 +659,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             
             nuclear = nuclear_norm(xsol);
             l21 = compute_sara_prior(xsol, Psit, s);
-            
-            % SNR
-            sol = reshape(xsol(:),numel(xsol(:))/c,c);
-            SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-            psnrh = zeros(c,1);
-            for i = 1:c
-                psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-            end
-            SNR_average = mean(psnrh);
-            
+
             % Log
             if (param.verbose >= 1)
                 fprintf('Backup iter: %i\n',t);
@@ -678,7 +671,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
         if (reweight_step_count >= param.reweighting_max_iter)
             fprintf('\n\n No more reweights \n\n');
-            break;
+            break; %! TO BE CHECKED
         end     
 
         reweight_step_count = reweight_step_count + 1;
@@ -767,17 +760,13 @@ l21 = compute_sara_prior(xsol, Psit, s);
 if (param.verbose > 0)
     if (flag_convergence == 1)
         fprintf('Solution found\n');
-        fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
-        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
-        fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     else
         fprintf('Maximum number of iterations reached\n');
-        fprintf('Iter %i\n',t);
-        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
-        fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
-        fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
+    fprintf('Iter %i\n',t);
+    fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
+    fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
+    fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
 end
 
 end_iter = end_iter(end_iter > 0);
