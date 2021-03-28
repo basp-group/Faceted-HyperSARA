@@ -384,7 +384,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
 
     if flag_epsilonUpdate
-        [epsilon, t_block] = update_epsilon(epsilon, t, t_block, rel_fval(t),...
+        [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
             norm_res, param.adapt_eps_tol_in, param.adapt_eps_tol_out, param.adapt_eps_steps, ...
             param.adapt_eps_change_percentage);
     end
@@ -398,7 +398,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
         reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >  param.reweighting_min_iter && ...   % minimum number of reweighting iterations
-            ( reweight_step_count <= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
+            ( reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
             rel_x_reweighting <= param.reweighting_rel_var ...        % relative variation
             );
 
@@ -434,12 +434,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1; 
-
-        if (reweight_step_count >= param.reweighting_max_iter)
-            fprintf('\n\n No more reweights \n\n');
-        end
         
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+        if (reweight_step_count == 1) || (reweight_step_count == 2) || (~mod(reweight_step_count,6))
 
             % compute SNR
             SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
@@ -483,14 +479,12 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
             end
         end
-       
-        if (reweight_step_count >= param.reweighting_max_iter)
-            fprintf('\n\n No more reweights \n\n');
-            break; %! TO BE CHECKED
-        end   
 
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
+        if (reweight_step_count >= param.reweighting_max_iter)
+            fprintf('\n\n No more reweights \n\n');
+        end
     end
 end
 
@@ -547,7 +541,7 @@ clear m
 
 % Final log
 if (param.verbose > 0)
-    if (flag == 1)
+    if (flag_convergence == 1)
         fprintf('Solution found\n');
     else
         fprintf('Maximum number of iterations reached\n');

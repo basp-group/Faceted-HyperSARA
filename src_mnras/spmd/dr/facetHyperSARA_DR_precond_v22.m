@@ -678,7 +678,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     if flag_epsilonUpdate
         spmd
             if labindex > Qp.Value
-                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, rel_val(t), norm_res, ...
+                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, norm_res, ...
                     adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
                     adapt_eps_change_percentage.Value);
             end
@@ -708,7 +708,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
         reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >  param.reweighting_min_iter && ...   % minimum number of reweighting iterations
-            ( reweight_step_count <= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
+            ( reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
             rel_x_reweighting <= param.reweighting_rel_var ...        % relative variation
             );
 
@@ -758,18 +758,14 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         for k = 1 : K
             res(:,:,c_chunks{k}) = res_{Q+k};
         end
-        
-        if (reweight_step_count >= param.total_reweights)
-            param.reweight_max_reweight_itr = t+1;
-        end
-        
+                
         fitswrite(xsol, ['results/', name, '_xsol_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma1), '_gamma0_', num2str(param.gamma0), ...
             '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
         
         fitswrite(res, ['results/', name, '_res_it', num2str(t), '_reweight', num2str(reweight_step_count), '_gamma', num2str(param.gamma1), '_gamma0_', num2str(param.gamma0), ...
             '_', num2str(realdatablocks), 'b_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), '_adpteps', num2str(param.use_adapt_eps), '.fits']);
                 
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,1))
+        if (reweight_step_count == 1) || (reweight_step_count == 2) || (~mod(reweight_step_count,6))
             % Save parameters (matfile solution)
             mkdir('./results/')
             m = matfile(['./results/', name, '_dr_co_w_real_' ...
@@ -843,13 +839,11 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             end
         end 
 
-        if (reweight_step_count >= param.reweighting_max_iter)
-            fprintf('\n\n No more reweights \n\n');
-            break; %! TO BE CHECKED
-        end
-        
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
+        if (reweight_step_count >= param.reweighting_max_iter)
+            fprintf('\n\n No more reweights \n\n');
+        end
     end
 end
 toc(start_loop)
