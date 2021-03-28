@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 
 import csv, subprocess, os
+import numpy as np
+import time
 
-parameter_file_full_path = "job_params_mnras.csv"
+parameter_file_full_path = "job_params_spatial.csv"
 
 with open(parameter_file_full_path, "r") as csvfile:
 
     reader = csv.reader(csvfile)
 
     for job in reader:
+
+        ncores = np.minimum(int(job[2])*int(job[3]) + int(job[10]) + 1, 36) # max number of cpus = 36
 
         slurm_command = """sbatch --job-name={5}_{1} --ntasks-per-node={19} \
             -e {5}_{0}_L={1}_Qx={2}_Qy={3}_Qc={4}_id={8}_overlap={9}_gamma={18}_rw={20}.err \
@@ -22,5 +26,7 @@ with open(parameter_file_full_path, "r") as csvfile:
         exit_status = subprocess.call(slurm_command, shell=True)
         if exit_status is 1:  # Check to make sure the job submitted
             print("Job {0} failed to submit".format(slurm_command))
+
+        time.sleep(5)
 
 print("Submission complete.")
