@@ -16,7 +16,7 @@ with open(parameter_file_full_path, "r") as csvfile:
 
         print("Number of cpus: {0}".format(ncores))
 
-        slurm_command = """sbatch --job-name=spatial_{1} --tasks-per-node={22} \
+        slurm_command = """sbatch --job-name=spatial_{1} --ntasks-per-node={22} \
             -e {0}_{1}_L={2}_Qx={4}_Qy={5}_Qc={6}_id={3}_overlap={8}_gamma={10}_rw={11}.err \
             -o {0}_{1}_L={2}_Qx={4}_Qy={5}_Qc={6}_id={3}_overlap={8}_gamma={10}_rw={11}.out \
             -v --export=ALL,imgname={0},algoversion={1},nchannels={2},ind={3},Qx={4},Qy={5},Qc={6},wintype={7},overlapx={8},overlapy={9},gam={10},
