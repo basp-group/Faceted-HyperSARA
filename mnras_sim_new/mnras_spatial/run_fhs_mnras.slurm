@@ -3,15 +3,15 @@
 #SBATCH --time=96:00:00
 # #SBATCH --exclusive
 #SBATCH --nodes=1
-#SBATCH --tasks-per-node=1
-# #SBATCH --cpus-per-task=25
+# #SBATCH --tasks-per-node=1
+#SBATCH --cpus-per-task=1
 #SBATCH --account=ec110-guest
 #SBATCH --partition=standard
 #SBATCH --qos=standard
 
 # # option indicated in the cirrus documentation
-# #SBATCH --tasks-per-node=1
-# #SBATCH --cpus-per-task=36
+# #SBATCH --tasks-per-node=36
+# #SBATCH --cpus-per-task=1
 
 # Change to the directory that the job was submitted from
 cd $SLURM_SUBMIT_DIR
