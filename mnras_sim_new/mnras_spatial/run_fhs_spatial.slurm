@@ -3,8 +3,9 @@
 #SBATCH --time=96:00:00
 # #SBATCH --exclusive
 #SBATCH --nodes=1
+#SBATCH --tasks-per-node=1
+# # option indicated in the cirrus documentation
 # #SBATCH --tasks-per-node=1
-#SBATCH --cpus-per-task=1
 # #SBATCH --cpus-per-task=36
 #SBATCH --account=ec110-guest
 #SBATCH --partition=standard
