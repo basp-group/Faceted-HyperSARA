@@ -1,8 +1,8 @@
-function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
-    algo_version, window_type, ncores_data, ind, overlap_fraction, nReweights, ...
-    flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
+function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
+    algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
+    flag_generateCube, flag_generateVisibilities, ...
     flag_computeOperatorNorm, flag_solveMinimization, ...
-    cube_path, coverage_path, gam, rw, flag_primal, flag_homotopy, ... 
+    cube_path, coverage_path, gam, rw, flag_homotopy, ... 
     flag_computeLowerBounds)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
@@ -91,11 +91,18 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 % flag_primal = 0;
 % flag_homotopy = 1;
 % flag_computeLowerBounds = 1;
-% overlap_fraction = 0.5;
-% 
-% %! to test SARA: take Qc = nChannels
-% % algo_version = 'sara';
-% % Qc = nChannels;
+% overlap_size = [0, 512];
+% % overlap_fraction = 0;
+% % 
+% % %! to test SARA: take Qc = nChannels
+% % % algo_version = 'sara';
+% % % Qc = nChannels;
+
+% unused parameters (in the mnras experiments)
+flag_generateUndersampledCube = false;
+flag_generateCoverage = false;
+p = 1;
+input_snr = 40;
 
 %%
 format compact;
@@ -113,25 +120,25 @@ disp(['Generating image cube: ', num2str(flag_generateCube)]);
 disp(['Generating coverage: ', num2str(flag_generateCoverage)]);
 disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
 
-addpath ../../lib/generate_data/
-addpath ../../lib/operators/
-addpath ../../lib/measurement-operator/nufft/
-addpath ../../lib/utils/
-addpath ../../lib/faceted-wavelet-transform/src
-addpath ../../data/
-addpath ../../src_mnras/
+addpath lib/generate_data/
+addpath lib/operators/
+addpath lib/measurement-operator/nufft/
+addpath lib/utils/
+addpath lib/faceted-wavelet-transform/src
+addpath data/
+addpath src_mnras/
 if strcmp(algo_version, "hypersara")
-    addpath ../../src_mnras/serial
+    addpath src_mnras/serial
 else
-    addpath ../../src_mnras/spmd
-    addpath ../../src_mnras/spmd/weighted
+    addpath src_mnras/spmd
+    addpath src_mnras/spmd/weighted
 end
 
 
 % setting paths to results and reference image cube
 % coverage_path = strcat(coverage_path, '.fits');
 % cube_path = strcat(cube_path, '.fits');
-data_path = '../../data/';
+data_path = 'data/';
 results_path = fullfile('results/', image_name);
 reference_cube_path = fullfile(data_path, strcat(image_name, '.fits'));
 freq_name = @(nchan) ['freq_', image_name, '_L=',num2str(nchan), '.mat'];
@@ -187,8 +194,13 @@ else
     nchans = nChannels;
 end
 channels = 1:nchans;
-overlap_size = floor(((1 - overlap_fraction)/overlap_fraction)*[Ny, Nx]./[Qy, Nx]);
-overlap_size(overlap_size<=1) = 0;
+
+% issue here! -> issue an error if greater than 0.5
+% if overlap_fraction > 0
+%     overlap_size = floor(((overlap_fraction)/(1-overlap_fraction))*[Ny, Nx]./[Qy, Qx]);
+% end
+% overlap_size(overlap_size<=1) = 0;
+% overlap_size([Qy,Qx]<2) = 0;
 
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
@@ -561,7 +573,7 @@ if flag_solveMinimization
         '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), '_Qc=', num2str(Qc), ...
         '_ind=', num2str(ind), ...
         '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_'), ...
-        '_primal=', num2str(flag_primal), ...
         '_homotopy=', num2str(flag_homotopy), ...
         '.fits')))
+%     '_primal=', num2str(flag_primal), ...
 end
