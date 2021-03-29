@@ -32,5 +32,7 @@ echo  "main_simulated_data_mnras('"$imagename"',"$nchannels","$Qx","$Qy","$Qc",'
 
 matlab -nodisplay < temporary_file_${SLURM_JOB_ID}.m > spatial_${wintype}_id=${ind}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_overlap=${overlapx}_gam=${gam}_rw=${rw}_homotopy=${homotopy}.txt
 
+rm temporary_file_${SLURM_JOB_ID}.m
+
 # rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 # rm -r ../lib/measurement-operator/nufft_$SLURM_JOB_ID
