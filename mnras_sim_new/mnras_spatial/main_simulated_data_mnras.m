@@ -120,18 +120,18 @@ disp(['Generating image cube: ', num2str(flag_generateCube)]);
 disp(['Generating coverage: ', num2str(flag_generateCoverage)]);
 disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
 
-addpath lib/generate_data/
-addpath lib/operators/
-addpath lib/measurement-operator/nufft/
-addpath lib/utils/
-addpath lib/faceted-wavelet-transform/src
+addpath ../../lib/generate_data/
+addpath ../../lib/operators/
+addpath ../../lib/measurement-operator/nufft/
+addpath ../../lib/utils/
+addpath ../../lib/faceted-wavelet-transform/src
 addpath data/
-addpath src_mnras/
+addpath ../../src_mnras/
 if strcmp(algo_version, "hypersara")
-    addpath src_mnras/serial
+    addpath ../../src_mnras/serial
 else
-    addpath src_mnras/spmd
-    addpath src_mnras/spmd/weighted
+    addpath ../../src_mnras/spmd
+    addpath ../../src_mnras/spmd/weighted
 end
 
 
