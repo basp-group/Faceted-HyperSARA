@@ -1,5 +1,5 @@
 function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_snr, ...
-    algo_version, window_type, ncores_data, ind, overlap_fraction, nReweights, ...
+    algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
     flag_generateCube, flag_generateCoverage, flag_generateVisibilities, flag_generateUndersampledCube, ...
     flag_computeOperatorNorm, flag_solveMinimization, ...
     cube_path, coverage_path, gam, rw, flag_primal, flag_homotopy, ... 
@@ -91,11 +91,12 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, p, input_s
 % flag_primal = 0;
 % flag_homotopy = 1;
 % flag_computeLowerBounds = 1;
-% overlap_fraction = 0.5;
-% 
-% %! to test SARA: take Qc = nChannels
-% % algo_version = 'sara';
-% % Qc = nChannels;
+% overlap_size = [0, 512];
+% % overlap_fraction = 0;
+% % 
+% % %! to test SARA: take Qc = nChannels
+% % % algo_version = 'sara';
+% % % Qc = nChannels;
 
 %%
 format compact;
@@ -187,8 +188,13 @@ else
     nchans = nChannels;
 end
 channels = 1:nchans;
-overlap_size = floor(((1 - overlap_fraction)/overlap_fraction)*[Ny, Nx]./[Qy, Nx]);
-overlap_size(overlap_size<=1) = 0;
+
+% issue here! -> issue an error if greater than 0.5
+% if overlap_fraction > 0
+%     overlap_size = floor(((overlap_fraction)/(1-overlap_fraction))*[Ny, Nx]./[Qy, Qx]);
+% end
+% overlap_size(overlap_size<=1) = 0;
+% overlap_size([Qy,Qx]<2) = 0;
 
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...

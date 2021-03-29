@@ -33,6 +33,8 @@ crop_l21 = Composite();
 
 Q = Qx*Qy;
 
+flag_overlap = any(d > 0);
+
 % initialize composite variables and constants for the faceted prior (l21
 % and nuclear norms)
 for q = 1:Q
@@ -100,7 +102,11 @@ for q = 1:Q
     end
     
     % define the weights (depends on the position of the facet inside the grid)
-    w{q} =  generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), d);
+    if flag_overlap
+        w{q} = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), d);
+    else
+        w{q} = ones(dims_o(:,q)); %! in this case, dims = dims_o
+    end
 end
 
 end
