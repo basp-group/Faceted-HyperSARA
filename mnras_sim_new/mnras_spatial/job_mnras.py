@@ -18,8 +18,7 @@ with open(parameter_file_full_path, "r") as csvfile:
         slurm_command = r"""sbatch --job-name=spatial_{1} --cpus-per-task={21} \
         -e {0}_{1}_L={2}_Qx={4}_Qy={5}_Qc={6}_id={3}_overlap={8}_gamma={10}_rw={11}.err \
         -o {0}_{1}_L={2}_Qx={4}_Qy={5}_Qc={6}_id={3}_overlap={8}_gamma={10}_rw={11}.out \
-        -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={3},Qx={4},Qy={5},Qc={6},wintype={7},overlapx={8},overlapy={9},gam={10},
-        nreweights={11},gencube={12},genvis={13},computenorm={14},solve={15},covpath={16},ncdata={17},rw={18},flaghomotopy={19},lowerbounds={20} \
+        -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={3},Qx={4},Qy={5},Qc={6},wintype={7},overlapx={8},overlapy={9},gam={10},nreweights={11},gencube={12},genvis={13},computenorm={14},solve={15},covpath={16},ncdata={17},rw={18},flaghomotopy={19},lowerbounds={20} \
         run_fhs_mnras.slurm""".format(*job,ncores)
 
         # print(slurm_command) # Uncomment this line when testing to view the sbatch command
