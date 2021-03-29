@@ -23,7 +23,7 @@ with open(parameter_file_full_path, "r") as csvfile:
             nreweights={11},gencube={12},gencov={13},genvis={14},computenorm={15},solve={16},covpath={17},ncdata={18},rw={19},flaghomotopy={20},lowerbounds={21},ncpus={22} \
             run_fhs_spatial.slurm""".format(*job,ncores)
 
-        # print(slurm_command) # Uncomment this line when testing to view the sbatch command
+        print(slurm_command) # Uncomment this line when testing to view the sbatch command
 
         # Comment the following 3 lines when testing to prevent jobs from being submitted
         exit_status = subprocess.call(slurm_command, shell=True)
