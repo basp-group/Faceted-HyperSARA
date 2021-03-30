@@ -82,7 +82,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % flag_computeOperatorNorm = 1;
 % flag_solveMinimization = true;
-% cubepath = @(nchannels) strcat('.', image_name, '_L', num2str(nchannels));
+% cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
 % 
