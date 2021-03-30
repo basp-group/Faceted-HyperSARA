@@ -76,33 +76,32 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index of the spectral facet to be reconstructed
 % gam = 1e-5;
-% flag_generateCube = 0;
+% flag_generateCube = 1;
 % flag_generateCoverage = 0;
-% flag_generateVisibilities = 0;
+% flag_generateVisibilities = 1;
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-% flag_computeOperatorNorm = 0;
+% flag_computeOperatorNorm = 1;
 % flag_solveMinimization = true;
-% cubepath = @(nchannels) strcat('data/', image_name, '_L', num2str(nchannels));
+% cubepath = @(nchannels) strcat('.', image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
 % 
 % rw = 1;
-% %overlap_size = 341; % 256;
 % flag_primal = 0;
 % flag_homotopy = 1;
 % flag_computeLowerBounds = 1;
-% overlap_size = [0, 512];
+% overlap_size = [0, 256];
 % % overlap_fraction = 0;
 % % 
 % % %! to test SARA: take Qc = nChannels
 % % % algo_version = 'sara';
 % % % Qc = nChannels;
-
-% unused parameters (in the mnras experiments)
-flag_generateUndersampledCube = false;
-flag_generateCoverage = false;
-p = 1;
-input_snr = 40;
+% 
+% % unused parameters (in the mnras experiments)
+% flag_generateUndersampledCube = false;
+% flag_generateCoverage = false;
+% p = 1;
+% input_snr = 40;
 
 %%
 format compact;
@@ -125,7 +124,7 @@ addpath ../../lib/operators/
 addpath ../../lib/measurement-operator/nufft/
 addpath ../../lib/utils/
 addpath ../../lib/faceted-wavelet-transform/src
-addpath data/
+addpath ../../data/
 addpath ../../src_mnras/
 if strcmp(algo_version, "hypersara")
     addpath ../../src_mnras/serial
@@ -138,7 +137,7 @@ end
 % setting paths to results and reference image cube
 % coverage_path = strcat(coverage_path, '.fits');
 % cube_path = strcat(cube_path, '.fits');
-data_path = 'data/';
+data_path = '../../data/';
 results_path = fullfile('results/', image_name);
 reference_cube_path = fullfile(data_path, strcat(image_name, '.fits'));
 freq_name = @(nchan) ['freq_', image_name, '_L=',num2str(nchan), '.mat'];
