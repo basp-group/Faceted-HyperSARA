@@ -97,11 +97,11 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % % % algo_version = 'sara';
 % % % Qc = nChannels;
 % 
-% % unused parameters (in the mnras experiments)
-% flag_generateUndersampledCube = false;
-% flag_generateCoverage = false;
-% p = 1;
-% input_snr = 40;
+% unused parameters (in the mnras experiments)
+flag_generateUndersampledCube = false;
+flag_generateCoverage = false;
+p = 1;
+input_snr = 40;
 
 %%
 format compact;
@@ -112,9 +112,9 @@ disp(['Reference image: ', image_name]);
 disp(['nchannels: ', num2str(nChannels)]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
-% disp(['Overlap size: ', num2str(overlap_size)]);
-disp(['Number of data points p per frequency (as a fraction of image size): ', num2str(p)]);
-disp(['Input SNR: ', num2str(input_snr)]);
+disp(['Overlap size: ', num2str(overlap_size)]);
+% disp(['Number of data points p per frequency (as a fraction of image size): ', num2str(p)]);
+% disp(['Input SNR: ', num2str(input_snr)]);
 disp(['Generating image cube: ', num2str(flag_generateCube)]);
 disp(['Generating coverage: ', num2str(flag_generateCoverage)]);
 disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
@@ -203,22 +203,23 @@ channels = 1:nchans;
 
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
-    num2str(nchannels),'_p=',num2str(p),'_snr=', num2str(input_snr),'.mat');
-
+    num2str(nchannels),'.mat');
+ % ,'_p=',num2str(p),'_snr=', num2str(input_snr)
 %! TO BE CHECKED
 results_name_function = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels),'_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
     '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
     '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_'), ...
-    '_p=',num2str(p), ...
-    '_snr=', num2str(input_snr),'.mat');
+    '.mat');
+    % '_p=',num2str(p), ...
+    % '_snr=', num2str(input_snr)
 
 temp_results_name = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
     '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
-    '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_'), ...
-    '_p=',num2str(p), ...
-    '_snr=', num2str(input_snr));
+    '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_'));
+    % '_p=',num2str(p), ...
+    % '_snr=', num2str(input_snr)
 
 warm_start = @(nchannels) strcat(temp_results_name(nchannels),'_rw=', num2str(rw), '.mat');
 
@@ -376,10 +377,10 @@ else
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
         Anorm = pow_method_op(F, Ft, [Ny Nx nchans]);
         save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
-            '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')),'-v7.3', 'Anorm');
+            '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm'); % ,'_p=',num2str(p),'_snr=', num2str(input_snr)
     else
         load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
-            num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind),'_p=',num2str(p),'_snr=', num2str(input_snr), '.mat')));
+            num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat'))); % ,'_p=',num2str(p),'_snr=', num2str(input_snr)
     end
 end
     
@@ -415,14 +416,16 @@ if flag_solveMinimization
     %! -- TO BE CHECKED
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
+    %! needs to be changed for sara: this won't be valid anymore
     if flag_computeLowerBounds
         [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
         nchans, wlt_basis, filter_length, nlevel);
-        save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image');
+        %! recompute the value for gam (ratio between l21 and nuclear norm)
+        gam = nuclear_norm/l21_norm;
+        save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'gam');
     else
         load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat']);
     end
-    mu = nuclear_norm/l21_norm;
     %! --
     
     %% HSI parameter structure sent to the  HSI algorithm
