@@ -435,8 +435,8 @@ if flag_solveMinimization
     param_HSI.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
 
     % pdfb
-    param_HSI.pdfb_min_iter = 300; % minimum number of iterations
-    param_HSI.pdfb_max_iter = 3000; % maximum number of iterations
+    param_HSI.pdfb_min_iter = 100; % minimum number of iterations
+    param_HSI.pdfb_max_iter = 2000; % maximum number of iterations
     param_HSI.pdfb_rel_var = 5e-4; % relative variation tolerance
     param_HSI.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied 
     
@@ -446,16 +446,16 @@ if flag_solveMinimization
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
     param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
-    param_HSI.adapt_eps_rel_var = 5e-4; % bound on the relative change of the solution
+    param_HSI.adapt_eps_rel_var = 1e-5; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
     %! -- TO BE CHECKED
-    param_HSI.reweighting_max_iter = nReweights+1; % maximum number of reweighting iterations reached  
+    param_HSI.reweighting_max_iter = nReweights+1; % maximum number of reweighting iterations reached, weights updated nReweights times
     param_HSI.reweighting_rel_var = 1e-5;       % relative variation (reweighting)
     if flag_homotopy
         param_HSI.reweighting_alpha = 10;
-        param_HSI.reweighting_min_iter = 5; % minimum number of reweighting iterations
-        param_HSI.reweighting_alpha_ff = (1/param_HSI.reweighting_alpha)^(1/param_HSI.reweighting_min_iter); % reach the floor level after reweighting_min_iter reweights (see if a different number would be appropriate)
+        param_HSI.reweighting_min_iter = 6; % minimum number of reweighting iterations, weights updated reweighting_min_iter-1 times
+        param_HSI.reweighting_alpha_ff = (1/param_HSI.reweighting_alpha)^(1/param_HSI.reweighting_min_iter-3); % reach the floor level after min_iter-3 updates of the weights, i.e., min_iter-2 iterations of the reweighting scheme (see if a different number would be appropriate)
         % 0.63 -> otherwise need 10 reweights minimum
         %
         % param_HSI.reweight_alpha_ff = 0.8;
