@@ -416,16 +416,36 @@ if flag_solveMinimization
     %! -- TO BE CHECKED
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
-    %! needs to be changed for sara: this won't be valid anymore
-    if flag_computeLowerBounds
-        [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
-        nchans, wlt_basis, filter_length, nlevel);
-        %! recompute the value for gam (ratio between l21 and nuclear norm)
-        gam = nuclear_norm/l21_norm;
-        save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'gam');
+    if strcmp(algo_version, 'sara')
+        if flag_computeLowerBounds
+            % to be completed
+            dwtmode('zpd')
+            [Psi1, Psit1] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
+            P = length(Psi1);
+            for k = 1 : P
+                f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
+                f = sprintf('%s%i},Ny,Nx);', f,k);
+                Psi{k} = eval(f);
+                b(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
+                ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
+                Psit{k} = eval(ft);
+            end
+            [sig, max_psf, dirty_image] = ...
+                compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, Psit);
+            save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'max_psf', 'dirty_image');
+        else
+            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat']);
+        end
     else
-        load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat']);
-    end
+        if flag_computeLowerBounds
+            [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
+            nchans, wlt_basis, filter_length, nlevel);
+            %! recompute the value for gam (ratio between l21 and nuclear norm)
+            gam = nuclear_norm/l21_norm;
+            save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'gam');
+        else
+            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat']);
+        end
     %! --
     
     %% HSI parameter structure sent to the  HSI algorithm
@@ -434,7 +454,7 @@ if flag_solveMinimization
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator
     param_HSI.gamma0 = 1;  % regularization parameter nuclear norm
-    param_HSI.gamma = gam; % regularization parameter l21-norm (soft th parameter)
+    param_HSI.gamma = gam; % regularization parameter l21-norm (soft th parameter) %! for SARA, take the value given as an input to the solver
     param_HSI.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
 
     % pdfb
@@ -469,7 +489,9 @@ if flag_solveMinimization
     end
     %! --
     param_HSI.reweighting_sig = sig; % estimate of the noise level in SARA space
-    param_HSI.reweighting_sig_bar = sig_bar; % estimate of the noise level in "SVD" space
+    if ~strcmp(algo_version, 'sara') %! if HyperSARA or faceted HyperSARA
+        param_HSI.reweighting_sig_bar = sig_bar; % estimate of the noise level in "SVD" space
+    end
     param_HSI.max_psf = max_psf;
 
     % ellipsoid projection parameters (when preconditioning is active)
@@ -481,18 +503,6 @@ if flag_solveMinimization
     if strcmp(algo_version, 'sara')
         disp('SARA')
         disp('-----------------------------------------')
-        dwtmode('zpd')
-
-        [Psi1, Psit1] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
-        P = length(Psi1);
-        for k = 1 : P
-            f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
-            f = sprintf('%s%i},Ny,Nx);', f,k);
-            Psi{k} = eval(f);
-            b(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
-            ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
-            Psit{k} = eval(ft);
-        end
 
         [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
             sara2(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI, fullfile(results_path,warm_start(nChannels)), ...

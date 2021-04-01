@@ -43,7 +43,7 @@ l21_norm = sum(sqrt(sum(Psit_full(dirty_image).^2, 2)));
 % and SARA space) involved in the reweighting scheme
 B = B./reshape(max_psf, [1, nChannels]);
 [~,S0,~] = svd(B,'econ');
-sig = std(diag(S0));
-sig_bar = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
+sig_bar = std(diag(S0));
+sig = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
 
 end
