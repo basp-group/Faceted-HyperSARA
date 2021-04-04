@@ -19,15 +19,15 @@ lowerbounds = 1
 solve = 1
 
 # kept fixed throughout all the simulations from this folder
-imagename = 'W28_1024'
+imagename = 'W28_256'
 algoversion = 'sara'
-nchannels = 20
+nchannels = 100
 Qc = 1
 rw = -1
 gam = '1e-5'
 nreweights = 30
 wintype = 'none'
-covpath = '../../data/vla_7.95h_dt10s.uvw256.mat'
+covpath = '../../data/vla_7.95h_dt10s.uvw.mat'
 ncdata = 9 # number of workers in this case (one per dictionary + a few for the master)
 flaghomotopy = 1
 
