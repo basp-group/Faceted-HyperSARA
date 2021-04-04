@@ -211,7 +211,7 @@ if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
     fprintf('reweight_step_count uploaded\n\n')
 else
-    reweight_step_count = 1;
+    reweight_step_count = 0;
     fprintf('reweight_step_count initialized \n\n')
 end
 
@@ -568,9 +568,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     %% Reweighting (in parallel)
     if pdfb_converged 
         rel_x_reweighting = norm(xlast_reweight(:) - xsol(:))/norm(xlast_reweight(:));
-        xlast_reweight = xsol;
-
-        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count, rel_x_reweighting);
+        xlast_reweight = xsol;        
         
         reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >= param.reweighting_min_iter && ...   % minimum number of reweighting iterations
@@ -582,6 +580,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             flag_convergence = 1;
             break;
         end
+
+        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count+1, rel_x_reweighting);
         
         %! -- TO BE CHECKED (using new reweighting with proper floor level)
         spmd
@@ -604,8 +604,10 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1;
+
+        fprintf('reweighting parameter: %e \n', reweighting_alpha);
         
-        if (reweight_step_count == 1) || (reweight_step_count == 2) || (~mod(reweight_step_count,6))
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
 
             % compute SNR
             sol = reshape(xsol(:),numel(xsol(:))/c,c);

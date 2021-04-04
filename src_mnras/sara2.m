@@ -75,7 +75,7 @@ if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
     fprintf('reweight_step_count uploaded\n\n')
 else
-    reweight_step_count = 1;
+    reweight_step_count = 0;
     fprintf('reweight_step_count initialized \n\n')
 end
 
@@ -390,8 +390,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         rel_x_reweighting = norm(xlast_reweight(:) - xsol(:))/norm(xlast_reweight(:));
         xlast_reweight = xsol;
 
-        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count, rel_x_reweighting);
-
         reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >= param.reweighting_min_iter && ...   % minimum number of reweighting iterations
             ( reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
@@ -402,6 +400,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             flag_convergence = 1;
             break;
         end
+
+        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count+1, rel_x_reweighting);
 
         % compute residual image
         res = zeros(size(xsol));
@@ -434,7 +434,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         
         fprintf('reweighting parameter: %e \n', reweighting_alpha);
         
-        if (reweight_step_count == 1) || (reweight_step_count == 2) || (~mod(reweight_step_count,5))
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
 
             % compute SNR
             SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));

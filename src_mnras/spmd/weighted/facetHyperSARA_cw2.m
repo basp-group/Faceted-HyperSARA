@@ -260,8 +260,8 @@ if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
     fprintf('reweight_step_count uploaded\n\n')
 else
-    param.init_reweight_step_count = 1;
-    reweight_step_count = 1;
+    param.init_reweight_step_count = 0;
+    reweight_step_count = 0;
     fprintf('reweight_step_count initialized \n\n')
 end
 
@@ -705,11 +705,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         end
         rel_x_reweighting = sqrt(rel_x_reweighting/norm_x_reweighting);
 
-        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count, rel_x_reweighting);
-
         reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >= param.reweighting_min_iter && ...   % minimum number of reweighting iterations
-            ( reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
+            ( reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached
             rel_x_reweighting <= param.reweighting_rel_var ...         % relative variation
             );
 
@@ -717,6 +715,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             flag_convergence = 1;
             break;
         end
+        
+        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count+1, rel_x_reweighting);
         
         spmd
             if labindex <= Qp.Value
@@ -752,8 +752,10 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1; 
+
+        fprintf('reweighting parameter: %e \n', reweighting_alpha);
         
-        if (reweight_step_count == 1) || (reweight_step_count == 2) || (~mod(reweight_step_count,6))
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % compute SNR
             % get xsol back from the workers
             for q = 1:Q
