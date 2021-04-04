@@ -585,9 +585,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         %! -- TO BE CHECKED (using new reweighting with proper floor level)
         spmd
             if labindex == 1
-                weights0_ = update_weights_nuclear_serial(xsol, reweighting_alpha);
+                weights0_ = update_weights_nuclear_serial(xsol, reweighting_alpha, sig_bar);
             elseif labindex == 2
-                weights1_ = update_weights_l21_serial(xsol, Psit_, weights1_, reweighting_alpha);
+                weights1_ = update_weights_l21_serial(xsol, Psit_, weights1_, reweighting_alpha, sig);
             else % > 2
                 % compute residual image
                 res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-2}), yp, Gp, Ap, Atp, Wp);
