@@ -85,7 +85,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
-% 
+
 % rw = 1;
 % flag_primal = 0;
 % flag_homotopy = 1;
@@ -93,9 +93,9 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % overlap_size = [0, 256];
 % % overlap_fraction = 0;
 % % 
-% % %! to test SARA: take Qc = nChannels
-% % % algo_version = 'sara';
-% % % Qc = nChannels;
+% %! to test SARA: take Qc = nChannels
+% algo_version = 'sara';
+% Qc = nChannels;
 % 
 % unused parameters (in the mnras experiments)
 flag_generateUndersampledCube = false;
@@ -431,7 +431,7 @@ if flag_solveMinimization
                 Psit{k} = eval(ft);
             end
             [sig, max_psf, dirty_image] = ...
-                compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, Psit);
+                compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, wlt_basis, filter_length, nlevel);
             save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'max_psf', 'dirty_image');
         else
             load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat']);
@@ -446,6 +446,7 @@ if flag_solveMinimization
         else
             load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat']);
         end
+    end
     %! --
     
     %% HSI parameter structure sent to the  HSI algorithm
@@ -460,7 +461,7 @@ if flag_solveMinimization
     % pdfb
     param_HSI.pdfb_min_iter = 100; % minimum number of iterations
     param_HSI.pdfb_max_iter = 2000; % maximum number of iterations
-    param_HSI.pdfb_rel_var = 5e-4; % relative variation tolerance
+    param_HSI.pdfb_rel_var = 1e-4; % relative variation tolerance
     param_HSI.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied 
     
     % epsilon update scheme

@@ -67,10 +67,9 @@ end
 
 %! -- TO BE CHECKED
 % Reweighting parameters
-sig_bar = param.reweighting_sig_bar;
 sig = param.reweighting_sig;
-reweighting_alpha = param.reweighting_alpha;
-reweighting_alpha_ff = param.reweighting_alpha_ff;
+% reweighting_alpha = param.reweighting_alpha;
+% reweighting_alpha_ff = param.reweighting_alpha_ff;
 
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
@@ -111,7 +110,8 @@ else
         u1{k} = zeros(size(Psi{k}(v1{k})));
         % initial L1 descent step
         d_val = abs(Psit{k}(xsol));
-        weights1{k} = reweighting_alpha ./ (reweighting_alpha + d_val);
+        upsilon = sig*param.reweighting_alpha;
+        weights1{k} = upsilon ./ (upsilon + d_val);
         % weights1{k} = ones(size(v1{k},1),1);
     end
     fprintf('v1, weights1 initialized \n\n')
@@ -418,7 +418,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         % update weights
         for k = 1 : P
             d_val = abs(Psit{k}(xsol));
-            weights1{k} = reweighting_alpha ./ (reweighting_alpha + d_val);
+            upsilon = sig*reweighting_alpha;
+            weights1{k} =  upsilon ./ (upsilon + d_val);
         end
         %! -- TO BE CHECKED
         if flag_homotopy
@@ -430,7 +431,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1; 
         
-        if (reweight_step_count == 1) || (reweight_step_count == 2) || (~mod(reweight_step_count,6))
+        fprintf('reweighting parameter: %e \n', reweighting_alpha);
+        
+        if (reweight_step_count == 1) || (reweight_step_count == 2) || (~mod(reweight_step_count,5))
 
             % compute SNR
             SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));

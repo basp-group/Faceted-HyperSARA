@@ -1,5 +1,5 @@
 function [sig, max_psf, dirty_image] = ...
-    compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, Psit)
+    compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, wavelet_basis, filters_length, nlevel)
 
 %! TO BE DOCUMENTED
 %! make sure the rng always starts from the same value for reproducibility 
@@ -20,6 +20,13 @@ dirty_image(:,:) = At(temp);
 % SARA space) involved in the reweighting scheme
 [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No);
 B = B/max_psf;
-sig = std(abs(Psit(B)));
+
+% set-up global SARA dictionary
+dwtmode('zpd')
+[~, Psitw] = op_sp_wlt_basis(wavelet_basis, nlevel, Ny, Nx);
+[~, s] = n_wavelet_coefficients(filters_length(1:end-1), [Ny, Nx], 'zpd', nlevel); % suppose Dirac is the last entry
+s = s+N; % total number of SARA coefficients (adding number of elements from Dirac basis)
+Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,s);
+sig = std(abs(Psit_full(reshape(B, [Ny, Nx]))));
 
 end
