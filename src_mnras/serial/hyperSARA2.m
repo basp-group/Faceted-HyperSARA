@@ -544,9 +544,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     
     %% Check convergence pdfb (inner solver)
     %! -- TO BE CHECKED
-    pdfb_converged = (t - reweight_last_step_iter > param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
+    pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
         ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
-            (rel_val(t) < param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
+            (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
         );
     
     %% Update epsilons (in parallel)
@@ -573,7 +573,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count, rel_x_reweighting);
         
         reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
-            reweight_step_count >  param.reweighting_min_iter && ...   % minimum number of reweighting iterations
+            reweight_step_count >= param.reweighting_min_iter && ...   % minimum number of reweighting iterations
             ( reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
             rel_x_reweighting <= param.reweighting_rel_var ...         % relative variation
             );
