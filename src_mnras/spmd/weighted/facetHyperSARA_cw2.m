@@ -269,8 +269,8 @@ if isfield(param,'init_reweight_last_iter_step')
     reweight_last_step_iter = param.init_reweight_last_iter_step;
     fprintf('reweight_last_iter_step uploaded \n\n')
 else
-    param.init_reweight_last_iter_step = 1;
-    reweight_last_step_iter = 1;
+    param.init_reweight_last_iter_step = 0;
+    reweight_last_step_iter = 0;
     fprintf('reweight_last_iter_step initialized \n\n')
 end
 %! --
@@ -666,8 +666,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     
     %% Check convergence pdfb (inner solver)
     %! -- TO BE CHECKED
-    pdfb_converged = (t - reweight_last_step_iter + 1 > param.pdfb_min_iter) && ...                                          % minimum number of pdfb iterations
-        ( t - reweight_last_step_iter + 1 >= param.pdfb_max_iter || ...                                                      % maximum number of pdfb iterations reached
+    pdfb_converged = (t - reweight_last_step_iter > param.pdfb_min_iter) && ...                                          % minimum number of pdfb iterations
+        ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                      % maximum number of pdfb iterations reached
             (rel_val(t) < param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
         );
 
