@@ -607,7 +607,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
         fprintf('reweighting parameter: %e \n', reweighting_alpha);
         
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,2))
 
             % compute SNR
             sol = reshape(xsol(:),numel(xsol(:))/c,c);
