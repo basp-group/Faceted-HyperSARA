@@ -441,7 +441,7 @@ if flag_solveMinimization
             [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
             nchans, wlt_basis, filter_length, nlevel);
             %! recompute the value for gam (ratio between l21 and nuclear norm)
-            gam = nuclear_norm/l21_norm;
+            gam = gam*nuclear_norm/l21_norm;
             save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'gam');
         else
             load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat']);

@@ -27,7 +27,7 @@ nchannels = 20
 ind = 1
 Qc = 1
 rw = -1
-gam = '1e-5'
+gam = '1e-2'  # multiplicative factor affecting the ratio -> '1e-5' order of magnitude
 nreweights = 30
 wintype = 'triangular'
 covpath = '../../data/vla_7.95h_dt10s.uvw.mat'
@@ -42,6 +42,10 @@ with open(parameter_file_full_path, "r") as csvfile:
 
     for job in reader:
 
+        if int(job[0])*int(job[1]) <= 1:
+            params[1] = 'hypersara'
+        else:
+            params[1] = 'cw'
         ncores = np.minimum(int(job[0])*int(job[1]) + int(ncdata) + 1, 36) # max number of cpus = 36
         print("Total number of cpus: {0}".format(ncores))
 

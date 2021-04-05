@@ -24,16 +24,16 @@ algoversion = 'sara'
 nchannels = 20
 Qc = 1
 rw = -1
-gam = '1e-5'
+gam = '1e-4'
 nreweights = 30
 wintype = 'none'
 covpath = '../../data/vla_7.95h_dt10s.uvw256.mat'
-ncdata = 9 # number of workers in this case (one per dictionary + a few for the master)
+ncdata = 9 # number of workers in this case (one per dictionary)
 flaghomotopy = 1
 
 params = [imagename,algoversion,nchannels,Qc,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve,Qx,Qy,overlapx,overlapy]
 
-ncores = 12 # max number of cpus = 36
+ncores = ncdata + 3
 
 for cubeid in range(1,nchannels+1):
 
