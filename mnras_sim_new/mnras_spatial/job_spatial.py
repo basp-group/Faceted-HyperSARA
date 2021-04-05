@@ -15,8 +15,8 @@ parameter_file_full_path = "job_spatial.csv"
 
 # to be activated only for the first run (generating the data), and can systematically deactivated afertwards)
 gencube = 0
-genvis = 1
-computenorm = 1
+genvis = 0
+computenorm = 0
 lowerbounds = 1
 solve = 1
 
@@ -52,7 +52,7 @@ with open(parameter_file_full_path, "r") as csvfile:
         slurm_command = r"""sbatch --job-name=spatial_{1} --ntasks-per-node={21} \
         -e {0}_{1}_L={2}_Qx={17}_Qy={18}_Qc={4}_id={3}_overlapx={19}_overlapy={20}_gamma={6}_rw={5}.err \
         -o {0}_{1}_L={2}_Qx={17}_Qy={18}_Qc={4}_id={3}_overlapx={19}_overlapy={20}_gamma={6}_rw={5}.out \
-        -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={3},Qx={17},Qy={18},Qc={4},wintype={8},overlapx={19},overlapy={20},gam={10},nreweights={7},gencube={12},genvis={13},computenorm={14},solve={16},covpath={9},ncdata={10},rw={5},flaghomotopy={11},lowerbounds={15} \
+        -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={3},Qx={17},Qy={18},Qc={4},wintype={8},overlapx={19},overlapy={20},gam={6},nreweights={7},gencube={12},genvis={13},computenorm={14},solve={16},covpath={9},ncdata={10},rw={5},flaghomotopy={11},lowerbounds={15} \
         run_fhs_mnras.slurm""".format(*params,*job,ncores)
 
         print(slurm_command) # Uncomment this line when testing to view the sbatch command

@@ -475,7 +475,7 @@ if flag_solveMinimization
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
     %! -- TO BE CHECKED
-    param_HSI.reweighting_rel_var = 1e-4;       % relative variation (reweighting)
+    param_HSI.reweighting_rel_var = 1e-5;       % relative variation (reweighting)
     if flag_homotopy
         param_HSI.reweighting_alpha = 10;
         param_HSI.reweighting_min_iter = 5; % minimum number of reweighting iterations, weights updated reweighting_min_iter times
