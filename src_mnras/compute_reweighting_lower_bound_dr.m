@@ -33,7 +33,7 @@ nuclear_norm = sum(abs(diag(S0)));
 
 % set-up global SARA dictionary
 dwtmode('zpd')
-[~, Psitw] = op_sp_wlt_basis(wavelet_basis, nlevel, Ny, Nx);
+[~, Psitw] = op_sp_wlt_basis_fhs(wavelet_basis, nlevel, Ny, Nx);
 [~, s] = n_wavelet_coefficients(filters_length(1:end-1), [Ny, Nx], 'zpd', nlevel);
 s = s+N; % total number of SARA coefficients (adding number of elements from Dirac basis)
 Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,s);

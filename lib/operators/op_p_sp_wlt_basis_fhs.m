@@ -1,4 +1,4 @@
-function [Psi, Psit] = op_p_sp_wlt_basis(basis, nlevel, Ny, Nx)
+function [Psi, Psit] = op_p_sp_wlt_basis_fhs(basis, nlevel, Ny, Nx)
 % Resturns the operator to the sparsity wavelet basis passed as argument
 % Each basis is considered to be distributed to a different node
 %
@@ -15,7 +15,7 @@ function [Psi, Psit] = op_p_sp_wlt_basis(basis, nlevel, Ny, Nx)
 
 
 %% sparsity operator definition
-dwtmode('zpd');
+% dwtmode('zpd');
 % construct a sting to repesent the desired inline function
 
 Psit = cell(length(basis), 1);
@@ -67,7 +67,3 @@ function Psi = make_Psi(basis, nlevel, Ny, Nx)
         Psi{i} = eval(f);
     end
 end
-
-
-
-

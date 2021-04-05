@@ -1,4 +1,4 @@
-function [Psi, Psit] = op_sp_wlt_basis(basis, nlevel, Ny, Nx)
+function [Psi, Psit] = op_sp_wlt_basis_fhs(basis, nlevel, Ny, Nx)
 % Resturns the operator to the sparsity wavelet basis passed as argument
 %
 % in:
@@ -63,7 +63,3 @@ function Psi = make_Psi(basis, nlevel, Ny, Nx)
     f = sprintf('%s 0)/sqrt(%d)', f, length(basis));
     Psi = eval(f);
 end
-
-
-
-

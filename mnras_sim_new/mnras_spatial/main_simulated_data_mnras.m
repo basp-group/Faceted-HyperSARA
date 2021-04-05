@@ -122,6 +122,7 @@ disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
 addpath ../../lib/generate_data/
 addpath ../../lib/operators/
 addpath ../../lib/measurement-operator/nufft/
+addpath ../../lib/measurement-operator/operators/
 addpath ../../lib/utils/
 addpath ../../lib/faceted-wavelet-transform/src
 addpath ../../data/
@@ -361,7 +362,7 @@ if strcmp(algo_version, 'sara')
         %Anorm_ch(i) = pow_method_op(@(x) sqrt(cell2mat(aW{i})) .* (Gw{i}*A(x)), @(x) real(At(Gw{i}' * (sqrt(cell2mat(aW{i})) .* x))), [Ny Nx 1]);
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-        Anorm = pow_method_op(F, Ft, [Ny Nx nchans]);
+        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-6, 200, 1);
         save(fullfile(results_path,strcat('Anorm_sara_N=',num2str(Nx), ...
             '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm');
         % save(['Anorm_ch=' num2str(ch) '.mat'],'-v7.3', 'Anorm_ch');
@@ -375,7 +376,7 @@ else
         % Compute full measurement operator spectral norm
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-        Anorm = pow_method_op(F, Ft, [Ny Nx nchans]);
+        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-6, 200, 1);
         save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
             '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm'); % ,'_p=',num2str(p),'_snr=', num2str(input_snr)
     else
@@ -420,7 +421,7 @@ if flag_solveMinimization
         if flag_computeLowerBounds
             % to be completed
             dwtmode('zpd')
-            [Psi1, Psit1] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
+            [Psi1, Psit1] = op_p_sp_wlt_basis_fhs(wlt_basis, nlevel, Ny, Nx);
             P = length(Psi1);
             for k = 1 : P
                 f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
