@@ -1,6 +1,6 @@
 function [xsol,param,t,rel_val,nuclear,l21,end_iter] = ...
     facetHyperSARA_DR_precond_v22(yp, epsilon, Ap, Atp, Hp, Wp, pUp, Tp, Wmp, param, ...
-    Qx, Qy, K, wavelet, L, nlevel, c_chunks, c, d, window_type, init_file_name, name, ...
+    Qx, Qy, K, wavelet, filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, ...
     reduction_version, realdatablocks, fouRed_gamma, typeStr, M, N, flag_primal, flag_homotopy)
 %facetHyperSARA_cst_overlap_weighted_dr_real_data: faceted HyperSARA
 %
@@ -171,8 +171,8 @@ for qx = 1:Qx
     end
 end
 
-rg_yo = split_range(Qy, M, d);
-rg_xo = split_range(Qx, N, d);
+rg_yo = split_range(Qy, M, d(1));
+rg_xo = split_range(Qx, N, d(2)));
 Io = zeros(Q, 2);
 dims_o = zeros(Q, 2);
 for qx = 1:Qx
@@ -187,7 +187,7 @@ clear rg_y rg_x rg_yo rg_xo;
 % instantiate auxiliary variables for faceted wavelet transforms involved
 % in SARA (sdwt2)
 [~, dims_overlap_ref, I_overlap, dims_overlap, status, offset, offsetL, ...
-    offsetR, Ncoefs, temLIdxs, temRIdxs] = sdwt2_setup([M, N], I, dims, nlevel, wavelet, L);
+    offsetR, Ncoefs, temLIdxs, temRIdxs] = sdwt2_setup([M, N], I, dims, nlevel, wavelet, filter_length);
 % define parallel constants (known by each worker)
 Qyp = parallel.pool.Constant(Qy);
 Qxp = parallel.pool.Constant(Qx);
@@ -266,8 +266,8 @@ if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
     fprintf('reweight_step_count uploaded\n\n')
 else
-    param.init_reweight_step_count = 1;
-    reweight_step_count = 1;
+    param.init_reweight_step_count = 0;
+    reweight_step_count = 0;
     fprintf('reweight_step_count initialized \n\n')
 end
 
@@ -275,8 +275,8 @@ if isfield(param,'init_reweight_last_iter_step')
     reweight_last_step_iter = param.init_reweight_last_iter_step;
     fprintf('reweight_last_iter_step uploaded \n\n')
 else
-    param.init_reweight_last_iter_step = 1;
-    reweight_last_step_iter = 1;
+    param.init_reweight_last_iter_step = 0;
+    reweight_last_step_iter = 0;
     fprintf('reweight_last_iter_step initialized \n\n')
 end
 %! --
@@ -333,7 +333,6 @@ elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
 adapt_eps_tol_in = parallel.pool.Constant(param.adapt_eps_tol_in);
 adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
 adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
-adapt_eps_rel_var = parallel.pool.Constant(param.adapt_eps_rel_var);
 adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
 
 xhat_i = Composite();
@@ -443,7 +442,7 @@ if init_flag
     norm_epsilon_check = sqrt(norm_epsilon_check);
     norm_residual_check = sqrt(norm_residual_check);
 
-    %% compute value of the priors in parallel
+    % compute value of the priors in parallel
     spmd
         if labindex <= Qp.Value
             % compute values for the prior terms
@@ -663,9 +662,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
     %% Check convergence pdfb (inner solver)
     %! -- TO BE CHECKED
-    pdfb_converged = (t - reweight_last_step_iter + 1 > param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
-        ( t - reweight_last_step_iter + 1 >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
-            (rel_val(t) < param.pdfb_rel_var && ...
+    pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
+        ( t - reweight_last_step_iter > param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
+            (rel_val(t) <= param.pdfb_rel_var && ...
             norm_residual_check_a <= param.pdfb_fidelity_tolerance*norm_epsilon_check_a && ...
             norm_residual_check_c <= param.pdfb_fidelity_tolerance*norm_epsilon_check_c) ... % relative variation and data fidelity within tolerance
         ); %! take 5000 iterations in this case
@@ -687,7 +686,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     %! --
     
     %% Reweighting (in parallel)   
-    if pdbf_converged 
+    if pdfb_converged 
         % Evaluate relative variation for the reweighting scheme
         spmd 
             if labindex <= Qp.Value
@@ -704,12 +703,10 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         end
         rel_x_reweighting = sqrt(rel_x_reweighting/norm_x_reweighting);
 
-        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count, rel_x_reweighting);
-
-        reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
-            reweight_step_count >  param.reweighting_min_iter && ...   % minimum number of reweighting iterations
+        reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
+            reweight_step_count >= param.reweighting_min_iter && ...   % minimum number of reweighting iterations
             ( reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
-            rel_x_reweighting <= param.reweighting_rel_var ...        % relative variation
+            rel_x_reweighting <= param.reweighting_rel_var ...         % relative variation
             );
 
         if reweighting_converged
@@ -717,6 +714,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             break;
         end
         
+        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count+1, rel_x_reweighting);
+
         spmd
             if labindex <= Qp.Value
                 % update weights
@@ -752,6 +751,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1;
+
+        fprintf('reweighting parameter: %e \n', reweighting_alpha);
         
          % [05/01/2020] [P.-A.] is it really necessary to have both res and xsol on the mater node? ask Ming...
         res = zeros(size(xsol));
