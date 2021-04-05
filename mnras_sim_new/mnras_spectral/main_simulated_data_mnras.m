@@ -362,7 +362,7 @@ if strcmp(algo_version, 'sara')
         %Anorm_ch(i) = pow_method_op(@(x) sqrt(cell2mat(aW{i})) .* (Gw{i}*A(x)), @(x) real(At(Gw{i}' * (sqrt(cell2mat(aW{i})) .* x))), [Ny Nx 1]);
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-6, 200, 1);
+        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 1);
         save(fullfile(results_path,strcat('Anorm_sara_N=',num2str(Nx), ...
             '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm');
         % save(['Anorm_ch=' num2str(ch) '.mat'],'-v7.3', 'Anorm_ch');
@@ -376,7 +376,7 @@ else
         % Compute full measurement operator spectral norm
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-6, 200, 1);
+        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 1);
         save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
             '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm'); % ,'_p=',num2str(p),'_snr=', num2str(input_snr)
     else
