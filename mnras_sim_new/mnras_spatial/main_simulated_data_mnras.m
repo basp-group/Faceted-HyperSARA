@@ -148,6 +148,7 @@ mkdir(results_path)
 %% 
 seed = 1;
 rng(seed);
+sigma_noise = 0.1
 % T = 1500; % to be set depending on the value of p
 % hrs = 6;
 % kernel = 'minmax:tuned'; % 'kaiser', 'minmax:tuned'
@@ -318,6 +319,7 @@ for i = 1:nchans
     % measurement operator initialization
     fprintf('Initializing the NUFFT operator\n\n');
     [A, At, G{i}, W{i}] = op_p_nufft([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
+    G{i} = G{i}/sigma_noise; %! add variance normalisation to use the same procedure as for real data to estimate the reweighting lower bounds
 end
 
 %% Free memory
@@ -329,9 +331,8 @@ if flag_generateVisibilities % generate only full spectral dataset
     param_l2_ball.sigma_ball = 2;
     % [y0, y, Nm, sigma_noise] = util_gen_measurements(x0, G, W, A, input_snr);
     %! see if it realy needs to be hard-coded this way!
-    sigma_noise = 0.1
-    [y0, y, Nm] = util_gen_measurements_sigma(x0, G, W, A, sigma_noise, seed);
-    [epsilon,epsilons] = util_gen_data_fidelity_bounds(y, Nm, param_l2_ball, sigma_noise); 
+    [y0, y, Nm] = util_gen_measurements_sigma(x0, G, W, A, 1, seed);
+    [epsilon,epsilons] = util_gen_data_fidelity_bounds(y, Nm, param_l2_ball, 1); %! sigma_noise modified to account for variance normalisation (Theta) % sigma_noise
 
     if save_data
         save(fullfile(data_path,data_name), '-v7.3', 'y0', 'y', 'epsilon', 'epsilons', 'sigma_noise');
