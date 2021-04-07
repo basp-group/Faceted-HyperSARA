@@ -319,7 +319,9 @@ for i = 1:nchans
     % measurement operator initialization
     fprintf('Initializing the NUFFT operator\n\n');
     [A, At, G{i}, W{i}] = op_p_nufft([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
-    G{i} = G{i}/sigma_noise; %! add variance normalisation to use the same procedure as for real data to estimate the reweighting lower bounds
+    for b = 1:numel(G{i})
+        G{i}{b} = G{i}{b}/sigma_noise; %! add variance normalisation to use the same procedure as for real data to estimate the reweighting lower bounds
+    end
 end
 
 %% Free memory
