@@ -71,7 +71,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % p = 0; % percentage
 % nReweights = 1;
 % input_snr = 40; % input SNR (in dB)
-% algo_version = 'cw'; % 'cst_weighted';
+% algo_version = 'hypersara'; % 'cst_weighted';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index of the spectral facet to be reconstructed
@@ -85,11 +85,11 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
-
+% 
 % rw = 1;
 % flag_primal = 0;
 % flag_homotopy = 1;
-% flag_computeLowerBounds = 0;
+% flag_computeLowerBounds = 1;
 % overlap_size = [0, 256];
 % % overlap_fraction = 0;
 % % 
@@ -365,7 +365,7 @@ if strcmp(algo_version, 'sara')
         %Anorm_ch(i) = pow_method_op(@(x) sqrt(cell2mat(aW{i})) .* (Gw{i}*A(x)), @(x) real(At(Gw{i}' * (sqrt(cell2mat(aW{i})) .* x))), [Ny Nx 1]);
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 1);
+        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
         save(fullfile(results_path,strcat('Anorm_sara_N=',num2str(Nx), ...
             '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm');
         % save(['Anorm_ch=' num2str(ch) '.mat'],'-v7.3', 'Anorm_ch');
@@ -379,7 +379,7 @@ else
         % Compute full measurement operator spectral norm
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 1);
+        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
         save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
             '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm'); % ,'_p=',num2str(p),'_snr=', num2str(input_snr)
     else

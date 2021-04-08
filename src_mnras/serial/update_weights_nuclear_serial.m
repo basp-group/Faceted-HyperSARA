@@ -1,4 +1,4 @@
-function weights = update_weights_nuclear_serial(x, reweight_alpha)
+function weights = update_weights_nuclear_serial(x, reweight_alpha, sig_bar)
 %update_weights_nuclear_serial: update the weigths for the reweighting of 
 % the nuclear norm prior.
 %-------------------------------------------------------------------------%
