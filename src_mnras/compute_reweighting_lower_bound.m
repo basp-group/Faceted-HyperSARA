@@ -22,6 +22,7 @@ end
 
 dirty_image = dirty_image./reshape(max_psf, [1, 1, nChannels]);
 [~,S0,~] = svd(reshape(dirty_image, [N, nChannels]),'econ');
+% [U,S0,V]
 nuclear_norm = sum(abs(diag(S0)));
 
 % set-up global SARA dictionary
@@ -37,6 +38,7 @@ l21_norm = sum(sqrt(sum(Psit_full(dirty_image).^2, 2)));
 B = B./reshape(max_psf, [1, nChannels]);
 [~,S0,~] = svd(B,'econ');
 sig_bar = std(diag(S0));
+% sig_bar = std(abs(diag(U'*B*V)));
 sig = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
 
 end
