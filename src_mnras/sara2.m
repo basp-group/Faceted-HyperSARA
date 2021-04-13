@@ -188,12 +188,19 @@ if init_flag
     fprintf('rel_val, l11, end_iter, t_master, t_l11, and t_data uploaded \n\n')
 else
     rel_val = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
-    l11 = NaN;
+    for k = 1:P
+        f(k) = parfeval(@run_par_l11, 1, Psit{k}, xsol, weights1{k});
+    end
     end_iter = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
     t_master = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
     t_l11 = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
     t_data = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
     fprintf('rel_val, l11, end_iter, t_master, t_l11, and t_data initialized \n\n')
+    l11 = 0;
+    for k = 1:P
+        l11_ = fetchNext(f);
+        l11 = l11 + l11_;
+    end
 end
 
 if init_flag
@@ -342,11 +349,13 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     g = sigma11*g1 + sigma22*Ftx;
     end_iter(t) = toc(start_iter);
     t_l11(t) = t_l11(t)/P; % average compute time for the dual variable
+    % previous_l11 = l11;
     l11 = sum(cell2mat(l11_cell));
     fprintf('Iter = %i, Time = %e, t_l11 = %e, t_data = %e\n',t,end_iter(t),t_data(t),t_l11(t));
 
     % Free memory
     Ftx=[]; g1=[];
+    % rel_obj = abs(l11 - previous_l11)/previous_l11;
     
     %% Display
     if ~mod(t,100)
@@ -369,10 +378,15 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
     %% Check convergence pdfb (inner solver)
     %! -- TO BE CHECKED
-    pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
-        ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
+    % pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
+    %     ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
+    %         (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
+    %     );
+
+    pdfb_converged = ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
             (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
         );
+        % && rel_obj <= param.pdfb_rel_obj
     
     %% Update epsilons
     flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update 
@@ -390,10 +404,10 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         rel_x_reweighting = norm(xlast_reweight(:) - xsol(:))/norm(xlast_reweight(:));
         xlast_reweight = xsol;
 
-        reweighting_converged = pdfb_converged && ...                 % do not exit solver before the current pdfb algorithm converged
+        reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >= param.reweighting_min_iter && ...   % minimum number of reweighting iterations
             ( reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached  
-            rel_x_reweighting <= param.reweighting_rel_var ...        % relative variation
+            rel_x_reweighting <= param.reweighting_rel_var ...         % relative variation
             );
 
         if reweighting_converged
@@ -402,6 +416,11 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         end
 
         fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count+1, rel_x_reweighting);
+
+        % update l11 norm
+        % for k = 1:P
+        %     f(k) = parfeval(@run_par_l11, 1, Psit{k}, xsol, weights1{k});
+        % end
 
         % compute residual image
         res = zeros(size(xsol));
@@ -430,7 +449,13 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         param.reweighting_alpha = reweighting_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
         param.init_reweight_last_iter_step = t;
-        param.init_t_start = t+1; 
+        param.init_t_start = t+1;
+
+        % l11 = 0;
+        % for k = 1:P
+        %     l11_ = fetchNext(f);
+        %     l11 = l11 + l11_;
+        % end
         
         fprintf('reweighting parameter: %e \n', reweighting_alpha);
         
@@ -553,6 +578,15 @@ r1 = v1_ + Psit(xhat);
 v1_ = r1 - sign(r1).*max(abs(r1) - beta1*weights1_,0);
 u1_ = Psi(v1_);
 t_l11_ = toc(tw);
+
+% local L11 norm of current solution
+l11_ = norm(r1(:),1);
+
+end
+
+function l11_ = run_par_l11(Psit, xhat, weights1_)
+
+r1 = weights1_*abs(Psit(xhat));
 
 % local L11 norm of current solution
 l11_ = norm(r1(:),1);

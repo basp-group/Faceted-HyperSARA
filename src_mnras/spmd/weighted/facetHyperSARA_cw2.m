@@ -460,62 +460,61 @@ else
 end
 
 %! check warm-start worked as expected
-if init_flag
-    spmd
-        if labindex > Qp.Value
-            [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
-        end
+spmd
+    if labindex > Qp.Value
+        [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
     end
-    norm_epsilon_check = 0;
-    norm_residual_check = 0;
-    for i = Q+1:Q+K
-        norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-        norm_residual_check = norm_residual_check + norm_residual_check_i{i};
-    end
-    norm_epsilon_check = sqrt(norm_epsilon_check);
-    norm_residual_check = sqrt(norm_residual_check);
+end
+norm_epsilon_check = 0;
+norm_residual_check = 0;
+for i = Q+1:Q+K
+    norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
+    norm_residual_check = norm_residual_check + norm_residual_check_i{i};
+end
+norm_epsilon_check = sqrt(norm_epsilon_check);
+norm_residual_check = sqrt(norm_residual_check);
 
-    % compute value of the priors in parallel
-    spmd
-        if labindex <= Qp.Value
-            % compute values for the prior terms
-            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
-            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-            x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-            [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
-        end
+% compute value of the priors in parallel
+spmd
+    if labindex <= Qp.Value
+        % compute values for the prior terms
+        x_overlap = zeros([max_dims, size(xsol_q, 3)]);
+        x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+        x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+        [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
+            offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+            offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
     end
+end
 
-    % retrieve value of the priors
-    l21 = 0;
-    nuclear = 0;
-    for q = 1:Q
-        l21 = l21 + l21_norm{q};
-        nuclear = nuclear + nuclear_norm{q};
-    end
+% retrieve value of the priors
+l21 = 0;
+nuclear = 0;
+for q = 1:Q
+    l21 = l21 + l21_norm{q};
+    nuclear = nuclear + nuclear_norm{q};
+end
+% obj = param.gamma0*nuclear + param.gamma*l21;
 
-    % SNR
-    % get xsol back from the workers
-    for q = 1:Q
-        xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-    end
-    sol = reshape(xsol(:),numel(xsol(:))/c,c);
-    SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-    psnrh = zeros(c,1);
-    for i = 1:c
-        psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-    end
-    SNR_average = mean(psnrh);
+% SNR
+% get xsol back from the workers
+for q = 1:Q
+    xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+end
+sol = reshape(xsol(:),numel(xsol(:))/c,c);
+SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+psnrh = zeros(c,1);
+for i = 1:c
+    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+end
+SNR_average = mean(psnrh);
 
-    % Log
-    if (param.verbose >= 1)
-        fprintf('Iter %i\n',t_start-1);
-        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t_start-1));
-        fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
-    end
+% Log
+if (param.verbose >= 1)
+    fprintf('Iter %i\n',max(t_start-1, 1));
+    fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(max(t_start-1, 1)));
+    fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+    fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
 end
 
 start_loop = tic;
@@ -622,6 +621,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     if ~mod(t,100)
         
         %% compute value of the priors in parallel
+        % TODO: move this block in l.619 if computing the norsm at each iteration
         spmd
             if labindex <= Qp.Value
                 % compute values for the prior terms
@@ -633,7 +633,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                     offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
             end
         end
-        
+
         % retrieve value of the priors
         l21 = 0;
         nuclear = 0;
@@ -641,7 +641,10 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             l21 = l21 + l21_norm{q};
             nuclear = nuclear + nuclear_norm{q};
         end
-        
+        % previous_obj = obj;
+        % obj = (param.gamma*l21 + param.gamma0*nuclear);
+        % rel_obj = abs(previous_obj - obj)/previous_obj;
+
         % SNR
         % get xsol back from the workers
         for q = 1:Q
@@ -666,10 +669,15 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     
     %% Check convergence pdfb (inner solver)
     %! -- TO BE CHECKED
-    pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ...                                          % minimum number of pdfb iterations
-        ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                      % maximum number of pdfb iterations reached
-            (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
+    % pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ...                                          % minimum number of pdfb iterations
+    %     ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                      % maximum number of pdfb iterations reached
+    %         (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
+    %     );
+
+    pdfb_converged = ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                      % maximum number of pdfb iterations reached
+            (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation solution, objective and data fidelity within tolerance
         );
+    % && rel_obj <= param.pdfb_rel_obj
 
     %% Update epsilons (in parallel)
     flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update 
@@ -753,6 +761,28 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1; 
 
+        %% compute value of the priors in parallel
+        spmd
+            if labindex <= Qp.Value
+            % compute values for the prior terms
+            %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+            x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
+                offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+            end
+        end
+        
+        % retrieve value of the priors
+        l21 = 0;
+        nuclear = 0;
+        for q = 1:Q
+            l21 = l21 + l21_norm{q};
+            nuclear = nuclear + nuclear_norm{q};
+        end
+        % obj = param.gamma0*nuclear + param.gamma*l21;
+
         fprintf('reweighting parameter: %e \n', reweighting_alpha);
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,2))
@@ -815,27 +845,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             m.t_data = t_data;
             m.rel_val = rel_val;
             clear m
-
-            %% compute value of the priors in parallel
-            spmd
-                if labindex <= Qp.Value
-                % compute values for the prior terms
-                %x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-                x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-                x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-                [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-                    offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
-                end
-            end
-            
-            % retrieve value of the priors
-            l21 = 0;
-            nuclear = 0;
-            for q = 1:Q
-                l21 = l21 + l21_norm{q};
-                nuclear = nuclear + nuclear_norm{q};
-            end
                         
             % Log
             if (param.verbose >= 1)

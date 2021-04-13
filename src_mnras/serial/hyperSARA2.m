@@ -402,43 +402,42 @@ else
 end
 
 %! check warm-start worked as expected
-if init_flag
-    spmd
-        if labindex > 2
-            [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
-        end
-    end  
-    norm_epsilon_check = 0;
-    norm_residual_check = 0;
-    for i = 3:K+2
-        norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-        norm_residual_check = norm_residual_check + norm_residual_check_i{i};
+spmd
+    if labindex > 2
+        [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
     end
-    norm_epsilon_check = sqrt(norm_epsilon_check);
-    norm_residual_check = sqrt(norm_residual_check);
-    
-    % nuclear norm
-    nuclear = nuclear_norm(xsol);
-    
-    % l21 norm
-    l21 = compute_sara_prior(xsol, Psit, s);
-    
-    % SNR
-    sol = reshape(xsol(:),numel(xsol(:))/c,c);
-    SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-    psnrh = zeros(c,1);
-    for i = 1:c
-        psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-    end
-    SNR_average = mean(psnrh);
-    
-    % Log
-    if (param.verbose >= 1)
-        fprintf('Iter %i\n',t_start-1);
-        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t_start-1));
-        fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
-    end
+end  
+norm_epsilon_check = 0;
+norm_residual_check = 0;
+for i = 3:K+2
+    norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
+    norm_residual_check = norm_residual_check + norm_residual_check_i{i};
+end
+norm_epsilon_check = sqrt(norm_epsilon_check);
+norm_residual_check = sqrt(norm_residual_check);
+
+% nuclear norm
+nuclear = nuclear_norm(xsol);
+
+% l21 norm
+l21 = compute_sara_prior(xsol, Psit, s);
+% obj = param.gamma0*nuclear + param.gamma*l21;
+
+% SNR
+sol = reshape(xsol(:),numel(xsol(:))/c,c);
+SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+psnrh = zeros(c,1);
+for i = 1:c
+    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+end
+SNR_average = mean(psnrh);
+
+% Log
+if (param.verbose >= 1)
+    fprintf('Iter %i\n',max(t_start-1, 1));
+    fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(max(t_start-1, 1)));
+    fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+    fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
 end
 
 %%
@@ -516,13 +515,17 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 %     for k = 1:K
 %        t_data = max(t_data, tw{2+k}); 
 %     end
-    
+
     %% Display
     if ~mod(t,100)
-        
+
         %% compute value of the priors
+        % TODO: move to l.518 if norms needs to be computed at each iteration
         nuclear = nuclear_norm(xsol);
         l21 = compute_sara_prior(xsol, Psit, s);
+        % previous_obj = obj;
+        % obj = (param.gamma*l21 + param.gamma0*nuclear);
+        % rel_obj = abs(previous_obj - obj)/previous_obj;
         
         % SNR
         sol = reshape(xsol(:),numel(xsol(:))/c,c);
@@ -544,11 +547,16 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     
     %% Check convergence pdfb (inner solver)
     %! -- TO BE CHECKED
-    pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
-        ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
-            (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
-        );
+    % pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
+    %     ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
+    %         (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
+    %     );
     
+    pdfb_converged = ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
+            (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation solution, objective and data fidelity within tolerance
+        );
+    % rel_obj <= param.pdfb_rel_obj
+
     %% Update epsilons (in parallel)
     flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update 
     (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
@@ -605,6 +613,12 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t+1;
 
+        nuclear = nuclear_norm(xsol);
+        l21 = compute_sara_prior(xsol, Psit, s);
+        % previous_obj = obj;
+        % obj = (param.gamma*l21 + param.gamma0*nuclear);
+        % rel_obj = abs(previous_obj - obj)/previous_obj;
+
         fprintf('reweighting parameter: %e \n', reweighting_alpha);
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,2))
@@ -658,9 +672,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             m.rel_val = rel_val;
             clear m
             
-            nuclear = nuclear_norm(xsol);
-            l21 = compute_sara_prior(xsol, Psit, s);
-
             % Log
             if (param.verbose >= 1)
                 fprintf('Backup iter: %i\n',t);
