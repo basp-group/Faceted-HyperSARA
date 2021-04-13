@@ -20,7 +20,7 @@ for l = 1:nChannels
 end
 [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No);
 
-dirty_image = dirty_image./reshape(max_psf, [1, nChannels]);
+dirty_image = dirty_image./reshape(max_psf, [1, 1, nChannels]);
 [~,S0,~] = svd(reshape(dirty_image, [N, nChannels]),'econ');
 nuclear_norm = sum(abs(diag(S0)));
 

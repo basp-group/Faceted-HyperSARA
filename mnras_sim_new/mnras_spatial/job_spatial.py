@@ -28,11 +28,11 @@ ind = 1
 Qc = 1
 rw = -1
 gam = '1e-2'  # multiplicative factor affecting the ratio -> '1e-5' order of magnitude
-nreweights = 30
+nreweights = 1
 wintype = 'triangular'
 covpath = '../../data/vla_7.95h_dt10s.uvw.mat'
 ncdata = 20
-flaghomotopy = 1
+flaghomotopy = 0
 
 params = [imagename,algoversion,nchannels,ind,Qc,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve]
 

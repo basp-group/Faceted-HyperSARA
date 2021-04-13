@@ -12,8 +12,8 @@ parameter_file_full_path = "job_spectral.csv"
 # sara, 100
 
 # to be activated only for the first run (generating the data), and can systematically deactivated afertwards)
-gencube = 1
-genvis = 1
+gencube = 0
+genvis = 0
 computenorm = 1
 lowerbounds = 1
 solve = 1
@@ -27,11 +27,11 @@ overlapx = 0
 overlapy = 0
 rw = -1
 gam = 1 # '1e-3'
-nreweights = 30
+nreweights = 1
 wintype = 'none'
 covpath = '../../data/vla_7.95h_dt10s.uvw256.mat'
 ncdata = 5
-flaghomotopy = 1 # 13 elements
+flaghomotopy = 0 # 13 elements
 
 params = [imagename,nchannels,Qx,Qy,overlapx,overlapy,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve] # 18 params
 
