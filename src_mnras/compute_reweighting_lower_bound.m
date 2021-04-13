@@ -18,6 +18,9 @@ for l = 1:nChannels
     end
     dirty_image(:,:,l) = At(temp);
 end
+[B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No);
+
+dirty_image = dirty_image./reshape(max_psf, [1, nChannels]);
 [~,S0,~] = svd(reshape(dirty_image, [N, nChannels]),'econ');
 nuclear_norm = sum(abs(diag(S0)));
 
@@ -31,7 +34,6 @@ l21_norm = sum(sqrt(sum(Psit_full(dirty_image).^2, 2)));
 
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
 % SARA space) involved in the reweighting scheme
-[B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No);
 B = B./reshape(max_psf, [1, nChannels]);
 [~,S0,~] = svd(B,'econ');
 sig_bar = std(diag(S0));

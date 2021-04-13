@@ -463,7 +463,7 @@ if flag_solveMinimization
     param_HSI.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
 
     % pdfb
-    param_HSI.pdfb_min_iter = 100; % minimum number of iterations
+    % param_HSI.pdfb_min_iter = 100; % minimum number of iterations
     param_HSI.pdfb_max_iter = 2000; % maximum number of iterations
     param_HSI.pdfb_rel_var = 1e-5; % relative variation tolerance
     param_HSI.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied %! this value seems quite stringent in practice

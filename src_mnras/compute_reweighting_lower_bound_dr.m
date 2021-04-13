@@ -25,6 +25,7 @@ for k = 1:n_data_workers
     B(:,cell_c_chunks{k}) = local_B{Q+k};
     max_psf(cell_c_chunks{k}) = local_max_psf{Q+k};
 end
+dirty_image = dirty_image./reshape(max_psf, [1, 1 ,nChannels]);
 
 % estimate mu: ratio between nuclear and l21 norm priors applied to
 % the dirty image
