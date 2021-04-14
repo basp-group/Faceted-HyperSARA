@@ -351,7 +351,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     t_l11(t) = t_l11(t)/P; % average compute time for the dual variable
     % previous_l11 = l11;
     l11 = sum(cell2mat(l11_cell));
-    fprintf('Iter = %i, Time = %e, t_l11 = %e, t_data = %e\n',t,end_iter(t),t_data(t),t_l11(t));
+    fprintf('Iter = %i, Time = %e, t_l11 = %e, t_data = %e, rel_val = %e, epsilon = %e, residual = %e\n', t,end_iter(t),t_data(t),t_l11(t),rel_val(t),norm_epsilon_check,norm_residual_check);
 
     % Free memory
     Ftx=[]; g1=[];

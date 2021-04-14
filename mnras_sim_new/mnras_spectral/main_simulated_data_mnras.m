@@ -438,9 +438,10 @@ if flag_solveMinimization
                 compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, wlt_basis, filter_length, nlevel);
             save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'max_psf', 'dirty_image');
         else
-            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat']);
+            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'max_psf');
         end
     else
+        fprintf('Normalization factor gamma = %e', gam);
         if flag_computeLowerBounds
             [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
             nchans, wlt_basis, filter_length, nlevel);
@@ -448,9 +449,12 @@ if flag_solveMinimization
             gam = gam*nuclear_norm/l21_norm;
             save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'gam');
         else
-            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat']);
+            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'gam');
         end
+        fprintf('nuclear_norm_dirty = %e, l21_norm_dirty = %e\n', l21_norm, nuclear_norm);
     end
+
+    fprintf('gam = %e, sig = %e, sig_bar = %e\n', gam, sig, sig_bar);
     %! --
     
     %% HSI parameter structure sent to the  HSI algorithm

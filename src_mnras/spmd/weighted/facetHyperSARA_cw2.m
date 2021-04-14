@@ -460,61 +460,63 @@ else
 end
 
 %! check warm-start worked as expected
-spmd
-    if labindex > Qp.Value
-        [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
+if init_flag
+    spmd
+        if labindex > Qp.Value
+            [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
+        end
     end
-end
-norm_epsilon_check = 0;
-norm_residual_check = 0;
-for i = Q+1:Q+K
-    norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-    norm_residual_check = norm_residual_check + norm_residual_check_i{i};
-end
-norm_epsilon_check = sqrt(norm_epsilon_check);
-norm_residual_check = sqrt(norm_residual_check);
-
-% compute value of the priors in parallel
-spmd
-    if labindex <= Qp.Value
-        % compute values for the prior terms
-        x_overlap = zeros([max_dims, size(xsol_q, 3)]);
-        x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-        x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-        [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
-            offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+    norm_epsilon_check = 0;
+    norm_residual_check = 0;
+    for i = Q+1:Q+K
+        norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
+        norm_residual_check = norm_residual_check + norm_residual_check_i{i};
     end
-end
+    norm_epsilon_check = sqrt(norm_epsilon_check);
+    norm_residual_check = sqrt(norm_residual_check);
 
-% retrieve value of the priors
-l21 = 0;
-nuclear = 0;
-for q = 1:Q
-    l21 = l21 + l21_norm{q};
-    nuclear = nuclear + nuclear_norm{q};
-end
-% obj = param.gamma0*nuclear + param.gamma*l21;
+    % compute value of the priors in parallel
+    spmd
+        if labindex <= Qp.Value
+            % compute values for the prior terms
+            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
+            x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+            x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
+                offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+        end
+    end
 
-% SNR
-% get xsol back from the workers
-for q = 1:Q
-    xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-end
-sol = reshape(xsol(:),numel(xsol(:))/c,c);
-SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-psnrh = zeros(c,1);
-for i = 1:c
-    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-end
-SNR_average = mean(psnrh);
+    % retrieve value of the priors
+    l21 = 0;
+    nuclear = 0;
+    for q = 1:Q
+        l21 = l21 + l21_norm{q};
+        nuclear = nuclear + nuclear_norm{q};
+    end
+    % obj = param.gamma0*nuclear + param.gamma*l21;
 
-% Log
-if (param.verbose >= 1)
-    fprintf('Iter %i\n',max(t_start-1, 1));
-    fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(max(t_start-1, 1)));
-    fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-    fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+    % SNR
+    % get xsol back from the workers
+    for q = 1:Q
+        xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+    end
+    sol = reshape(xsol(:),numel(xsol(:))/c,c);
+    SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+    psnrh = zeros(c,1);
+    for i = 1:c
+        psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+    end
+    SNR_average = mean(psnrh);
+
+    % Log
+    if (param.verbose >= 1)
+        fprintf('Iter %i\n',max(t_start-1, 1));
+        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(max(t_start-1, 1)));
+        fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+    end
 end
 
 start_loop = tic;
@@ -605,7 +607,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         t_data(t) = t_data(t) + t_op{i};
     end
     t_data(t) = t_data(t)/K;
-    fprintf('Iter = %i, time = %e, t_facet = %e, t_data = %e, rel_var = %e\n',t,end_iter(t),t_facet(t),t_data(t),rel_val(t));
     
     %% Retrieve value of the monitoring variables (residual norms + epsilons)
     norm_epsilon_check = 0;
@@ -616,6 +617,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     end
     norm_epsilon_check = sqrt(norm_epsilon_check);
     norm_residual_check = sqrt(norm_residual_check);
+
+    fprintf('Iter = %i, time = %e, t_facet = %e, t_data = %e, rel_var = %e,  epsilon = %e, residual = %e\n',t,end_iter(t),t_facet(t),t_data(t),rel_val(t),norm_epsilon_check,norm_residual_check);
     
     %% Display
     if ~mod(t,100)

@@ -283,6 +283,7 @@ if init_flag
     end
     fprintf('norm_res uploaded \n\n')
 else
+    %! this assumes the primal variable has been initialized to 0
     for k = 1:K
         norm_res_tmp = cell(length(c_chunks{k}), 1);
         for i = 1:length(c_chunks{k})
@@ -402,42 +403,44 @@ else
 end
 
 %! check warm-start worked as expected
-spmd
-    if labindex > 2
-        [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
+if init_flag
+    spmd
+        if labindex > 2
+            [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
+        end
+    end  
+    norm_epsilon_check = 0;
+    norm_residual_check = 0;
+    for i = 3:K+2
+        norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
+        norm_residual_check = norm_residual_check + norm_residual_check_i{i};
     end
-end  
-norm_epsilon_check = 0;
-norm_residual_check = 0;
-for i = 3:K+2
-    norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-    norm_residual_check = norm_residual_check + norm_residual_check_i{i};
-end
-norm_epsilon_check = sqrt(norm_epsilon_check);
-norm_residual_check = sqrt(norm_residual_check);
+    norm_epsilon_check = sqrt(norm_epsilon_check);
+    norm_residual_check = sqrt(norm_residual_check);
 
-% nuclear norm
-nuclear = nuclear_norm(xsol);
+    % nuclear norm
+    nuclear = nuclear_norm(xsol);
 
-% l21 norm
-l21 = compute_sara_prior(xsol, Psit, s);
-% obj = param.gamma0*nuclear + param.gamma*l21;
+    % l21 norm
+    l21 = compute_sara_prior(xsol, Psit, s);
+    % obj = param.gamma0*nuclear + param.gamma*l21;
 
-% SNR
-sol = reshape(xsol(:),numel(xsol(:))/c,c);
-SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-psnrh = zeros(c,1);
-for i = 1:c
-    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-end
-SNR_average = mean(psnrh);
+    % SNR
+    sol = reshape(xsol(:),numel(xsol(:))/c,c);
+    SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+    psnrh = zeros(c,1);
+    for i = 1:c
+        psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+    end
+    SNR_average = mean(psnrh);
 
-% Log
-if (param.verbose >= 1)
-    fprintf('Iter %i\n',max(t_start-1, 1));
-    fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(max(t_start-1, 1)));
-    fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-    fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+    % Log
+    if (param.verbose >= 1)
+        fprintf('Iter %i\n',max(t_start-1, 1));
+        fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(max(t_start-1, 1)));
+        fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
+        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+    end
 end
 
 %%
@@ -497,7 +500,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         t_data(t) = t_data(t) + t_op{i};
     end
     t_data(t) = t_data(t)/K;
-    fprintf('Iter = %i, Time = %e, t_master= %e, t_l21 = %e, t_nuclear = %e, t_data = %e\n',t,end_iter(t),t_master(t),t_l21(t),t_nuclear(t),t_data(t));
     
     %% Retrieve value of the monitoring variables (residual norms)
     norm_epsilon_check = 0;
@@ -508,6 +510,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     end
     norm_epsilon_check = sqrt(norm_epsilon_check);
     norm_residual_check = sqrt(norm_residual_check);
+
+    fprintf('Iter = %i, Time = %e, t_master= %e, t_l21 = %e, t_nuclear = %e, t_data = %e, rel_val = %e, epsilon = %e, residual = %e\n',t,end_iter(t),t_master(t),t_l21(t),t_nuclear(t),t_data(t),rel_val(t),norm_epsilon_check,norm_residual_check);
     
 %     t_nuclear = tw{1};
 %     t_l21 = tw{2};
