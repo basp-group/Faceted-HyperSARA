@@ -1,10 +1,10 @@
 clc; clear all; close all;
 format compact;
 
-addpath ../../../CubeHelix
-addpath ../../../export_fig_master
-addpath ../../mnras_faceted_corrected/final_real_data
-addpath ../../lib/print/
+addpath ../../../../CubeHelix
+addpath ../../../../export_fig_master
+addpath ../../../mnras_faceted_corrected/final_real_data
+addpath ../../../lib/print/
 
 %% Only load useful channels, create average cube progressively
 % addpath ../../mnras_faceted_corrected/final_real_data
