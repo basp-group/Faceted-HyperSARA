@@ -1,6 +1,6 @@
-function [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = ...
+function [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image, B, s] = ...
     compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
-    nChannels, wavelet_basis, filters_length, nlevel)
+    nChannels, wavelet_basis, filters_length, nlevel, sigma_noise)
 
 %! TO BE DOCUMENTED
 %! make sure the rng always starts from the same value for reproducibility 
@@ -18,7 +18,8 @@ for l = 1:nChannels
     end
     dirty_image(:,:,l) = At(temp);
 end
-[B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No);
+% sigma_noise = ones(nChannels, 1); % 0.1*
+[B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise);
 
 dirty_image = dirty_image./reshape(max_psf, [1, 1, nChannels]);
 [~,S0,~] = svd(reshape(dirty_image, [N, nChannels]),'econ');

@@ -4,6 +4,8 @@ function [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = ...
 %! TO BE DOCUMENTED
 %! make sure the rng always starts from the same value for reproducibility 
 
+%! to be revised (sigma noise, ...)
+
 N = Ny*Nx;    % number of image pixels
 n_data_workers = length(cell_c_chunks);
 

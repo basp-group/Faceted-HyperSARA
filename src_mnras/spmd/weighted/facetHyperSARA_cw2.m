@@ -247,8 +247,14 @@ end
 
 %! -- TO BE CHECKED
 % Reweighting parameters
-sig_bar = param.reweighting_sig_bar;
-sig = param.reweighting_sig;
+% sig_bar = param.reweighting_sig_bar;
+% sig = param.reweighting_sig;
+sig_ = Composite();
+sig_bar_ = Composite();
+for q = 1:Q
+    sig_bar_{q} = param.reweighting_sig_bar(q);
+    sig_{q} = param.reweighting_sig;
+end
 reweighting_alpha = param.reweighting_alpha;
 reweighting_alphap = Composite();
 for q = 1:Q
@@ -308,7 +314,7 @@ else
             % weights initialized from initial primal variable, dual variables to 0
             [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
                 Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
-                offsetLq, offsetRq, reweighting_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+                offsetLq, offsetRq, reweighting_alphap, crop_l21, crop_nuclear, w, sig_, sig_bar_);
 
             % weights and dual variables initialized from initial primal variable
             % [v0, v1, weights0, weights1] = initialize_dual_and_weights2(x_overlap, ...
@@ -744,7 +750,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 [weights1_, weights0_] = update_weights_overlap2(x_overlap, size(v1_), ...
                 Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                 Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                reweighting_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+                reweighting_alphap, crop_l21, crop_nuclear, w, sig_, sig_bar_);
                 if flag_homotopy
                     reweighting_alphap = max(reweighting_alpha_ffp.Value*reweighting_alphap, 1);
                 end

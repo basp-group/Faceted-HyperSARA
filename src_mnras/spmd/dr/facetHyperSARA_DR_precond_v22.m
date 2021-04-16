@@ -48,8 +48,8 @@ function [xsol,param,t,rel_val,nuclear,l21,end_iter] = ...
 %   > .reweight_max_reweight_itr     param_HSI.max_iter - param_HSI.reweight_step_size;
 %   > .reweight_rel_var   (1e-4)     criterion for performing reweighting
 %   > .reweight_min_steps_rel_var (300) minimum number of iterations between consecutive reweights
-%   > .sig                           noise level (wavelet space)
-%   > sig_bar                        noise level (singular value space)
+%   > .sig_                           noise level (wavelet space)
+%   > sig_bar_                        noise level (singular value space)
 %
 %   projection onto ellipsoid (preconditioning)
 %   > .elipse_proj_max_iter (20)     max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
@@ -172,7 +172,7 @@ for qx = 1:Qx
 end
 
 rg_yo = split_range(Qy, M, d(1));
-rg_xo = split_range(Qx, N, d(2)));
+rg_xo = split_range(Qx, N, d(2));
 Io = zeros(Q, 2);
 dims_o = zeros(Q, 2);
 for qx = 1:Qx
@@ -253,8 +253,14 @@ end
 
 %! -- TO BE CHECKED
 % Reweighting parameters
-sig_bar = param.reweighting_sig_bar;
-sig = param.reweighting_sig;
+% sig_bar = param.reweighting_sig_bar;
+% sig = param.reweighting_sig;
+sig_ = Composite();
+sig_bar_ = Composite();
+for q = 1:Q
+    sig_bar_{q} = param.reweighting_sig_bar(q);
+    sig_{q} = param.reweighting_sig;
+end
 reweighting_alpha = param.reweighting_alpha;
 reweighting_alphap = Composite();
 for q = 1:Q
@@ -308,7 +314,7 @@ else
             %! weights initialized from initial primal variable (set to 1 if primal=0), dual variables to 0
             [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
             Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
-            offsetLq, offsetRq, reweighting_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+            offsetLq, offsetRq, reweighting_alphap, crop_l21, crop_nuclear, w, sig_, sig_bar_);
 
             %! archive: to be deleted once above isntructions have been checked
             % [v0_, v1_, weights0_, weights1_] = initialize_dual_overlap(Ncoefs_q, max_dims-crop_nuclear, c, nlevelp.Value);
@@ -731,7 +737,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 [weights1_, weights0_] = update_weights_overlap2(x_overlap, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                    reweighting_alphap, crop_l21, crop_nuclear, w, sig, sig_bar);
+                    reweighting_alphap, crop_l21, crop_nuclear, w, sig_, sig_bar_);
                 if flag_homotopy
                     reweighting_alphap = max(reweighting_alpha_ffp.Value*reweighting_alphap, 1);
                 end

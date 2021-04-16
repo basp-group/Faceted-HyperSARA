@@ -65,43 +65,51 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % image_name = 'W28_512';
 % nChannels = 3; % 60;
-% Qx = 2;
-% Qy = 1;
+% Qx = 2; %4;
+% Qy = 1; %4;
+% overlap_size = [0, 256]; % [128, 128];
 % Qc = 1;
 % p = 0; % percentage
 % nReweights = 1;
-% input_snr = 40; % input SNR (in dB)
-% algo_version = 'hypersara'; % 'cst_weighted';
+% input_snr = 50*ones(nChannels, 1); % 40 % input SNR (in dB)
+% algo_version = 'cw'; % 'hypersara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index of the spectral facet to be reconstructed
 % gam = 1e-5;
 % flag_generateCube = 0;
 % flag_generateCoverage = 0;
-% flag_generateVisibilities = 1;
+% flag_generateVisibilities = 0;
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-% flag_computeOperatorNorm = 1;
+% flag_computeOperatorNorm = 0;
 % flag_solveMinimization = true;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
-% 
+
 % rw = 1;
 % flag_primal = 0;
 % flag_homotopy = 1;
 % flag_computeLowerBounds = 1;
-% overlap_size = [0, 256];
-% % overlap_fraction = 0;
+% overlap_fraction = 0;
 % % 
 % %! to test SARA: take Qc = nChannels
 % % algo_version = 'sara';
 % % Qc = nChannels;
 % 
-% unused parameters (in the mnras experiments)
+% fixed parameters (in the mnras experiments)
 flag_generateUndersampledCube = false;
 flag_generateCoverage = false;
 p = 1;
-input_snr = 40;
+input_snr = 50*ones(nChannels, 1);
+seed = 1;
+rng(seed);
+% sigma_noise = 0.1
+% T = 1500; % to be set depending on the value of p
+% hrs = 6;
+% kernel = 'minmax:tuned'; % 'kaiser', 'minmax:tuned'
+generate_eps_nnls = false;
+save_data = true; 
 
 %%
 format compact;
@@ -145,16 +153,6 @@ freq_name = @(nchan) ['freq_', image_name, '_L=',num2str(nchan), '.mat'];
 mkdir(data_path)
 mkdir(results_path)
 
-%% 
-seed = 1;
-rng(seed);
-sigma_noise = 0.1
-% T = 1500; % to be set depending on the value of p
-% hrs = 6;
-% kernel = 'minmax:tuned'; % 'kaiser', 'minmax:tuned'
-generate_eps_nnls = false;
-save_data = true; 
-
 %% Generate/load ground-truth image cube
 if flag_generateCube
     % frequency bandwidth from 1 to 2 GHz
@@ -186,11 +184,12 @@ if strcmp(algo_version, 'sara')
     Qc = nChannels; %! handle each channel separately
 end
 id = split_range_interleaved(Qc, nChannels);
-if ind > 0
+if Qc > 1 && ind > 0 
     x0 = x0(:,:,id{ind});
     nchans = size(x0,3);
     f = f(id{ind});
     X0 = reshape(x0,Nx*Ny,nchans);
+    input_snr = input_snr(id{ind});
 else
     nchans = nChannels;
 end
@@ -319,9 +318,9 @@ for i = 1:nchans
     % measurement operator initialization
     fprintf('Initializing the NUFFT operator\n\n');
     [A, At, G{i}, W{i}] = op_p_nufft([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
-    for b = 1:numel(G{i})
-        G{i}{b} = G{i}{b}/sigma_noise; %! add variance normalisation to use the same procedure as for real data to estimate the reweighting lower bounds
-    end
+%     for b = 1:numel(G{i})
+%         G{i}{b} = G{i}{b}/sigma_noise; %! add variance normalisation to use the same procedure as for real data to estimate the reweighting lower bounds
+%     end
 end
 
 %% Free memory
@@ -332,18 +331,23 @@ if flag_generateVisibilities % generate only full spectral dataset
     param_l2_ball.type = 'sigma';
     param_l2_ball.sigma_ball = 2;
     % [y0, y, Nm, sigma_noise] = util_gen_measurements(x0, G, W, A, input_snr);
+    
     %! see if it realy needs to be hard-coded this way!
-    [y0, y, Nm] = util_gen_measurements_sigma(x0, G, W, A, 1, seed);
-    [epsilon,epsilons] = util_gen_data_fidelity_bounds(y, Nm, param_l2_ball, 1); %! sigma_noise modified to account for variance normalisation (Theta) % sigma_noise
-
+    % [y0, y, Nm] = util_gen_measurements_sigma(x0, G, W, A, 1, seed);
+    % [epsilon,epsilons] = util_gen_data_fidelity_bounds(y, Nm, param_l2_ball, 1); %! sigma_noise modified to account for variance normalisation (Theta) % sigma_noise
+    
+    %! [15/04/2021] agreed with Arwa and Yves 
+    [y0, y, Ml, Nm, sigma_noise] = util_gen_measurements_snr(x0, G, W, A, input_snr,seed);
+    [epsilon,epsilons] = util_gen_data_fidelity_bounds2(y, Ml, param_l2_ball, sigma_noise);    
+    
     if save_data
         save(fullfile(data_path,data_name), '-v7.3', 'y0', 'y', 'epsilon', 'epsilons', 'sigma_noise');
     end
-    clear y0 Nm epsilon sigma_noise;
+    clear y0 Nm epsilon;
 else
     %! if spectral faceting or SARA, only load the portion of the data
     %needed for the analysis
-    load(fullfile(data_path,data_name), 'y', 'epsilons');
+    load(fullfile(data_path,data_name), 'y', 'epsilons', 'sigma_noise');
     % need to completely restructure data format to avoid reloading
     % everything
     %m = matfile(fullfile(data_path,data_name));
@@ -435,16 +439,115 @@ if flag_solveMinimization
                 Psit{k} = eval(ft);
             end
             [sig, max_psf, dirty_image] = ...
-                compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, wlt_basis, filter_length, nlevel);
+                compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, wlt_basis, filter_length, nlevel, sigma_noise);
             save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'max_psf', 'dirty_image');
+            %! to be checked for sara...
         else
             load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'max_psf');
         end
     else
-        fprintf('Normalization factor gamma = %e', gam);
+        fprintf('Normalization factor gamma = %e \n', gam);
         if flag_computeLowerBounds
-            [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
-            nchans, wlt_basis, filter_length, nlevel);
+            [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image, B, s] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
+            nchans, wlt_basis, filter_length, nlevel, sigma_noise);
+        
+            E = sum(var(B,0,1));
+            
+            % wavelet
+            sig2_w = N*E/s;
+            fprintf("sig^2 = %e, sig2_w = %e, \n", sig^2, sig2_w)
+            sig = sqrt(sig2_w);
+            
+            if strcmp(algo_version, 'hypersara')
+                % SVD (full)
+                [U0,S0,V0] = svd(reshape(X0, [N, nChannels]),'econ');
+                sig2_bar0 = var(abs(diag(U0'*B*V0))); 
+                
+                [U1,S1,V1] = svd(reshape(dirty_image, [N, nChannels]),'econ');
+                sig2_bar1 = var(abs(diag(U1'*B*V1))); 
+                
+                sig2_svd = E/min(nChannels, N); % need to compute that quantity from within the algo, 
+                % one per facet 
+                
+                fprintf("sig2_svd_noise = %e, sig2_svd0 = %e, sig2_svd1 = %e, sig2_svd = %e \n", sig_bar^2, sig2_bar0, sig2_bar1, sig2_svd);
+
+                sig_bar = sqrt(sig2_svd);
+            else
+                % define facets from noise B in image space
+                Q = Qx*Qy;
+                B = reshape(B, [Ny, Nx, nchans]);
+                
+                Eq = zeros(Q, 1);
+                sig2_bar_q = zeros(Q, 1);
+                sig2_bar_q0 = zeros(Q, 1);
+                sig2_bar_q1 = zeros(Q, 1);
+                sig2_svd_q = zeros(Q, 1);
+                b_overlap = cell(Q, 1);
+                w = cell(Q, 1);
+                
+                rg_y = split_range(Qy, Ny);
+                rg_x = split_range(Qx, Nx);
+                I = zeros(Q, 2);
+                dims = zeros(Q, 2);
+                for qx = 1:Qx
+                    for qy = 1:Qy
+                        q = (qx-1)*Qy+qy;
+                        I(q, :) = [rg_y(qy, 1)-1, rg_x(qx, 1)-1];
+                        dims(q, :) = [rg_y(qy,2)-rg_y(qy,1)+1, rg_x(qx,2)-rg_x(qx,1)+1];
+                    end
+                end
+                clear rg_y rg_x;
+
+                rg_yo = split_range(Qy, Ny, overlap_size(1));
+                rg_xo = split_range(Qx, Nx, overlap_size(2));
+                Io = zeros(Q, 2);
+                dims_o = zeros(Q, 2);
+                for qx = 1:Qx
+                    for qy = 1:Qy
+                        q = (qx-1)*Qy+qy;
+                        Io(q, :) = [rg_yo(qy, 1)-1, rg_xo(qx, 1)-1];
+                        dims_o(q, :) = [rg_yo(qy,2)-rg_yo(qy,1)+1, rg_xo(qx,2)-rg_xo(qx,1)+1];
+                    end
+                end
+                clear rg_yo rg_xo;
+                
+                for q = 1:Q
+                    [qy, qx] = ind2sub([Qy, Qx], q);
+                    w{q} = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), overlap_size);
+                    
+                    Noq = prod(dims_o(q, :));
+                    Bq = B(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+                    bq = reshape(w{q}.*Bq, [Noq, nchans]);
+                    Eq(q) = sum(var(bq,0,1));
+                    
+                    % SVD of noise
+                    [~,S0,~] = svd(bq,'econ');
+                    sig2_bar_q(q) = var(diag(S0));
+                    
+                    % SVD space of X0
+                    X0q = x0(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+                    [U0,S0,V0] = svd(reshape(X0q, [Noq, nChannels]),'econ');
+                    sig2_bar_q0(q) = var(abs(diag(U0'*bq*V0))); 
+                    
+                    % SVD space of Xdirty
+                    dirty_image_q = dirty_image(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+                    [U1,S1,V1] = svd(reshape(dirty_image_q, [Noq, nChannels]),'econ');
+                    sig2_bar_q1(q) = var(abs(diag(U1'*bq*V1)));
+                    
+                    % order of magnitude
+                    sig2_svd_q(q) = Eq(q)/min(nChannels, Noq);
+                end
+
+                save(['test_L', num2str(nchans), '_Q', num2str(Q), '.mat'], 'sig', 'sig_bar', ...
+                'Eq', 'sig2_bar_q', 'sig2_bar_q0', 'sig2_bar_q1', 'sig2_svd_q')
+                % 'E', 'sig2_w', 'sig2_bar0', 'sig2_bar1', 'sig2_svd'
+            
+                fprintf("Max: sig2_svd_noise = %e, sig2_svd0 = %e, sig2_svd_dirty = %e, sig2_svd = %e \n", ...
+                    max(sig2_bar_q), max(sig2_bar_q0), max(sig2_bar_q1), max(sig2_svd_q))
+                fprintf("Min: sig2_svd_noise = %e, sig2_svd0 = %e, sig2_svd_dirty = %e, sig2_svd = %e \n", ...
+                    min(sig2_bar_q), min(sig2_bar_q0), min(sig2_bar_q1), min(sig2_svd_q))
+                sig_bar = sig2_svd_q;
+            end 
             %! recompute the value for gam (ratio between l21 and nuclear norm)
             gam = gam*nuclear_norm/l21_norm;
             save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'gam');
@@ -596,5 +699,4 @@ if flag_solveMinimization
         '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_'), ...
         '_homotopy=', num2str(flag_homotopy), ...
         '.fits')))
-%     '_primal=', num2str(flag_primal), ...
 end

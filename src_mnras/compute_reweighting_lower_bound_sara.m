@@ -1,5 +1,5 @@
 function [sig, max_psf, dirty_image] = ...
-    compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, wavelet_basis, filters_length, nlevel)
+    compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, wavelet_basis, filters_length, nlevel, sigma_noise)
 
 %! TO BE DOCUMENTED
 %! make sure the rng always starts from the same value for reproducibility 
@@ -9,13 +9,12 @@ No = N*oy*ox; % size of oversampled Fourier space
 
 % estimate mu: ratio between nuclear and l21 norm priors applied to
 % the dirty image
-dirty_image = zeros([Ny, Nx]);
 temp = zeros(No, 1);
 for b = 1:numel(G{1})
     temp(W{1}{b}) = temp(W{1}{b}) + G{1}{b}' * y{1}{b};
 end
 dirty_image = At(temp);
-[B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No);
+[B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise);
 dirty_image = dirty_image/max_psf;
 
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 

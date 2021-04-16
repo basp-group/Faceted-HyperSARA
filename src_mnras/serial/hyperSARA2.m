@@ -198,8 +198,10 @@ end
 
 %! -- TO BE CHECKED
 % Reweighting parameters
-sig_bar = param.reweighting_sig_bar;
-sig = param.reweighting_sig;
+sig_ = Composite();
+sig_bar_ = Composite();
+sig_bar_{1} = param.reweighting_sig_bar;
+sig_{2} = param.reweighting_sig;
 reweighting_alpha = param.reweighting_alpha;
 reweighting_alphap = Composite();
 for q = 1:2
@@ -245,10 +247,10 @@ else
         if labindex == 1
             % v0_ = zeros(M*N, c);
             % weights0_ = ones(min(M*N, c), 1);
-            [v0_, weights0_] = initialize_nuclear_serial(xsol, reweighting_alphap, sig_bar);
+            [v0_, weights0_] = initialize_nuclear_serial(xsol, reweighting_alphap, sig_bar_);
         elseif labindex == 2
             % [v1_, weights1_, s_] = initialize_l21_serial(xsol, Psit_, 'zpd', nlevel); 
-            [v1_, weights1_, s_] = initialize_l21_serial2(xsol, Psit_, 'zpd', nlevel, reweighting_alphap, sig);
+            [v1_, weights1_, s_] = initialize_l21_serial2(xsol, Psit_, 'zpd', nlevel, reweighting_alphap, sig_);
         end
     end
     s = s_{2};
@@ -598,9 +600,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         %! -- TO BE CHECKED (using new reweighting with proper floor level)
         spmd
             if labindex == 1
-                weights0_ = update_weights_nuclear_serial(xsol, reweighting_alpha, sig_bar);
+                weights0_ = update_weights_nuclear_serial(xsol, reweighting_alpha, sig_bar_);
             elseif labindex == 2
-                weights1_ = update_weights_l21_serial(xsol, Psit_, weights1_, reweighting_alpha, sig);
+                weights1_ = update_weights_l21_serial(xsol, Psit_, weights1_, reweighting_alpha, sig_);
             else % > 2
                 % compute residual image
                 res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-2}), yp, Gp, Ap, Atp, Wp);
