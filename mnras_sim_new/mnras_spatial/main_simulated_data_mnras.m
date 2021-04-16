@@ -1,9 +1,9 @@
-function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
-    algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
-    flag_generateCube, flag_generateVisibilities, ...
-    flag_computeOperatorNorm, flag_solveMinimization, ...
-    cube_path, coverage_path, gam, rw, flag_homotopy, ... 
-    flag_computeLowerBounds)
+% function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
+%     algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
+%     flag_generateCube, flag_generateVisibilities, ...
+%     flag_computeOperatorNorm, flag_solveMinimization, ...
+%     cube_path, coverage_path, gam, rw, flag_homotopy, ... 
+%     flag_computeLowerBounds)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -63,35 +63,35 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 %% PARAMETERS FOR DEBUGGING
 
-% image_name = 'W28_512';
-% nChannels = 20; % 60;
-% Qx = 4; %2;
-% Qy = 4; %1;
-% overlap_size = [128, 128]; %[0, 256]; % [128, 128];
-% Qc = 1;
-% p = 0; % percentage
-% nReweights = 1;
-% input_snr = 50*ones(nChannels, 1); % 40 % input SNR (in dB)
-% algo_version = 'cw'; % 'hypersara';
-% window_type = 'triangular'; % 'hamming', 'pc'
-% ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
-% ind = 1;  % index of the spectral facet to be reconstructed
-% gam = 1e-5;
-% flag_generateCube = 0;
-% flag_generateCoverage = 0;
-% flag_generateVisibilities = 0;
-% flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-% flag_computeOperatorNorm = 0;
-% flag_solveMinimization = true;
-% cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
-% cube_path = cubepath(nChannels);
-% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
-% 
-% rw = 1;
-% flag_primal = 0;
-% flag_homotopy = 1;
-% flag_computeLowerBounds = 1;
-% overlap_fraction = 0;
+image_name = 'W28_512';
+nChannels = 20; % 60;
+Qx = 4; %2;
+Qy = 4; %1;
+overlap_size = [128, 128]; %[0, 256]; % [128, 128];
+Qc = 1;
+p = 0; % percentage
+nReweights = 1;
+input_snr = 50*ones(nChannels, 1); % 40 % input SNR (in dB)
+algo_version = 'cw'; % 'hypersara';
+window_type = 'triangular'; % 'hamming', 'pc'
+ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
+ind = 1;  % index of the spectral facet to be reconstructed
+gam = 1e-5;
+flag_generateCube = 0;
+flag_generateCoverage = 0;
+flag_generateVisibilities = 0;
+flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
+flag_computeOperatorNorm = 0;
+flag_solveMinimization = true;
+cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
+cube_path = cubepath(nChannels);
+coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
+
+rw = 1;
+flag_primal = 0;
+flag_homotopy = 1;
+flag_computeLowerBounds = 1;
+overlap_fraction = 0;
 % % 
 % %! to test SARA: take Qc = nChannels
 % % algo_version = 'sara';
@@ -451,10 +451,10 @@ if flag_solveMinimization
             [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image, B, s] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
             nchans, wlt_basis, filter_length, nlevel, sigma_noise);
         
-            E = sum(var(B,0,1));
+            E = N*sum(var(B,0,1));
             
             % wavelet
-            sig2_w = N*E/s;
+            sig2_w = E/s;
             fprintf("sig^2 = %e, sig2_w = %e, \n", sig^2, sig2_w)
             sig = sqrt(sig2_w);
             
@@ -466,7 +466,7 @@ if flag_solveMinimization
                 [U1,~,V1] = svd(reshape(dirty_image, [N, nChannels]),'econ');
                 sig2_bar1 = var(abs(diag(U1'*B*V1))); 
                 
-                sig2_svd = E/min(nChannels, N); % need to compute that quantity from within the algo, 
+                sig2_svd = N*E/min(nChannels, N); % need to compute that quantity from within the algo, 
                 % one per facet 
                 
                 fprintf("sig2_svd_noise = %e, sig2_svd0 = %e, sig2_svd1 = %e, sig2_svd = %e \n", sig_bar^2, sig2_bar0, sig2_bar1, sig2_svd);
@@ -516,11 +516,11 @@ if flag_solveMinimization
                     Noq = prod(dims_o(q, :));
                     Bq = B(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
                     bq = reshape(Bq, [Noq, nchans]);
-                    Eq(q) = sum(var(bq,0,1));
+                    Eq(q) = Noq*sum(var(bq,0,1));
                     
                     % SVD of noise
-                    [~,S0,~] = svd(bq,'econ');
-                    sig2_bar_q(q) = var(diag(S0));
+                    [~,S0,~] = svd(w(:).*bq,'econ');
+                    sig2_bar_q(q) = var(abs(diag(S0)));
                     
                     % SVD space of X0
                     X0q = w.*x0(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
