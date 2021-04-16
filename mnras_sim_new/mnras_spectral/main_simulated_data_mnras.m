@@ -64,10 +64,10 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 %% PARAMETERS FOR DEBUGGING
 
 % image_name = 'W28_512';
-% nChannels = 3; % 60;
-% Qx = 2; %4;
-% Qy = 1; %4;
-% overlap_size = [0, 256]; % [128, 128];
+% nChannels = 20; % 60;
+% Qx = 4; %2;
+% Qy = 4; %1;
+% overlap_size = [128, 128]; %[0, 256]; % [128, 128];
 % Qc = 1;
 % p = 0; % percentage
 % nReweights = 1;
@@ -86,7 +86,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
-
+% 
 % rw = 1;
 % flag_primal = 0;
 % flag_homotopy = 1;
@@ -460,10 +460,10 @@ if flag_solveMinimization
             
             if strcmp(algo_version, 'hypersara')
                 % SVD (full)
-                [U0,S0,V0] = svd(reshape(X0, [N, nChannels]),'econ');
+                [U0,~,V0] = svd(reshape(X0, [N, nChannels]),'econ');
                 sig2_bar0 = var(abs(diag(U0'*B*V0))); 
                 
-                [U1,S1,V1] = svd(reshape(dirty_image, [N, nChannels]),'econ');
+                [U1,~,V1] = svd(reshape(dirty_image, [N, nChannels]),'econ');
                 sig2_bar1 = var(abs(diag(U1'*B*V1))); 
                 
                 sig2_svd = E/min(nChannels, N); % need to compute that quantity from within the algo, 
@@ -482,8 +482,6 @@ if flag_solveMinimization
                 sig2_bar_q0 = zeros(Q, 1);
                 sig2_bar_q1 = zeros(Q, 1);
                 sig2_svd_q = zeros(Q, 1);
-                b_overlap = cell(Q, 1);
-                w = cell(Q, 1);
                 
                 rg_y = split_range(Qy, Ny);
                 rg_x = split_range(Qx, Nx);
@@ -513,11 +511,11 @@ if flag_solveMinimization
                 
                 for q = 1:Q
                     [qy, qx] = ind2sub([Qy, Qx], q);
-                    w{q} = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), overlap_size);
+                    w = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), overlap_size);
                     
                     Noq = prod(dims_o(q, :));
                     Bq = B(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
-                    bq = reshape(w{q}.*Bq, [Noq, nchans]);
+                    bq = reshape(Bq, [Noq, nchans]);
                     Eq(q) = sum(var(bq,0,1));
                     
                     % SVD of noise
@@ -525,17 +523,17 @@ if flag_solveMinimization
                     sig2_bar_q(q) = var(diag(S0));
                     
                     % SVD space of X0
-                    X0q = x0(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
-                    [U0,S0,V0] = svd(reshape(X0q, [Noq, nChannels]),'econ');
+                    X0q = w.*x0(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+                    [U0,~,V0] = svd(reshape(X0q, [Noq, nChannels]),'econ');
                     sig2_bar_q0(q) = var(abs(diag(U0'*bq*V0))); 
                     
                     % SVD space of Xdirty
-                    dirty_image_q = dirty_image(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
-                    [U1,S1,V1] = svd(reshape(dirty_image_q, [Noq, nChannels]),'econ');
+                    dirty_image_q = w.*dirty_image(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+                    [U1,~,V1] = svd(reshape(dirty_image_q, [Noq, nChannels]),'econ');
                     sig2_bar_q1(q) = var(abs(diag(U1'*bq*V1)));
                     
                     % order of magnitude
-                    sig2_svd_q(q) = Eq(q)/min(nChannels, Noq);
+                    sig2_svd_q(q) = norm(w(:))^2*Eq(q)/(Noq*min(nChannels, Noq));
                 end
 
                 save(['test_L', num2str(nchans), '_Q', num2str(Q), '.mat'], 'sig', 'sig_bar', ...
@@ -556,7 +554,7 @@ if flag_solveMinimization
         end
         fprintf('nuclear_norm_dirty = %e, l21_norm_dirty = %e\n', l21_norm, nuclear_norm);
     end
-
+    clear dirty_image B Bq bq s U0 U1 V0 V1 X0q dirty_image_q w E Eq I Io dims dims_o
     fprintf('gam = %e, sig = %e, sig_bar = %e\n', gam, sig, sig_bar);
     %! --
     
