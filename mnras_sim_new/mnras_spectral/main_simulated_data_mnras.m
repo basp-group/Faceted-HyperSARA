@@ -516,7 +516,7 @@ if flag_solveMinimization
                     Noq = prod(dims_o(q, :));
                     Bq = B(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
                     bq = reshape(Bq, [Noq, nchans]);
-                    Eq(q) = Noq*sum(var(bq,0,1));
+                    Eq(q) = sum(var(bq,0,1));
                     
                     % SVD of noise
                     [~,S0,~] = svd(w(:).*bq,'econ');
@@ -533,7 +533,7 @@ if flag_solveMinimization
                     sig2_bar_q1(q) = var(abs(diag(U1'*bq*V1)));
                     
                     % order of magnitude
-                    sig2_svd_q(q) = norm(w(:))^2*Eq(q)/(Noq*min(nChannels, Noq));
+                    sig2_svd_q(q) = norm(w(:))^2*Eq(q)/(min(nChannels, Noq));
                 end
 
                 save(['test_L', num2str(nchans), '_Q', num2str(Q), '.mat'], 'sig', 'sig_bar', ...
