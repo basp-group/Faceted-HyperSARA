@@ -544,7 +544,7 @@ if flag_solveMinimization
                     max(sig2_bar_q), max(sig2_bar_q0), max(sig2_bar_q1), max(sig2_svd_q))
                 fprintf("Min: sig2_svd_noise = %e, sig2_svd0 = %e, sig2_svd_dirty = %e, sig2_svd = %e \n", ...
                     min(sig2_bar_q), min(sig2_bar_q0), min(sig2_bar_q1), min(sig2_svd_q))
-                sig_bar = sig2_svd_q;
+                sig_bar = sqrt(sig2_svd_q);
             end 
             %! recompute the value for gam (ratio between l21 and nuclear norm)
             gam = gam*nuclear_norm/l21_norm;
