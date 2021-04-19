@@ -386,6 +386,16 @@ else
         Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
         save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
             '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm'); % ,'_p=',num2str(p),'_snr=', num2str(input_snr)
+       
+%         % operator norm per channel "l"
+%         Anorm_channel = zeros(nchans, 1);
+%         for l = 1:nchans
+%             F = afclean( @(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l)));
+%             Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx));
+%             Anorm_channel(l) = op_norm(F, Ft, [Ny Nx 1], 1e-8, 200, 2); 
+%         end
+%         save(fullfile(results_path,strcat('Anorm_channel_N=',num2str(Nx), ...
+%             '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm_channel');
     else
         load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
             num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat'))); % ,'_p=',num2str(p),'_snr=', num2str(input_snr)
@@ -451,27 +461,55 @@ if flag_solveMinimization
             [sig, sig_bar, max_psf, l21_norm, nuclear_norm, dirty_image, B, s] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
             nchans, wlt_basis, filter_length, nlevel, sigma_noise);
         
-            E = N*sum(var(B,0,1));
+            %! need to compute operator norm per channel
+            [~,S0,~] = svd(reshape(X0, [N, nChannels]),'econ');
+            nuclear_norm_X0 = sum(abs(diag(S0)));            
+            [~, Psitw] = op_sp_wlt_basis_fhs(wlt_basis, nlevel, Ny, Nx);
+            Psit_full = @(x) HS_adjoint_sparsity(x,Psitw,s);
+            l21_norm_X0 = sum(sqrt(sum(Psit_full(x0).^2, 2))); 
+
+            fprintf("\\mu (X0) -> %e, (dirty, PSF) -> %e\n", ...
+                nuclear_norm_X0/l21_norm_X0, nuclear_norm/l21_norm)
             
-            % wavelet
-            sig2_w = E/s;
-            fprintf("sig^2 = %e, sig2_w = %e, \n", sig^2, sig2_w)
-            sig = sqrt(sig2_w);
+            % d2 = dirty_image.*reshape(max_psf./Anorm_channel,[1, 1, nchans]);
+            % d2 = dirty_image.*reshape(max_psf./Anorm_channel,[1, 1, nchans]);
+            % [~,S0,~] = svd(reshape(d2, [N, nChannels]),'econ');
+            % nuclear_norm_dirty_op_norm_ch = sum(abs(diag(S0)));  
+            % l21_norm_dirty_op_norm_ch = sum(sqrt(sum(Psit_full(reshape(d2, [Ny, Nx, nchans])).^2, 2)));
+            
+            % d2 = dirty_image.*reshape(max_psf/Anorm,[1, 1, nchans]);
+            % [~,S0,~] = svd(reshape(d2, [N, nChannels]),'econ');
+            % nuclear_norm_dirty_op_norm = sum(abs(diag(S0)));  
+            % l21_norm_dirty_op_norm = sum(sqrt(sum(Psit_full(reshape(d2, [Ny, Nx, nchans])).^2, 2)));
+            
+            % fprintf("\\mu (X0) -> %e, (dirty, PSF) -> %e, (dirty, op. norm per channel) -> %e, (dirty, op. norm) -> %e \n", ...
+            %     nuclear_norm_X0/l21_norm_X0, nuclear_norm/l21_norm, nuclear_norm_dirty_op_norm_ch/l21_norm_dirty_op_norm_ch, ...
+            %     nuclear_norm_dirty_op_norm/l21_norm_dirty_op_norm)
+            
+            % % wavelet -> normalisation factor has no influence here!
+            % E = N*sum(var(B,0,1));
+            % sig2_w = E/s;
+            % %
+            % E_op = N*sum(var(B.*reshape(max_psf./Anorm_channel, [1, nchans]),0,1));
+            % sig2_w_op = E_op/s;
+            
+            % fprintf("Wavelet (upsilon^2): noise transfer = %e, heuristic (PSF) = %e, heuristic (op. norm) = %e\n", sig^2, sig2_w, sig2_w_op)
+            % sig = sqrt(sig2_w);
             
             if strcmp(algo_version, 'hypersara')
                 % SVD (full)
-                [U0,~,V0] = svd(reshape(X0, [N, nChannels]),'econ');
-                sig2_bar0 = var(abs(diag(U0'*B*V0))); 
+                % [U0,~,V0] = svd(reshape(X0, [N, nChannels]),'econ');
+                % sig2_bar0 = var(abs(diag(U0'*B*V0))); 
                 
                 [U1,~,V1] = svd(reshape(dirty_image, [N, nChannels]),'econ');
                 sig2_bar1 = var(abs(diag(U1'*B*V1))); 
                 
-                sig2_svd = N*E/min(nChannels, N); % need to compute that quantity from within the algo, 
-                % one per facet 
+                % sig2_svd = N*E/min(nChannels, N); % need to compute that quantity from within the algo, 
+                % % one per facet 
                 
-                fprintf("sig2_svd_noise = %e, sig2_svd0 = %e, sig2_svd1 = %e, sig2_svd = %e \n", sig_bar^2, sig2_bar0, sig2_bar1, sig2_svd);
+                % fprintf("sig2_svd_noise = %e, sig2_svd0 = %e, sig2_svd1 = %e, sig2_svd = %e \n", sig_bar^2, sig2_bar0, sig2_bar1, sig2_svd);
 
-                sig_bar = sqrt(sig2_svd);
+                sig_bar = sqrt(sig2_bar1);
             else
                 % define facets from noise B in image space
                 Q = Qx*Qy;
@@ -509,6 +547,7 @@ if flag_solveMinimization
                 end
                 clear rg_yo rg_xo;
                 
+                % B normalized by psf
                 for q = 1:Q
                     [qy, qx] = ind2sub([Qy, Qx], q);
                     w = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), overlap_size);
@@ -516,16 +555,16 @@ if flag_solveMinimization
                     Noq = prod(dims_o(q, :));
                     Bq = B(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
                     bq = reshape(Bq, [Noq, nchans]);
-                    Eq(q) = sum(var(bq,0,1));
+                    % Eq(q) = sum(var(bq,0,1));
                     
                     % SVD of noise
-                    [~,S0,~] = svd(w(:).*bq,'econ');
-                    sig2_bar_q(q) = var(abs(diag(S0)));
+                    % [~,S0,~] = svd(w(:).*bq,'econ');
+                    % sig2_bar_q(q) = var(abs(diag(S0)));
                     
                     % SVD space of X0
-                    X0q = w.*x0(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
-                    [U0,~,V0] = svd(reshape(X0q, [Noq, nChannels]),'econ');
-                    sig2_bar_q0(q) = var(abs(diag(U0'*bq*V0))); 
+                    % X0q = w.*x0(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+                    % [U0,~,V0] = svd(reshape(X0q, [Noq, nChannels]),'econ');
+                    % sig2_bar_q0(q) = var(abs(diag(U0'*bq*V0))); 
                     
                     % SVD space of Xdirty
                     dirty_image_q = w.*dirty_image(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
@@ -533,18 +572,58 @@ if flag_solveMinimization
                     sig2_bar_q1(q) = var(abs(diag(U1'*bq*V1)));
                     
                     % order of magnitude
-                    sig2_svd_q(q) = norm(w(:))^2*Eq(q)/(min(nChannels, Noq));
+                    % sig2_svd_q(q) = norm(w(:))^2*E/(N*min(nChannels, Noq)); % Eq(q)
                 end
 
-                save(['test_L', num2str(nchans), '_Q', num2str(Q), '.mat'], 'sig', 'sig_bar', ...
-                'Eq', 'sig2_bar_q', 'sig2_bar_q0', 'sig2_bar_q1', 'sig2_svd_q')
-                % 'E', 'sig2_w', 'sig2_bar0', 'sig2_bar1', 'sig2_svd'
+                % save(['test_L_psf', num2str(nchans), '_Q', num2str(Q), '.mat'], 'sig', 'sig_bar', ...
+                % 'E', 'sig2_bar_q', 'sig2_bar_q0', 'sig2_bar_q1', 'sig2_svd_q', 'sig2_w')
             
-                fprintf("Max: sig2_svd_noise = %e, sig2_svd0 = %e, sig2_svd_dirty = %e, sig2_svd = %e \n", ...
-                    max(sig2_bar_q), max(sig2_bar_q0), max(sig2_bar_q1), max(sig2_svd_q))
-                fprintf("Min: sig2_svd_noise = %e, sig2_svd0 = %e, sig2_svd_dirty = %e, sig2_svd = %e \n", ...
-                    min(sig2_bar_q), min(sig2_bar_q0), min(sig2_bar_q1), min(sig2_svd_q))
-                sig_bar = sqrt(sig2_svd_q);
+                % fprintf("PSF (\\overline{\\upsilon}^2) \n")
+                % fprintf("Min: noise transfer = %e, X0 = %e, dirty = %e, heuristic = %e \n", ...
+                %     min(sig2_bar_q), min(sig2_bar_q0), min(sig2_bar_q1), min(sig2_svd_q))
+                % fprintf("Max: noise transfer = %e, X0 = %e, dirty = %e, heuristic = %e \n", ...
+                %     max(sig2_bar_q), max(sig2_bar_q0), max(sig2_bar_q1), max(sig2_svd_q))                
+
+%                 % B normalized by operator norm
+%                 B2 = B.*reshape(max_psf, [1, 1, nchans]);
+%                 B2 = B2./reshape(Anorm_channel, [1, 1, nchans]);
+%                 for q = 1:Q
+%                     [qy, qx] = ind2sub([Qy, Qx], q);
+%                     w = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), overlap_size);
+%                     
+%                     Noq = prod(dims_o(q, :));
+%                     Bq = B2(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+%                     bq = reshape(Bq, [Noq, nchans]);
+%                     Eq(q) = sum(var(bq,0,1));
+%                     
+%                     % SVD of noise
+%                     [~,S0,~] = svd(w(:).*bq,'econ');
+%                     sig2_bar_q(q) = var(abs(diag(S0)));
+%                     
+%                     % SVD space of X0
+%                     X0q = w.*x0(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+%                     [U0,~,V0] = svd(reshape(X0q, [Noq, nChannels]),'econ');
+%                     sig2_bar_q0(q) = var(abs(diag(U0'*bq*V0))); 
+%                     
+%                     % SVD space of Xdirty
+%                     dirty_image_q = w.*dirty_image(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+%                     [U1,~,V1] = svd(reshape(dirty_image_q, [Noq, nChannels]),'econ');
+%                     sig2_bar_q1(q) = var(abs(diag(U1'*bq*V1)));
+%                     
+%                     % order of magnitude
+%                     sig2_svd_q(q) = norm(w(:))^2*E_op/(N*min(nChannels, Noq)); % Eq(q)
+%                 end
+% 
+%                 save(['test_L_op', num2str(nchans), '_Q', num2str(Q), '.mat'], 'sig', 'sig_bar', ...
+%                 'E', 'sig2_bar_q', 'sig2_bar_q0', 'sig2_bar_q1', 'sig2_svd_q', 'sig2_w_op')
+%             
+%                 fprintf("Op. norm (\\overline{\\upsilon}^2) \n")
+%                 fprintf("Min: noise transfer = %e, X0 = %e, dirty = %e, heuristic = %e \n", ...
+%                     min(sig2_bar_q), min(sig2_bar_q0), min(sig2_bar_q1), min(sig2_svd_q))
+%                 fprintf("Max: noise transfer = %e, X0 = %e, dirty = %e, heuristic = %e \n", ...
+%                     max(sig2_bar_q), max(sig2_bar_q0), max(sig2_bar_q1), max(sig2_svd_q))
+                
+                sig_bar = sqrt(sig2_bar_q1);
             end 
             %! recompute the value for gam (ratio between l21 and nuclear norm)
             gam = gam*nuclear_norm/l21_norm;
@@ -555,7 +634,8 @@ if flag_solveMinimization
         fprintf('nuclear_norm_dirty = %e, l21_norm_dirty = %e\n', l21_norm, nuclear_norm);
     end
     clear dirty_image B Bq bq s U0 U1 V0 V1 X0q dirty_image_q w E Eq I Io dims dims_o
-    fprintf('gam = %e, sig = %e, sig_bar = %e\n', gam, sig, sig_bar);
+    fprintf('gam = %e, sig = %e\n', gam, sig);
+    fprintf('sig_bar = %e\n', sig_bar);
     %! --
     
     %% HSI parameter structure sent to the  HSI algorithm
