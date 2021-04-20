@@ -22,6 +22,6 @@ mkdir results/
 module load matlab/R2020b  # version to be checked on cirrus
 
 echo  "main_simulated_data_mnras('"$imagename"',"$nchannels","$Qx","$Qy","$Qc",'"$algoversion"','"$wintype"',"$ncdata","$ind",["$overlapy","$overlapx"],"$nreweights",'"$gencube"',"$genvis","$computenorm","$solve",strcat('"$imagename"','_',num2str("$nchannels")),'"$covpath"',"$gam","$rw","$flaghomotopy", "$lowerbounds", '"$rwtype"')" > temporary_file_${SLURM_JOB_ID}.m
-matlab -nodisplay < temporary_file_${SLURM_JOB_ID}.m > spectral_${wintype}_id=${ind}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_overlap=${overlapx}_gam=${gam}_rw=${rw}_homotopy=${flaghomotopy}.txt
+matlab -nodisplay < temporary_file_${SLURM_JOB_ID}.m > spectral_${wintype}_id=${ind}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_overlap=${overlapx}_gam=${gam}_rw=${rw}_homotopy=${flaghomotopy}_rwt=${rwtype}.txt
 
 rm temporary_file_${SLURM_JOB_ID}.m

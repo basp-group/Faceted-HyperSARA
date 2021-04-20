@@ -50,8 +50,8 @@ with open(parameter_file_full_path, "r") as csvfile:
             # print(*params,*job,cubeid,ncores)
 
             slurm_command = r"""sbatch --job-name=spectral_{18}_{19}_{20} --ntasks-per-node={21} \
-            -e {0}_{18}_L={1}_Qx={2}_Qy={3}_Qc={19}_id={20}_overlapx={4}_overlapy={5}_gamma={7}_rw={6}.err \
-            -o {0}_{18}_L={1}_Qx={2}_Qy={3}_Qc={19}_id={20}_overlapx={4}_overlapy={5}_gamma={7}_rw={6}.out \
+            -e {0}_{18}_L={1}_Qx={2}_Qy={3}_Qc={19}_id={20}_overlapx={4}_overlapy={5}_gamma={7}_rw={6}_rwt={22}.err \
+            -o {0}_{18}_L={1}_Qx={2}_Qy={3}_Qc={19}_id={20}_overlapx={4}_overlapy={5}_gamma={7}_rw={6}_rwt={22}.out \
             -v --export=ALL,imagename={0},algoversion={18},nchannels={1},ind={20},Qx={2},Qy={3},Qc={19},wintype={9},overlapx={4},overlapy={5},gam={7},nreweights={8},gencube={13},genvis={14},computenorm={15},solve={17},covpath={10},ncdata={11},rw={6},flaghomotopy={12},lowerbounds={16},rwtype={22} \
             run_fhs_mnras.slurm""".format(*params,*job,cubeid,ncores,rw_type)
 

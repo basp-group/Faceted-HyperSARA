@@ -51,8 +51,8 @@ with open(parameter_file_full_path, "r") as csvfile:
         print("Total number of cpus: {0}".format(ncores))
 
         slurm_command = r"""sbatch --job-name=spatial_{1} --ntasks-per-node={21} \
-        -e {0}_{1}_L={2}_Qx={17}_Qy={18}_Qc={4}_id={3}_overlapx={19}_overlapy={20}_gamma={6}_rw={5}.err \
-        -o {0}_{1}_L={2}_Qx={17}_Qy={18}_Qc={4}_id={3}_overlapx={19}_overlapy={20}_gamma={6}_rw={5}.out \
+        -e {0}_{1}_L={2}_Qx={17}_Qy={18}_Qc={4}_id={3}_overlapx={19}_overlapy={20}_gamma={6}_rw={5}_rwt={22}.err \
+        -o {0}_{1}_L={2}_Qx={17}_Qy={18}_Qc={4}_id={3}_overlapx={19}_overlapy={20}_gamma={6}_rw={5}_rwt={22}.out \
         -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={3},Qx={17},Qy={18},Qc={4},wintype={8},overlapx={19},overlapy={20},gam={6},nreweights={7},gencube={12},genvis={13},computenorm={14},solve={16},covpath={9},ncdata={10},rw={5},flaghomotopy={11},lowerbounds={15},rwtype={22} \
         run_fhs_mnras.slurm""".format(*params,*job,ncores,rw_type)
 
