@@ -3,7 +3,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
     flag_generateCube, flag_generateVisibilities, ...
     flag_computeOperatorNorm, flag_solveMinimization, ...
     cube_path, coverage_path, gam, rw, flag_homotopy, ... 
-    flag_computeLowerBounds, rw_type)
+    flag_computeLowerBounds, rw_type, gam_bar)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -65,9 +65,9 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % image_name = 'W28_512'; % 512
 % nChannels = 20;
-% Qx = 4; %2; % 4
-% Qy = 4; %1; % 4
-% overlap_size = [128, 128]; %[0, 256]; % [128, 128];
+% Qx = 2; %2; % 4
+% Qy = 1; %1; % 4
+% overlap_size = [0, 256]; %[0, 256]; % [128, 128];
 % Qc = 1;
 % p = 0; % percentage
 % nReweights = 1;
@@ -77,16 +77,17 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index of the spectral facet to be reconstructed
 % gam = 1; % 1e-5
-% flag_generateCube = 1;
+% gam_bar = 1;
+% flag_generateCube = 0;
 % flag_generateCoverage = 0;
 % flag_generateVisibilities = 1;
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-% flag_computeOperatorNorm = 1;
+% flag_computeOperatorNorm = 0;
 % flag_solveMinimization = true;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
-% 
+
 % rw = 1;
 % rw_type = 'dirty'; % ground_truth, heuristic
 % flag_primal = 0;
@@ -170,8 +171,6 @@ if flag_generateCube
     fitswrite(X0.', strcat(cube_path, '.fits'));
     fitsdisp(strcat(cube_path, '.fits'));
     save(fullfile(data_path,freq_name(nChannels)), 'f');
-    
-    fitswrite(x0, strcat(cube_path, '.fits'));
 else
     X0 = fitsread(strcat(cube_path, '.fits')).';
     Nx = sqrt(size(X0, 1));
@@ -180,6 +179,23 @@ else
     x0 = reshape(X0, [Ny, Nx, nChannels]);
     load(fullfile(data_path,freq_name(nChannels)), 'f');
 end
+
+%! load the appropriate portion of the reference image cube
+% if spectral faceting, just load the intersting portion of the full image cube
+% info        = fitsinfo('../../data/cubeS.fits');
+% rowend      = info.PrimaryData.Size(1);
+% colend      = info.PrimaryData.Size(2);
+% sliceend    = info.PrimaryData.Size(3);
+% x0 = fitsread('../../data/cubeS.fits','primary',...
+%           'Info', info,...
+%           'PixelRegion',{[1 2 rowend], [1 2 colend], [1 5 sliceend]});
+% 
+% [Ny, Nx, nChannels] = size(x0);
+% N = Nx*Ny;
+% X0 = reshape(x0, [N, nChannels]);
+% % frequency bandwidth from 1 to 2 GHz
+% f = linspace(1, 2, nChannels);
+% clear info rowend colend sliceend
 
 %% Generate spectral facets (interleaved sampling)
 if strcmp(algo_version, 'sara')
@@ -212,7 +228,7 @@ data_name_function = @(nchannels) strcat('y_N=',num2str(Nx),'_L=', ...
 results_name_function = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels),'_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
     '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
-    '_gam=', num2str(gam), '_rw_type=', rw_type, ...
+    '_gam=', num2str(gam), '_gambar=', num2str(gam_bar), '_rw_type=', rw_type, ...
     '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_'), ...
     '.mat');
     % '_p=',num2str(p), ...
@@ -221,7 +237,7 @@ results_name_function = @(nchannels) strcat('fhs_', algo_version,'_',window_type
 temp_results_name = @(nchannels) strcat('fhs_', algo_version,'_',window_type,'_N=',num2str(Nx), ...
     '_L=',num2str(nchannels), '_Qx=', num2str(Qx), '_Qy=', num2str(Qy), ...
     '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
-    '_gam=', num2str(gam), '_rw_type=', rw_type, ...
+    '_gam=', num2str(gam), '_gambar=', num2str(gam_bar), '_rw_type=', rw_type, ...
     '_overlap=', strjoin(strsplit(num2str(overlap_size)), '_'));
     % '_p=',num2str(p), ...
     % '_snr=', num2str(input_snr)
@@ -391,15 +407,15 @@ else
         save(fullfile(results_path,strcat('Anorm_N=',num2str(Nx), ...
             '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm'); % ,'_p=',num2str(p),'_snr=', num2str(input_snr)
        
-%         % operator norm per channel "l"
-%         Anorm_channel = zeros(nchans, 1);
-%         for l = 1:nchans
-%             F = afclean( @(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l)));
-%             Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx));
-%             Anorm_channel(l) = op_norm(F, Ft, [Ny Nx 1], 1e-8, 200, 2); 
-%         end
-%         save(fullfile(results_path,strcat('Anorm_channel_N=',num2str(Nx), ...
-%             '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm_channel');
+        % % operator norm per channel "l"
+        % Anorm_channel = zeros(nchans, 1);
+        % for l = 1:nchans
+        %     F = afclean( @(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l)));
+        %     Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx));
+        %     Anorm_channel(l) = op_norm(F, Ft, [Ny Nx 1], 1e-8, 200, 2); 
+        % end
+        % save(fullfile(results_path,strcat('Anorm_channel_N=',num2str(Nx), ...
+        %     '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm_channel');
     else
         load(fullfile(results_path,strcat('Anorm_N=',num2str(Nx),'_L=', ...
             num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat'))); % ,'_p=',num2str(p),'_snr=', num2str(input_snr)
@@ -455,36 +471,36 @@ if flag_solveMinimization
             %! to be updated!
             [sig, max_psf, dirty_image] = ...
                 compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, wlt_basis, filter_length, nlevel, sigma_noise);
-            save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '.mat'], 'sig', 'max_psf', 'dirty_image');
+            save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '_gam=', num2str(gam), '.mat'], 'sig', 'max_psf', 'dirty_image');
             %! to be checked for sara...
         else
-            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '_gam=', num2str(gam), '_rw_type=', rw_type, '.mat'], 'sig', 'max_psf');
+            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '_gam=', num2str(gam), '.mat'], 'sig', 'max_psf');
         end
     else
-        fprintf('Normalization factor gamma = %e \n', gam);
+        fprintf('Normalization factors gamma = %e, gamma_bar = %e \n', gam, gam_bar);
         if flag_computeLowerBounds
             %! use normalization by operator norm
-            [sig, sig_bar, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image, ~, ~] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
+            [sig, sig_bar, mu0, mu, mu_bar, m_bar, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
                 nchans, wlt_basis, filter_length, nlevel, sigma_noise, rw_type, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm);
-%             fprintf('Ground truth: sig2_bar min = %e, max = %e\n', min(sig_bar)^2, max(sig_bar)^2);            
-%             [sig_d, sig_bar_d, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, ~, ~, ~] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
-%                 nchans, wlt_basis, filter_length, nlevel, sigma_noise, "dirty", algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm);
-%             fprintf('Dirty: sig2_bar min = %e, max = %e\n', min(sig_bar_d)^2, max(sig_bar_d)^2);
-%             
-%             [sig_h, sig_bar_h, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, ~, ~, ~] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
-%                 nchans, wlt_basis, filter_length, nlevel, sigma_noise, "heuristic", algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm);
-%             fprintf('Heuristic: sig2_bar min = %e, max = %e\n', min(sig_bar_h)^2, max(sig_bar_h)^2);
-
+            fprintf('%s: upsilon_bar min = %e, max = %e\n', rw_type, min(sig_bar), max(sig_bar));
+            fprintf('%s: mu_bar = %e, mu = %e\n', rw_type, mu_bar, mu);
+            
             %! recompute the value for gam (ratio between l21 and nuclear norm)
+            % g = gam;
+            % gam = gam*nuclear_norm/l21_norm;
             g = gam;
-            gam = gam*nuclear_norm/l21_norm;
-            save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '_gam=', num2str(g), '_rw_type=', rw_type, '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'gam', 'l21_norm_x0', 'nuclear_norm_x0');
+            g_bar = gam_bar;
+            gam = gam*mu;
+            gam_bar = gam_bar*mu_bar;
+            save(['lower_bounds_', algo_version, '_ind=', num2str(ind), '_gam=', num2str(g), '_gam_bar=', num2str(g_bar), '_rw_type=', rw_type, '.mat'], ...
+                'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'gam', 'l21_norm_x0', 'nuclear_norm_x0', 'gam_bar');
         else
-            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '_gam=', num2str(gam), '_rw_type=', rw_type, '.mat'], 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'gam');
+            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '_gam=', num2str(gam), '_gambar=', num2str(gam_bar), '_rw_type=', rw_type, '.mat'], ...
+                'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'gam', 'gam_bar');
         end
         fprintf('nuclear_norm_dirty = %e, l21_norm_dirty = %e\n', l21_norm, nuclear_norm);
     end
-    clear dirty_image B
+    clear dirty_image
     fprintf('Reweighting type (for SVD log prior): %s \n', rw_type);
     fprintf('gam = %e, sig2 = %e\n', gam, sig^2);
     fprintf('sig2_bar = %e\n', sig_bar.^2);
@@ -495,7 +511,7 @@ if flag_solveMinimization
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator
-    param_HSI.gamma0 = 1;  % regularization parameter nuclear norm
+    param_HSI.gamma0 = gam_bar;  % regularization parameter nuclear norm
     param_HSI.gamma = gam; % regularization parameter l21-norm (soft th parameter) %! for SARA, take the value given as an input to the solver
     param_HSI.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
 

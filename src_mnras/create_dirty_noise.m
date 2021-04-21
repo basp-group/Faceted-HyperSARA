@@ -1,8 +1,9 @@
-function [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise, rng)
+function [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise, seed)
 
 %! to be documented
 %! create "dirty" noise matrix
 
+rng(seed)
 nChannels = numel(y);
 max_psf = zeros(nChannels, 1);
 B = zeros(Nx*Ny, nChannels);

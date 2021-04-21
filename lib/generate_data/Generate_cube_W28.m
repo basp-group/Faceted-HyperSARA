@@ -80,8 +80,15 @@ alpha = repmat(alpha,1,n_src);
 beta = repmat(beta,1,n_src);
 
 %! test P.-A.
-% alpha = [ -3 -2.5 0.5 0.3 -2 -1 0.1 0.5 -0.25 -4 0.5 2.5];
-% beta =  [ -3 -2  3   5.1  -3 -2.5  4   4  0.25 -3  3  3];
+% take alpha in [-3, 0.5]
+% beta in [-0.5, 0.5]
+% take sth random?
+% alpha = [ -3.1 -2.5 0.52 0.33 -2.4 -1.5 0.16 0.235 -0.25 0.12 0.125 2.5];
+% beta =  [ -0.12 -0.24 0.15 0.28 -0.5 -0.35 0.11 0.80 0.125 -0.8 0.32, 0.73];
+% alpha = [ -2.99 -2.5 0.17 0.33 -2.4 -1.5 0.16 0.235 -0.25 0.12 0.125 2.5];
+% beta =  [ -0.12 -0.24 0.15 0.28 -0.5 -0.35 0.11 -0.03 0.125 -0.8 0.32, 0.48];
+% alpha = unifrnd(-3, 0.5, n_src);
+% beta = unifrnd(-0.5, 0.5, n_src);
 
 c = length(f);
 %
@@ -97,7 +104,6 @@ if emission_lines
         HI(c-k-2,i) = 1.5;
         HI(c-k-3,i) = 2;
         HI(c-k-4,i) = 1.5;
-        k = k+3;
     end
 end
 
@@ -108,8 +114,13 @@ police={'-*b','-*b','-*b'}; %, '-or', '-dg', '-sc','.-m', '-+c', '-hb', '-dr','*
 %figure(2), hold on;
 
 for i=1:length(alpha)
-    
+
     H(:,i) = (f./f(1)).^(- alpha(i) + (beta(i).*log(f./f(1))));
+    %! using same convention as 
+    % https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwjxvbGMko3w[…]Flectures%2FRVU_Wideband.pdf&usg=AOvVaw3Ss58wIxnc9PKChkD2acs6 ?
+    % take alpha in [-3, 0.5]
+    % beta in [-0.5, 0.5]
+    % H(:,i) = (f./f(1)).^(alpha(i) + (beta(i).*log(f./f(1))));
     if emission_lines
         H(:,i) = H(:,i) .* HI(:,i);
     end
