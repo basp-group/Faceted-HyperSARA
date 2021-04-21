@@ -17,6 +17,8 @@
 cd $SLURM_SUBMIT_DIR
 # mkdir pref_$SLURM_JOB_ID
 mkdir results/
+mkdir $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
+export MATLAB_PREFDIR=$SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 
 # module purge             # remove all previously loaded modules
 module load matlab/R2020b  # version to be checked on cirrus
@@ -25,3 +27,4 @@ echo  "main_simulated_data_mnras('"$imagename"',"$nchannels","$Qx","$Qy","$Qc",'
 matlab -nodisplay < temporary_file_${SLURM_JOB_ID}.m > spectral_${wintype}_id=${ind}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_overlap=${overlapx}_gam=${gam}_rw=${rw}_homotopy=${flaghomotopy}_rwt=${rwtype}.txt
 
 rm temporary_file_${SLURM_JOB_ID}.m
+rm -r $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
