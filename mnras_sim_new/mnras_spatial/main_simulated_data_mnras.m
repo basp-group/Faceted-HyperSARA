@@ -205,7 +205,7 @@ switch exp_type
         error("Unknown experiment type")
 end
 
-reference_cube_path = fullfile(datapath, strcat(image_name, '.fits'));
+reference_cube_path = fullfile(data_path, strcat(image_name, '.fits'));
 info        = fitsinfo(reference_cube_path);
 rowend      = info.PrimaryData.Size(1);
 colend      = info.PrimaryData.Size(2);
