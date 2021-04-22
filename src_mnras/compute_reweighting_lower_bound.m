@@ -51,8 +51,12 @@ E = N*sum(var(B,0,1));
 
 %! wavelet prior
 sig = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
-mu = 1/sum(sig*log(d1/sig + 1));
 mu0 = 1/sum(sig*log(d0/sig + 1));
+if strcmp(rw_type, "ground_truth")
+    mu = mu0;
+else
+    mu = 1/sum(sig*log(d1/sig + 1));
+end
 
 %! heuristic for the wavelet transform
 % sig_w = sqrt(E/s);
