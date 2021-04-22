@@ -21,7 +21,7 @@ lowerbounds = 1
 solve = 1
 
 # kept fixed throughout all the simulations from this folder
-imagename = 'W28_1024'
+imagename = 'cygASband_Cube_H' #'W28_1024'
 algoversion = 'cw'
 nchannels = 20
 ind = 1

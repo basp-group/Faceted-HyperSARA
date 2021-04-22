@@ -19,7 +19,7 @@ lowerbounds = 1
 solve = 1
 
 # kept fixed throughout all the simulations from this folder
-imagename = 'W28_256'
+imagename = 'cygASband_Cube_L' #'W28_256'
 algoversion = 'sara'
 nchannels = 100
 Qc = nchannels

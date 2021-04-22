@@ -88,7 +88,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
-
+% 
 % rw = 1;
 % rwtype = 'dirty'; % ground_truth, heuristic
 % flag_primal = 0;
