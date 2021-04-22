@@ -15,8 +15,8 @@ parameter_file_full_path = "job_spatial.csv"
 
 # to be activated only for the first run (generating the data), and can systematically deactivated afertwards)
 gencube = 0
-genvis = 0
-computenorm = 0
+genvis = 1
+computenorm = 1
 lowerbounds = 1
 solve = 1
 
