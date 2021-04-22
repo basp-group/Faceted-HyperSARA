@@ -46,7 +46,7 @@ l21_norm_x0 = sum(d0);
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
 % SARA space) involved in the reweighting scheme
 % B = B./reshape(max_psf, [1, nChannels]); %! normalize noise by the psf
-B = B/sqrt(Anorm); %! normalize noise by the operator norm
+B = B/Anorm; %! normalize noise by the squared norm of the operator
 E = N*sum(var(B,0,1));
 
 %! wavelet prior
@@ -128,7 +128,7 @@ else
         w = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), overlap_size);
         
         Noq = prod(dims_o(q, :));
-        Bq = B(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+        Bq = w.*B(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
         bq = reshape(Bq, [Noq, nChannels]);
 
         switch rw_type
