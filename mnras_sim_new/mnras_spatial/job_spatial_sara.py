@@ -19,18 +19,18 @@ lowerbounds = 1
 solve = 1
 
 # kept fixed throughout all the simulations from this folder
-imagename = 'cygASband_Cube_L' # 'W28_1024'
+imagename = 'cygASband_Cube_1024x512x20' # 'W28_1024'
 algoversion = 'sara'
 nchannels = 20
 Qc = nchannels
 rw = -1
-gam = '1e-4'
+gam = '1'
 nreweights = 30
 wintype = 'none'
 covpath = '../../data/vla_7.95h_dt10s.uvw256.mat'
 ncdata = 9 # number of workers in this case (one per dictionary)
 flaghomotopy = 1
-exp_type = 'spatial'
+exp_type = 'test'
 
 params = [imagename,algoversion,nchannels,Qc,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve,Qx,Qy,overlapx,overlapy]
 

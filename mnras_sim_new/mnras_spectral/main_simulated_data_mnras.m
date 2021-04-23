@@ -73,7 +73,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % p = 0; % percentage
 % nReweights = 1;
 % input_snr = 50*ones(nChannels, 1); % 40 % input SNR (in dB)
-% algo_version = 'cw'; % 'cw' % 'hypersara';
+% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1;  % index of the spectral facet to be reconstructed
@@ -81,14 +81,14 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % gam_bar = 1;
 % flag_generateCube = 0;
 % flag_generateCoverage = 0;
-% flag_generateVisibilities = 1;
+% flag_generateVisibilities = 0;
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % flag_computeOperatorNorm = 1;
 % flag_solveMinimization = true;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
-% 
+
 % rw = 1;
 % rwtype = 'dirty'; % ground_truth, heuristic
 % flag_primal = 0;
@@ -191,16 +191,16 @@ switch exp_type
     case "spatial"
         image_name = 'cygASband_Cube_H';
         spectral_downsampling = 5;
-        spatial_downsampling = 2;
+        spatial_downsampling = 1;
         
     case "spectral"
         image_name = 'cygASband_Cube_L';
         spectral_downsampling = 1;
         spatial_downsampling = 1;
     case "test"
-        image_name = 'cygASband_Cube_H';
-        spectral_downsampling = 5;
-        spatial_downsampling = 4;
+        image_name = 'cygASband_Cube_1024x512x20';
+        spectral_downsampling = 1;
+        spatial_downsampling = 1;
     otherwise
         error("Unknown experiment type")
 end
@@ -232,6 +232,9 @@ f = nu0 + (1:spectral_downsampling:99)*dnu;
 %% Generate spectral facets (interleaved sampling)
 if strcmp(algo_version, 'sara')
     Qc = nChannels; %! handle each channel separately
+    Qx = 1;
+    Qy = 1;
+    overlap_size = [0, 0];
 end
 id = split_range_interleaved(Qc, nChannels);
 if Qc > 1 && ind > 0 
@@ -333,15 +336,19 @@ else
     coverage_path	
     load(coverage_path);
     size(uvw)
+    
+    %! Abdullah's version: normalization w.r.t. the minimum frequency
     % u1 = uvw(:, 1);
     % v1 = uvw(:, 2);
     % r = sqrt(u1.^2 + v1.^2);
     % bmax = max(r);
-    % v1 = v1 * pi/(bmax * 1);
+    % v1 = v1 * pi/(bmax * 1); 
     % u1 = u1 * pi/(bmax * 1);
     % u = u1/2;
     % v = v1/2;
     
+    %! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
+    % units of the smallest wavelenght, associated with the highest frequency)
     u1 = uvw(:, 1)*f(end)/speed_of_light;
     v1 = uvw(:, 2)*f(end)/speed_of_light;
     bmax = max(sqrt(u1.^2 + v1.^2));
@@ -355,8 +362,13 @@ end
 
 % setup measurement operator
 for i = 1:nchans
-    uw = (f(i)/f(1)) * u;
-    vw = (f(i)/f(1)) * v;
+    %! previous version
+    % uw = (f(i)/f(1)) * u;
+    % vw = (f(i)/f(1)) * v;
+
+    %! fixing normalization error with the new version
+    uw = (f(i)/f(end)) * u;
+    vw = (f(i)/f(end)) * v;
     
     % compute uniform weights (sampling density) for the preconditioning
     aWw = util_gen_preconditioning_matrix(uw, vw, param_precond);
@@ -500,20 +512,25 @@ if flag_solveMinimization
                 ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
                 Psit{k} = eval(ft);
             end
-            %! to be updated!
-            [sig, max_psf, dirty_image] = ...
-                compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, oy, ox, wlt_basis, filter_length, nlevel, sigma_noise);
-            save(['lower_bounds_', algo_version, '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_ind=', num2str(ind), '_gam=', num2str(gam), '_rwtype=', rwtype, '.mat'], 'sig', 'max_psf', 'dirty_image');
+
+            [sig, max_psf, mu, l21_norm, l21_norm_x0, dirty_image] = ...
+                compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, ...
+                oy, ox, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, x0, Anorm);
+            g = gam;
+            gam = gam*mu;
+            save(['lower_bounds_', algo_version, '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_ind=', num2str(ind), '_gam=', num2str(g), '_rwtype=', rwtype, '.mat'], ...
+                'sig', 'max_psf', 'l21_norm', 'l21_norm_x0', 'dirty_image', 'gam');
             %! to be checked for sara...
         else
-            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '_gam=', num2str(gam), '_rwtype=', rwtype, '.mat'], 'sig', 'max_psf');
+            load(['lower_bounds_', algo_version, '_ind=', num2str(ind), '_gam=', num2str(gam), '_rwtype=', rwtype, '.mat'], ...
+                'sig', 'max_psf', 'gam');
         end
     else
         fprintf('Normalization factors gamma = %e, gamma_bar = %e \n', gam, gam_bar);
         if flag_computeLowerBounds
             %! use normalization by operator norm
             [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
-                nchans, wlt_basis, filter_length, nlevel, sigma_noise, "ground_truth", algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm);
+                nchans, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm);
             fprintf('%s: upsilon_bar min = %e, max = %e\n', rwtype, min(sig_bar), max(sig_bar));
             fprintf('%s: mu_bar = %e, mu = %e\n', rwtype, mu_bar, mu);
             fprintf('upsilon = %e \n', sig);
@@ -531,12 +548,13 @@ if flag_solveMinimization
             load(['lower_bounds_', algo_version, '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_ind=', num2str(ind), '_gam=', num2str(gam), '_gambar=', num2str(gam_bar), '_rwtype=', rwtype, '.mat'], ...
                 'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'gam', 'gam_bar');
         end
+        fprintf('Reweighting type (for SVD log prior): %s \n', rwtype);
         fprintf('nuclear_norm_dirty = %e, l21_norm_dirty = %e\n', l21_norm, nuclear_norm);
+        fprintf('gam_bar = %e\n', gam_bar);
+        fprintf('sig_bar = %e\n', sig_bar);
     end
     clear dirty_image
-    fprintf('Reweighting type (for SVD log prior): %s \n', rwtype);
-    fprintf('gam = %e, sig = %e\n', gam, sig);
-    fprintf('sig_bar = %e\n', sig_bar);
+    fprintf('%s: gam = %e, sig = %e\n', rwtype, gam, sig);
     %! --
     
     %% HSI parameter structure sent to the  HSI algorithm

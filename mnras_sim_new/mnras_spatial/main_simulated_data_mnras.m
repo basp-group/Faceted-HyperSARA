@@ -1,9 +1,9 @@
-% function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
-%     algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
-%     flag_generateCube, flag_generateVisibilities, ...
-%     flag_computeOperatorNorm, flag_solveMinimization, ...
-%     cube_path, coverage_path, gam, rw, flag_homotopy, ... 
-%     flag_computeLowerBounds, rwtype, gam_bar, exp_type)
+function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
+    algo_version, window_type, ncores_data, ind, overlap_size, nReweights, ...
+    flag_generateCube, flag_generateVisibilities, ...
+    flag_computeOperatorNorm, flag_solveMinimization, ...
+    cube_path, coverage_path, gam, rw, flag_homotopy, ... 
+    flag_computeLowerBounds, rwtype, gam_bar, exp_type)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -63,38 +63,38 @@
 
 %% PARAMETERS FOR DEBUGGING
 
-image_name = 'cygASband_Cube_H'; %'W28_512';
-exp_type = "test"; % "spectral"
-nChannels = 20;
-Qx = 2; %2; % 4
-Qy = 1; %1; % 4
-overlap_size = [0, 256]; %[0, 256]; % [128, 128];
-Qc = 1;
-p = 0; % percentage
-nReweights = 1;
-input_snr = 50*ones(nChannels, 1); % 40 % input SNR (in dB)
-algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
-window_type = 'triangular'; % 'hamming', 'pc'
-ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
-ind = 1;  % index of the spectral facet to be reconstructed
-gam = 1; % 1e-5
-gam_bar = 1;
-flag_generateCube = 0;
-flag_generateCoverage = 0;
-flag_generateVisibilities = 0;
-flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-flag_computeOperatorNorm = 1;
-flag_solveMinimization = true;
-cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
-cube_path = cubepath(nChannels);
-coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
+% image_name = 'cygASband_Cube_H'; %'W28_512';
+% exp_type = "test"; % "spectral"
+% nChannels = 20;
+% Qx = 2; %2; % 4
+% Qy = 1; %1; % 4
+% overlap_size = [0, 256]; %[0, 256]; % [128, 128];
+% Qc = 1;
+% p = 0; % percentage
+% nReweights = 1;
+% input_snr = 50*ones(nChannels, 1); % 40 % input SNR (in dB)
+% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
+% window_type = 'triangular'; % 'hamming', 'pc'
+% ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
+% ind = 1;  % index of the spectral facet to be reconstructed
+% gam = 1; % 1e-5
+% gam_bar = 1;
+% flag_generateCube = 0;
+% flag_generateCoverage = 0;
+% flag_generateVisibilities = 0;
+% flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
+% flag_computeOperatorNorm = 1;
+% flag_solveMinimization = true;
+% cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
+% cube_path = cubepath(nChannels);
+% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat"; %'data/uv_coverage_p=1';
 
-rw = 1;
-rwtype = 'dirty'; % ground_truth, heuristic
-flag_primal = 0;
-flag_homotopy = 1;
-flag_computeLowerBounds = 1;
-overlap_fraction = 0;
+% rw = 1;
+% rwtype = 'dirty'; % ground_truth, heuristic
+% flag_primal = 0;
+% flag_homotopy = 1;
+% flag_computeLowerBounds = 1;
+% overlap_fraction = 0;
 % % 
 % %! to test SARA: take Qc = nChannels
 % % algo_version = 'sara';
@@ -191,16 +191,16 @@ switch exp_type
     case "spatial"
         image_name = 'cygASband_Cube_H';
         spectral_downsampling = 5;
-        spatial_downsampling = 2;
+        spatial_downsampling = 1;
         
     case "spectral"
         image_name = 'cygASband_Cube_L';
         spectral_downsampling = 1;
         spatial_downsampling = 1;
     case "test"
-        image_name = 'cygASband_Cube_H';
-        spectral_downsampling = 5;
-        spatial_downsampling = 4;
+        image_name = 'cygASband_Cube_1024x512x20';
+        spectral_downsampling = 1;
+        spatial_downsampling = 1;
     otherwise
         error("Unknown experiment type")
 end
@@ -550,6 +550,7 @@ if flag_solveMinimization
         end
         fprintf('Reweighting type (for SVD log prior): %s \n', rwtype);
         fprintf('nuclear_norm_dirty = %e, l21_norm_dirty = %e\n', l21_norm, nuclear_norm);
+        fprintf('gam_bar = %e\n', gam_bar);
         fprintf('sig_bar = %e\n', sig_bar);
     end
     clear dirty_image
