@@ -82,7 +82,7 @@ if strcmp(algo_version, 'hypersara')
     switch rw_type
         
     case "ground_truth"
-        [U0,S0,V0] = svd(reshape(X0, [N, nChannels]),'econ');
+        [U0,S0,V0] = svd(reshape(x0, [N, nChannels]),'econ');
         sig_bar = std(abs(diag(U0'*B*V0))); 
 
     case "dirty"
