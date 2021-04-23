@@ -49,7 +49,7 @@ with open(parameter_file_full_path, "r") as csvfile:
             params[1] = 'hypersara'
         else:
             params[1] = 'cw'
-        ncores = np.minimum(int(job[0])*int(job[1]) + int(ncdata) + 1, 36) # max number of cpus = 36
+        ncores = np.minimum(int(job[1])*int(job[2]) + int(ncdata) + 1, 36) # max number of cpus = 36
         print("Total number of cpus: {0}".format(ncores))
 
         slurm_command = r"""sbatch --job-name=spatial_{1} --ntasks-per-node={21} \
