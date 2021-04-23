@@ -45,10 +45,10 @@ with open(parameter_file_full_path, "r") as csvfile:
 
     for job in reader:
 
-        if int(job[0])*int(job[1]) <= 1:
-            params[1] = 'hypersara'
+        if int(job[1])*int(job[2]) <= 1:
+            job[0] = 'hypersara'
         else:
-            params[1] = 'cw'
+            job[0] = 'cw'
         ncores = np.minimum(int(job[1])*int(job[2]) + int(ncdata) + 1, 36) # max number of cpus = 36
         print("Total number of cpus: {0}".format(ncores))
 
