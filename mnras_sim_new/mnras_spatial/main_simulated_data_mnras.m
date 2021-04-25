@@ -68,7 +68,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'hypersara'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1; % index of the spectral facet to be reconstructed
@@ -80,7 +80,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
-% 
+
 % rw = 1;
 % rwtype = 'dirty'; % ground_truth, heuristic
 % flag_homotopy = 1;
@@ -217,9 +217,8 @@ else
               [1 spatial_downsampling colend], ...
               [1 spectral_downsampling sliceend]});
 end
-clear info rowend colend sliceend
-
 nChannels = floor(sliceend/spectral_downsampling);
+clear info rowend colend sliceend
 
 [Ny, Nx, nchans] = size(x0);
 N = Nx*Ny;
@@ -256,8 +255,6 @@ if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
     f = f(id{ind});
     X0 = reshape(x0,Nx*Ny,nchans);
     input_snr = input_snr(id{ind});
-else
-    nchans = nChannels;
 end
 channels = 1:nchans;
 
