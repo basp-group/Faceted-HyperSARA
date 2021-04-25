@@ -89,10 +89,6 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateCoverage = 0;
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 %
-% % 
-% %! to test SARA: take Qc = nChannels
-% % algo_version = 'sara';
-% % Qc = nChannels;
 
 % fixed parameters (in the mnras experiments)
 flag_generateUndersampledCube = false;
