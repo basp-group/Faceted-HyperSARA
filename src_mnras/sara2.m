@@ -198,7 +198,7 @@ else
     fprintf('rel_val, l11, end_iter, t_master, t_l11, and t_data initialized \n\n')
     l11 = 0;
     for k = 1:P
-        l11_ = fetchNext(f);
+        [~, l11_] = fetchNext(f);
         l11 = l11 + l11_;
     end
 end
@@ -586,10 +586,10 @@ end
 
 function l11_ = run_par_l11(Psit, xhat, weights1_)
 
-r1 = weights1_*abs(Psit(xhat));
+r1 = weights1_.*abs(Psit(xhat));
 
 % local L11 norm of current solution
-l11_ = norm(r1(:),1);
+l11_ = sum(r1(:));
 
 end
 
