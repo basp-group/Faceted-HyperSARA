@@ -177,8 +177,7 @@ switch exp_type
     case "spatial"
         image_name = 'cygASband_Cube_H';
         spectral_downsampling = 5;
-        spatial_downsampling = 1;
-        
+        spatial_downsampling = 1;     
     case "spectral"
         image_name = 'cygASband_Cube_L';
         spectral_downsampling = 1;
@@ -205,11 +204,19 @@ info        = fitsinfo(reference_cube_path);
 rowend      = info.PrimaryData.Size(1);
 colend      = info.PrimaryData.Size(2);
 sliceend    = info.PrimaryData.Size(3);
-x0 = fitsread(reference_cube_path, 'primary',...
-          'Info', info,...
-          'PixelRegion',{[1 spatial_downsampling rowend], ...
-          [1 spatial_downsampling colend], ...
-          [1 spectral_downsampling sliceend]});
+if strcmp(algo_version, 'sara')
+    x0 = fitsread(reference_cube_path, 'primary',...
+              'Info', info,...
+              'PixelRegion',{[1 spatial_downsampling rowend], ...
+              [1 spatial_downsampling colend], ...
+              ind});
+else
+    x0 = fitsread(reference_cube_path, 'primary',...
+              'Info', info,...
+              'PixelRegion',{[1 spatial_downsampling rowend], ...
+              [1 spatial_downsampling colend], ...
+              [1 spectral_downsampling sliceend]});
+end
 clear info rowend colend sliceend
 
 [Ny, Nx, nChannels] = size(x0);
@@ -241,7 +248,7 @@ end
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
 
 id = split_range_interleaved(Qc, nChannels);
-if Qc > 1 && ind > 0 
+if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
     x0 = x0(:,:,id{ind});
     nchans = size(x0,3);
     f = f(id{ind});
