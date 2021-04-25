@@ -64,6 +64,6 @@ with open(parameter_file_full_path, "r") as csvfile:
             if exit_status is 1:  # Check to make sure the job submitted
                 print("Job {0} failed to submit".format(slurm_command))
 
-            time.sleep(5)
+            time.sleep(1)
 
 print("Submission complete.")
