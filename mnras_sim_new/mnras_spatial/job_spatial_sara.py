@@ -47,13 +47,13 @@ for cubeid in range(1,nchannels+1):
     -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={20},Qx={16},Qy={17},Qc={3},wintype={7},overlapx={18},overlapy={19},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},gambar=1,exptype={22},rwtype={23} \
     run_fhs_mnras.slurm""".format(*params,cubeid,ncores,exp_type,rw_type)
 
-    print(slurm_command) # Uncomment this line when testing to view the sbatch command
+    # print(slurm_command) # Uncomment this line when testing to view the sbatch command
 
     # Comment the following 3 lines when testing to prevent jobs from being submitted
-    # exit_status = subprocess.call(slurm_command, shell=True)
-    # if exit_status is 1:  # Check to make sure the job submitted
-    #     print("Job {0} failed to submit".format(slurm_command))
+    exit_status = subprocess.call(slurm_command, shell=True)
+    if exit_status is 1:  # Check to make sure the job submitted
+        print("Job {0} failed to submit".format(slurm_command))
 
-    # time.sleep(5)
+    time.sleep(2)
 
 print("Submission complete.")
