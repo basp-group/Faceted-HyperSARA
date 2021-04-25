@@ -219,9 +219,11 @@ else
 end
 clear info rowend colend sliceend
 
-[Ny, Nx, nChannels] = size(x0);
+nChannels = floor(sliceend/spectral_downsampling);
+
+[Ny, Nx, nchans] = size(x0);
 N = Nx*Ny;
-X0 = reshape(x0, [N, nChannels]);
+X0 = reshape(x0, [N, nchans]);
 
 % frequency used to generate the 2 reference cubes
 nu0 = 2.052e9; % starting freq
