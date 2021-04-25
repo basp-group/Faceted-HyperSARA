@@ -10,8 +10,8 @@ parameter_file_full_path = "job_spatial.csv"
 # Qx = 2
 # Qy = 2
 # # compute overlap from Qx, Qy right from the Matlab script?
-# overlapx = 512
-# overlapy = 512
+# overlapx = 0.5
+# overlapy = 0.5
 
 # to be activated only for the first run (generating the data), and can systematically deactivated afertwards)
 gencube = 0
