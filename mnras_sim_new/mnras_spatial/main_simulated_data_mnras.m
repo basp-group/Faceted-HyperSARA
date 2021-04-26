@@ -61,25 +61,25 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 %% PARAMETERS FOR DEBUGGING
 
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
-% exp_type = 'old_local_test'; % 'spectral', 'spatial', 'test'
+% exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
 % nChannels = 5;
 % flag_generateCube = 1;
 % Qx = 2; % 4
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1; % index of the spectral facet to be reconstructed
 % gam = 1;
 % gam_bar = 1;
-% flag_generateVisibilities = 0;
-% flag_computeOperatorNorm = 0;
+% flag_generateVisibilities = 1;
+% flag_computeOperatorNorm = 1;
 % flag_solveMinimization = true;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
-% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
+% coverage_path = "data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % 
 % rw = 1;
 % rwtype = 'dirty'; % ground_truth, heuristic
@@ -189,7 +189,7 @@ switch exp_type
     % case "local_test"
     %     image_name = 'cygASband_Cube_H';
     %     spectral_downsampling = 5;
-    %     spatial_downsampling = 4;
+    %     spatial_downsampling = 8;
     % case "old_local_test"
     %     image_name = 'cubeW28';
     %     spectral_downsampling = 20;
@@ -225,7 +225,7 @@ N = Nx*Ny;
 X0 = reshape(x0, [N, nchans]);
 
 % frequency used to generate the 2 reference cubes
-nu0 = 2.052e9; % starting freq
+nu0 = 2.0525e9; % starting freq
 dnu = 16e6;    % freq step
 superresolution_factor = 2;
 % nChannels = 100; % total number of channels
@@ -334,7 +334,7 @@ if flag_generateCoverage
     fitsdisp(coverage_path);
 else
     coverage_path	
-    load(coverage_path);
+    load(coverage_path, 'uvw');
     size(uvw)
     
     %! Abdullah's version: normalization w.r.t. the minimum frequency

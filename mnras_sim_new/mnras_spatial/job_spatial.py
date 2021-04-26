@@ -18,7 +18,7 @@ gencube = 0
 genvis = 1
 computenorm = 1
 lowerbounds = 1
-solve = 1
+solve = 0
 
 # kept fixed throughout all the simulations from this folder
 imagename = 'cygASband_Cube_1024x512x20' # 'cygASband_Cube_H' #'W28_1024'
@@ -31,7 +31,7 @@ gam = '1'  # multiplicative factor affecting the ratio -> '1e-5' order of magnit
 gam_bar = '1'
 nreweights = 30
 wintype = 'triangular'
-covpath = '../../data/vla_7.95h_dt10s.uvw.mat'
+covpath = '../../data/msSpecs.mat' #'../../data/vla_7.95h_dt10s.uvw.mat'
 ncdata = 20
 flaghomotopy = 1
 rw_type = 'dirty' # heuristic, dirty
