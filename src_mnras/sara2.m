@@ -8,6 +8,7 @@ function [xsol,param,v1,v2,g,weights1,proj,t_block,reweighting_alpha,epsilon,t,r
 % Author: Abdullah Abdulaziz
 c = size(y,2);
 P = length(Psit);
+flag_convergence = 0;
 
 % oversampling vectorized data length
 No = size(W{1}{1}, 1);
@@ -68,8 +69,8 @@ end
 %! -- TO BE CHECKED
 % Reweighting parameters
 sig = param.reweighting_sig;
-% reweighting_alpha = param.reweighting_alpha;
-% reweighting_alpha_ff = param.reweighting_alpha_ff;
+reweighting_alpha = param.reweighting_alpha;
+reweighting_alpha_ff = param.reweighting_alpha_ff;
 
 if isfield(param,'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
@@ -443,7 +444,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         end
         %! -- TO BE CHECKED
         if flag_homotopy
-            reweighting_alpha = max(param.reweighting_alpha_ff * reweighting_alpha, 1);
+            reweighting_alpha = max(reweighting_alpha_ff * reweighting_alpha, 1);
         end
         %! --
         param.reweighting_alpha = reweighting_alpha;
@@ -514,8 +515,8 @@ for i = 1 : c
     Fx = A(xsol(:,:,i));
     g2 = zeros(No,1);
     for j = 1 : length(G{i})
-        res_f{i}{j} = y{i}{j} - G{i}{j} * Fx(W{i}{j});
-        u2{i}{j} = Gt{i}{j} * res_f{i}{j};
+        res_f = y{i}{j} - G{i}{j} * Fx(W{i}{j});
+        u2{i}{j} = Gt{i}{j} * res_f;
         g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
     end
     res(:,:,i) = real(At(g2));

@@ -74,17 +74,17 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % ind = 1; % index of the spectral facet to be reconstructed
 % gam = 1;
 % gam_bar = 1;
-% flag_generateVisibilities = 1;
-% flag_computeOperatorNorm = 1;
+% flag_generateVisibilities = 0;
+% flag_computeOperatorNorm = 0;
 % flag_solveMinimization = true;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
-
+% 
 % rw = 1;
 % rwtype = 'dirty'; % ground_truth, heuristic
 % flag_homotopy = 1;
-% flag_computeLowerBounds = 1;
+% flag_computeLowerBounds = 0;
 % overlap_fraction = 0.5;
 % flag_generateCoverage = 0;
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
@@ -503,20 +503,19 @@ if flag_solveMinimization
     % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
     % SARA space) involved in the reweighting scheme
     if strcmp(algo_version, 'sara')
+        dwtmode('zpd')
+        [Psi1, Psit1] = op_p_sp_wlt_basis_fhs(wlt_basis, nlevel, Ny, Nx);
+        P = length(Psi1);
+        for k = 1 : P
+            f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
+            f = sprintf('%s%i},Ny,Nx);', f,k);
+            Psi{k} = eval(f);
+            b(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
+            ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
+            Psit{k} = eval(ft);
+        end
         if flag_computeLowerBounds
             %! to be updated (with the different options)
-            dwtmode('zpd')
-            [Psi1, Psit1] = op_p_sp_wlt_basis_fhs(wlt_basis, nlevel, Ny, Nx);
-            P = length(Psi1);
-            for k = 1 : P
-                f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
-                f = sprintf('%s%i},Ny,Nx);', f,k);
-                Psi{k} = eval(f);
-                b(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
-                ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
-                Psit{k} = eval(ft);
-            end
-
             [sig, max_psf, mu, l21_norm, l21_norm_x0, dirty_image] = ...
                 compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, ...
                 oy, ox, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, x0, Anorm);
