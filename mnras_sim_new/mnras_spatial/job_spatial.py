@@ -36,7 +36,7 @@ ncdata = 20
 flaghomotopy = 1
 rw_type = 'dirty' # heuristic, dirty
 exp_type = 'test'
-superresolution_factor = 1
+superresolution_factor = 2
 
 params = [imagename,nchannels,ind,Qc,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve]
 

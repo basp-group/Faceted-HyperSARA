@@ -32,7 +32,7 @@ ncdata = 9 # number of workers in this case (one per dictionary)
 flaghomotopy = 1
 exp_type = 'test'
 rw_type = 'dirty'
-superresolution_factor = 1
+superresolution_factor = 2
 
 params = [imagename,algoversion,nchannels,Qc,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve,Qx,Qy,overlapx,overlapy]
 
@@ -43,8 +43,8 @@ for cubeid in range(1,nchannels+1):
     print("Total number of cpus: {0}".format(ncores))
 
     slurm_command = r"""sbatch --job-name=spatial_{1} --ntasks-per-node={21} \
-    -e {0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_srf={24}.err \
-    -o {0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_srf={24}.out \
+    -e {0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_exptype={22}_srf={24}.err \
+    -o {0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_exptype={22}_srf={24}.out \
     -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={20},Qx={16},Qy={17},Qc={3},wintype={7},overlapx={18},overlapy={19},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},gambar=1,exptype={22},rwtype={23},superresolution={24} \
     run_fhs_mnras.slurm""".format(*params,cubeid,ncores,exp_type,rw_type, superresolution_factor)
 
