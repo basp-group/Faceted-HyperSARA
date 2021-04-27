@@ -359,8 +359,8 @@ else
     v1 = uvw(:, 2)*f(end)/speed_of_light;
     bmax = max(sqrt(u1.^2 + v1.^2));
     % cellsize = 3600*180/(superresolution_factor*2*pi*bmax); % in arcsec
-    u = u1*pi/(superresolution_factor*2*bmax);
-    v = v1*pi/(superresolution_factor*2*bmax);
+    u = u1*pi/(superresolution_factor*bmax);
+    v = v1*pi/(superresolution_factor*bmax);
     size(u)
     disp('Coverage loaded successfully')
     clear uvw u1 v1
