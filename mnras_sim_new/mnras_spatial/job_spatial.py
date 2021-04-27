@@ -36,6 +36,7 @@ ncdata = 20
 flaghomotopy = 1
 rw_type = 'dirty' # heuristic, dirty
 exp_type = 'test'
+superresolution_factor = 1
 
 params = [imagename,nchannels,ind,Qc,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve]
 
@@ -53,10 +54,10 @@ with open(parameter_file_full_path, "r") as csvfile:
         print("Total number of cpus: {0}".format(ncores))
 
         slurm_command = r"""sbatch --job-name=spatial_{16} --ntasks-per-node={21} \
-        -e {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}.err \
-        -o {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}.out \
-        -v --export=ALL,imagename={0},algoversion={16},nchannels={1},ind={2},Qx={17},Qy={18},Qc={3},wintype={7},overlapx={19},overlapy={20},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},rwtype={22},gambar={23},exptype={24} \
-        run_fhs_mnras.slurm""".format(*params,*job,ncores,rw_type,gam_bar,exp_type)
+        -e {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}.err \
+        -o {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}.out \
+        -v --export=ALL,imagename={0},algoversion={16},nchannels={1},ind={2},Qx={17},Qy={18},Qc={3},wintype={7},overlapx={19},overlapy={20},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},rwtype={22},gambar={23},exptype={24},superresolution={25} \
+        run_fhs_mnras.slurm""".format(*params,*job,ncores,rw_type,gam_bar,exp_type,superresolution_factor)
 
         # print(slurm_command) # Uncomment this line when testing to view the sbatch command
 
