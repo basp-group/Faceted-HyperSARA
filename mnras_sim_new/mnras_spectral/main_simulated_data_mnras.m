@@ -178,7 +178,7 @@ mkdir(results_path)
 switch exp_type
     case "spatial"
         image_name = 'cygASband_Cube_1024_2048_20';
-        spectral_downsampling = 5;
+        spectral_downsampling = 1;
         spatial_downsampling = 1;     
     case "spectral"
         image_name = 'cygASband_Cube_256_512_100';
