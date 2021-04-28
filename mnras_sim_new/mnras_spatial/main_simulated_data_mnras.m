@@ -177,19 +177,19 @@ mkdir(results_path)
 % if spectral faceting, just load the intersting portion of the full image cube
 switch exp_type
     case "spatial"
-        image_name = 'cygASband_Cube_H';
+        image_name = 'cygASband_Cube_1024_2048_20';
         spectral_downsampling = 5;
         spatial_downsampling = 1;     
     case "spectral"
-        image_name = 'cygASband_Cube_L';
+        image_name = 'cygASband_Cube_256_512_100';
         spectral_downsampling = 1;
         spatial_downsampling = 1;
     case "test"
-        image_name = 'cygASband_Cube_1024x512x20';
-        spectral_downsampling = 1;
+        image_name = 'cygASband_Cube_512_1024_20';
+        spectral_downsampling = 5;
         spatial_downsampling = 1;
     case "local_test"
-        image_name = 'cygASband_Cube_1024x512x20';
+        image_name = 'cygASband_Cube_512_1024_20';
         spectral_downsampling = 5;
         spatial_downsampling = 2;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
@@ -230,12 +230,12 @@ input_snr = 50*ones(nchans, 1); % input SNR (in dB)
 
 % frequency used to generate the 2 reference cubes
 % superresolution_factor = 2; %? keep as is, or change order of magnitude
-% pixelsizeH = 0.2*1024/3000;
-% pixelsizeL = 0.2*1024/512;
-nu0 = 2.0525e9; % starting freq
-dnu = 16e6;     % freq step
-f = nu0 + (0:spectral_downsampling:(sliceend-1))*dnu;
-% f = nu0 + linspace(0, 99, nChannels)*dnu; %! see if this is really the case (i.e., constant frequdncy range over all the synthetic data cubes considered)
+% Freq info
+nu0 = 2.052e9; % starting freq
+dnu = 16e6;    % freq step
+L = 100;       % number of channels
+nu_vect =[nu0 (dnu*(1:L-1)+nu0)];
+f = nu_vect(1:spectral_downsampling:end);
 
 %% Generate spectral facets (interleaved sampling)
 if strcmp(algo_version, 'sara')
@@ -251,7 +251,7 @@ end
 
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
 id = split_range_interleaved(Qc, nChannels);
-fc = f(id{ind}); %! beware: this is needed all the time
+fc = f(id{ind}); %! beware: this is needed all the time (selected frequencies for the subcube)
 
 if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
     x0 = x0(:,:,id{ind});
