@@ -62,7 +62,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
 % exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-
+% 
 % Qx = 2; % 4
 % Qy = 1; % 4
 % Qc = 1;
@@ -78,19 +78,19 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % gam = 1;
 % gam_bar = 1;
 % coverage_path = "data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
-
+% 
 % rw = 1;
 % rwtype = 'dirty'; % ground_truth, heuristic
 % flag_homotopy = 1;
 % overlap_fraction = 0.5;
-
+% 
 % nChannels = 5;
 % flag_generateCube = 1;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
 % cube_path = cubepath(nChannels);
 % flag_generateCoverage = 0;
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-
+% superresolution_factor = 2;
 %%
 
 % fixed parameters (in the mnras experiments)
@@ -189,9 +189,9 @@ switch exp_type
         spectral_downsampling = 5;
         spatial_downsampling = 1;
     case "local_test"
-        image_name = 'cygASband_Cube_512_1024_20';
+        image_name = 'cygASband_Cube_256_512_100';
         spectral_downsampling = 5;
-        spatial_downsampling = 2;
+        spatial_downsampling = 1;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
     case "old_local_test"
         image_name = 'cubeW28';
