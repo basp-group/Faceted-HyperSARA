@@ -18,10 +18,10 @@ gencube = 0
 genvis = 1
 computenorm = 1
 lowerbounds = 1
-solve = 0
+solve = 1
 
 # kept fixed throughout all the simulations from this folder
-imagename = 'cygASband_Cube_1024x512x20' # 'cygASband_Cube_H' #'W28_1024'
+imagename = 'cygASband_Cube_512_1024_20' # cygASband_Cube_1024_2048_20
 # algoversion = 'cw'
 nchannels = 20
 ind = 1
@@ -34,7 +34,7 @@ wintype = 'triangular'
 covpath = '../../data/msSpecs.mat' #'../../data/vla_7.95h_dt10s.uvw.mat'
 ncdata = 20
 flaghomotopy = 1
-rw_type = 'dirty' # heuristic, dirty
+rw_type = 'dirty' # 'ground_truth' 'dirty'
 exp_type = 'test'
 superresolution_factor = 2
 

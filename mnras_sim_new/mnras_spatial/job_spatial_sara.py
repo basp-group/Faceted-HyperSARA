@@ -19,9 +19,9 @@ lowerbounds = 1
 solve = 1
 
 # kept fixed throughout all the simulations from this folder
-imagename = 'cygASband_Cube_1024x512x20' # 'W28_1024'
+imagename = 'cygASband_Cube_512_1024_20' # cygASband_Cube_1024_2048_20
 algoversion = 'sara'
-nchannels = 1 # 20
+nchannels = 20
 Qc = nchannels
 rw = -1
 gam = '1'
@@ -31,7 +31,7 @@ covpath = '../../data/msSpecs.mat' # '../../data/vla_7.95h_dt10s.uvw.mat'
 ncdata = 9 # number of workers in this case (one per dictionary)
 flaghomotopy = 1
 exp_type = 'test'
-rw_type = 'dirty'
+rw_type = 'dirty' # 'ground_truth' 'dirty'
 superresolution_factor = 2
 
 params = [imagename,algoversion,nchannels,Qc,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve,Qx,Qy,overlapx,overlapy]
