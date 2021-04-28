@@ -229,12 +229,13 @@ X0 = reshape(x0, [N, nchans]);
 input_snr = 50*ones(nchans, 1); % input SNR (in dB)
 
 % frequency used to generate the 2 reference cubes
-nu0 = 2.0525e9; % starting freq
-dnu = 16e6;    % freq step
 % superresolution_factor = 2; %? keep as is, or change order of magnitude
 % pixelsizeH = 0.2*1024/3000;
 % pixelsizeL = 0.2*1024/512;
+nu0 = 2.0525e9; % starting freq
+dnu = 16e6;     % freq step
 f = nu0 + (0:spectral_downsampling:(sliceend-1))*dnu;
+% f = nu0 + linspace(0, 99, nChannels)*dnu; %! see if this is really the case (i.e., constant frequdncy range over all the synthetic data cubes considered)
 
 %% Generate spectral facets (interleaved sampling)
 if strcmp(algo_version, 'sara')
@@ -250,7 +251,7 @@ end
 
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
 id = split_range_interleaved(Qc, nChannels);
-f = f(id{ind}); %! beware: this is needed all the time
+fc = f(id{ind}); %! beware: this is needed all the time
 
 if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
     x0 = x0(:,:,id{ind});
@@ -333,8 +334,8 @@ if flag_generateCoverage
     % -> in the c++ code, do u.col(f) = u*freq[f]/freq[0]
     % with freq = linspace(1, 2, L)
     % om = [v(:), u(:)];
-    u = u(:)*f(1)/f(end);
-    v = v(:)*f(1)/f(end);
+    u = u(:)*fc(1)/f(end);
+    v = v(:)*fc(1)/f(end);
     fitswrite([u, v, ones(numel(u), 1)], coverage_path)
     fitsdisp(coverage_path);
 else
@@ -373,8 +374,8 @@ for i = 1:nchans
 
     %? need to fix the frequencies? (just select the right ones)
     %? i.e., need to normalize w.r.t. max over all available frequencies?
-    uw = (f(i)/f(end)) * u;
-    vw = (f(i)/f(end)) * v;
+    uw = (fc(i)/f(end)) * u;
+    vw = (fc(i)/f(end)) * v;
     
     % compute uniform weights (sampling density) for the preconditioning
     aWw = util_gen_preconditioning_matrix(uw, vw, param_precond);
