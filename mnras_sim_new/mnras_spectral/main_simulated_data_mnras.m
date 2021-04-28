@@ -249,13 +249,12 @@ elseif strcmp(algo_version, 'hypersara')
 end
 
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
-
 id = split_range_interleaved(Qc, nChannels);
+f = f(id{ind}); %! beware: this is needed all the time
+
 if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
     x0 = x0(:,:,id{ind});
     nchans = size(x0,3);
-    f = f(id{ind}); %? do not do this, otherwise the uv-normalization is
-    % completely wrong?
     X0 = reshape(x0,Nx*Ny,nchans);
     input_snr = input_snr(id{ind});
 end
