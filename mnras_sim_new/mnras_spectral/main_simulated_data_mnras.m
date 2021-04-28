@@ -186,7 +186,7 @@ switch exp_type
         spatial_downsampling = 1;
     case "test"
         image_name = 'cygASband_Cube_512_1024_20';
-        spectral_downsampling = 5;
+        spectral_downsampling = 1;
         spatial_downsampling = 1;
     case "local_test"
         image_name = 'cygASband_Cube_256_512_100';
