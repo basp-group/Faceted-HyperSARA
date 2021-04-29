@@ -62,28 +62,29 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
 % exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-% 
+
 % Qx = 2; % 4
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
-% flag_generateVisibilities = 0;
-% flag_computeOperatorNorm = 0;
-% flag_computeLowerBounds = 0;
+% flag_generateVisibilities = 1;
+% flag_computeOperatorNorm = 1;
+% flag_computeLowerBounds = 1;
 % flag_solveMinimization = true;
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1; % index of the spectral facet to be reconstructed
 % gam = 1;
 % gam_bar = 1;
 % coverage_path = "data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
-% 
+
 % rw = 1;
 % rwtype = 'dirty'; % ground_truth, heuristic
 % flag_homotopy = 1;
 % overlap_fraction = 0.5;
-% 
+% isnr = 50;
+
 % nChannels = 5;
 % flag_generateCube = 1;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
