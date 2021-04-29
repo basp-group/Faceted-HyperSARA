@@ -27,8 +27,8 @@ nchannels = 20
 ind = 1
 Qc = 1
 rw = -1
-gam = '1'  # multiplicative factor affecting the ratio -> '1e-5' order of magnitude
-gam_bar = '1'
+gam = ['1']  # multiplicative factor affecting the ratio -> '1e-5' order of magnitude
+gam_bar = ['1e-1','1','10']
 nreweights = 30
 wintype = 'triangular'
 covpath = '../../data/msSpecs.mat' #'../../data/vla_7.95h_dt10s.uvw.mat'
@@ -38,34 +38,38 @@ rw_type = 'dirty' # 'ground_truth' 'dirty'
 exp_type = 'test'
 superresolution_factor = 2
 
-params = [imagename,nchannels,ind,Qc,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve]
 
-with open(parameter_file_full_path, "r") as csvfile:
+for g in gam:
 
-    reader = csv.reader(csvfile)
+    params = [imagename,nchannels,ind,Qc,rw,g,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve]
 
-    for job in reader:
+    for g_bar in gam_bar:
+        with open(parameter_file_full_path, "r") as csvfile:
 
-        if int(job[1])*int(job[2]) <= 1:
-            job[0] = 'hypersara'
-        else:
-            job[0] = 'cw'
-        ncores = np.minimum(int(job[1])*int(job[2]) + int(ncdata) + 1, 36) # max number of cpus = 36
-        print("Total number of cpus: {0}".format(ncores))
+            reader = csv.reader(csvfile)
 
-        slurm_command = r"""sbatch --job-name=spatial_{16} --ntasks-per-node={21} \
-        -e {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}.err \
-        -o {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}.out \
-        -v --export=ALL,imagename={0},algoversion={16},nchannels={1},ind={2},Qx={17},Qy={18},Qc={3},wintype={7},overlapx={19},overlapy={20},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},rwtype={22},gambar={23},exptype={24},superresolution={25} \
-        run_fhs_mnras.slurm""".format(*params,*job,ncores,rw_type,gam_bar,exp_type,superresolution_factor)
+            for job in reader:
 
-        # print(slurm_command) # Uncomment this line when testing to view the sbatch command
+                if int(job[1])*int(job[2]) <= 1:
+                    job[0] = 'hypersara'
+                else:
+                    job[0] = 'cw'
+                ncores = np.minimum(int(job[1])*int(job[2]) + int(ncdata) + 1, 36) # max number of cpus = 36
+                print("Total number of cpus: {0}".format(ncores))
 
-        # Comment the following 3 lines when testing to prevent jobs from being submitted
-        exit_status = subprocess.call(slurm_command, shell=True)
-        if exit_status is 1:  # Check to make sure the job submitted
-            print("Job {0} failed to submit".format(slurm_command))
+                slurm_command = r"""sbatch --job-name=spatial_{16} --ntasks-per-node={21} \
+                -e {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}.err \
+                -o {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}.out \
+                -v --export=ALL,imagename={0},algoversion={16},nchannels={1},ind={2},Qx={17},Qy={18},Qc={3},wintype={7},overlapx={19},overlapy={20},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},rwtype={22},gambar={23},exptype={24},superresolution={25} \
+                run_fhs_mnras.slurm""".format(*params,*job,ncores,rw_type,g_bar,exp_type,superresolution_factor)
 
-        time.sleep(1)
+                print(slurm_command) # Uncomment this line when testing to view the sbatch command
+
+                # Comment the following 3 lines when testing to prevent jobs from being submitted
+                # exit_status = subprocess.call(slurm_command, shell=True)
+                # if exit_status is 1:  # Check to make sure the job submitted
+                #     print("Job {0} failed to submit".format(slurm_command))
+
+                # time.sleep(1)
 
 print("Submission complete.")

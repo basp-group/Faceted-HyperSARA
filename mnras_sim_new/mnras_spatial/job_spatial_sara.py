@@ -24,8 +24,8 @@ algoversion = 'sara'
 nchannels = 20
 Qc = nchannels
 rw = -1
-gam = '1'
-nreweights = 1
+gam = ['1e-1','1','10']
+nreweights = 30
 wintype = 'none'
 covpath = '../../data/msSpecs.mat' # '../../data/vla_7.95h_dt10s.uvw.mat'
 ncdata = 9 # number of workers in this case (one per dictionary)
@@ -34,27 +34,29 @@ exp_type = 'test'
 rw_type = 'dirty' # 'ground_truth' 'dirty'
 superresolution_factor = 2
 
-params = [imagename,algoversion,nchannels,Qc,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve,Qx,Qy,overlapx,overlapy]
-
 ncores = ncdata + 3
 
-for cubeid in range(1,nchannels+1):
+for g in gam:
 
-    print("Total number of cpus: {0}".format(ncores))
+    params = [imagename,algoversion,nchannels,Qc,rw,g,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve,Qx,Qy,overlapx,overlapy]
 
-    slurm_command = r"""sbatch --job-name=spatial_{1} --ntasks-per-node={21} \
-    -e {0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}.err \
-    -o {0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}.out \
-    -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={20},Qx={16},Qy={17},Qc={3},wintype={7},overlapx={18},overlapy={19},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},gambar=1,exptype={22},rwtype={23},superresolution={24} \
-    run_fhs_mnras.slurm""".format(*params,cubeid,ncores,exp_type,rw_type, superresolution_factor)
+    for cubeid in range(1,nchannels+1):
 
-    # print(slurm_command) # Uncomment this line when testing to view the sbatch command
+        print("Total number of cpus: {0}".format(ncores))
 
-    # Comment the following 3 lines when testing to prevent jobs from being submitted
-    exit_status = subprocess.call(slurm_command, shell=True)
-    if exit_status is 1:  # Check to make sure the job submitted
-        print("Job {0} failed to submit".format(slurm_command))
+        slurm_command = r"""sbatch --job-name=spatial_{1} --ntasks-per-node={21} \
+        -e {0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}.err \
+        -o {0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}.out \
+        -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={20},Qx={16},Qy={17},Qc={3},wintype={7},overlapx={18},overlapy={19},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},gambar=1,exptype={22},rwtype={23},superresolution={24} \
+        run_fhs_mnras.slurm""".format(*params,cubeid,ncores,exp_type,rw_type, superresolution_factor)
 
-    time.sleep(1)
+        print(slurm_command) # Uncomment this line when testing to view the sbatch command
+
+        # Comment the following 3 lines when testing to prevent jobs from being submitted
+        # exit_status = subprocess.call(slurm_command, shell=True)
+        # if exit_status is 1:  # Check to make sure the job submitted
+        #     print("Job {0} failed to submit".format(slurm_command))
+
+        # time.sleep(1)
 
 print("Submission complete.")
