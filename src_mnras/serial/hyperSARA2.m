@@ -271,12 +271,22 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 
 Ap = Composite();
 Atp = Composite();
-xhat_i = Composite();
+xi = Composite();
+Fxi_old = Composite();
 Gp = Composite();
 yp = Composite();
 pUp = Composite();
 Wp = Composite();
 epsilonp = Composite();
+
+for i = 1:K
+    temp = zeros(No, numel(c_chunks{i}));
+    for l = 1:numel(c_chunks{i})
+        temp(:,l) = A(xsol(:, :, c_chunks{i}(l)));
+    end
+    Fxi_old{2+i} = temp; 
+end
+clear temp
 
 norm_res = Composite();
 if init_flag
@@ -462,7 +472,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     t_master(t) = toc(tw);
 
     for i = 1:K
-       xhat_i{2+i} = xhat(:, :, c_chunks{i}); 
+       xi{2+i} = xsol(:, :, c_chunks{i}); 
     end
     
     % update dual variables
@@ -477,7 +487,11 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             t_op = toc(tw); 
         else % data nodes, 3:K+2 (labindex > 2)
             tw = tic;
-            [v2_, g2_, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            % [v2_, g2_, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            %     elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
+
+            [v2_, g2_, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = ...
+                update_dual_fidelity2(v2_, yp, xi, Fxi_old, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             t_op = toc(tw); 
         end

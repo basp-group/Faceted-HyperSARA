@@ -339,7 +339,6 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 
 Ap = Composite();
 Atp = Composite();
-x_hat_i = Composite();
 Gp = Composite();
 yp = Composite();
 pUp = Composite();
@@ -380,7 +379,6 @@ for k = 1:K
     end
     yp{Q+k} = y{k};
     y{k} = [];
-    x_hat_i{Q+k} = zeros(M, N, length(c_chunks{k}));
     Ap{Q+k} = A;
     Atp{Q+k} = At;
     Gp{Q+k} = G{k};
@@ -390,6 +388,27 @@ for k = 1:K
     epsilonp{Q+k} = epsilon{k};
 end
 clear epsilon pU W G y
+
+% initialize xi and Fxi_old
+spmd
+    if labindex <= Qp.Value
+        % send xhat_q (communication towards the data nodes)
+        for i = 1:K
+            labSend(xsol_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
+        end
+    else
+        xi = zeros(M, N, numel(yp));
+        for q = 1:Qp.Value
+            xi(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
+                labReceive(q);
+        end
+
+        Fxi_old = zeros(No, numel(yp));
+        for l = 1:numel(yp)
+            Fxi_old(:, l) = Ap(xi(:,:,l));
+        end
+    end
+end
 
 v2_ = Composite();
 t_block = Composite();
@@ -575,11 +594,15 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             % data nodes (Q+1:Q+K) (no parallelisation over data blocks, just frequency)
             % retrieve xhat_i from the prior/primal nodes
             for q = 1:Qp.Value
-                xhat_i(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
-                    labReceive(q);
+                xi(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
+                    labReceive(q); % xhat_i
             end
             tw = tic;
-            [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            %! to be modified (keep Fourier transform)
+            % [v2_, g2, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, yp, xhat_i, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            %     elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
+
+            [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity2(v2_, yp, xi, Fxi_old, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
             t_op = toc(tw);
 

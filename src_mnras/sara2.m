@@ -147,8 +147,13 @@ end
 % Initialise projection
 if init_flag
     proj = init_m.proj;
+    Fx_old = zeros(No, c);
+    for i = 1 : c
+        Fx_old(:,i) = A(xsol(:,:,i));
+    end
     fprintf('proj uploaded \n\n')
 else
+    Fx_old = zeros(No, c);
     for i = 1 : c
         proj{i} = cell(length(G{i}),1);
         Fx = A(xsol(:,:,i));
@@ -156,6 +161,7 @@ else
             r2{i}{j} = G{i}{j} * Fx(W{i}{j});
             [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
         end
+        Fx_old(:,i) = Fx;
     end
     fprintf('proj initialized \n\n')
 end
@@ -294,10 +300,10 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     counter = 1;
     tw = tic;
     for i = 1 : c
-        Fx = A(xhat(:,:,i));
+        Fx = A(xsol(:,:,i));
         g2 = zeros(No,1);
         for j = 1 : length(G{i})
-            r2{i}{j} = G{i}{j} * Fx(W{i}{j});
+            r2{i}{j} = G{i}{j} * (2*Fx(W{i}{j}) - Fx_old(W{i}{j},i));
             [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
             v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
             
@@ -308,7 +314,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
             
             % norm of residual
-            norm_res{i}{j} = norm(r2{i}{j} - y{i}{j});
+            % norm_res{i}{j} = norm(r2{i}{j} - y{i}{j});
+            %! fixing computation of the residual
+            norm_res{i}{j} = norm(G{i}{j}*Fx(W{i}{j}) - y{i}{j});
             residual_check(counter) = norm_res{i}{j};
             epsilon_check(counter) = epsilon{i}{j};
             counter = counter + 1;
@@ -324,6 +332,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             norm_residual_check = norm_residual_check + norm_res{i}{j}^2;
             norm_epsilon_check = norm_epsilon_check + power(epsilon{i}{j},2);
         end
+        Fx_old(:,i) = Fx;
         Ftx(:,:,i) = real(At(g2));
     end
     t_data(t) = toc(tw);
