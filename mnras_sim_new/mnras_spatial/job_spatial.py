@@ -63,13 +63,13 @@ for g in gam:
                 -v --export=ALL,imagename={0},algoversion={16},nchannels={1},ind={2},Qx={17},Qy={18},Qc={3},wintype={7},overlapx={19},overlapy={20},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},rwtype={22},gambar={23},exptype={24},superresolution={25} \
                 run_fhs_mnras.slurm""".format(*params,*job,ncores,rw_type,g_bar,exp_type,superresolution_factor)
 
-                print(slurm_command) # Uncomment this line when testing to view the sbatch command
+                # print(slurm_command) # Uncomment this line when testing to view the sbatch command
 
                 # Comment the following 3 lines when testing to prevent jobs from being submitted
-                # exit_status = subprocess.call(slurm_command, shell=True)
-                # if exit_status is 1:  # Check to make sure the job submitted
-                #     print("Job {0} failed to submit".format(slurm_command))
+                exit_status = subprocess.call(slurm_command, shell=True)
+                if exit_status is 1:  # Check to make sure the job submitted
+                    print("Job {0} failed to submit".format(slurm_command))
 
-                # time.sleep(1)
+                time.sleep(3)
 
 print("Submission complete.")
