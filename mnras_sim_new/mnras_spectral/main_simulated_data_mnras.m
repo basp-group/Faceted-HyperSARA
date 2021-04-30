@@ -534,15 +534,13 @@ if flag_solveMinimization
             [sig, max_psf, mu, l21_norm, l21_norm_x0, dirty_image] = ...
                 compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, ...
                 oy, ox, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, x0, Anorm);
-            g = gam;
-            gam = gam*mu;
             save(fullfile(results_path, ...
                 strcat('lower_bounds_', ...
                 algo_version, '_srf=', num2str(superresolution_factor), ...
                 '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nChannels),...
                 '_ind=', num2str(ind), ...
                 '_rwtype=', rwtype, '_snr=', num2str(isnr), '.mat')), ...
-                'sig', 'max_psf', 'l21_norm', 'l21_norm_x0', 'dirty_image', 'gam');
+                'sig', 'max_psf', 'l21_norm', 'l21_norm_x0', 'dirty_image', 'mu');
         else
             load(fullfile(results_path, ...
                 strcat('lower_bounds_', ...
@@ -550,8 +548,10 @@ if flag_solveMinimization
                 '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nChannels),...
                 '_ind=', num2str(ind), ...
                 '_rwtype=', rwtype, '_snr=', num2str(isnr), '.mat')), ...
-                'sig', 'max_psf', 'gam');
+                'sig', 'max_psf', 'mu');
         end
+        mu = gam*mu;
+        mu_bar = 0;
     else
         fprintf('Normalization factors gamma = %e, gamma_bar = %e \n', gam, gam_bar);
         if flag_computeLowerBounds
@@ -563,12 +563,7 @@ if flag_solveMinimization
             fprintf('upsilon = %e \n', sig);
             
             %! recompute the value for gam (ratio between l21 and nuclear norm)
-            % g = gam;
             % gam = gam*nuclear_norm/l21_norm;
-            g = gam;
-            g_bar = gam_bar;
-            gam = gam*mu;
-            gam_bar = gam_bar*mu_bar;
             save(fullfile(results_path, ...
                 strcat('lower_bounds_', ...
                 algo_version, ...
@@ -577,7 +572,7 @@ if flag_solveMinimization
                 '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
                 '_ind=', num2str(ind), ...
                 '_rwtype=', rwtype, '_snr=', num2str(isnr), '.mat')), ...
-                    'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'gam', 'l21_norm_x0', 'nuclear_norm_x0', 'gam_bar');
+                    'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'mu', 'l21_norm_x0', 'nuclear_norm_x0', 'mu_bar');
         else
             load(fullfile(results_path, ...
                 strcat('lower_bounds_', ...
@@ -587,15 +582,17 @@ if flag_solveMinimization
                 '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
                 '_ind=', num2str(ind), ...
                 '_rwtype=', rwtype, '_snr=', num2str(isnr), '.mat')), ...
-                'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'gam', 'gam_bar');
+                'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'mu', 'mu_bar');
         end
+        mu = gam*mu;
+        mu_bar = gam_bar*mu_bar;
         fprintf('Reweighting type (for SVD log prior): %s \n', rwtype);
         fprintf('nuclear_norm_dirty = %e, l21_norm_dirty = %e\n', l21_norm, nuclear_norm);
-        fprintf('gam_bar = %e\n', gam_bar);
+        fprintf('mu_bar = %e\n', mu_bar);
         fprintf('sig_bar = %e\n', sig_bar);
     end
     clear dirty_image
-    fprintf('%s: gam = %e, sig = %e\n\n', rwtype, gam, sig);
+    fprintf('%s: mu = %e, sig = %e\n\n', rwtype, mu, sig);
     %! --
     
     %% HSI parameter structure sent to the  HSI algorithm
@@ -603,8 +600,8 @@ if flag_solveMinimization
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator
-    param_HSI.gamma0 = gam_bar;  % regularization parameter nuclear norm
-    param_HSI.gamma = gam; % regularization parameter l21-norm (soft th parameter) %! for SARA, take the value given as an input to the solver
+    param_HSI.gamma0 = mu_bar;  % regularization parameter nuclear norm
+    param_HSI.gamma = mu; % regularization parameter l21-norm (soft th parameter) %! for SARA, take the value given as an input to the solver
     param_HSI.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
 
     % pdfb
