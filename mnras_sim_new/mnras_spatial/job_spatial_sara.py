@@ -58,6 +58,6 @@ for g in gam:
         if exit_status is 1:  # Check to make sure the job submitted
             print("Job {0} failed to submit".format(slurm_command))
 
-        time.sleep(3)
+        time.sleep(5)
 
 print("Submission complete.")
