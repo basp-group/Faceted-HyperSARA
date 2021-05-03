@@ -26,10 +26,9 @@ function get_sara_cube(pathname, Ny, Nx, nChannels, gam, homotopy, rwtype, ...
     % evaluate full and per channel reconstruction snr
     x0 = fitsread(pathToGrountruth);
     err_per_channel = squeeze(sum(x0.^2, [1,2])./sum((x - x0).^2, [1,2]));
-    SNR = 10*log10(sum(err_per_channel));
     SNR_per_channel = 10*log10(err_per_channel);
 
-    fprintf("SNR = %e \n", SNR);
+    fprintf("aSNR = %e \n", mean(SNR_per_channel));
     fprintf("SNR per channel = %e \n\n", SNR_per_channel);
 
 end
