@@ -40,6 +40,6 @@ isnr='40'
 pathToGrountruth='../../data/cygASband_Cube_512_1024_20.fits'
 
 echo  "addpath('../../figures'); get_sara_cube('./results/cygASband_Cube_512_1024_20_test/',"$nChannels","$Ny","$Nx","$nChannels","$gam","$flaghomotopy", '"$rwtype"', '"$pathToGrountruth"')" > temporary_file_${SLURM_JOB_ID}.m
-matlab -nosplash -nodisplay -nodesktop < temporary_file_${SLURM_JOB_ID}.m > cygASband_Cube_512_1024_20_sara_gam=${gam}_homotopy=${flaghomotopy}_rwt=${rwtype}_exptype=${exptype}_srf=${superresolution}_snr=${isnr}.txt
+matlab -nodesktop < temporary_file_${SLURM_JOB_ID}.m > cygASband_Cube_512_1024_20_sara_gam=${gam}_homotopy=${flaghomotopy}_rwt=${rwtype}_exptype=${exptype}_srf=${superresolution}_snr=${isnr}.txt
 
 rm temporary_file_${SLURM_JOB_ID}.m
