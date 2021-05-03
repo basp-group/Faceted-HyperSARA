@@ -21,6 +21,7 @@ function get_sara_cube(pathname, Ny, Nx, nChannels, gam, homotopy, rwtype, ...
         x_ = fitsread(fullFilename);
         x(:,:,l) = x_;
     end
+    disp(fullfile(pathname,cubename))
     fitswrite(x, fullfile(pathname,cubename));
 
     % evaluate full and per channel reconstruction snr
