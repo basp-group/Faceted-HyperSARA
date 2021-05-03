@@ -16,7 +16,7 @@ function get_sara_cube(pathname, Ny, Nx, nChannels, gam, homotopy, rwtype, ...
     x = zeros(Ny, Nx, nChannels);
 
     for l = 2:nChannels
-        fullFilename = fullfile(pathname, strcat(filename(l), ".fits"));
+        fullFilename = fullfile(pathname, strcat(filename(l), '.fits'));
         x_ = fitsread(fullFilename);
         x(:,:,l) = x_;
     end
