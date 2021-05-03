@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=results
+#SBATCH --job-name=sara_cube
 #SBATCH --time=00:15:00
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
@@ -35,7 +35,7 @@ gam = '1'
 flaghomotopy = '1'
 rwtype = 'dirty'
 exptype = 'test'
-srf = '2'
+superresolution = '2'
 isnr = '40'
 pathToGrountruth = '../../data/cygASband_Cube_512_1024_20.fits'
 
