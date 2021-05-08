@@ -624,7 +624,7 @@ if flag_solveMinimization
     %! -- TO BE CHECKED
     param_HSI.reweighting_rel_var = 1e-5;       % relative variation (reweighting)
     if flag_homotopy
-        param_HSI.reweighting_alpha = 10;
+        param_HSI.reweighting_alpha = 20;
         param_HSI.reweighting_min_iter = 5; % minimum number of reweighting iterations, weights updated reweighting_min_iter times
         param_HSI.reweighting_alpha_ff = (1/param_HSI.reweighting_alpha)^(1/(param_HSI.reweighting_min_iter-1)); % reach the floor level after min_iter updates of the weights
         % 0.63 -> otherwise need 10 reweights minimum
