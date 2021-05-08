@@ -37,7 +37,7 @@ flaghomotopy = 1
 rw_type = 'dirty' # 'ground_truth' 'dirty'
 exp_type = 'test'
 superresolution_factor = 2
-isnr = 50
+isnr = 40
 
 
 for g in gam:

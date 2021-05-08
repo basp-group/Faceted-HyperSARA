@@ -33,7 +33,7 @@ flaghomotopy = 1
 exp_type = 'test'
 rw_type = 'dirty' # 'ground_truth' 'dirty'
 superresolution_factor = 2
-isnr = 50
+isnr = 40
 
 ncores = ncdata + 3
 
