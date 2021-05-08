@@ -186,7 +186,7 @@ if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
     exit(1);
 end
 % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+% cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
 % maxNumCompThreads(param.num_workers);
 parpool(cirrus_cluster, numworkers);
 % % start the matlabpool with maximum available workers
@@ -711,7 +711,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     %         (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
     %     );
 
-    pdfb_converged = ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                      % maximum number of pdfb iterations reached
+    pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ... % minimum number of pdfb iterations 
+        ( t - reweight_last_step_iter >= param.pdfb_max_iter || ... % maximum number of pdfb iterations reached
             (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation solution, objective and data fidelity within tolerance
         );
     % && rel_obj <= param.pdfb_rel_obj
@@ -761,7 +762,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             break;
         end
         
-        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count+1, rel_x_reweighting);
+        fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count+1, rel_x_reweighting, reweighting_alpha);
         
         spmd
             if labindex <= Qp.Value
@@ -819,8 +820,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             nuclear = nuclear + nuclear_norm{q};
         end
         % obj = param.gamma0*nuclear + param.gamma*l21;
-
-        fprintf('reweighting parameter: %e \n', reweighting_alpha);
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,2))
             % compute SNR

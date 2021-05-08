@@ -573,7 +573,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     %         (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
     %     );
     
-    pdfb_converged = ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
+    pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ... % minimum number of pdfb iterations 
+        ( t - reweight_last_step_iter >= param.pdfb_max_iter || ... % maximum number of pdfb iterations reached
             (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation solution, objective and data fidelity within tolerance
         );
     % rel_obj <= param.pdfb_rel_obj
@@ -610,7 +611,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             break;
         end
 
-        fprintf('Reweighting: %i, relative variation: %e \n\n', reweight_step_count+1, rel_x_reweighting);
+        fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count+1, rel_x_reweighting, reweighting_alpha);
         
         %! -- TO BE CHECKED (using new reweighting with proper floor level)
         spmd
@@ -639,8 +640,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         % previous_obj = obj;
         % obj = (param.gamma*l21 + param.gamma0*nuclear);
         % rel_obj = abs(previous_obj - obj)/previous_obj;
-
-        fprintf('reweighting parameter: %e \n', reweighting_alpha);
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,2))
 

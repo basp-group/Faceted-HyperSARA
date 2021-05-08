@@ -69,15 +69,15 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % nReweights = 1;
 % algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
-% flag_generateVisibilities = 1;
-% flag_computeOperatorNorm = 1;
-% flag_computeLowerBounds = 1;
+% flag_generateVisibilities = 0;
+% flag_computeOperatorNorm = 0;
+% flag_computeLowerBounds = 0;
 % flag_solveMinimization = true;
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1; % index of the spectral facet to be reconstructed
 % gam = 1;
 % gam_bar = 1;
-% coverage_path = "data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
+% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 
 % rw = 1;
 % rwtype = 'dirty'; % ground_truth, heuristic
@@ -607,7 +607,7 @@ if flag_solveMinimization
     param_HSI.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
 
     % pdfb
-    % param_HSI.pdfb_min_iter = 100; % minimum number of iterations
+    param_HSI.pdfb_min_iter = 10; % minimum number of iterations
     param_HSI.pdfb_max_iter = 2000; % maximum number of iterations
     param_HSI.pdfb_rel_var = 1e-5; % relative variation tolerance
     param_HSI.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied %! this value seems quite stringent in practice
@@ -626,7 +626,7 @@ if flag_solveMinimization
     if flag_homotopy
         param_HSI.reweighting_alpha = 10;
         param_HSI.reweighting_min_iter = 5; % minimum number of reweighting iterations, weights updated reweighting_min_iter times
-        param_HSI.reweighting_alpha_ff = (1/param_HSI.reweighting_alpha)^(1/(param_HSI.reweighting_min_iter-1)); % reach the floor level after min_iter-2 updates of the weights
+        param_HSI.reweighting_alpha_ff = (1/param_HSI.reweighting_alpha)^(1/(param_HSI.reweighting_min_iter-1)); % reach the floor level after min_iter updates of the weights
         % 0.63 -> otherwise need 10 reweights minimum
     else
         param_HSI.reweighting_min_iter = 1; % minimum number of reweighting iterations
@@ -634,7 +634,7 @@ if flag_solveMinimization
         param_HSI.reweighting_alpha_ff = 1;
     end
     %! --
-    param_HSI.reweighting_max_iter = max(nReweights, param_HSI.reweighting_min_iter); % maximum number of reweighting iterations reached, weights updated nReweights times
+    param_HSI.reweighting_max_iter = max(nReweights, param_HSI.reweighting_min_iter+1); % maximum number of reweighting iterations reached, weights updated nReweights times
     param_HSI.reweighting_sig = sig; % estimate of the noise level in SARA space
     if ~strcmp(algo_version, 'sara') %! if HyperSARA or faceted HyperSARA
         % estimate of the noise level in "SVD" spaces
