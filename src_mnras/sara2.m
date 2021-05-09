@@ -247,6 +247,7 @@ sigma22 = tau*sigma2;
 flag = 0;
 
 beta1 = param.gamma/sigma1;
+alph = param.alph;
 
 Gt = cell(size(G));
 for i = 1 : c
@@ -435,6 +436,23 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         %     f(k) = parfeval(@run_par_l11, 1, Psit{k}, xsol, weights1{k});
         % end
 
+        if param.update_regularization && (reweight_step_count == 0)
+            for k = 1:P
+                f(k) = parfeval(@update_regularization_l11, 1, Psit{k}, xsol, alph, sig);
+            end
+
+            param.gamma_old = param.gamma;
+            gam = 0;
+            for k = 1:P
+                [~, gam_] = fetchNext(f);
+                gam = gam + gam_;
+            end
+            param.gamma = gam;
+            beta1 = param.gamma/sigma1;
+
+            fprintf('Updated gamma: %e \n\n', gam);
+        end
+
         % compute residual image
         res = zeros(size(xsol));
         for i = 1 : c
@@ -596,12 +614,14 @@ l11_ = norm(r1(:),1);
 end
 
 function l11_ = run_par_l11(Psit, xhat, weights1_)
-
 r1 = weights1_.*abs(Psit(xhat));
-
 % local L11 norm of current solution
 l11_ = sum(r1(:));
+end
 
+function gam_ = update_regularization_l11(Psit, xhat, alph, sig)
+r1 = abs(Psit(xhat));
+gam_ = alph / (sig * sum(log(r1(:)/sig + 1)));
 end
 
 function p = proj_l2ball(x, eps, y)

@@ -3,7 +3,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
     flag_generateCube, flag_generateVisibilities, ...
     flag_computeOperatorNorm, flag_solveMinimization, ...
     cube_path, coverage_path, gam, rw, flag_homotopy, ... 
-    flag_computeLowerBounds, rwtype, gam_bar, exp_type, superresolution_factor, isnr)
+    flag_computeLowerBounds, rwtype, gam_bar, exp_type, superresolution_factor, isnr, update_regularization)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -67,7 +67,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 0;
 % flag_computeOperatorNorm = 0;
@@ -78,6 +78,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % gam = 1;
 % gam_bar = 1;
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
+% update_regularization = 1;
 
 % rw = 1;
 % rwtype = 'dirty'; % ground_truth, heuristic
@@ -611,6 +612,9 @@ if flag_solveMinimization
     param_HSI.pdfb_max_iter = 2000; % maximum number of iterations
     param_HSI.pdfb_rel_var = 1e-5; % relative variation tolerance
     param_HSI.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied %! this value seems quite stringent in practice
+    param_HSI.update_regularization = update_regularization;
+    param_HSI.alph = gam;
+    param_HSI.alph_bar = gam_bar;
     
     % epsilon update scheme
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)

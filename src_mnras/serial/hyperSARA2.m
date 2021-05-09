@@ -384,6 +384,8 @@ sigma11 = parallel.pool.Constant(tau*sigma1);
 sigma22 = parallel.pool.Constant(tau*sigma2);
 beta0 = parallel.pool.Constant(param.gamma0/sigma0);
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
+alph = param.alph;
+alph_bar = param.alph_bar;
 
 % Variables for the stopping criterion
 flag_convergence = 0;
@@ -612,8 +614,27 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         end
 
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count+1, rel_x_reweighting, reweighting_alpha);
-        
-        %! -- TO BE CHECKED (using new reweighting with proper floor level)
+
+        %! -- TO BE CHECKED (using new reweighting with proper floor level)        
+        if param.update_regularization && (reweight_step_count == 0)
+            spmd
+                if labindex == 1
+                    gamma0_ = compute_low_rank_regularizer(xsol, sig_bar_, alph_bar);
+                elseif labindex == 2
+                    gamma1_ = compute_sparsity_regularizer(xsol, Psit_, s, sig_, alph);
+                end
+            end
+
+            param.gamma0_old = param.gamma0;
+            param.gamma_old = param.gamma;
+            param.gamma0 = gamma0_{1};
+            param.gamma = gamma1_{2};
+            beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
+            beta1 = parallel.pool.Constant(param.gamma/sigma1);
+
+            fprintf('Updated regularization parameters: gamma0 = %e, gamma1 = %e \n\n', param.gamma0, param.gamma);
+        end
+
         spmd
             if labindex == 1
                 weights0_ = update_weights_nuclear_serial(xsol, reweighting_alpha, sig_bar_);

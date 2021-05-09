@@ -462,6 +462,8 @@ sigma11 = parallel.pool.Constant(tau*sigma1);
 sigma22 = parallel.pool.Constant(tau*sigma2);
 beta0 = parallel.pool.Constant(param.gamma0/sigma0);
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
+alph = parallel.pool.Constant(param.alph);
+alph_bar = parallel.pool.Constant(param.alph_bar);
 
 % Variables for the stopping criterion
 flag_convergence = 0;
@@ -763,6 +765,38 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         end
         
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count+1, rel_x_reweighting, reweighting_alpha);
+
+        % update regularization parameters after the first pdfb
+        if param.update_regularization && (reweight_step_count == 0)
+            spmd
+                if labindex <= Qp.Value
+                    x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+                    x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+
+                    %! need to update beta0 and beta1
+                    [gamma1_q, gamma0_q] = compute_facet_log_prior_regularizer(x_overlap, Iq, ...
+                    offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_, alph.Value, alph_bar.Value);
+                end
+            end
+
+            param.gamma0_old = param.gamma0;
+            param.gamma_old = param.gamma;
+            
+            gamma0 = 0;
+            gamma1 = 0;
+            for q = 1:q
+                gamma0 = gamma0 + gamma0_q{q};
+                gamma1 = gamma1 + gamma1_q{q};
+            end
+
+            param.gamma0 = gamma0;
+            param.gamma = gamma1;
+            beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
+            beta1 = parallel.pool.Constant(param.gamma/sigma1);
+
+            fprintf('Updated regularization parameters: gamma0 = %e, gamma1 = %e \n\n', param.gamma0, param.gamma);
+        end
         
         spmd
             if labindex <= Qp.Value
