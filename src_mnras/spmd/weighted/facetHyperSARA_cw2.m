@@ -1,7 +1,7 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA_cw2(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, varargin)
+    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -462,8 +462,10 @@ sigma11 = parallel.pool.Constant(tau*sigma1);
 sigma22 = parallel.pool.Constant(tau*sigma2);
 beta0 = parallel.pool.Constant(param.gamma0/sigma0);
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
-alph = parallel.pool.Constant(param.alph);
-alph_bar = parallel.pool.Constant(param.alph_bar);
+param.alph = alph;
+param.alph_bar = alph_bar;
+alph_ = parallel.pool.Constant(alph);
+alph_bar_ = parallel.pool.Constant(alph_bar);
 
 % Variables for the stopping criterion
 flag_convergence = 0;
@@ -776,7 +778,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                     %! need to update beta0 and beta1
                     [gamma1_q, gamma0_q] = compute_facet_log_prior_regularizer(x_overlap, Iq, ...
                     offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_, alph.Value, alph_bar.Value);
+                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_, alph_.Value, alph_bar_.Value);
                 end
             end
 

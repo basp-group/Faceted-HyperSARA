@@ -1,5 +1,5 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,SNR,SNR_average] = ...
-    hyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, varargin)
+    hyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, varargin)
 %HyperSARA
 %
 % ...
@@ -384,8 +384,8 @@ sigma11 = parallel.pool.Constant(tau*sigma1);
 sigma22 = parallel.pool.Constant(tau*sigma2);
 beta0 = parallel.pool.Constant(param.gamma0/sigma0);
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
-alph = param.alph;
-alph_bar = param.alph_bar;
+param.alph = alph;
+param.alph_bar = alph_bar;
 
 % Variables for the stopping criterion
 flag_convergence = 0;
@@ -619,9 +619,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         if param.update_regularization && (reweight_step_count == 0)
             spmd
                 if labindex == 1
-                    gamma0_ = compute_low_rank_regularizer(xsol, sig_bar_, alph_bar);
+                    gamma0_ = compute_low_rank_regularizer(xsol, sig_bar_, alph_bar_);
                 elseif labindex == 2
-                    gamma1_ = compute_sparsity_regularizer(xsol, Psit_, s, sig_, alph);
+                    gamma1_ = compute_sparsity_regularizer(xsol, Psit_, s, sig_, alph_);
                 end
             end
 

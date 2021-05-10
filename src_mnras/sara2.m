@@ -1,5 +1,5 @@
 function [xsol,param,v1,v2,g,weights1,proj,t_block,reweighting_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, varargin)
+    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, alph, varargin)
 
 % This function solves:
 %
@@ -247,7 +247,7 @@ sigma22 = tau*sigma2;
 flag = 0;
 
 beta1 = param.gamma/sigma1;
-alph = param.alph;
+param.alph = alph;
 
 Gt = cell(size(G));
 for i = 1 : c
