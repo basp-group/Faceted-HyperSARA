@@ -1,5 +1,5 @@
 function [xsol,param,v1,v2,g,weights1,proj,t_block,reweighting_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, alph, varargin)
+    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, alph, update_regularization, varargin)
 
 % This function solves:
 %
@@ -436,7 +436,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         %     f(k) = parfeval(@run_par_l11, 1, Psit{k}, xsol, weights1{k});
         % end
 
-        if param.update_regularization && (reweight_step_count == 0)
+        if update_regularization && (reweight_step_count == 0)
             for k = 1:P
                 f(k) = parfeval(@update_regularization_l11, 1, Psit{k}, xsol, alph, sig);
             end

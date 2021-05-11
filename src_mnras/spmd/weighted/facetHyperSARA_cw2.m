@@ -1,7 +1,7 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA_cw2(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, varargin)
+    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -769,7 +769,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count+1, rel_x_reweighting, reweighting_alpha);
 
         % update regularization parameters after the first pdfb
-        if param.update_regularization && (reweight_step_count == 0)
+        if update_regularization && (reweight_step_count == 0)
             spmd
                 if labindex <= Qp.Value
                     x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;

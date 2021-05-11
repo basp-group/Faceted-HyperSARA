@@ -1,5 +1,5 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,SNR,SNR_average] = ...
-    hyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, varargin)
+    hyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, varargin)
 %HyperSARA
 %
 % ...
@@ -616,7 +616,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count+1, rel_x_reweighting, reweighting_alpha);
 
         %! -- TO BE CHECKED (using new reweighting with proper floor level)        
-        if param.update_regularization && (reweight_step_count == 0)
+        if update_regularization && (reweight_step_count == 0)
             spmd
                 if labindex == 1
                     gamma0_ = compute_low_rank_regularizer(xsol, sig_bar_, alph_bar_);
