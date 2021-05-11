@@ -55,8 +55,8 @@ with open(parameter_file_full_path, "r") as csvfile:
             # print(*params,*job,cubeid,ncores)
 
             slurm_command = r"""sbatch --job-name=spectral_{18}_{19}_{20} --ntasks-per-node={21} \
-            -e {0}_{18}_L={1}_Qx={2}_Qy={3}_Qc={19}_id={20}_overlapx={4}_overlapy={5}_gamma={7}_gammabar={23}_rw={6}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={12}.err \
-            -o {0}_{18}_L={1}_Qx={2}_Qy={3}_Qc={19}_id={20}_overlapx={4}_overlapy={5}_gamma={7}_gammabar={23}_rw={6}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={12}.out \
+            -e {0}_{18}_L={1}_Qx={2}_Qy={3}_Qc={19}_id={20}_overlapx={4}_overlapy={5}_gamma={7}_gammabar={23}_rw={6}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={12}_updatereg={27}.err \
+            -o {0}_{18}_L={1}_Qx={2}_Qy={3}_Qc={19}_id={20}_overlapx={4}_overlapy={5}_gamma={7}_gammabar={23}_rw={6}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={12}_updatereg={27}.out \
             -v --export=ALL,imagename={0},algoversion={18},nchannels={1},ind={20},Qx={2},Qy={3},Qc={19},wintype={9},overlapx={4},overlapy={5},gam={7},nreweights={8},gencube={13},genvis={14},computenorm={15},solve={17},covpath={10},ncdata={11},rw={6},flaghomotopy={12},lowerbounds={16},rwtype={22},gambar={23},exptype={24},superresolution={25},isnr={26},updatereg={27} \
             run_fhs_mnras.slurm""".format(*params,*job,cubeid,ncores,rw_type,gam_bar,exp_type,superresolution_factor,isnr,updatereg)
 
@@ -67,6 +67,6 @@ with open(parameter_file_full_path, "r") as csvfile:
             if exit_status is 1:  # Check to make sure the job submitted
                 print("Job {0} failed to submit".format(slurm_command))
 
-            time.sleep(1)
+            time.sleep(0.5)
 
 print("Submission complete.")
