@@ -60,8 +60,8 @@ for g in gam:
                 print("Total number of cpus: {0}".format(ncores))
 
                 slurm_command = r"""sbatch --job-name=spatial_{16} --ntasks-per-node={21} \
-                -e {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}_snr={26}.err \
-                -o {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}_snr={26}.out \
+                -e {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={10}.err \
+                -o {0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={10}.out \
                 -v --export=ALL,imagename={0},algoversion={16},nchannels={1},ind={2},Qx={17},Qy={18},Qc={3},wintype={7},overlapx={19},overlapy={20},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},rwtype={22},gambar={23},exptype={24},superresolution={25},isnr={26},updatereg={27} \
                 run_fhs_mnras.slurm""".format(*params,*job,ncores,rw_type,g_bar,exp_type,superresolution_factor,isnr,updatereg)
 
