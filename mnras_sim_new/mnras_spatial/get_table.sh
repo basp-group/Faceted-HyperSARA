@@ -13,6 +13,9 @@ rw=-1
 logpath=$(pwd)/results/cygASband_Cube_512_1024_20_test/${algoversion}/logs
 outputfile=$(pwd)/results/cygASband_Cube_512_1024_20_test/${algoversion}/output_parameters.txt
 
+# grep pattern + sourrounding lines
+# https://stackoverflow.com/questions/9081/grep-a-file-but-show-several-surrounding-lines
+
 for updatereg in 0 1; do
     for homotopy in 0 1; do # {0..1}
         for rwtype in dirty ground_truth; do
