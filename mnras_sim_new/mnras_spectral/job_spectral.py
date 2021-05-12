@@ -3,6 +3,8 @@
 import csv, subprocess, os
 import numpy as np
 import time
+import pathlib
+import os
 
 parameter_file_full_path = "job_spectral.csv"
 
@@ -50,9 +52,10 @@ with open(parameter_file_full_path, "r") as csvfile:
         ncores = np.minimum(int(ncdata) + 2, 36) # max number of cpus = 36
         print("Total number of cpus: {0}".format(ncores))
 
-        for cubeid in range(1,int(job[1])+1):
+        slurm_log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, job[0], 'slurm_logs') 
+        pathlib.Path(slurm_log_path).mkdir(parents=True, exist_ok=True)
 
-            # print(*params,*job,cubeid,ncores)
+        for cubeid in range(1,int(job[1])+1):
 
             slurm_command = r"""sbatch --job-name=spectral_{18}_{19}_{20} --ntasks-per-node={21} \
             -e {0}_{18}_L={1}_Qx={2}_Qy={3}_Qc={19}_id={20}_overlapx={4}_overlapy={5}_gamma={7}_gammabar={23}_rw={6}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={12}_updatereg={27}.err \
@@ -67,6 +70,6 @@ with open(parameter_file_full_path, "r") as csvfile:
             if exit_status is 1:  # Check to make sure the job submitted
                 print("Job {0} failed to submit".format(slurm_command))
 
-            time.sleep(0.5)
+            # time.sleep(0.5)
 
 print("Submission complete.")
