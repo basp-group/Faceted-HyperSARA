@@ -46,7 +46,11 @@ end
 %! -- TO BE CHECKED (primal initialization)
 if init_flag
     xsol = init_m.xsol;
+    pdfb_rel_var_low = param.pdfb_rel_var_low;
     param = init_m.param;
+    if ~isfield(param,'pdfb_rel_var_low')
+        param.pdfb_rel_var_low = pdfb_rel_var_low;
+    end
     epsilon = init_m.epsilon;
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
@@ -398,7 +402,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
     pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ... % minimum number of pdfb iterations
         ( t - reweight_last_step_iter >= param.pdfb_max_iter || ... % maximum number of pdfb iterations reached
-            (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
+            (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) || ... % relative variation and data fidelity within tolerance
+            rel_val(t) <= param.pdfb_rel_var_low ... % relative variation really small and data fidelity criterion not satisfied yet
         );
         % && rel_obj <= param.pdfb_rel_obj
     

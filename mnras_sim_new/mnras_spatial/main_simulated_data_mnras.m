@@ -612,12 +612,13 @@ if flag_solveMinimization
 
     % pdfb
     param_HSI.pdfb_min_iter = 10; % minimum number of iterations
-    param_HSI.pdfb_max_iter = 2000; % maximum number of iterations
+    param_HSI.pdfb_max_iter = 5000; % maximum number of iterations
     param_HSI.pdfb_rel_var = 1e-5; % relative variation tolerance
     param_HSI.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied %! this value seems quite stringent in practice
     param_HSI.update_regularization = update_regularization;
     param_HSI.alph = gam;
     param_HSI.alph_bar = gam_bar;
+    param_HSI.pdfb_rel_var_low = 1e-6; % minimum relative variation tolerance (allows stopping earlier if data fidelity constraint not about to be satisfied)
     
     % epsilon update scheme
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
