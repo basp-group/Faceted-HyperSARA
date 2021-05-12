@@ -98,12 +98,12 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % fixed parameters (in the mnras experiments)
 flag_generateUndersampledCube = false;
 flag_generateCoverage = false;
-p = 1;
 seed = 1;
 rng(seed);
 % sigma_noise = 0.1
 % T = 1500; % to be set depending on the value of p
 % hrs = 6;
+% p = 1;
 % kernel = 'minmax:tuned'; % 'kaiser', 'minmax:tuned'
 generate_eps_nnls = false;
 save_data = true;
@@ -120,9 +120,9 @@ disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
 disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), '_')]);
 % disp(['Number of data points p per frequency (as a fraction of image size): ', num2str(p)]);
-% disp(['Input SNR: ', num2str(input_snr)]);
-disp(['Generating image cube: ', num2str(flag_generateCube)]);
-disp(['Generating coverage: ', num2str(flag_generateCoverage)]);
+% disp(['Generating image cube: ', num2str(flag_generateCube)]);
+% disp(['Generating coverage: ', num2str(flag_generateCoverage)]);
+disp(['Input SNR: ', num2str(isnr)]);
 disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
 
 addpath ../../lib/generate_data/
