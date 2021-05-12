@@ -20,7 +20,7 @@ mkdir $SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 export MATLAB_PREFDIR=$SLURM_SUBMIT_DIR/pref_$SLURM_JOB_ID
 mkdir -p /lustre/home/sc004/$USER/$SLURM_JOB_ID
 
-log_path = "results/"${imagename}"_"${exptype}"/"${algoversion}"/logs"
+log_path = results/${imagename}_${exptype}/${algoversion}/logs
 mkdir results/${imagename}_${exptype}/${algoversion}/logs
 
 # module purge             # remove all previously loaded modules
