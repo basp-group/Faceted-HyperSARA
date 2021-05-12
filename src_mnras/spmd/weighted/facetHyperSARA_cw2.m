@@ -1,7 +1,7 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA_cw2(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, varargin)
+    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, sigma_noise, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -353,6 +353,7 @@ yp = Composite();
 pUp = Composite();
 Wp = Composite();
 epsilonp = Composite();
+sigma_noise_ = Composite();
 
 norm_res = Composite();
 if init_flag
@@ -395,6 +396,7 @@ for k = 1:K
     Wp{Q+k} = W{k};
     pUp{Q+k} = pU{k};
     epsilonp{Q+k} = epsilon{k};
+    sigma_noise_{Q+k} = sigma_noise{k};
 end
 clear epsilon pU W G y
 
@@ -468,8 +470,6 @@ beta0 = parallel.pool.Constant(param.gamma0/sigma0);
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
 param.alph = alph;
 param.alph_bar = alph_bar;
-alph_ = parallel.pool.Constant(alph);
-alph_bar_ = parallel.pool.Constant(alph_bar);
 
 % Variables for the stopping criterion
 flag_convergence = 0;
@@ -780,23 +780,47 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                     x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
                     x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
+                    bq = zeros(size(x_overlap));
+                    % send xhat_q (communication towards the data nodes)
+                    for i = 1:Kp.Value
+                        bq(overlap(1)+1:end, overlap(2)+1:end, c_chunksp.Value{i}) = labReceive(Qp.Value+i);
+                    end
+
+                    bq = comm2d_update_borders(bq, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+
+                    sig_bar_ = update_sig_bar(x_overlap, w, bq);
+
                     %! need to update beta0 and beta1
                     [gamma1_q, gamma0_q] = compute_facet_log_prior_regularizer(x_overlap, Iq, ...
                     offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_, alph_.Value, alph_bar_.Value);
+                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_);
+                else
+                    % generate noise matrix to update sig_bar
+                    bi = create_data_noise(yp, Atp, Gp, Wp, M, N, No, sigma_noise_, labindex);
+
+                    for q = 1:Qp.Value
+                        labSend(bi(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
+                    end
                 end
             end
 
             param.gamma0_old = param.gamma0;
             param.gamma_old = param.gamma;
+            param.reweighting_sig_bar_old = param.reweighting_sig_bar;
             
             gamma0 = 0;
             gamma1 = 0;
-            for q = 1:q
+            sig_bar = zeros(Q, 1);
+            %! to be fixed
+            for q = 1:Q
                 gamma0 = gamma0 + gamma0_q{q};
                 gamma1 = gamma1 + gamma1_q{q};
+                sig_bar(q) = sig_bar{q};
             end
+            gamma0 = alph_bar/gamma0;
+            gamma1 = alph/gamma1;
 
+            param.reweighting_sig_bar = sig_bar;
             param.gamma0 = gamma0;
             param.gamma = gamma1;
             beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine

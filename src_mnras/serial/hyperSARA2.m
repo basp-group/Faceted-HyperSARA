@@ -1,5 +1,5 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,SNR,SNR_average] = ...
-    hyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, varargin)
+    hyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, sigma_noise, varargin)
 %HyperSARA
 %
 % ...
@@ -283,6 +283,7 @@ yp = Composite();
 pUp = Composite();
 Wp = Composite();
 epsilonp = Composite();
+sigma_noise_ = Composite();
 
 for i = 1:K
     temp = zeros(No, numel(c_chunks{i}));
@@ -337,6 +338,7 @@ for k = 1:K
     pUp{2+k} = pU{k};
     pU{k} = [];
     epsilonp{2+k} = epsilon{k};
+    sigma_noise_{Q+k} = sigma_noise{k};
 end
 clear epsilon pU W G y
 
@@ -622,6 +624,25 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
         %! -- TO BE CHECKED (using new reweighting with proper floor level)        
         if update_regularization && (reweight_step_count == 0)
+
+            % update sig_bar
+            spmd
+                if labindex > 2
+                    bi = create_data_noise(yp, Atp, Gp, Wp, M, N, No, sigma_noise_, labindex);
+                end
+            end
+            B = zeros(size(xsol));
+            for i = 1:K
+                B(:,:,c_chunks{i}) = bi{2+i};
+            end 
+            clear bi
+            sig_bar = update_sig_bar(xsol, B);
+            clear B
+
+            sig_bar_{1} = sig_bar;
+            param.sig_bar_old = param.sig_bar;
+            param.sig_bar = sig_bar;
+
             spmd
                 if labindex == 1
                     gamma0_ = compute_low_rank_regularizer(xsol, sig_bar_, alph_bar_);

@@ -662,7 +662,7 @@ if flag_solveMinimization
 
         [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
             sara2(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI, fullfile(auxiliary_path,warm_start(nChannels)), ...
-            fullfile(auxiliary_path,temp_results_name(nChannels)), x0, flag_homotopy, ncores_data, gam, update_regularization); %! in this case, ncores_data corresponds to the number of workers for the wavelet transform (9 maximum)
+            fullfile(auxiliary_path,temp_results_name(nChannels)), x0, flag_homotopy, ncores_data, gam, update_regularization, sigma_noise); %! in this case, ncores_data corresponds to the number of workers for the wavelet transform (9 maximum)
         
         time_iter_average = mean(end_iter);
         disp(['Average time per iteration: ', num2str(time_iter_average)]);
@@ -694,6 +694,7 @@ if flag_solveMinimization
         aW_spmd = cell(ncores_data, 1);
         W_spmd = cell(ncores_data, 1);
         G_spmd = cell(ncores_data, 1);
+        sigma_noise_spmd = cell(ncores_data, 1);
 
         for i = 1:ncores_data
             cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
@@ -702,6 +703,7 @@ if flag_solveMinimization
             aW_spmd{i} = aW(cell_c_chunks{i});
             W_spmd{i} = W(cell_c_chunks{i});
             G_spmd{i} = G(cell_c_chunks{i});
+            sigma_noise_spmd{i} = sigma_noise(cell_c_chunks{i});
         end
         clear y epsilon aW W G
         
@@ -712,13 +714,13 @@ if flag_solveMinimization
                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
                     hyperSARA2(y_spmd, epsilon_spmd, ...
                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
-                    wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, update_regularization);
+                    wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, update_regularization, sigma_noise_spmd);
 
             case 'cw'
                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                     facetHyperSARA_cw2(y_spmd, epsilon_spmd, ...
                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
-                    filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, update_regularization);
+                    filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, update_regularization, sigma_noise_spmd);
             otherwise
                 error('Unknown solver version.')
         end

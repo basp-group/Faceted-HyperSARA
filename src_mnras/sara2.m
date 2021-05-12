@@ -1,5 +1,5 @@
 function [xsol,param,v1,v2,g,weights1,proj,t_block,reweighting_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, alph, update_regularization, varargin)
+    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, alph, update_regularization, sigma_noise, varargin)
 
 % This function solves:
 %
@@ -443,7 +443,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
         if update_regularization && (reweight_step_count == 0)
             for k = 1:P
-                f(k) = parfeval(@update_regularization_l11, 1, Psit{k}, xsol, alph, sig);
+                f(k) = parfeval(@update_regularization_l11, 1, Psit{k}, xsol, sig);
             end
 
             param.gamma_old = param.gamma;
@@ -452,6 +452,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 [~, gam_] = fetchNext(f);
                 gam = gam + gam_;
             end
+            gam = alph / gam;
+
             param.gamma = gam;
             beta1 = param.gamma/sigma1;
 
@@ -624,9 +626,10 @@ r1 = weights1_.*abs(Psit(xhat));
 l11_ = sum(r1(:));
 end
 
-function gam_ = update_regularization_l11(Psit, xhat, alph, sig)
+function gam_ = update_regularization_l11(Psit, xhat, sig)
 r1 = abs(Psit(xhat));
-gam_ = alph / (sig * sum(log(r1(:)/sig + 1)));
+gam_ = sig * sum(log(r1(:)/sig + 1));
+% gam_ = alph / (sig * sum(log(r1(:)/sig + 1)));
 end
 
 function p = proj_l2ball(x, eps, y)

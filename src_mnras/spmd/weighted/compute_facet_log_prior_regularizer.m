@@ -1,7 +1,7 @@
 function [mu_q, mu_bar_q] = compute_facet_log_prior_regularizer(x_overlap, Iq, ...
     offset, status_q, nlevel, wavelet, Ncoefs_q, dims_overlap_ref_q, ...
-    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size_v1, sig, sig_bar_q, alph, alph_bar)
-% TODO: to be updated
+    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size_v1, sig, sig_bar_q)
+%! to be fixed!
 % Compute the value of the faceted prior (:math:`\ell_{2,1}` + nuclear 
 % norm).
 %
@@ -49,7 +49,8 @@ c = size(x_overlap, 3);
 xhatm = w.*x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :);
 xhatm = reshape(xhatm,numel(xhatm)/c,c);
 [~,S0,~] = svd(xhatm,'econ');
-mu_bar_q = alph_bar / (sig_bar_q * sum(log(abs(diag(S0))/sig_bar_q + 1)));
+% mu_bar_q = alph_bar / (sig_bar_q * sum(log(abs(diag(S0))/sig_bar_q + 1)));
+mu_bar_q = sig_bar_q * sum(log(abs(diag(S0))/sig_bar_q + 1));
 
 %% compute facet l21-norm
 % zero-padding
@@ -62,6 +63,7 @@ z = zeros(size_v1);
 for l = 1 : c
     z(:,l) = sdwt2_sara_faceting(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
 end
-mu_q = alph / (sig * sum(log(sqrt(sum(abs(z).^2,2))/sig + 1)));
+% mu_q = alph / (sig * sum(log(sqrt(sum(abs(z).^2,2))/sig + 1)));
+mu_q = sig * sum(log(sqrt(sum(abs(z).^2,2))/sig + 1));
 
 end
