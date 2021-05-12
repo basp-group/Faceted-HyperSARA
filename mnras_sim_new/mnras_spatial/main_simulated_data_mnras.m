@@ -329,6 +329,8 @@ param_block_structure.use_manual_partitioning = 0;
 
 %% Generate/load uv-coverage, setup measurement operator
 % generating u-v coverage
+%! reminder uv-coverage and weighting
+% https://casa.nrao.edu/Release4.1.0/doc/UserMan/UserMansu259.html
 if flag_generateCoverage
     cov_type = 'vlaa';
     dl = 1.1;
