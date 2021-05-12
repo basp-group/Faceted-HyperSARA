@@ -1,5 +1,5 @@
 function [xsol,param,v1,v2,g,weights1,proj,t_block,reweighting_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, alph, update_regularization, sigma_noise, varargin)
+    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, alph, update_regularization, flag_cirrus, varargin)
 
 % This function solves:
 %
@@ -29,7 +29,9 @@ if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
     exit(1);
 end
 % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+if flag_cirrus
+    cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+end
 % maxNumCompThreads(param.num_workers);
 parpool(cirrus_cluster, numworkers);
 spmd
@@ -453,11 +455,10 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 gam = gam + gam_;
             end
             gam = alph / gam;
-
             param.gamma = gam;
             beta1 = param.gamma/sigma1;
 
-            fprintf('Updated gamma: %e \n\n', gam);
+            fprintf('Updated reg: gamma=%e \n\n', gam);
         end
 
         % compute residual image

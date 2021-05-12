@@ -1,5 +1,5 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,SNR,SNR_average] = ...
-    hyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, sigma_noise, varargin)
+    hyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, sigma_noise, flag_cirrus, varargin)
 %HyperSARA
 %
 % ...
@@ -137,6 +137,7 @@ SNR = 0;
 SNR_average = 0;
 norm_epsilon_check = Inf;
 norm_residual_check = 0;
+operator_norm = param.operator_norm;
 
 % size of the oversampled Fourier space (vectorized)
 No = size(W{1}{1}{1}, 1);
@@ -154,7 +155,9 @@ if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
     exit(1);
 end
 % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+if flag_cirrus
+    cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+end
 parpool(cirrus_cluster, numworkers);
 
 % instantiate Psi, Psit
@@ -628,7 +631,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             % update sig_bar
             spmd
                 if labindex > 2
-                    bi = create_data_noise(yp, Atp, Gp, Wp, M, N, No, sigma_noise_, labindex);
+                    bi = create_data_noise(yp, Atp, Gp, Wp, M, N, No, sigma_noise_, labindex, operator_norm);
                 end
             end
             B = zeros(size(xsol));
@@ -658,7 +661,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
             beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
-            fprintf('Updated regularization parameters: gamma0 = %e, gamma1 = %e \n\n', param.gamma0, param.gamma);
+            fprintf('Updated reg: gamma0 = %e, gamma1 = %e \n\n', param.gamma0, param.gamma);
         end
 
         spmd
@@ -688,7 +691,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         % obj = (param.gamma*l21 + param.gamma0*nuclear);
         % rel_obj = abs(previous_obj - obj)/previous_obj;
         
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,2))
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
 
             % compute SNR
             sol = reshape(xsol(:),numel(xsol(:))/c,c);

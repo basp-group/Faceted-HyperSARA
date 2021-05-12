@@ -1,7 +1,7 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA_cw2(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, sigma_noise, varargin)
+    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, sigma_noise, flag_cirrus, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -158,6 +158,8 @@ for qx = 1:Qx
 end
 clear rg_y rg_x;
 
+operator_norm = param.operator_norm;
+
 rg_yo = split_range(Qy, M, d(1));
 rg_xo = split_range(Qx, N, d(2));
 Io = zeros(Q, 2);
@@ -186,7 +188,9 @@ if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
     exit(1);
 end
 % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+if flag_cirrus
+    cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+end
 % maxNumCompThreads(param.num_workers);
 parpool(cirrus_cluster, numworkers);
 % % start the matlabpool with maximum available workers
@@ -788,7 +792,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
                     bq = comm2d_update_borders(bq, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
-                    sig_bar_ = update_sig_bar(x_overlap, w, bq);
+                    sig_bar_ = update_sig_bar_q(x_overlap, w, bq);
 
                     %! need to update beta0 and beta1
                     [gamma1_q, gamma0_q] = compute_facet_log_prior_regularizer(x_overlap, Iq, ...
@@ -796,7 +800,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                     offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_);
                 else
                     % generate noise matrix to update sig_bar
-                    bi = create_data_noise(yp, Atp, Gp, Wp, M, N, No, sigma_noise_, labindex);
+                    bi = create_data_noise(yp, Atp, Gp, Wp, N, M, No, sigma_noise_, labindex, operator_norm);
 
                     for q = 1:Qp.Value
                         labSend(bi(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
@@ -815,7 +819,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             for q = 1:Q
                 gamma0 = gamma0 + gamma0_q{q};
                 gamma1 = gamma1 + gamma1_q{q};
-                sig_bar(q) = sig_bar{q};
+                sig_bar(q) = sig_bar_{q};
             end
             gamma0 = alph_bar/gamma0;
             gamma1 = alph/gamma1;
@@ -826,7 +830,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
             beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
-            fprintf('Updated regularization parameters: gamma0 = %e, gamma1 = %e \n\n', param.gamma0, param.gamma);
+            fprintf('Updated reg: gamma0 = %e, gamma1 = %e \n\n', param.gamma0, param.gamma);
         end
         
         spmd
@@ -886,7 +890,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         end
         % obj = param.gamma0*nuclear + param.gamma*l21;
         
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,2))
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % compute SNR
             % get xsol back from the workers
             for q = 1:Q

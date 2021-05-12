@@ -3,7 +3,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
     flag_generateCube, flag_generateVisibilities, ...
     flag_computeOperatorNorm, flag_solveMinimization, ...
     cube_path, coverage_path, gam, rw, flag_homotopy, ... 
-    flag_computeLowerBounds, rwtype, gam_bar, exp_type, superresolution_factor, isnr, update_regularization)
+    flag_computeLowerBounds, rwtype, gam_bar, exp_type, superresolution_factor, isnr, update_regularization, flag_cirrus)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -62,16 +62,16 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
 % exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-
+% 
 % Qx = 2; % 4
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
-% flag_generateVisibilities = 0;
-% flag_computeOperatorNorm = 0;
-% flag_computeLowerBounds = 0;
+% flag_generateVisibilities = 1;
+% flag_computeOperatorNorm = 1;
+% flag_computeLowerBounds = 1;
 % flag_solveMinimization = true;
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1; % index of the spectral facet to be reconstructed
@@ -79,13 +79,13 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % gam_bar = 1;
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % update_regularization = 1;
-
-% rw = 1;
+% 
+% rw = -1;
 % rwtype = 'dirty'; % ground_truth, heuristic
 % flag_homotopy = 1;
 % overlap_fraction = 0.5;
 % isnr = 50;
-
+% 
 % nChannels = 5;
 % flag_generateCube = 1;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
@@ -93,6 +93,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateCoverage = 0;
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
+% flag_cirrus = false;
 %%
 
 % fixed parameters (in the mnras experiments)
@@ -452,11 +453,16 @@ if strcmp(algo_version, 'sara')
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
         Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+        
+        F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
+        Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
+        operator_norm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+        
         save(fullfile(results_path, ...
             strcat('Anorm_', ...
             algo_version, ...
             '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm');
+            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm', 'operator_norm');
     else
         load(fullfile(results_path, ...
             strcat('Anorm_', ...
@@ -470,10 +476,15 @@ else
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
         Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+        
+        F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
+        Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
+        operator_norm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+
         save(fullfile(results_path, ...
             strcat('Anorm_hs', ...
             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm');
+            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm', 'operator_norm');
        
         % % operator norm per channel "l"
         % Anorm_channel = zeros(nchans, 1);
@@ -541,7 +552,7 @@ if flag_solveMinimization
             %! to be updated (with the different options)
             [sig, max_psf, mu, l21_norm, l21_norm_x0, dirty_image] = ...
                 compute_reweighting_lower_bound_sara(y, W, G, A, At, Ny, Nx, ...
-                oy, ox, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, x0, Anorm);
+                oy, ox, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, x0, operator_norm);
             save(fullfile(auxiliary_path, ...
                 strcat('lower_bounds_', ...
                 algo_version, '_srf=', num2str(superresolution_factor), ...
@@ -568,7 +579,7 @@ if flag_solveMinimization
         if flag_computeLowerBounds
             %! use normalization by operator norm
             [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
-                nchans, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm);
+                nchans, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, algo_version, Qx, Qy, overlap_size, window_type, x0, operator_norm);
 
             %! recompute the value for gam (ratio between l21 and nuclear norm)
             % gam = gam*nuclear_norm/l21_norm;
@@ -606,6 +617,7 @@ if flag_solveMinimization
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
     param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator
+    param_HSI.operator_norm = operator_norm;
     param_HSI.gamma0 = mu_bar;  % regularization parameter nuclear norm
     param_HSI.gamma = mu; % regularization parameter l21-norm (soft th parameter) %! for SARA, take the value given as an input to the solver
     param_HSI.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
@@ -662,7 +674,7 @@ if flag_solveMinimization
 
         [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
             sara2(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI, fullfile(auxiliary_path,warm_start(nChannels)), ...
-            fullfile(auxiliary_path,temp_results_name(nChannels)), x0, flag_homotopy, ncores_data, gam, update_regularization, sigma_noise); %! in this case, ncores_data corresponds to the number of workers for the wavelet transform (9 maximum)
+            fullfile(auxiliary_path,temp_results_name(nChannels)), x0, flag_homotopy, ncores_data, gam, update_regularization, flag_cirrus); %! in this case, ncores_data corresponds to the number of workers for the wavelet transform (9 maximum)
         
         time_iter_average = mean(end_iter);
         disp(['Average time per iteration: ', num2str(time_iter_average)]);
@@ -714,13 +726,13 @@ if flag_solveMinimization
                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
                     hyperSARA2(y_spmd, epsilon_spmd, ...
                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
-                    wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, update_regularization, sigma_noise_spmd);
+                    wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, update_regularization, sigma_noise_spmd, flag_cirrus);
 
             case 'cw'
                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                     facetHyperSARA_cw2(y_spmd, epsilon_spmd, ...
                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
-                    filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, update_regularization, sigma_noise_spmd);
+                    filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, update_regularization, sigma_noise_spmd, flag_cirrus);
             otherwise
                 error('Unknown solver version.')
         end
