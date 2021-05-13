@@ -480,6 +480,7 @@ else
         F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
         Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
         operator_norm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+        operator_norm = sqrt(operator_norm);
 
         save(fullfile(results_path, ...
             strcat('Anorm_hs', ...
