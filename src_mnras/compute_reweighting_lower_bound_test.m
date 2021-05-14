@@ -1,6 +1,6 @@
-function [sig, mu0, mu, mu_bar, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image_precond] = ...
+function [sig, sig_bar, mu0, mu, mu_bar, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image_precond] = ...
     compute_reweighting_lower_bound_test(y, W, G, aW, A, At, Ny, Nx, oy, ox, ...
-    nChannels, wavelet_basis, filters_length, nlevel, sigma_noise, x0, Anorm, squared_operator_norm)
+    nChannels, wavelet_basis, filters_length, nlevel, sigma_noise, rw_type, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm, squared_operator_norm)
 
 %! TO BE DOCUMENTED
 %! make sure the rng always starts from the same value for reproducibility 
@@ -13,7 +13,7 @@ dirty_image_precond = zeros([Ny, Nx, nChannels]);
 for l = 1:nChannels
     temp = zeros(No, 1);
     for b = 1:numel(G{l})
-        temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * (aW{l}{b}.*y{l}{b}); % sqrt(aW{i}{j}) .* sqrt(aW{i}{j}) .* y{l}{b}
+        temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * (aW{l}{b}.*y{l}{b}); % ... sqrt(aW{i}{j}) .* sqrt(aW{i}{j}) .* y{l}{b}
     end
     dirty_image_precond(:,:,l) = At(temp);
 end
@@ -51,5 +51,73 @@ sig = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
 mu0 = 1/l21_norm_x0;
 mu = 1/l21_norm;
 mu_bar = 1/nuclear_norm;
+
+% compute sig_bar
+if strcmp(algo_version, 'hypersara')
+    switch rw_type
+        
+    case "ground_truth"
+        [U0,~,V0] = svd(reshape(x0, [N, nChannels]),'econ');
+        sig_bar = std(abs(diag(U0'*B*V0))); 
+
+    case "dirty"
+        [U0,~,V0] = svd(reshape(dirty_image_precond, [N, nChannels]),'econ');
+        sig_bar = std(abs(diag(U0'*B*V0)));
+
+    end  
+else
+    Q = Qx*Qy;
+    B = reshape(B, [Ny, Nx, nChannels]);
+
+    rg_y = split_range(Qy, Ny);
+    rg_x = split_range(Qx, Nx);
+    I = zeros(Q, 2);
+    dims = zeros(Q, 2);
+    for qx = 1:Qx
+        for qy = 1:Qy
+            q = (qx-1)*Qy+qy;
+            I(q, :) = [rg_y(qy, 1)-1, rg_x(qx, 1)-1];
+            dims(q, :) = [rg_y(qy,2)-rg_y(qy,1)+1, rg_x(qx,2)-rg_x(qx,1)+1];
+        end
+    end
+    clear rg_y rg_x;
+
+    rg_yo = split_range(Qy, Ny, overlap_size(1));
+    rg_xo = split_range(Qx, Nx, overlap_size(2));
+    Io = zeros(Q, 2);
+    dims_o = zeros(Q, 2);
+    for qx = 1:Qx
+        for qy = 1:Qy
+            q = (qx-1)*Qy+qy;
+            Io(q, :) = [rg_yo(qy, 1)-1, rg_xo(qx, 1)-1];
+            dims_o(q, :) = [rg_yo(qy,2)-rg_yo(qy,1)+1, rg_xo(qx,2)-rg_xo(qx,1)+1];
+        end
+    end
+    clear rg_yo rg_xo;
+
+    sig_bar = zeros(Q, 1);
+    for q = 1:Q
+        [qy, qx] = ind2sub([Qy, Qx], q);
+        w = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), overlap_size);
+        
+        Noq = prod(dims_o(q, :));
+        Bq = w.*B(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+        bq = reshape(Bq, [Noq, nChannels]);
+
+        switch rw_type
+            
+        case "ground_truth"
+            % SVD space of X0
+            X0q = w.*x0(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+            [U0,~,V0] = svd(reshape(X0q, [Noq, nChannels]),'econ');
+            sig_bar(q) = std(abs(diag(U0'*bq*V0))); 
+            
+        case "dirty"
+            % SVD space of Xdirty
+            dirty_im_q = w.*dirty_image_precond(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+            [U0,~,V0] = svd(reshape(dirty_im_q, [Noq, nChannels]),'econ');
+            sig_bar(q) = std(abs(diag(U0'*bq*V0)));
+        end   
+    end
 
 end

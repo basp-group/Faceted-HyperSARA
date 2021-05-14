@@ -594,9 +594,9 @@ else
         %         'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'mu', 'l21_norm_x0', 'nuclear_norm_x0', 'mu_bar');
 
         %? initialization proposed in (Abdulaziz 2019) (but using dirty image obtained with preconditioned operator)
-        [sig, mu0, mu, mu_bar, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image_precond] = ...
+        [sig, sig_bar, mu0, mu, mu_bar, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image_precond] = ...
             compute_reweighting_lower_bound_test(y, W, G, aW, A, At, Ny, Nx, oy, ox, ...
-            nchans, wlt_basis, filter_length, nlevel, sigma_noise, x0, Anorm, operator_norm);
+            nchans, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm, operator_norm);
 
         save(fullfile(auxiliary_path, ...
         strcat('lower_bounds_test_', ...
@@ -606,7 +606,7 @@ else
         '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
         '_ind=', num2str(ind), ...
         '_rwtype=', rwtype, '_snr=', num2str(isnr), '.mat')), ...
-            'sig', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image_precond', 'mu', 'l21_norm_x0', 'nuclear_norm_x0', 'mu_bar');            
+            'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image_precond', 'mu', 'l21_norm_x0', 'nuclear_norm_x0', 'mu_bar');            
         %! recompute the value for gam (ratio between l21 and nuclear norm)
         % gam = gam*nuclear_norm/l21_norm;
     else
@@ -630,10 +630,10 @@ else
             '_rwtype=', rwtype, '_snr=', num2str(isnr), '.mat')), ...
             'sig', 'max_psf', 'l21_norm', 'nuclear_norm', 'mu', 'mu_bar');
     end
-    % fprintf('Rwt: %s, algo: %s, alpha = %.4e, alpha_bar = %.4e, mu = %.4e, mu_bar = %.4e, upsilon = %.4e, upsilon_bar = [%.4e, %.4e] \n', rwtype, algo_version, ...
-    %     gam, gam_bar, mu, mu_bar, sig, min(sig_bar), max(sig_bar));
-    fprintf('Rwt: %s, algo: %s, alpha = %.4e, alpha_bar = %.4e, mu = %.4e, mu_bar = %.4e, upsilon = %.4e\n', rwtype, ...
-    algo_version, gam, gam_bar, mu, mu_bar, sig);
+    fprintf('Rwt: %s, algo: %s, alpha = %.4e, alpha_bar = %.4e, mu = %.4e, mu_bar = %.4e, upsilon = %.4e, upsilon_bar = [%.4e, %.4e] \n', rwtype, algo_version, ...
+        gam, gam_bar, mu, mu_bar, sig, min(sig_bar), max(sig_bar));
+    % fprintf('Rwt: %s, algo: %s, alpha = %.4e, alpha_bar = %.4e, mu = %.4e, mu_bar = %.4e, upsilon = %.4e\n', rwtype, ...
+    % algo_version, gam, gam_bar, mu, mu_bar, sig);
     fprintf('Rwt: %s, algo: %s, nuclear norm = %.4e, l21-norm = %.4e \n', rwtype, algo_version, nuclear_norm, l21_norm);
 
     mu = gam*mu;
@@ -689,7 +689,7 @@ if flag_solveMinimization
     param_HSI.reweighting_sig = sig; % estimate of the noise level in SARA space
     if ~strcmp(algo_version, 'sara') %! if HyperSARA or faceted HyperSARA
         % estimate of the noise level in "SVD" spaces
-        param_HSI.reweighting_sig_bar = ones(Qx*Qy, 1); %! sig_bar; 
+        param_HSI.reweighting_sig_bar = sig_bar; 
     end
     param_HSI.max_psf = max_psf;
 
