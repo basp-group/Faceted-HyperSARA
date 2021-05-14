@@ -1,5 +1,5 @@
 function [xsol,param,v1,v2,g,weights1,proj,t_block,reweighting_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, alph, update_regularization, flag_cirrus, varargin)
+    sara2(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, alph, update_regularization, flag_cirrus, regtype, varargin)
 
 % This function solves:
 %
@@ -446,7 +446,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
         if update_regularization && (reweight_step_count == 0)
             for k = 1:P
-                f(k) = parfeval(@update_regularization_l11, 1, Psit{k}, xsol, sig);
+                f(k) = parfeval(@update_regularization_l11, 1, Psit{k}, xsol, sig, regtype);
             end
 
             param.gamma_old = param.gamma;
@@ -628,9 +628,13 @@ r1 = weights1_.*abs(Psit(xhat));
 l11_ = sum(r1(:));
 end
 
-function gam_ = update_regularization_l11(Psit, xhat, sig)
+function gam_ = update_regularization_l11(Psit, xhat, sig, regtype)
 r1 = abs(Psit(xhat));
-gam_ = sig * sum(log(r1(:)/sig + 1));
+if strcmp(regtype, "log")
+    gam_ = sig * sum(log(r1(:)/sig + 1));
+else % "inv"
+    gam_ = sum(r1(:));
+end
 % gam_ = alph / (sig * sum(log(r1(:)/sig + 1)));
 end
 
