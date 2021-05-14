@@ -145,7 +145,7 @@ No = size(W{1}{1}{1}, 1);
 % number of pixels (spatial dimensions)
 [M, N] = size(At(zeros(No, 1)));
 
-% total number of workers (Q: facets workers, K: data workers)
+% total number of workers (2: facets workers, K: data workers)
 numworkers = 2 + K;
 cirrus_cluster = parcluster('local');
 cirrus_cluster.NumWorkers = numworkers;
@@ -159,6 +159,11 @@ if flag_cirrus
     cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
 end
 parpool(cirrus_cluster, numworkers);
+
+dwtmode('zpd')
+spmd
+   dwtmode('zpd') 
+end
 
 % instantiate Psi, Psit
 [Psi, Psit] = op_sp_wlt_basis(wavelet, nlevel, M, N);
@@ -341,7 +346,7 @@ for k = 1:K
     pUp{2+k} = pU{k};
     pU{k} = [];
     epsilonp{2+k} = epsilon{k};
-    sigma_noise_{Q+k} = sigma_noise{k};
+    sigma_noise_{2+k} = sigma_noise{k};
 end
 clear epsilon pU W G y
 
@@ -484,7 +489,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     t_master(t) = toc(tw);
 
     for i = 1:K
-       xi{2+i} = xsol(:, :, c_chunks{i}); 
+       xi{2+i} = xhat(:, :, c_chunks{i}); 
     end
     
     % update dual variables
@@ -631,7 +636,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             % update sig_bar
             spmd
                 if labindex > 2
-                    bi = create_data_noise(yp, Atp, Gp, Wp, M, N, No, sigma_noise_, labindex, operator_norm);
+                    bi = create_data_noise(yp, Atp, Gp, Wp, N, M, No, sigma_noise_, labindex, operator_norm);
                 end
             end
             B = zeros(size(xsol));
@@ -648,9 +653,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
             spmd
                 if labindex == 1
-                    gamma0_ = compute_low_rank_regularizer(xsol, sig_bar_, alph_bar_, regtype);
+                    gamma0_ = compute_low_rank_regularizer(xsol, sig_bar_, alph_bar, regtype);
                 elseif labindex == 2
-                    gamma1_ = compute_sparsity_regularizer(xsol, Psit_, s, sig_, alph_, regtype);
+                    gamma1_ = compute_sparsity_regularizer(xsol, Psit_, s, sig_, alph, regtype);
                 end
             end
 

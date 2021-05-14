@@ -69,10 +69,10 @@ switch regtype
         mu_bar_q = sig_bar_q * sum(log(abs(diag(S0))/sig_bar_q + 1));
         mu_q = sig * sum(log(sqrt(sum(abs(z).^2,2))/sig + 1));
     case "inv"
-        mu_bar_q = sum(abs(S0));
+        mu_bar_q = sum(abs(diag(S0)));
         mu_q = sum(sqrt(sum(abs(z).^2,2)));
     otherwise
-        mu_bar_q = sum(abs(S0));
+        mu_bar_q = sum(abs(diag(S0)));
         mu_q = sum(sqrt(sum(abs(z).^2,2)));
 end
 

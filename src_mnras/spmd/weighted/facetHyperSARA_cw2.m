@@ -197,6 +197,11 @@ parpool(cirrus_cluster, numworkers);
 % % control how many workers by setting ntasks in your sbatch script
 % parpool(cirrus_cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
 
+dwtmode('zpd') 
+spmd
+   dwtmode('zpd') 
+end
+
 % define parallel constants (known by each worker)
 Qyp = parallel.pool.Constant(Qy);
 Qxp = parallel.pool.Constant(Qx);

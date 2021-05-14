@@ -69,8 +69,8 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % nReweights = 1;
 % algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
-% flag_generateVisibilities = 1;
-% flag_computeOperatorNorm = 1;
+% flag_generateVisibilities = 0;
+% flag_computeOperatorNorm = 0;
 % flag_computeLowerBounds = 1;
 % flag_solveMinimization = true;
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
@@ -94,6 +94,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
 % flag_cirrus = false;
+% regtype = 'inv';
 %%
 
 % fixed parameters (in the mnras experiments)

@@ -34,6 +34,7 @@ if flag_cirrus
 end
 % maxNumCompThreads(param.num_workers);
 parpool(cirrus_cluster, numworkers);
+dwtmode('zpd')
 spmd
     dwtmode('zpd')
 end
