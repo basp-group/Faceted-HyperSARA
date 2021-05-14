@@ -1,5 +1,5 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,SNR,SNR_average] = ...
-    hyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, sigma_noise, flag_cirrus, varargin)
+    hyperSARA2(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, sigma_noise, flag_cirrus, regtype, varargin)
 %HyperSARA
 %
 % ...
@@ -648,9 +648,9 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
             spmd
                 if labindex == 1
-                    gamma0_ = compute_low_rank_regularizer(xsol, sig_bar_, alph_bar_);
+                    gamma0_ = compute_low_rank_regularizer(xsol, sig_bar_, alph_bar_, regtype);
                 elseif labindex == 2
-                    gamma1_ = compute_sparsity_regularizer(xsol, Psit_, s, sig_, alph_);
+                    gamma1_ = compute_sparsity_regularizer(xsol, Psit_, s, sig_, alph_, regtype);
                 end
             end
 
@@ -661,7 +661,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
             beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
-            fprintf('Updated reg: gamma0 = %e, gamma1 = %e \n\n', param.gamma0, param.gamma);
+            fprintf('Updated reg (%s): gamma0 = %e, gamma1 = %e \n\n', regtype, param.gamma0, param.gamma);
         end
 
         spmd

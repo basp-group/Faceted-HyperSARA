@@ -1,5 +1,5 @@
-function [sig, sig_bar, mu0, mu, mu_bar, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image_precond] = ...
-    compute_reweighting_lower_bound_test(y, W, G, aW, A, At, Ny, Nx, oy, ox, ...
+function [sig, sig_bar, mu0, mu, mu_bar, mu_bar_full, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image_precond] = ...
+    compute_reweighting_lower_bound_inverse(y, W, G, aW, A, At, Ny, Nx, oy, ox, ...
     nChannels, wavelet_basis, filters_length, nlevel, sigma_noise, rw_type, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm, squared_operator_norm)
 
 %! TO BE DOCUMENTED
@@ -50,7 +50,7 @@ B = B/squared_operator_norm; %! normalize noise by the squared norm of the opera
 sig = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
 mu0 = 1/l21_norm_x0;
 mu = 1/l21_norm;
-mu_bar = 1/nuclear_norm;
+mu_bar_full = 1/nuclear_norm; % using the inverse
 
 % compute sig_bar
 if strcmp(algo_version, 'hypersara')
@@ -64,7 +64,8 @@ if strcmp(algo_version, 'hypersara')
         [U0,~,V0] = svd(reshape(dirty_image_precond, [N, nChannels]),'econ');
         sig_bar = std(abs(diag(U0'*B*V0)));
 
-    end  
+    end
+    mu_bar = mu_bar_full;
 else
     Q = Qx*Qy;
     B = reshape(B, [Ny, Nx, nChannels]);
@@ -96,6 +97,7 @@ else
     clear rg_yo rg_xo;
 
     sig_bar = zeros(Q, 1);
+    mu_bar = 0;
     for q = 1:Q
         [qy, qx] = ind2sub([Qy, Qx], q);
         w = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), overlap_size);
@@ -109,15 +111,16 @@ else
         case "ground_truth"
             % SVD space of X0
             X0q = w.*x0(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
-            [U0,~,V0] = svd(reshape(X0q, [Noq, nChannels]),'econ');
+            [U0,S0,V0] = svd(reshape(X0q, [Noq, nChannels]),'econ');
             sig_bar(q) = std(abs(diag(U0'*bq*V0))); 
             
         case "dirty"
             % SVD space of Xdirty
             dirty_im_q = w.*dirty_image_precond(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
-            [U0,~,V0] = svd(reshape(dirty_im_q, [Noq, nChannels]),'econ');
+            [U0,S0,V0] = svd(reshape(dirty_im_q, [Noq, nChannels]),'econ');
             sig_bar(q) = std(abs(diag(U0'*bq*V0)));
-        end   
+        end
+        mu_bar = mu_bar + sum(abs(diag(S0)));   
     end
-
+    mu_bar = 1/mu_bar;
 end

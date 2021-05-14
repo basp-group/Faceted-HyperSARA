@@ -1,7 +1,7 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA_cw2(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, sigma_noise, flag_cirrus, varargin)
+    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, update_regularization, sigma_noise, flag_cirrus, regtype, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -797,7 +797,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                     %! need to update beta0 and beta1
                     [gamma1_q, gamma0_q] = compute_facet_log_prior_regularizer(x_overlap, Iq, ...
                     offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_);
+                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_, regtype);
                 else
                     % generate noise matrix to update sig_bar
                     bi = create_data_noise(yp, Atp, Gp, Wp, N, M, No, sigma_noise_, labindex, operator_norm);
@@ -830,7 +830,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
             beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
-            fprintf('Updated reg: gamma0 = %e, gamma1 = %e \n\n', param.gamma0, param.gamma);
+            fprintf('Updated reg (%s): gamma0 = %e, gamma1 = %e \n\n', regtype, param.gamma0, param.gamma);
         end
         
         spmd
