@@ -56,8 +56,9 @@ with open(parameter_file_full_path, "r") as csvfile:
         ncores = np.minimum(int(ncdata) + 2, 36) # max number of cpus = 36
         print("Total number of cpus: {0}".format(ncores))
 
-        slurm_log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, job[0], 'slurm_logs') 
-        pathlib.Path(slurm_log_path).mkdir(parents=True, exist_ok=True)
+        slurm_log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, job[0], 'slurm_logs')
+        log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, job[0], 'slurm_logs')
+        pathlib.Path(log_path).mkdir(parents=True, exist_ok=True)
 
         for cubeid in range(1,int(job[1])+1):
 

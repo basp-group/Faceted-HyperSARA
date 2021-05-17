@@ -23,7 +23,7 @@ lowerbounds = 1
 solve = 1
 
 # kept fixed throughout all the simulations from this folder
-imagename = 'cygASband_Cube_512_1024_20' # cygASband_Cube_1024_2048_20
+imagename = 'cygASband_Cube_1024_2048_20' # cygASband_Cube_1024_2048_20
 # algoversion = 'cw'
 nchannels = 20
 ind = 1
@@ -67,7 +67,10 @@ for g in gam:
             
                 slurm_log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, job[0], 'slurm_logs') 
 
+                log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, job[0], 'logs') 
+
                 pathlib.Path(slurm_log_path).mkdir(parents=True, exist_ok=True)
+                pathlib.Path(log_path).mkdir(parents=True, exist_ok=True)
 
                 slurm_command = r"""sbatch --job-name=spa_{16}_h{10}_reg{27}_regtype={29}_xapprox={30}_nt={31}_a{5}_ab{23} --ntasks-per-node={21} \
                 -e {28}/{0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={10}_updatereg={27}_regtype={29}_xapprox={30}_nt={31}.err \

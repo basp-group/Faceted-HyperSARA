@@ -43,6 +43,19 @@ Image size: 512 x 1024 x 20, 2x2 facets for FHS, no homotopy
 
 ### Order of magnitude regularization parameters
 
+| Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$         | $\mu$      | $\bar{\mu}$ | id     |
+| --------- | ------------- | -------------- | ---------- | ------------------------ | ---------- | ----------- | ------ |
+| log       | none          | none           | 2.9079e-07 | [1.4224e-06, 2.0568e-06] | 3.3464e-01 | 9.7886e+02  | 796125 |
+| log       | none          | precond        | 6.5492e-05 | [8.0022e-05, 1.3153e-04] | 5.9271e-03 | 3.0180e+01  | 796126 |
+| log       | precond       | none           | 2.9079e-07 | [5.8051e-07, 1.3771e-06] | 1.3371e-01 | 1.0278e+03  | 796130 |
+| log       | precond       | precond        | 6.5492e-05 | [9.2640e-05, 1.7364e-04] | 2.2478e-03 | 1.2166e+01  | 796129 |
+
+---
+
+## Spatial faceting
+
+Image size: 1024 x 2048 x 20.
+
 | Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | id  |
 | --------- | ------------- | -------------- | ---------- | ---------------- | ----- | ----------- | --- |
 | log       | none          | none           |            |                  |       |             |     |
@@ -52,12 +65,13 @@ Image size: 512 x 1024 x 20, 2x2 facets for FHS, no homotopy
 
 ---
 
-## Spatial faceting
-
-Image size: 1024 x 2048 x 20.
-
----
-
 ## Spectral faceting
 
 Image size: 256 x 512 x 100.
+
+| Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | id  |
+| --------- | ------------- | -------------- | ---------- | ---------------- | ----- | ----------- | --- |
+| log       | none          | none           |            |                  |       |             |     |
+| log       | none          | precond        |            |                  |       |             |     |
+| log       | precond       | none           |            |                  |       |             |     |
+| log       | precond       | precond        |            |                  |       |             |     |

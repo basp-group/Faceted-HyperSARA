@@ -43,8 +43,10 @@ params = [imagename,algoversion,nchannels,Qc,rw,gam,nreweights,wintype,covpath,n
 
 ncores = ncdata + 3
 
-slurm_log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, algoversion, 'slurm_logs') 
+slurm_log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, algoversion, 'slurm_logs')
+log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, algoversion, 'logs') 
 pathlib.Path(slurm_log_path).mkdir(parents=True, exist_ok=True)
+pathlib.Path(log_path).mkdir(parents=True, exist_ok=True)
 
 for cubeid in range(1,nchannels+1):
 
