@@ -63,15 +63,15 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
 % exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-
+% 
 % Qx = 2; % 4
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 0;
-% flag_computeOperatorNorm = 1;
+% flag_computeOperatorNorm = 0;
 % flag_computeLowerBounds = 1;
 % flag_solveMinimization = true;
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
@@ -80,13 +80,13 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % gam_bar = 1;
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % update_regularization = 1;
-
+% 
 % rw = -1;
 % rwtype = 'dirty'; % ground_truth, heuristic
 % flag_homotopy = 0;
 % overlap_fraction = 0.5;
 % isnr = 50;
-
+% 
 % nChannels = 5;
 % flag_generateCube = 1;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
@@ -95,7 +95,9 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
 % flag_cirrus = false;
-% regtype = 'inv';
+% regtype = 'log';
+% xapprox = 'precond';
+% noise_transfer = 'precond';
 %%
 
 % fixed parameters (in the mnras experiments)
@@ -611,7 +613,7 @@ else
                 window_type, x0, Anorm, operator_norm);
             case "log"
                 [sig, sig_bar, mu0, mu, mu_bar, m_bar, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
-                compute_reweighting_lower_bound_log(y, W, G, A, At, Ny, Nx, ...
+                compute_reweighting_lower_bound_log(y, W, G, aW, A, At, Ny, Nx, ...
                 oy, ox, nchans, wlt_basis, filter_length, nlevel, ...
                 sigma_noise, rwtype, algo_version, Qx, Qy, overlap_size, ...
                 window_type, x0, Anorm, operator_norm, xapprox, noise_transfer);
