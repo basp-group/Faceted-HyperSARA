@@ -1,6 +1,6 @@
 function [sig, sig_bar, mu0, mu, mu_bar, m_bar, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
-    compute_reweighting_lower_bound_log(y, W, G, A, At, Ny, Nx, oy, ox, ...
-    nChannels, wavelet_basis, filters_length, nlevel, sigma_noise, rw_type, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm)
+    compute_reweighting_lower_bound_log(y, W, G, aW, A, At, Ny, Nx, oy, ox, ...
+    nChannels, wavelet_basis, filters_length, nlevel, sigma_noise, rw_type, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm, squared_operator_norm, xapprox, noise_transfer)
 
 %! TO BE DOCUMENTED
 %! make sure the rng always starts from the same value for reproducibility 
@@ -8,23 +8,39 @@ function [sig, sig_bar, mu0, mu, mu_bar, m_bar, max_psf, l21_norm, nuclear_norm,
 N = Ny*Nx;    % number of image pixels
 No = N*oy*ox; % size of oversampled Fourier space
 
-% form dirty image (no normalization)
-dirty_image = zeros([Ny, Nx, nChannels]);
-for l = 1:nChannels
-    temp = zeros(No, 1);
-    for b = 1:numel(G{l})
-        temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * y{l}{b};
-    end
-    dirty_image(:,:,l) = At(temp);
-end
-
 % generate noise transferred from data to image domain, compute maximum of 
 % the psf in each channel
-[B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise, 1234);
+if strcmp(noise_transfer, "precond")
+    [B, max_psf] = create_dirty_noise_precond(y, A, At, G, aW, W, Nx, Ny, No, sigma_noise, 1234);
+    B = B/Anorm; %! normalize noise by the squared norm of the operator
+else
+    [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise, 1234);
+    B = B/squared_operator_norm; %! normalize noise by the squared norm of the operator
+end
+
+% form dirty image (no normalization)
+dirty_image = zeros([Ny, Nx, nChannels]);
+if strcmp(xapprox, "precond")
+    for l = 1:nChannels
+        temp = zeros(No, 1);
+        for b = 1:numel(G{l})
+            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * (aW{l}{b}.*y{l}{b});
+        end
+        dirty_image(:,:,l) = At(temp);
+    end
+    dirty_image = dirty_image/Anorm; % Phi applied twice, and square operator norm for the normalisation
+else
+    for l = 1:nChannels
+        temp = zeros(No, 1);
+        for b = 1:numel(G{l})
+            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * y{l}{b};
+        end
+        dirty_image(:,:,l) = At(temp);
+    end
+    dirty_image = dirty_image/squared_operator_norm;
+end
 
 % evaluate nuclear norm of the dirty image -> regularization parameter
-% dirty_image = dirty_image./reshape(max_psf, [1, 1, nChannels]);
-dirty_image = dirty_image/Anorm; % Phi applied twice, and square operator norm for the normalisation
 [~,S0,~] = svd(reshape(dirty_image, [N, nChannels]),'econ');
 nuclear_norm = sum(abs(diag(S0)));
 [~,S0,~] = svd(reshape(x0, [N, nChannels]),'econ');
@@ -45,10 +61,6 @@ l21_norm_x0 = sum(d0);
 
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
 % SARA space) involved in the reweighting scheme
-% B = B./reshape(max_psf, [1, nChannels]); %! normalize noise by the psf
-B = B/Anorm; %! normalize noise by the squared norm of the operator
-E = N*sum(var(B,0,1));
-
 %! wavelet prior
 sig = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
 mu0 = 1/sum(sig*log(d0/sig + 1));

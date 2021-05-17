@@ -38,6 +38,8 @@ superresolution_factor = 2
 isnr = 40
 updatereg = 0
 regtype = 'log'
+xapprox = 'precond'
+noise_transfer = 'precond'
 
 ncores = ncdata + 3
 
@@ -52,11 +54,11 @@ for g in gam:
 
         print("Total number of cpus: {0}".format(ncores))
 
-        slurm_command = r"""sbatch --job-name=spa_{1}_h{10}_reg{26}_regtype={28}_a{5} --ntasks-per-node={21} \
-        -e {27}/{0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}_snr={25}_homotopy={10}_updatereg={26}_regtype={28}.err \
-        -o {27}/{0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}_snr={25}_homotopy={10}_updatereg={26}_regtype={28}.out \
-        -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={20},Qx={16},Qy={17},Qc={3},wintype={7},overlapx={18},overlapy={19},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},gambar=1,exptype={22},rwtype={23},superresolution={24},isnr={25},updatereg={26},regtype={28} \
-        run_fhs_mnras.slurm""".format(*params,cubeid,ncores,exp_type,rw_type, superresolution_factor,isnr,updatereg,slurm_log_path,regtype)
+        slurm_command = r"""sbatch --job-name=spa_{1}_h{10}_reg{26}_regtype={28}_xapprox={29}_nt={30}_a{5} --ntasks-per-node={21} \
+        -e {27}/{0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}_snr={25}_homotopy={10}_updatereg={26}_regtype={28}_xapprox={29}_nt={30}.err \
+        -o {27}/{0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}_snr={25}_homotopy={10}_updatereg={26}_regtype={28}_xapprox={29}_nt={30}.out \
+        -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={20},Qx={16},Qy={17},Qc={3},wintype={7},overlapx={18},overlapy={19},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},gambar=1,exptype={22},rwtype={23},superresolution={24},isnr={25},updatereg={26},regtype={28},xapprox={29},noisetransfer={30} \
+        run_fhs_mnras.slurm""".format(*params,cubeid,ncores,exp_type,rw_type, superresolution_factor,isnr,updatereg,slurm_log_path,regtype,xapprox,noise_transfer)
 
         print(slurm_command) # Uncomment this line when testing to view the sbatch command
 

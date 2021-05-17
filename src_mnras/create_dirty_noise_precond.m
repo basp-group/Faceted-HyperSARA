@@ -1,4 +1,4 @@
-function [B, max_psf] = create_dirty_noise_test(y, A, At, G, aW, W, Nx, Ny, No, sigma_noise, seed)
+function [B, max_psf] = create_dirty_noise_precond(y, A, At, G, aW, W, Nx, Ny, No, sigma_noise, seed)
 
     %! to be documented
     %! create "dirty" noise matrix
