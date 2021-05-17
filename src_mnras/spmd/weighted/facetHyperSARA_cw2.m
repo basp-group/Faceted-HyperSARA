@@ -836,6 +836,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
             fprintf('Updated reg (%s): gamma0 = %e, gamma1 = %e \n\n', regtype, param.gamma0, param.gamma);
+            fprintf('Updated floor lvl (%s): sig_bar = [%e,%e] \n\n', regtype, min(param.reweighting_sig_bar), max(param.reweighting_sig_bar));
         end
         
         spmd
