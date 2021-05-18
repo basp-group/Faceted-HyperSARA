@@ -56,6 +56,7 @@ with open(parameter_file_full_path, "r") as csvfile:
         print("Total number of cpus: {0}".format(ncores))
 
         slurm_log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, job[0], 'slurm_logs')
+        pathlib.Path(slurm_log_path).mkdir(parents=True, exist_ok=True)
         log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, job[0], 'logs')
         pathlib.Path(log_path).mkdir(parents=True, exist_ok=True)
 
