@@ -621,14 +621,14 @@ else
                 [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
                 compute_reweighting_lower_bound_inverse(y, W, G, aW, A, At, ...
                 Ny, Nx, oy, ox, nchans, wlt_basis, filter_length, nlevel, ...
-                sigma_noise, rwtype, algo_version, Qx, Qy, overlap_size, ...
-                window_type, x0, Anorm, operator_norm);
+                sigma_noise, rwtype, "hypersara", Qx, Qy, overlap_size, ...
+                window_type, x0, Anorm, operator_norm); % algo_version
             case "log"
                 [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
                 compute_reweighting_lower_bound_log(y, W, G, aW, A, At, Ny, Nx, ...
                 oy, ox, nchans, wlt_basis, filter_length, nlevel, ...
-                sigma_noise, rwtype, algo_version, Qx, Qy, overlap_size, ...
-                window_type, x0, Anorm, operator_norm, xapprox, noise_transfer);
+                sigma_noise, rwtype, "hypersara", Qx, Qy, overlap_size, ...
+                window_type, x0, Anorm, operator_norm, xapprox, noise_transfer); % algo_version
             otherwise
                 error("Unknown regularization type.")
         end
@@ -688,13 +688,13 @@ if flag_solveMinimization
 
     % pdfb
     param_HSI.pdfb_min_iter = 10; % minimum number of iterations
-    param_HSI.pdfb_max_iter = 5000; % maximum number of iterations
-    param_HSI.pdfb_rel_var = 1e-5; % relative variation tolerance
+    param_HSI.pdfb_max_iter = 2000; % maximum number of iterations
+    param_HSI.pdfb_rel_var = 5e-5; % relative variation tolerance
     param_HSI.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied
     param_HSI.update_regularization = update_regularization;
     param_HSI.alph = gam;
     param_HSI.alph_bar = gam_bar;
-    param_HSI.pdfb_rel_var_low = 1e-6; % minimum relative variation tolerance (allows stopping earlier if data fidelity constraint not about to be satisfied)
+    param_HSI.pdfb_rel_var_low = 5e-6; % minimum relative variation tolerance (allows stopping earlier if data fidelity constraint not about to be satisfied)
     
     % epsilon update scheme
     param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
