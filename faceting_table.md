@@ -50,16 +50,16 @@ Image size: 512 x 1024 x 20, 2x2 facets for FHS, no homotopy, 5k max. pdfb itera
 | log       | precond       | precond        | 6.5492e-05 | [9.2640e-05, 1.7364e-04] | 2.2478e-03 | 1.2166e+01  | 796129 |
 
 Single facet
-| Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | id     |
-| --------- | ------------- | -------------- | ---------- | ---------------- | ----- | ----------- | ------ |
-| log       | none          | none           |            |                  |       |             | 798315 |
-| log       | none          | precond        |            |                  |       |             | 798317 |
-| log       | precond       | none           |            |                  |       |             | 798320 |
-| log       | precond       | precond        |            |                  |       |             | 798319 |
-| inv       | none          | none           |            |                  |       |             | 798393 |
-| inv       | none          | precond        |            |                  |       |             | 798396 |
-| inv       | precond       | none           |            |                  |       |             | 798398 |
-| inv       | precond       | precond        |            |                  |       |             | 798397 |
+| Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$       | $\bar{\mu}$ | id     |
+| --------- | ------------- | -------------- | ---------- | ---------------- | ----------- | ----------- | ------ |
+| log       | none          | none           | 1.2574e-03 | 1.3324e-02       | 7.7386e-05  | 4.5494e-01  | 798315 | to be verified...  801710|
+| log       | none          | precond        | 6.5492e-05 | 1.0377e-04       | 5.9271e-G03 | 1.0121e+02  | 798317 |
+| log       | precond       | none           | 2.9079e-07 | 1.4449e-06       | 1.3371e-01  | 2.4871e+03  | 798320 |
+| log       | precond       | precond        | 6.5492e-05 | 1.2300e-04       | 2.2478e-03  | 4.2927e+01  | 798319 |
+| inv       | none          | none           |            |                  |             |             | 798393 |
+| inv       | none          | precond        |            |                  |             |             | 798396 |
+| inv       | precond       | none           |            |                  |             |             | 798398 |
+| inv       | precond       | precond        |            |                  |             |             | 798397 |
 
 ---
 

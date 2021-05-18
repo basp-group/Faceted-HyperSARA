@@ -360,9 +360,7 @@ if flag_generateCoverage
     fitswrite([u, v, ones(numel(u), 1)], coverage_path)
     fitsdisp(coverage_path);
 else
-    coverage_path	
-    load(coverage_path, 'uvw');
-    size(uvw)
+    coverage_path	 
     
     %! Abdullah's version: normalization w.r.t. the minimum frequency
     % u1 = uvw(:, 1);
@@ -373,22 +371,34 @@ else
     % u1 = u1 * pi/(bmax * 1);
     % u = u1/2;
     % v = v1/2;
-    
-    %! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
-    % units of the smallest wavelenght, associated with the highest frequency)
-    u1 = uvw(:, 1)*f(end)/speed_of_light;
-    v1 = uvw(:, 2)*f(end)/speed_of_light;
-    bmax = max(sqrt(u1.^2 + v1.^2));
 
     %! only for spectral faceting experiment...
     if strcmp(exp_type, "spectral")
+        % VLA configuration
+        % A. 762775 -> 3
+        % B. 268448 -> 2
+        % C. 202957 -> 1
+        % D. 47750 -> 0
+        load(coverage_path, 'uvw', 'obsId');
+        size(uvw)
+        u1 = uvw(obsId==1, 1)*f(end)/speed_of_light;
+        v1 = uvw(obsId==1, 2)*f(end)/speed_of_light;  
+        clear obsId
         %! take 2x the cellsize that we had for the spatial fceting experiment,
-        %! which corrseponds to keeping the uv points < 0.5 bmax_spatial
+        %! which corresponds to keeping the uv points < 0.5 bmax_spatial
         %! (each dimension/2 -> 2x larger cellsize)
-        u1 = u1(u1 < 0.5*bmax);
-        v1 = v1(u1 < 0.5*bmax);
-        bmax = max(sqrt(u1.^2 + v1.^2));
+        % u1 = u1(u1 < 0.5*bmax);
+        % v1 = v1(u1 < 0.5*bmax);
+        % bmax = max(sqrt(u1.^2 + v1.^2));
+    else
+        load(coverage_path, 'uvw');
+        size(uvw)
+        %! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
+        % units of the smallest wavelenght, associated with the highest frequency)
+        u1 = uvw(:, 1)*f(end)/speed_of_light;
+        v1 = uvw(:, 2)*f(end)/speed_of_light;  
     end
+    bmax = max(sqrt(u1.^2 + v1.^2));
 
     % cellsize = 3600*180/(superresolution_factor*2*pi*bmax); % in arcsec
     u = u1*pi/(superresolution_factor*bmax);
