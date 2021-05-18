@@ -4,7 +4,8 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
     flag_computeOperatorNorm, flag_solveMinimization, ...
     cube_path, coverage_path, gam, rw, flag_homotopy, ... 
     flag_computeLowerBounds, rwtype, gam_bar, exp_type, ...
-    superresolution_factor, isnr, update_regularization, flag_cirrus, regtype, xapprox, noise_transfer)
+    superresolution_factor, isnr, update_regularization, flag_cirrus, ...
+    regtype, xapprox, noise_transfer)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -378,6 +379,17 @@ else
     u1 = uvw(:, 1)*f(end)/speed_of_light;
     v1 = uvw(:, 2)*f(end)/speed_of_light;
     bmax = max(sqrt(u1.^2 + v1.^2));
+
+    %! only for spectral faceting experiment...
+    if strcmp(exp_type, "spectral")
+        %! take 2x the cellsize that we had for the spatial fceting experiment,
+        %! which corrseponds to keeping the uv points < 0.5 bmax_spatial
+        %! (each dimension/2 -> 2x larger cellsize)
+        u1 = u1(u1 < 0.5*bmax);
+        v1 = v1(u1 < 0.5*bmax);
+        bmax = max(sqrt(u1.^2 + v1.^2));
+    end
+
     % cellsize = 3600*180/(superresolution_factor*2*pi*bmax); % in arcsec
     u = u1*pi/(superresolution_factor*bmax);
     v = v1*pi/(superresolution_factor*bmax);
