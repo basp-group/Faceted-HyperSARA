@@ -41,6 +41,7 @@ Image size: 512 x 1024 x 20, 2x2 facets for FHS, no homotopy, 5k max. pdfb itera
 
 ### Order of magnitude regularization parameters
 
+"Per facet" computation for the low-rank term
 | Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$         | $\mu$      | $\bar{\mu}$ | id     |
 | --------- | ------------- | -------------- | ---------- | ------------------------ | ---------- | ----------- | ------ |
 | log       | none          | none           | 2.9079e-07 | [1.4224e-06, 2.0568e-06] | 3.3464e-01 | 9.7886e+02  | 796125 |
@@ -48,9 +49,17 @@ Image size: 512 x 1024 x 20, 2x2 facets for FHS, no homotopy, 5k max. pdfb itera
 | log       | precond       | none           | 2.9079e-07 | [5.8051e-07, 1.3771e-06] | 1.3371e-01 | 1.0278e+03  | 796130 |
 | log       | precond       | precond        | 6.5492e-05 | [9.2640e-05, 1.7364e-04] | 2.2478e-03 | 1.2166e+01  | 796129 |
 
-
-inv -> do the same computations
-
+Single facet
+| Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | id     |
+| --------- | ------------- | -------------- | ---------- | ---------------- | ----- | ----------- | ------ |
+| log       | none          | none           |            |                  |       |             | 798315 |
+| log       | none          | precond        |            |                  |       |             | 798317 |
+| log       | precond       | none           |            |                  |       |             | 798320 |
+| log       | precond       | precond        |            |                  |       |             | 798319 |
+| inv       | none          | none           |            |                  |       |             | 798321 |
+| inv       | none          | precond        |            |                  |       |             | 798322 |
+| inv       | precond       | none           |            |                  |       |             | 798324 |
+| inv       | precond       | precond        |            |                  |       |             | 798323 |
 
 ---
 
@@ -58,16 +67,26 @@ inv -> do the same computations
 
 Image size: 1024 x 2048 x 20.
 
-Figures reported for Qx=Qy=2, 50% overlap.
+"Per facet" computation for the low-rank term (Qx=Qy=2, 50% overlap.)
+| Reg. type     | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$         | $\mu$      | $\bar{\mu}$ | id     |
+| ------------- | ------------- | -------------- | ---------- | ------------------------ | ---------- | ----------- | ------ |
+| Per facet log |
+| log           | none          | none           | 6.0010e-07 | [2.0873e-06, 4.5724e-06] | 5.4684e-02 | 4.5052e+02  | 796652 |
+| log           | none          | precond        | 9.6485e-05 | [1.5802e-04, 1.7333e-04] | 1.2692e-03 | 1.5704e+01  | 796653 |
+| log           | precond       | none           | 6.0010e-07 | [2.1773e-06, 3.9061e-06] | 2.2885e-02 | 3.3885e+02  | 796651 |
+| log           | precond       | precond        | 9.6485e-05 | [1.0510e-04, 1.8453e-04] | 5.8640e-04 | 9.9955e+00  | 796639 |
 
-| Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$         | $\mu$      | $\bar{\mu}$ | id     |
-| --------- | ------------- | -------------- | ---------- | ------------------------ | ---------- | ----------- | ------ |
-
-
-| log       | none          | none           | 6.0010e-07 | [2.0873e-06, 4.5724e-06] | 5.4684e-02 | 4.5052e+02  | 796652 |
-| log       | none          | precond        | 9.6485e-05 | [1.5802e-04, 1.7333e-04] | 1.2692e-03 | 1.5704e+01  | 796653 |
-| log       | precond       | none           | 6.0010e-07 | [2.1773e-06, 3.9061e-06] | 2.2885e-02 | 3.3885e+02  | 796651 |
-| log       | precond       | precond        | 9.6485e-05 | [1.0510e-04, 1.8453e-04] | 5.8640e-04 | 9.9955e+00  | 796639 |
+Single facet
+| Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | id     |
+| --------- | ------------- | -------------- | ---------- | ---------------- | ----- | ----------- | ------ |
+| log       | none          | none           |            |                  |       |             | 798285 |
+| log       | none          | precond        |            |                  |       |             | 798286 |
+| log       | precond       | none           |            |                  |       |             | 798284 |
+| log       | precond       | precond        |            |                  |       |             | 798282 |
+| inv       | none          | none           |            |                  |       |             | 798288 |
+| inv       | none          | precond        |            |                  |       |             | 798289 |
+| inv       | precond       | none           |            |                  |       |             | 798291 |
+| inv       | precond       | precond        |            |                  |       |             | 798290 |
 
 ---
 
