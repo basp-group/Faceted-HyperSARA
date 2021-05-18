@@ -64,7 +64,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
 % exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-% 
+
 % Qx = 2; % 4
 % Qy = 1; % 4
 % Qc = 1;
@@ -81,13 +81,13 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % gam_bar = 1;
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % update_regularization = 1;
-% 
+
 % rw = -1;
 % rwtype = 'dirty'; % ground_truth, heuristic
 % flag_homotopy = 0;
 % overlap_fraction = 0.5;
 % isnr = 50;
-% 
+
 % nChannels = 5;
 % flag_generateCube = 1;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
@@ -96,7 +96,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
 % flag_cirrus = false;
-% regtype = 'log';
+% regtype = 'inv';
 % xapprox = 'precond';
 % noise_transfer = 'precond';
 %%
@@ -623,7 +623,7 @@ else
                 compute_reweighting_lower_bound_inverse(y, W, G, aW, A, At, ...
                 Ny, Nx, oy, ox, nchans, wlt_basis, filter_length, nlevel, ...
                 sigma_noise, rwtype, "hypersara", Qx, Qy, overlap_size, ...
-                window_type, x0, Anorm, operator_norm); % algo_version
+                window_type, x0, Anorm, operator_norm, xapprox, noise_transfer); % algo_version
             case "log"
                 [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
                 compute_reweighting_lower_bound_log(y, W, G, aW, A, At, Ny, Nx, ...
