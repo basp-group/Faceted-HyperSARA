@@ -666,7 +666,7 @@ else
     end
     fprintf('Rwt: %s, algo: %s, alpha = %.4e, alpha_bar = %.4e, mu = %.4e, mu_bar = %.4e, upsilon = %.4e, upsilon_bar = [%.4e, %.4e] \n', rwtype, algo_version, ...
         gam, gam_bar, mu, mu_bar, sig, min(sig_bar), max(sig_bar));
-    fprintf('Rwt: %s, algo: %s, mu_bar (full SVD) = %.4e, nuclear norm = %.4e, l21-norm = %.4e \n', rwtype, algo_version, nuclear_norm, l21_norm);
+    fprintf('Rwt: %s, algo: %s, nuclear norm = %.4e, l21-norm = %.4e \n', rwtype, algo_version, nuclear_norm, l21_norm);
 
     mu = gam*mu;
     mu_bar = gam_bar*mu_bar;

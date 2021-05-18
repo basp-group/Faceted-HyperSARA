@@ -56,10 +56,10 @@ Single facet
 | log       | none          | precond        |            |                  |       |             | 798317 |
 | log       | precond       | none           |            |                  |       |             | 798320 |
 | log       | precond       | precond        |            |                  |       |             | 798319 |
-| inv       | none          | none           |            |                  |       |             | 798321 |
-| inv       | none          | precond        |            |                  |       |             | 798322 |
-| inv       | precond       | none           |            |                  |       |             | 798324 |
-| inv       | precond       | precond        |            |                  |       |             | 798323 |
+| inv       | none          | none           |            |                  |       |             | 798393 |
+| inv       | none          | precond        |            |                  |       |             | 798396 |
+| inv       | precond       | none           |            |                  |       |             | 798398 |
+| inv       | precond       | precond        |            |                  |       |             | 798397 |
 
 ---
 
@@ -77,16 +77,16 @@ Image size: 1024 x 2048 x 20.
 | log           | precond       | precond        | 9.6485e-05 | [1.0510e-04, 1.8453e-04] | 5.8640e-04 | 9.9955e+00  | 796639 |
 
 Single facet
-| Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | id     |
-| --------- | ------------- | -------------- | ---------- | ---------------- | ----- | ----------- | ------ |
-| log       | none          | none           |            |                  |       |             | 798285 |
-| log       | none          | precond        |            |                  |       |             | 798286 |
-| log       | precond       | none           |            |                  |       |             | 798284 |
-| log       | precond       | precond        |            |                  |       |             | 798282 |
-| inv       | none          | none           |            |                  |       |             | 798288 |
-| inv       | none          | precond        |            |                  |       |             | 798289 |
-| inv       | precond       | none           |            |                  |       |             | 798291 |
-| inv       | precond       | precond        |            |                  |       |             | 798290 |
+| Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$      | $\bar{\mu}$ | id     |
+| --------- | ------------- | -------------- | ---------- | ---------------- | ---------- | ----------- | ------ |
+| log       | none          | none           | 6.0010e-07 | 5.3544e-06       | 5.4684e-02 | 1.0058e+03  | 798285 |
+| log       | none          | precond        | 9.6485e-05 | 2.0485e-04       | 1.2692e-03 | 4.3194e+01  | 798286 |
+| log       | precond       | none           | 6.0010e-07 | 3.9700e-06       | 2.2885e-02 | 9.2375e+02  | 798284 |
+| log       | precond       | precond        | 9.6485e-05 | 1.2259e-04       | 5.8640e-04 | 3.9970e+01  | 798282 |
+| inv       | none          | none           |            |                  |            | running     |        |
+| inv       | none          | precond        |            |                  |            |             |        |
+| inv       | precond       | none           |            |                  |            |             |        |
+| inv       | precond       | precond        |            |                  |            |             |        |
 
 ---
 
