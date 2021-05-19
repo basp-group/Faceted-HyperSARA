@@ -64,8 +64,6 @@ l21_norm_x0 = sum(d0);
 
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
 % SARA space) involved in the reweighting scheme
-B = B/squared_operator_norm; %! normalize noise by the squared norm of the operator
-
 sig = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
 mu0 = 1/l21_norm_x0;
 mu = 1/l21_norm;
