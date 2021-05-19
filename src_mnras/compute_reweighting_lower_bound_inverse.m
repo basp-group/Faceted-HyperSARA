@@ -2,7 +2,7 @@ function [sig, sig_bar, mu0, mu, mu_bar, mu_bar_full, max_psf, l21_norm, nuclear
     compute_reweighting_lower_bound_inverse(y, W, G, aW, A, At, Ny, Nx, ...
     oy, ox, nChannels, wavelet_basis, filters_length, nlevel, sigma_noise, ...
     rw_type, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm, ...
-    squared_operator_norm, xapprox, noise_transfer)
+    squared_operator_norm, xapprox, noise_transfer, reg_option)
 
 %! TO BE DOCUMENTED
 %! make sure the rng always starts from the same value for reproducibility 
@@ -78,9 +78,13 @@ if strcmp(algo_version, 'hypersara')
         sig_bar = std(abs(diag(U0'*B*V0))); 
 
     case "dirty"
-        [U0,~,V0] = svd(reshape(dirty_image, [N, nChannels]),'econ');
-        sig_bar = std(abs(diag(U0'*B*V0)));
-
+        if strcmp(reg_option, "dirty") 
+            [U0,S0,V0] = svd(reshape(dirty_image, [N, nChannels]),'econ');
+            sig_bar = std(abs(diag(U0'*B*V0)));
+        else
+            [~,S0,~] = svd(reshape(B, [N, nChannels]),'econ');
+            sig_bar = std(abs(diag(S0)));
+        end
     end
     mu_bar = mu_bar_full;
 else

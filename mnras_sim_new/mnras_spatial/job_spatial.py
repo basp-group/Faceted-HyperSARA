@@ -44,6 +44,7 @@ updatereg = 0
 regtype = 'log'
 xapprox = 'precond'
 noise_transfer = 'precond'
+reg_option = 'dirty'
 
 # os.path.join(dir_name, base_filename + suffix)
 
@@ -72,11 +73,11 @@ for g in gam:
                 pathlib.Path(slurm_log_path).mkdir(parents=True, exist_ok=True)
                 pathlib.Path(log_path).mkdir(parents=True, exist_ok=True)
 
-                slurm_command = r"""sbatch --job-name=spa_{16}_h{10}_reg{27}_regtype={29}_xapprox={30}_nt={31}_a{5}_ab{23} --ntasks-per-node={21} \
-                -e {28}/{0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={10}_updatereg={27}_regtype={29}_xapprox={30}_nt={31}.err \
-                -o {28}/{0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={10}_updatereg={27}_regtype={29}_xapprox={30}_nt={31}.out \
-                -v --export=ALL,imagename={0},algoversion={16},nchannels={1},ind={2},Qx={17},Qy={18},Qc={3},wintype={7},overlapx={19},overlapy={20},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},rwtype={22},gambar={23},exptype={24},superresolution={25},isnr={26},updatereg={27},regtype={29},xapprox={30},noisetransfer={31},logpath={32} \
-                run_fhs_mnras.slurm""".format(*params,*job,ncores,rw_type,g_bar,exp_type,superresolution_factor,isnr,updatereg,slurm_log_path,regtype,xapprox,noise_transfer,log_path)
+                slurm_command = r"""sbatch --job-name=spa_{16}_h{10}_reg{27}_rt={29}_xa={30}_nt={31}_a{5}_ab{23}_ropt{33} --ntasks-per-node={21} \
+                -e {28}/{0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={10}_updatereg={27}_regtype={29}_xapprox={30}_nt={31}_ropt={33}.err \
+                -o {28}/{0}_{16}_L={1}_Qx={17}_Qy={18}_Qc={3}_id={2}_overlapx={19}_overlapy={20}_gamma={5}_gammabar={23}_rw={4}_rwt={22}_exptype={24}_srf={25}_snr={26}_homotopy={10}_updatereg={27}_regtype={29}_xapprox={30}_nt={31}_ropt={33}.out \
+                -v --export=ALL,imagename={0},algoversion={16},nchannels={1},ind={2},Qx={17},Qy={18},Qc={3},wintype={7},overlapx={19},overlapy={20},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},rwtype={22},gambar={23},exptype={24},superresolution={25},isnr={26},updatereg={27},regtype={29},xapprox={30},noisetransfer={31},logpath={32},regoption={33} \
+                run_fhs_mnras.slurm""".format(*params,*job,ncores,rw_type,g_bar,exp_type,superresolution_factor,isnr,updatereg,slurm_log_path,regtype,xapprox,noise_transfer,log_path,reg_option)
 
                 # print(slurm_command) # Uncomment this line when testing to view the sbatch command
 
