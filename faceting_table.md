@@ -40,7 +40,7 @@ Image size: 512 x 1024 x 20, 2x2 facets for FHS, no homotopy, 5k max. pdfb itera
 -> SNR slightly better after update
 -> rel. variation starts to oscillate for (10, 10)
 
-Test again with old values: 806976 (!! BEWARE: need to modify script before launching anything new !!)
+Test again with old values: 806976, running in ~/Faceted... (!! BEWARE: need to modify script before launching anything new !!)
 
 ---
 
@@ -64,7 +64,7 @@ Single facet
 | inv       | none          | none           | 2.9079e-07 | 1.4449e-06       | 3.3377e-04 | 9.3655e-02  | 806948 |
 | inv       | none          | precond        | 6.5492e-05 | 1.2300e-04       | 3.3377e-04 | 9.3655e-02  | 806949 |
 | inv       | precond       | none           | 2.9079e-07 | 1.4449e-06       | 1.2522e-04 | 1.4981e-02  | 806952 |
-| inv       | precond       | precond        | 6.5492e-05 | 1.2300e-04        | 1.2522e-04 | 1.4981e-02  | 806950 |
+| inv       | precond       | precond        | 6.5492e-05 | 1.2300e-04       | 1.2522e-04 | 1.4981e-02  | 806950 |
 
 ---
 
@@ -75,7 +75,6 @@ Image size: 1024 x 2048 x 20.
 "Per facet" computation for the low-rank term (Qx=Qy=2, 50% overlap.)
 | Reg. type     | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$         | $\mu$      | $\bar{\mu}$ | id     |
 | ------------- | ------------- | -------------- | ---------- | ------------------------ | ---------- | ----------- | ------ |
-| Per facet log |
 | log           | none          | none           | 6.0010e-07 | [2.0873e-06, 4.5724e-06] | 5.4684e-02 | 4.5052e+02  | 796652 |
 | log           | none          | precond        | 9.6485e-05 | [1.5802e-04, 1.7333e-04] | 1.2692e-03 | 1.5704e+01  | 796653 |
 | log           | precond       | none           | 6.0010e-07 | [2.1773e-06, 3.9061e-06] | 2.2885e-02 | 3.3885e+02  | 796651 |
@@ -92,6 +91,17 @@ Single facet
 | inv       | none          | precond        | 9.6485e-05 | 2.0485e-04       |            |             | 806955 |
 | inv       | precond       | none           | 6.0010e-07 | 3.9700e-06       |            |             | 806956 |
 | inv       | precond       | precond        | 9.6485e-05 | 1.2259e-04       |            |             | 806958 |
+
+Test with svd of the noise (ot of the dirty image) to compute upsilon_bar (log option) -> 807235 (ongoing, test/...)
+
+Test (image, noise_transfer) = (precond, precond), reg. parameters computed from a single facet (ongoing, test/...)
+
+| Run | Algo      | Reg. type | Reg. update | $\alpha$ | $\bar{\alpha}$ | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | aSNR | id     |
+| --- | --------- | --------- | ----------- | -------- | -------------- | ---------- | ---------------- | ----- | ----------- | ---- | ------ |
+| [ ] | FHS (2x2) | log       | 0           | 1e-1     | 1e-1           |            |                  |       |             |      | 807239 |
+| [ ] | FHS (2x2) | log       | 0           | 1e-1     | 1              |            |                  |       |             |      | 807240 |
+| [ ] | FHS (2x2) | log       | 0           | 1        | 1e-1           |            |                  |       |             |      | 807241 |
+| [ ] | FHS (2x2) | log       | 0           | 1        | 1              |            |                  |       |             |      | 807242 |
 
 ---
 
