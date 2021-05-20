@@ -37,7 +37,8 @@ Image size: 512 x 1024 x 20, 2x2 facets for FHS, no homotopy, 5k max. pdfb itera
 | [x] | FHS (2x2)   | inv       | 1           | 10       | 1              | "          | " /                            | " / 2.187030e-04          | " / 1.206262e-02          | 31.69 | 795018          |
 | [x] | FHS (2x2)   | inv       | 1           | 10       | 10             | "          | " /                            | " / 2.182731e-04          | " / 1.210817e-02          | 33.07 | 795019          |
 | [x] | FHS (2x2)   | log (old) | 1           | 10       | 10             | 1.2574e-03 | [6.1506e-03, 8.8939e-03]       | 7.7386e-05                | 2.2637e-01                | 31.12 | 806976          |
-old values, with stopping criterion raised to 5e-5, pdfb stops really early! (1500 iterations in total over the 30 reweights, which is a problem)
+
+old values, with stopping criterion raised to 5e-5, pdfb stops really early! (1500 iterations in total over the 30 reweights, which is a problem) -> relaunch with the stopping criterion back to 1e-5? (and w/o min. number of iterations?)
 
 ---
 
@@ -54,7 +55,7 @@ old values, with stopping criterion raised to 5e-5, pdfb stops really early! (15
 Single facet
 | Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$      | $\bar{\mu}$ | id     |
 | --------- | ------------- | -------------- | ---------- | ---------------- | ---------- | ----------- | ------ |
-| log       | none          | none           |            |                  |            |             | 806961 |
+| log       | none          | none           | 2.9079e-07 | 3.0812e-06       | 3.3464e-01 | 1.9673e+03  | 809077 |
 | log       | none          | precond        | 6.5492e-05 | 1.0377e-04       | 5.9271e-03 | 1.0121e+02  | 798317 |
 | log       | precond       | none           | 2.9079e-07 | 1.4449e-06       | 1.3371e-01 | 2.4871e+03  | 798320 |
 | log       | precond       | precond        | 6.5492e-05 | 1.2300e-04       | 2.2478e-03 | 4.2927e+01  | 798319 |
@@ -78,27 +79,29 @@ Image size: 1024 x 2048 x 20.
 | log       | precond       | precond        | 9.6485e-05 | [1.0510e-04, 1.8453e-04] | 5.8640e-04 | 9.9955e+00  | 796639 |
 
 Single facet
-| Reg. type | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$      | $\bar{\mu}$ | id     |
-| --------- | ------------- | -------------- | ---------- | ---------------- | ---------- | ----------- | ------ |
-| log       | none          | none           | 6.0010e-07 | 5.3544e-06       | 5.4684e-02 | 1.0058e+03  | 798285 |
-| log       | none          | precond        | 9.6485e-05 | 2.0485e-04       | 1.2692e-03 | 4.3194e+01  | 798286 |
-| log       | precond       | none           | 6.0010e-07 | 3.9700e-06       | 2.2885e-02 | 9.2375e+02  | 798284 |
-| log       | precond       | precond        | 9.6485e-05 | 1.2259e-04       | 5.8640e-04 | 3.9970e+01  | 798282 |
-| inv       | none          | none           | 6.0010e-07 | 5.3544e-06       |            |             | 806954 | -> all failed, to be rerun (to not git pill before a job has been launched!) |
-| inv       | none          | precond        | 9.6485e-05 | 2.0485e-04       |            |             | 806955 |
-| inv       | precond       | none           | 6.0010e-07 | 3.9700e-06       |            |             | 806956 |
-| inv       | precond       | precond        | 9.6485e-05 | 1.2259e-04       |            |             | 806958 |
+| Reg. type          | Image approx. | Noise transfer | $\upsilon$ | $\bar{\upsilon}$ | $\mu$      | $\bar{\mu}$ | id     |
+| ------------------ | ------------- | -------------- | ---------- | ---------------- | ---------- | ----------- | ------ |
+| log                | none          | none           | 6.0010e-07 | 5.3544e-06       | 5.4684e-02 | 1.0058e+03  | 798285 |
+| log                | none          | precond        | 9.6485e-05 | 2.0485e-04       | 1.2692e-03 | 4.3194e+01  | 798286 |
+| log                | precond       | none           | 6.0010e-07 | 3.9700e-06       | 2.2885e-02 | 9.2375e+02  | 798284 |
+| log                | precond       | precond        | 9.6485e-05 | 1.2259e-04       | 5.8640e-04 | 3.9970e+01  | 798282 |
+| inv                | none          | none           | 6.0010e-07 | 5.3544e-06       | 8.3710e-05 | 3.7578e-02  | 808666 | 4.054766e+01
+| inv                | none          | precond        | 9.6485e-05 | 2.0485e-04       | 8.3710e-05 | 3.7578e-02  | 808667 | nothing here
+| inv                | precond       | none           | 6.0010e-07 | 3.9700e-06       | 3.9072e-05 | 7.4795e-03  | 808669 | 3.615950e+01
+| inv                | precond       | precond        | 9.6485e-05 | 1.2259e-04,      | 3.9072e-05 | 7.4795e-03  | 808668 | 3.615950e+01
+| log (svd of noise) | precond       | precond        | 9.6485e-05 | 2.0693e-02       | 5.8640e-04 | 1.3523e+00  | 807235 |
 
-Test with svd of the noise (ot of the dirty image) to compute upsilon_bar (log option) -> 807235 (ongoing, test/...)
+**Remark**: the last option might be more appropriate in term of values (+ a priori no need to play with $\alpha$, $\bar{\alpha}$)
 
 Test (image, noise_transfer) = (precond, precond), reg. parameters computed from a single facet (ongoing, test/...)
+Results after 700 pdfb iterations (not even 1st reweight yet)
 
-| Run | Algo      | Reg. type | Reg. update | $\alpha$ | $\bar{\alpha}$ | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | aSNR | id     |
-| --- | --------- | --------- | ----------- | -------- | -------------- | ---------- | ---------------- | ----- | ----------- | ---- | ------ |
-| [ ] | FHS (2x2) | log       | 0           | 1e-1     | 1e-1           |            |                  |       |             |      | 807239 | -> to be rerun (sig_bar has now changed size!) |
-| [ ] | FHS (2x2) | log       | 0           | 1e-1     | 1              |            |                  |       |             |      | 807240 |
-| [ ] | FHS (2x2) | log       | 0           | 1        | 1e-1           |            |                  |       |             |      | 807241 |
-| [ ] | FHS (2x2) | log       | 0           | 1        | 1              |            |                  |       |             |      | 807242 |
+| Run | Algo      | Reg. type | Reg. update | $\alpha$ | $\bar{\alpha}$ | $\upsilon$ | $\bar{\upsilon}$ | $\mu$      | $\bar{\mu}$ | aSNR         | id     |
+| --- | --------- | --------- | ----------- | -------- | -------------- | ---------- | ---------------- | ---------- | ----------- | ------------ | ------ |
+| [R] | FHS (2x2) | log       | 0           | 1e-1     | 1e-1           | 9.6485e-05 | 1.2259e-04       | 5.8640e-04 | 3.9970e+01  | 3.524659e+01 | 808670 |
+| [R] | FHS (2x2) | log       | 0           | 1e-1     | 1              | "          | "                | "          | "           | 3.127044e+01 | 808671 |
+| [R] | FHS (2x2) | log       | 0           | 1        | 1e-1           | "          | "                | "          | "           | 3.535832e+01 | 808672 |
+| [R] | FHS (2x2) | log       | 0           | 1        | 1              | 9.6485e-05 | 1.2259e-04       | 5.8640e-04 | 3.9970e+01  | 3.132294e+01 | 808673 |
 
 ---
 

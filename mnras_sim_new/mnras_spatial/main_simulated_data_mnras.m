@@ -722,7 +722,7 @@ if flag_solveMinimization
     param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
     param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
     param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
-    param_HSI.adapt_eps_rel_var = 1e-5; % bound on the relative change of the solution
+    param_HSI.adapt_eps_rel_var = 5e-5; % bound on the relative change of the solution
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
     %! -- TO BE CHECKED
