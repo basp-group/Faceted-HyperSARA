@@ -64,12 +64,12 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
 % exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-
+% 
 % Qx = 2; % 4
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 0;
 % flag_computeOperatorNorm = 0;
@@ -81,13 +81,13 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % gam_bar = 1;
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % update_regularization = 1;
-
+% 
 % rw = -1;
 % rwtype = 'dirty'; % ground_truth, heuristic
 % flag_homotopy = 0;
 % overlap_fraction = 0.5;
 % isnr = 50;
-
+% 
 % nChannels = 5;
 % flag_generateCube = 1;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
@@ -651,6 +651,10 @@ else
                 window_type, x0, Anorm, operator_norm, xapprox, noise_transfer, reg_option); % algo_version
             otherwise
                 error("Unknown regularization type.")
+        end
+
+        if strcmp(algo_version, 'cw')
+            sig_bar = sig_bar*ones(Qx*Qy, 1);
         end
 
         save(fullfile(auxiliary_path, ...
