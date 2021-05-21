@@ -125,6 +125,10 @@ Final runs (spatial faceting, inv, (none, none), SVD of the dirty image to compu
 | --- | --------- | ---------------------------- | ----------- | -------- | -------------- | ---------- | ---------------- | ----- | ----------- | ---- | ------ |
 | [R] | HS        | log (precond, precond, none) | 0           | 1        | 1              |            |                  |       |             |      | 823855 |
 | [R] | FHS (4x4) | log (precond, precond, none) | 0           | 1        | 1              |            |                  |       |             |      | 823856 |
+| [R] | HS        | inv (none, psf, dirty)       | 0           | 1        | 1              |            |                  |       |             |      | 823883 |
+| [R] | FHS (4x4) | inv (none, psf, dirty)       | 0           | 1        | 1              |            |                  |       |             |      | 823884 |
+
+inv (none, none, none) | 823911
 
 ---
 

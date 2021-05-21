@@ -508,9 +508,16 @@ else
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
         Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
         
-        F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
-        Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
-        operator_norm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+        % F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
+        % Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
+        % operator_norm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+
+        operator_norm = zeros(nchans, 1);
+        for l = 1:nchans
+            F = afclean( @(x) HS_forward_operator_G(x, G(l), W(l), A));
+            Ft = afclean( @(y) HS_adjoint_operator_G(y(l), G(l), W(l), At, Ny, Nx));
+            operator_norm(l) = op_norm(F, Ft, [Ny Nx], 1e-8, 200, 2);
+        end
 
         save(fullfile(results_path, ...
             strcat('Anorm_hs', ...

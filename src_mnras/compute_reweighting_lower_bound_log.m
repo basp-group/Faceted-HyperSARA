@@ -15,7 +15,7 @@ if strcmp(noise_transfer, "precond")
     B = B/Anorm; %! normalize noise by the squared norm of the operator
 else
     [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise, 1234);
-    B = B/squared_operator_norm; %! normalize noise by the squared norm of the operator
+    B = B./reshape(squared_operator_norm, [1, nChannels]); %! normalize noise by the squared norm of the operator
 end
 
 % form dirty image (no normalization)
@@ -37,7 +37,7 @@ else
         end
         dirty_image(:,:,l) = At(temp);
     end
-    dirty_image = dirty_image/squared_operator_norm;
+    dirty_image = dirty_image./reshape(squared_operator_norm, [1, 1, nChannels]);
 end
 
 % evaluate nuclear norm of the dirty image -> regularization parameter
