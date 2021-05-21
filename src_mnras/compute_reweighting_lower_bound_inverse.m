@@ -31,6 +31,15 @@ if strcmp(xapprox, "precond")
         dirty_image(:,:,l) = At(temp);
     end
     dirty_image = dirty_image/Anorm; % Phi applied twice, and square operator norm for the normalisation
+elseif strcmp(xapprox, "psf")
+    for l = 1:nChannels
+        temp = zeros(No, 1);
+        for b = 1:numel(G{l})
+            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * y{l}{b};
+        end
+        dirty_image(:,:,l) = At(temp);
+    end
+    dirty_image = dirty_image./reshape(max_psf, [1, 1, nChannels]);
 else
     for l = 1:nChannels
         temp = zeros(No, 1);

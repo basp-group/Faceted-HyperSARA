@@ -64,6 +64,13 @@ Single facet
 | inv       | precond       | none           | 2.9079e-07 | 1.4449e-06       | 1.2522e-04 | 1.4981e-02  | 806952 |
 | inv       | precond       | precond        | 6.5492e-05 | 1.2300e-04       | 1.2522e-04 | 1.4981e-02  | 806950 |
 
+Final runs (spatial faceting, inv, (none, none), SVD of the dirty image to compute $\bar{\upsilon}$)
+| Run | Algo      | Reg. type        | Reg. update | $\alpha$ | $\bar{\alpha}$ | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | aSNR | id  |
+| --- | --------- | ---------------- | ----------- | -------- | -------------- | ---------- | ---------------- | ----- | ----------- | ---- | --- |
+| [R] | SARA      | inv (none, none) | 0           | 1        | -              |            |                  |       |             |      |     |
+| [R] | HS        | inv (none, none) | 0           | 1        | 1              |            |                  |       |             |      |     |
+| [R] | FHS (4x4) | inv (none, none) | 0           | 1        | 1              |            |                  |       |             |      |     |
+
 ---
 
 ## Spatial faceting
@@ -85,10 +92,10 @@ Single facet
 | log                | none          | precond        | 9.6485e-05 | 2.0485e-04       | 1.2692e-03 | 4.3194e+01  | 798286 |
 | log                | precond       | none           | 6.0010e-07 | 3.9700e-06       | 2.2885e-02 | 9.2375e+02  | 798284 |
 | log                | precond       | precond        | 9.6485e-05 | 1.2259e-04       | 5.8640e-04 | 3.9970e+01  | 798282 |
-| inv                | none          | none           | 6.0010e-07 | 5.3544e-06       | 8.3710e-05 | 3.7578e-02  | 808666 | 4.054766e+01
-| inv                | none          | precond        | 9.6485e-05 | 2.0485e-04       | 8.3710e-05 | 3.7578e-02  | 808667 | nothing here
-| inv                | precond       | none           | 6.0010e-07 | 3.9700e-06       | 3.9072e-05 | 7.4795e-03  | 808669 | 3.615950e+01
-| inv                | precond       | precond        | 9.6485e-05 | 1.2259e-04,      | 3.9072e-05 | 7.4795e-03  | 808668 | 3.615950e+01
+| inv                | none          | none           | 6.0010e-07 | 5.3544e-06       | 8.3710e-05 | 3.7578e-02  | 808666 | 4.054766e+01 -> run all solvers in this configuration |
+| inv                | none          | precond        | 9.6485e-05 | 2.0485e-04       | 8.3710e-05 | 3.7578e-02  | 808667 | nothing here                                          |
+| inv                | precond       | none           | 6.0010e-07 | 3.9700e-06       | 3.9072e-05 | 7.4795e-03  | 808669 | 3.615950e+01                                          |
+| inv                | precond       | precond        | 9.6485e-05 | 1.2259e-04,      | 3.9072e-05 | 7.4795e-03  | 808668 | 3.615950e+01                                          |
 | log (svd of noise) | precond       | precond        | 9.6485e-05 | 2.0693e-02       | 5.8640e-04 | 1.3523e+00  | 807235 |
 
 **Remark**: the last option might be more appropriate in term of values (+ a priori no need to play with $\alpha$, $\bar{\alpha}$)
@@ -102,6 +109,22 @@ Results after 700 pdfb iterations (not even 1st reweight yet)
 | [R] | FHS (2x2) | log       | 0           | 1e-1     | 1              | "          | "                | "          | "           | 3.127044e+01 | 808671 |
 | [R] | FHS (2x2) | log       | 0           | 1        | 1e-1           | "          | "                | "          | "           | 3.535832e+01 | 808672 |
 | [R] | FHS (2x2) | log       | 0           | 1        | 1              | 9.6485e-05 | 1.2259e-04       | 5.8640e-04 | 3.9970e+01  | 3.132294e+01 | 808673 |
+
+Final runs (spatial faceting, inv, (none, none), SVD of the dirty image to compute $\bar{\upsilon}$)
+| Run | Algo      | Reg. type        | Reg. update | $\alpha$ | $\bar{\alpha}$ | $\upsilon$ | $\bar{\upsilon}$ | $\mu$      | $\bar{\mu}$ | aSNR  | id              |
+| --- | --------- | ---------------- | ----------- | -------- | -------------- | ---------- | ---------------- | ---------- | ----------- | ----- | --------------- |
+| [x] | SARA      | inv (none, none) | 0           | 1        | -              | ...        | ...              | ...        | ...         | 35.28 | 810790 - 810809 |
+| [x] | HS        | inv (none, none) | 0           | 1        | 1              | 6.0010e-07 | 5.3544e-06       | 8.3710e-05 | 3.7578e-02  | 34.90 | 810313          |
+| [x] | FHS (4x4) | inv (none, none) | 0           | 1        | 1              | 6.0010e-07 | 5.3544e-06       | 8.3710e-05 | 3.7578e-02  | 34.90 | 810314          |
+
+-> reweighting sort of kill the reconstruction quality in this case (40 dB before first reweight, then decreases significantly...)
+-> same behaviour actually observed with SARA
+-> remove $\upsilon$ from the numerator when defining the weights? (this could make sense)
+
+| Run | Algo      | Reg. type                    | Reg. update | $\alpha$ | $\bar{\alpha}$ | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | aSNR | id     |
+| --- | --------- | ---------------------------- | ----------- | -------- | -------------- | ---------- | ---------------- | ----- | ----------- | ---- | ------ |
+| [R] | HS        | log (precond, precond, none) | 0           | 1        | 1              |            |                  |       |             |      | 823855 |
+| [R] | FHS (4x4) | log (precond, precond, none) | 0           | 1        | 1              |            |                  |       |             |      | 823856 |
 
 ---
 
