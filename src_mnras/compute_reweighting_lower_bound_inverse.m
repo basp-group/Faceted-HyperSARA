@@ -15,6 +15,9 @@ No = N*oy*ox; % size of oversampled Fourier space
 if strcmp(noise_transfer, "precond")
     [B, max_psf] = create_dirty_noise_precond(y, A, At, G, aW, W, Nx, Ny, No, sigma_noise, 1234);
     B = B/Anorm; %! normalize noise by the squared norm of the operator
+elseif strcmp(noise_transfer, "psf")
+    [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise, 1234);
+    B = B./reshape(max_psf, [1, nChannels]); 
 else
     [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise, 1234);
     B = B/squared_operator_norm; %! normalize noise by the squared norm of the operator
@@ -31,15 +34,6 @@ if strcmp(xapprox, "precond")
         dirty_image(:,:,l) = At(temp);
     end
     dirty_image = dirty_image/Anorm; % Phi applied twice, and square operator norm for the normalisation
-elseif strcmp(xapprox, "psf")
-    for l = 1:nChannels
-        temp = zeros(No, 1);
-        for b = 1:numel(G{l})
-            temp(W{l}{b}) = temp(W{l}{b}) + G{l}{b}' * y{l}{b};
-        end
-        dirty_image(:,:,l) = At(temp);
-    end
-    dirty_image = dirty_image./reshape(max_psf, [1, 1, nChannels]);
 else
     for l = 1:nChannels
         temp = zeros(No, 1);
