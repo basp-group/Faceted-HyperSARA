@@ -1,5 +1,5 @@
-function [sig, sig_bar, mu0, mu, mu_bar, mu_bar_full, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
-    compute_reweighting_lower_bound_inverse_heuristic(y, W, G, aW, At, Ny, Nx, ...
+function [sig, sig_bar, mu0, mu, mu_bar, m_bar, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
+    compute_reweighting_lower_bound_log_heuristic(y, W, G, aW, At, Ny, Nx, ...
     oy, ox, nChannels, wavelet_basis, filters_length, nlevel, sigma_noise, ...
     algo_version, Qx, Qy, overlap_size, window_type, x0, squared_precond_operator_norm, ...
     squared_operator_norm, xapprox)
@@ -54,13 +54,9 @@ l21_norm_x0 = sum(d0);
 
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
 % SARA space) involved in the reweighting scheme
-mu0 = 1/l21_norm_x0;
-mu = 1/l21_norm;
-mu_bar_full = 1/nuclear_norm; % using the inverse
-mu_bar = mu_bar_full;
-
-% sig = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
 sig = sqrt(sum((sigma_noise.^2)./squared_operator_norm)) / 3;
+mu0 = 1/sum(sig*log(d0/sig + 1));
+mu = 1/sum(sig*log(d1/sig + 1));
 
 % compute sig_bar
 if strcmp(algo_version, 'hypersara')
@@ -94,11 +90,17 @@ else
     clear rg_yo rg_xo;
 
     sig_bar = zeros(Q, 1);
+    m_bar = zeros(Q, 1);
     for q = 1:Q
         [qy, qx] = ind2sub([Qy, Qx], q);
         w = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), overlap_size);
         
         Noq = prod(dims_o(q, :));
         sig_bar(q) = sqrt(sum(w(:).^2)*sum(sigma_noise.^2./squared_operator_norm)/min(Noq, nChannels));
+
+        dirty_im_q = w.*dirty_image(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
+        [~,S0,~] = svd(reshape(dirty_im_q, [Noq, nChannels]),'econ');
+        m_bar(q) = sig_bar(q)*sum(log(abs(diag(S0))/sig_bar(q) + 1));
     end
+    mu_bar = 1/sum(m_bar);
 end

@@ -64,7 +64,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
 % exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-% 
+
 % Qx = 2; % 4
 % Qy = 1; % 4
 % Qc = 1;
@@ -72,7 +72,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 0;
-% flag_computeOperatorNorm = 1;
+% flag_computeOperatorNorm = 0;
 % flag_computeLowerBounds = 1;
 % flag_solveMinimization = true;
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
@@ -81,13 +81,13 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % gam_bar = 1;
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % update_regularization = 1;
-% 
+
 % rw = -1;
-% rwtype = 'dirty'; % ground_truth, heuristic
+% rwtype = 'heuristic'; % dirty, heuristic
 % flag_homotopy = 0;
 % overlap_fraction = 0.5;
 % isnr = 50;
-% 
+
 % nChannels = 5;
 % flag_generateCube = 1;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
@@ -97,8 +97,8 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % superresolution_factor = 2;
 % flag_cirrus = false;
 % regtype = 'log';
-% xapprox = 'precond';
-% noise_transfer = 'precond';
+% xapprox = 'none';
+% noise_transfer = 'none';
 % reg_option = 'none';
 %%
 
@@ -504,9 +504,9 @@ if strcmp(algo_version, 'sara')
 else
     if flag_computeOperatorNorm
         % Compute full measurement operator spectral norm
-        % F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
-        % Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-        % Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+%         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
+%         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
+%         Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
         
         % F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
         % Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
@@ -624,7 +624,7 @@ if strcmp(algo_version, 'sara')
             '_xa=', xapprox, ...
             '_nt=', noise_transfer, ...
             '_snr=', num2str(isnr), '.mat')), ...
-            'sig', 'max_psf', 'mu');
+            'sig', 'mu');
     end
 
     fprintf('Rwt: %s, algo: %s, alpha = %.4e, mu = %.4e, upsilon = %.4e\n', rwtype, algo_version, gam, mu, sig);
@@ -653,22 +653,40 @@ else
 
         switch regtype
             case "inv"
-                [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
-                compute_reweighting_lower_bound_inverse(y, W, G, aW, A, At, ...
-                Ny, Nx, oy, ox, nchans, wlt_basis, filter_length, nlevel, ...
-                sigma_noise, rwtype, "hypersara", Qx, Qy, overlap_size, ...
-                window_type, x0, precond_operator_norm, operator_norm, xapprox, noise_transfer, reg_option); % algo_version
+                if strcmp(rwtype, "heuristic")
+                    [sig, sig_bar, mu0, mu, mu_bar, ~, l21_norm, ...
+                    nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
+                    compute_reweighting_lower_bound_inverse_heuristic(y, W, G, aW, At, Ny, Nx, ...
+                    oy, ox, nchans, wlt_basis, filter_length, nlevel, sigma_noise, ...
+                    algo_version, Qx, Qy, overlap_size, window_type, x0, ...
+                    precond_operator_norm, operator_norm, xapprox);
+                else
+                    [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
+                    compute_reweighting_lower_bound_inverse(y, W, G, aW, A, At, ...
+                    Ny, Nx, oy, ox, nchans, wlt_basis, filter_length, nlevel, ...
+                    sigma_noise, rwtype, "hypersara", Qx, Qy, overlap_size, ...
+                    window_type, x0, precond_operator_norm, operator_norm, xapprox, noise_transfer, reg_option);
+                end
             case "log"
-                [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
-                compute_reweighting_lower_bound_log(y, W, G, aW, A, At, Ny, Nx, ...
-                oy, ox, nchans, wlt_basis, filter_length, nlevel, ...
-                sigma_noise, rwtype, "hypersara", Qx, Qy, overlap_size, ...
-                window_type, x0, precond_operator_norm, operator_norm, xapprox, noise_transfer, reg_option); % algo_version
+                if strcmp(rwtype, "heuristic")
+                    [sig, sig_bar, mu0, mu, mu_bar, ~, l21_norm, ...
+                    nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
+                    compute_reweighting_lower_bound_log_heuristic(y, W, G, aW, At, Ny, Nx, ...
+                    oy, ox, nchans, wlt_basis, filter_length, nlevel, sigma_noise, ...
+                    algo_version, Qx, Qy, overlap_size, window_type, x0, ...
+                    precond_operator_norm, operator_norm, xapprox);
+                else
+                    [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
+                    compute_reweighting_lower_bound_log(y, W, G, aW, A, At, Ny, Nx, ...
+                    oy, ox, nchans, wlt_basis, filter_length, nlevel, ...
+                    sigma_noise, rwtype, "hypersara", Qx, Qy, overlap_size, ...
+                    window_type, x0, precond_operator_norm, operator_norm, xapprox, noise_transfer, reg_option);
+                end
             otherwise
                 error("Unknown regularization type.")
         end
 
-        if strcmp(algo_version, 'cw')
+        if strcmp(algo_version, 'cw') && numel(sig_bar) == 1
             sig_bar = sig_bar*ones(Qx*Qy, 1);
         end
 
@@ -684,7 +702,7 @@ else
         '_xa=', xapprox, ...
         '_nt=', noise_transfer, ...
         '_snr=', num2str(isnr), '.mat')), ...
-            'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'mu', 'l21_norm_x0', 'nuclear_norm_x0', 'mu_bar');            
+            'sig', 'sig_bar', 'l21_norm', 'nuclear_norm', 'dirty_image', 'mu', 'l21_norm_x0', 'nuclear_norm_x0', 'mu_bar');            
     else        
         load(fullfile(auxiliary_path, ...
             strcat('lower_bounds_', ...
@@ -698,7 +716,7 @@ else
             '_xa=', xapprox, ...
             '_nt=', noise_transfer, ...
             '_snr=', num2str(isnr), '.mat')), ...
-            'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'mu', 'mu_bar');
+            'sig', 'sig_bar', 'l21_norm', 'nuclear_norm', 'mu', 'mu_bar');
     end
     fprintf('Rwt: %s, algo: %s, alpha = %.4e, alpha_bar = %.4e, mu = %.4e, mu_bar = %.4e, upsilon = %.4e, upsilon_bar = [%.4e, %.4e] \n', rwtype, algo_version, ...
         gam, gam_bar, mu, mu_bar, sig, min(sig_bar), max(sig_bar));
@@ -759,7 +777,7 @@ if flag_solveMinimization
         % estimate of the noise level in "SVD" spaces
         param_HSI.reweighting_sig_bar = sig_bar; 
     end
-    param_HSI.max_psf = max_psf;
+    % param_HSI.max_psf = max_psf;
 
     % ellipsoid projection parameters (when preconditioning is active)
     param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
