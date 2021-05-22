@@ -72,7 +72,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 0;
-% flag_computeOperatorNorm = 0;
+% flag_computeOperatorNorm = 1;
 % flag_computeLowerBounds = 1;
 % flag_solveMinimization = true;
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
@@ -504,9 +504,9 @@ if strcmp(algo_version, 'sara')
 else
     if flag_computeOperatorNorm
         % Compute full measurement operator spectral norm
-        F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
-        Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+%         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
+%         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
+%         Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
         
         % F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
         % Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
@@ -515,14 +515,15 @@ else
         precond_operator_norm = zeros(nchans, 1);
         for l = 1:nchans
             F = afclean( @(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l)));
-            Ft = afclean( @(y) HS_adjoint_operator_precond_G(y(l), G(l), W(l), At, aW(l), Ny, Nx));
+            Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx));
             precond_operator_norm(l) = op_norm(F, Ft, [Ny Nx], 1e-8, 200, 2);
         end
+        Anorm = max(precond_operator_norm); % operator is block diagonal
 
         operator_norm = zeros(nchans, 1);
         for l = 1:nchans
             F = afclean( @(x) HS_forward_operator_G(x, G(l), W(l), A));
-            Ft = afclean( @(y) HS_adjoint_operator_G(y(l), G(l), W(l), At, Ny, Nx));
+            Ft = afclean( @(y) HS_adjoint_operator_G(y, G(l), W(l), At, Ny, Nx));
             operator_norm(l) = op_norm(F, Ft, [Ny Nx], 1e-8, 200, 2);
         end
 

@@ -83,8 +83,9 @@ if strcmp(algo_version, 'hypersara')
             [U0,S0,V0] = svd(reshape(dirty_image, [N, nChannels]),'econ');
             sig_bar = std(abs(diag(U0'*B*V0)));
         else
-            [~,S0,~] = svd(reshape(B, [N, nChannels]),'econ');
-            sig_bar = std(abs(diag(S0)));
+            [~,S0,~] = svd(reshape(dirty_image, [N, nChannels]),'econ');
+            [~,S1,~] = svd(reshape(B, [N, nChannels]),'econ');
+            sig_bar = std(abs(diag(S1)));
         end
     end        
     m_bar = sig_bar*sum(log(abs(diag(S0))/sig_bar + 1));
@@ -138,10 +139,17 @@ else
             sig_bar(q) = std(abs(diag(U0'*bq*V0))); 
             
         case "dirty"
-            % SVD space of Xdirty
             dirty_im_q = w.*dirty_image(Io(q, 1)+1:Io(q, 1)+dims_o(q, 1), Io(q, 2)+1:Io(q, 2)+dims_o(q, 2), :);
-            [U0,S0,V0] = svd(reshape(dirty_im_q, [Noq, nChannels]),'econ');
-            sig_bar(q) = std(abs(diag(U0'*bq*V0)));
+            if strcmp(reg_option, "dirty") 
+                % SVD space of Xdirty
+                [U0,S0,V0] = svd(reshape(dirty_im_q, [Noq, nChannels]),'econ');
+                sig_bar(q) = std(abs(diag(U0'*bq*V0)));
+            else
+                % SVD of noise
+                [~,S0,~] = svd(reshape(dirty_im_q, [Noq, nChannels]),'econ');
+                [~,S1,~] = svd(bq,'econ');
+                sig_bar(q) = std(abs(diag(S1)));
+            end
         end
         m_bar(q) = sig_bar(q)*sum(log(abs(diag(S0))/sig_bar(q) + 1));
     end    
