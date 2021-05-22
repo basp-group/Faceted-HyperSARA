@@ -512,6 +512,13 @@ else
         % Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
         % operator_norm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
 
+        precond_operator_norm = zeros(nchans, 1);
+        for l = 1:nchans
+            F = afclean( @(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l)));
+            Ft = afclean( @(y) HS_adjoint_operator_precond_G(y(l), G(l), W(l), At, aW(l), Ny, Nx));
+            precond_operator_norm(l) = op_norm(F, Ft, [Ny Nx], 1e-8, 200, 2);
+        end
+
         operator_norm = zeros(nchans, 1);
         for l = 1:nchans
             F = afclean( @(x) HS_forward_operator_G(x, G(l), W(l), A));
@@ -522,7 +529,7 @@ else
         save(fullfile(results_path, ...
             strcat('Anorm_hs', ...
             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm', 'operator_norm');
+            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm');
        
         % % operator norm per channel "l"
         % Anorm_channel = zeros(nchans, 1);
@@ -541,7 +548,7 @@ else
     end
 end
 
-fprintf('Squared operator norm: %e, with precond.: %e \n', operator_norm, Anorm);
+fprintf('Squared operator norm: %e, with precond.: %e \n', max(operator_norm), Anorm);
 % operator_norm = sqrt(operator_norm);
 
 %% Generate initial epsilons by performing imaging with NNLS on each data block separately
@@ -593,7 +600,7 @@ if strcmp(algo_version, 'sara')
         [sig, max_psf, mu, l11_norm, l11_norm_x0, dirty_image] = ...
             compute_reweighting_lower_bound_sara(y, W, G, aW, A, At, Ny, Nx, ...
             oy, ox, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, ...
-            x0, Anorm, operator_norm, xapprox, noise_transfer, regtype);
+            x0, precond_operator_norm, operator_norm, xapprox, noise_transfer, regtype);
         save(fullfile(auxiliary_path, ...
             strcat('lower_bounds_', ...
             algo_version, '_srf=', num2str(superresolution_factor), ...
@@ -649,13 +656,13 @@ else
                 compute_reweighting_lower_bound_inverse(y, W, G, aW, A, At, ...
                 Ny, Nx, oy, ox, nchans, wlt_basis, filter_length, nlevel, ...
                 sigma_noise, rwtype, "hypersara", Qx, Qy, overlap_size, ...
-                window_type, x0, Anorm, operator_norm, xapprox, noise_transfer, reg_option); % algo_version
+                window_type, x0, precond_operator_norm, operator_norm, xapprox, noise_transfer, reg_option); % algo_version
             case "log"
                 [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
                 compute_reweighting_lower_bound_log(y, W, G, aW, A, At, Ny, Nx, ...
                 oy, ox, nchans, wlt_basis, filter_length, nlevel, ...
                 sigma_noise, rwtype, "hypersara", Qx, Qy, overlap_size, ...
-                window_type, x0, Anorm, operator_norm, xapprox, noise_transfer, reg_option); % algo_version
+                window_type, x0, precond_operator_norm, operator_norm, xapprox, noise_transfer, reg_option); % algo_version
             otherwise
                 error("Unknown regularization type.")
         end

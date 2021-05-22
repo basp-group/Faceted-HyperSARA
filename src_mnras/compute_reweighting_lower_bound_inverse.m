@@ -1,7 +1,7 @@
 function [sig, sig_bar, mu0, mu, mu_bar, mu_bar_full, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
     compute_reweighting_lower_bound_inverse(y, W, G, aW, A, At, Ny, Nx, ...
     oy, ox, nChannels, wavelet_basis, filters_length, nlevel, sigma_noise, ...
-    rw_type, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm, ...
+    rw_type, algo_version, Qx, Qy, overlap_size, window_type, x0, squared_precond_operator_norm, ...
     squared_operator_norm, xapprox, noise_transfer, reg_option)
 
 %! TO BE DOCUMENTED
@@ -14,13 +14,13 @@ No = N*oy*ox; % size of oversampled Fourier space
 % the psf in each channel
 if strcmp(noise_transfer, "precond")
     [B, max_psf] = create_dirty_noise_precond(y, A, At, G, aW, W, Nx, Ny, No, sigma_noise, 1234);
-    B = B/Anorm; %! normalize noise by the squared norm of the operator
+    B = B/reshape(squared_precond_operator_norm, [1, nChannels]); %! normalize noise by the squared norm of the operator
 elseif strcmp(noise_transfer, "psf")
     [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise, 1234);
     B = B./reshape(max_psf, [1, nChannels]); 
 else
     [B, max_psf] = create_dirty_noise(y, A, At, G, W, Nx, Ny, No, sigma_noise, 1234);
-    B = B./reshape(squared_operator_norm, [1, nChannels]);; %! normalize noise by the squared norm of the operator
+    B = B./reshape(squared_operator_norm, [1, nChannels]); %! normalize noise by the squared norm of the operator
 end
 
 % form dirty image (no normalization)
@@ -33,7 +33,7 @@ if strcmp(xapprox, "precond")
         end
         dirty_image(:,:,l) = At(temp);
     end
-    dirty_image = dirty_image/Anorm; % Phi applied twice, and square operator norm for the normalisation
+    dirty_image = dirty_image./reshape(squared_precond_operator_norm, [1, 1, nChannels]); % Phi applied twice, and square operator norm for the normalisation
 else
     for l = 1:nChannels
         temp = zeros(No, 1);
