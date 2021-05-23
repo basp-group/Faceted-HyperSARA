@@ -34,10 +34,10 @@ end
 
 
 % evaluate nuclear norm of the dirty image -> regularization parameter
-[~,S0,~] = svd(reshape(dirty_image, [N, nChannels]),'econ');
-nuclear_norm = sum(abs(diag(S0)));
 [~,S0,~] = svd(reshape(x0, [N, nChannels]),'econ');
 nuclear_norm_x0 = sum(abs(diag(S0)));
+[~,S0,~] = svd(reshape(dirty_image, [N, nChannels]),'econ');
+nuclear_norm = sum(abs(diag(S0)));
 
 % set-up global SARA dictionary
 dwtmode('zpd')
@@ -61,6 +61,7 @@ mu = 1/sum(sig*log(d1/sig + 1));
 % compute sig_bar
 if strcmp(algo_version, 'hypersara')
     sig_bar = sqrt(Nx*Ny*sum(sigma_noise.^2./squared_operator_norm)/min(Nx*Ny, nChannels));
+    mu_bar = 1/(sig_bar*sum(log(abs(diag(S0))/sig_bar + 1)));
 else
     Q = Qx*Qy;
     rg_y = split_range(Qy, Ny);
