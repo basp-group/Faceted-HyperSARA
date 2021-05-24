@@ -121,25 +121,21 @@ Final runs (spatial faceting, inv, (none, none), SVD of the dirty image to compu
 -> same behaviour actually observed with SARA
 -> remove $\upsilon$ from the numerator when defining the weights? actually, $\upsilon$ and $\bar{\upsilon}$ are too small.
 
-- Old table
-| Run | Algo      | Reg. type                    | Reg. update | $\alpha$ | $\bar{\alpha}$ | $\upsilon$ | $\bar{\upsilon}$ | $\mu$      | $\bar{\mu}$ | aSNR  | id     |
-| --- | --------- | ---------------------------- | ----------- | -------- | -------------- | ---------- | ---------------- | ---------- | ----------- | ----- | ------ |
-| [R] | HS        | log (precond, precond, none) | 0           | 1        | 1              |            |                  |            |             |       | 823855 |
-| [R] | FHS (4x4) | log (precond, precond, none) | 0           | 1        | 1              |            |                  |            |             |       | 823856 |
-| [R] | HS        | inv (none, psf, dirty)       | 0           | 1        | 1              |            |                  |            |             |       | 823883 |
-| [R] | FHS (4x4) | inv (none, psf, dirty)       | 0           | 1        | 1              | 7.8432e-03 | 7.0244e-02       | 8.3710e-05 | 3.7578e-02  | 42.41 | 823884 |
-
 - After latest fix (add heuristic, normaliza by operator norm per channel, ...)
-| Run | Algo      | Rw. type  | Reg. type | Noise transfer | Xdirty  | reg. option (SVD of noise, or Xdirty) | $\upsilon$ | $\bar{\upsilon}$ | $\mu$      | $\bar{\mu}$ | aSNR  | id     |
-| --- | --------- | --------- | --------- | -------------- | ------- | ------------------------------------- | ---------- | ---------------- | ---------- | ----------- | ----- | ------ |
-| [x] | HS        | dirty     | inv       | psf            | none    | none                                  | 7.8432e-03 | 1.9261e+00       | 7.7626e-05 | 3.4569e-02  | 42.29 | 847555 |
-| [x] | HS        | dirty     | log       | precond        | precond | none                                  | 1.0025e-04 | 2.0726e-02       | 5.6404e-04 | 4.7098e-01  | 42.97 | 847556 |
-| [x] | HS        | heuristic | inv       | none           | none    | none                                  | 1.0965e-04 | 1.0652e-01       | 7.7626e-05 | 3.4569e-02  | 40.92 | 847557 |
-| [ ] | HS        | heuristic | log       | none           | none    | none                                  |            |                  |            |             |       | 847558 |
-| [ ] | FHS (4x4) | dirty     | inv       | psf            | none    | none                                  |            |                  |            |             |       | 848745 |
-| [ ] | FHS (4x4) | dirty     | log       | precond        | precond | none                                  |            |                  |            |             |       | 848746 |
-| [ ] | FHS (4x4) | heuristic | inv       | none           | none    | none                                  |            |                  |            |             |       | 848748 |
-| [ ] | FHS (4x4) | heuristic | log       | none           | none    | none                                  |            |                  |            |             |       | 848749 |
+| Run | Algo      | Rw. type  | Reg. type | Noise transfer | Xdirty  | reg. option (SVD of noise, or Xdirty) | $\upsilon$ | $\bar{\upsilon}$         | $\mu$      | $\bar{\mu}$ | aSNR  | id     |
+| --- | --------- | --------- | --------- | -------------- | ------- | ------------------------------------- | ---------- | ------------------------ | ---------- | ----------- | ----- | ------ |
+| [x] | HS        | dirty     | inv       | psf            | none    | none                                  | 7.8432e-03 | 1.9261e+00               | 7.7626e-05 | 3.4569e-02  | 42.29 | 847555 |
+| [x] | HS        | dirty     | log       | precond        | precond | none                                  | 1.0025e-04 | 2.0726e-02               | 5.6404e-04 | 4.7098e-01  | 42.97 | 847556 |
+| [x] | HS        | heuristic | inv       | none           | none    | none                                  | 1.0965e-04 | 1.0652e-01               | 7.7626e-05 | 3.4569e-02  | 40.92 | 847557 |
+| [R] | HS        | heuristic | log       | none           | none    | none                                  |            |                          |            |             |       | 868724 |
+| [R] | FHS (4x4) | dirty     | inv       | none           | none    | none                                  |            |                          |            |             |       | 868703 | weird hdf5 error
+| [R] | FHS (4x4) | dirty     | inv       | none           | none    | dirty                                 |            |                          |            |             |       | 868630 | weird hdf5 error
+| [x] | FHS (4x4) | dirty     | inv       | psf            | none    | none                                  | 7.8432e-03 | 1.9261e+00               | 7.7626e-05 | 3.4569e-02  | 42.25 | 848745 |
+| [R] | FHS (4x4) | dirty     | log       | precond        | precond | none                                  |            |                          |            |             |       | 848746 |
+| [x] | FHS (4x4) | heuristic | inv       | none           | none    | none                                  | 1.0965e-04 | [8.8810e-03, 3.5512e-02] | 7.7626e-05 | 3.4569e-02  | 41.62 | 848748 |
+| [R] | FHS (4x4) | heuristic | log       | none           | none    | none                                  |            |                          |            |             |       | 848749 |
+
+-> for inv: could move stopping criterion to 1e-5 for pdfb (would allow to run a bit longer)
 
 ---
 

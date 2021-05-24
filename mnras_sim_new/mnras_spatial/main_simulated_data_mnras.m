@@ -64,15 +64,15 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
 % exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-
+% 
 % Qx = 2; % 4
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 0;
-% flag_computeOperatorNorm = 0;
+% flag_computeOperatorNorm = 1;
 % flag_computeLowerBounds = 1;
 % flag_solveMinimization = true;
 % ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
@@ -81,13 +81,13 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % gam_bar = 1;
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % update_regularization = 1;
-
+% 
 % rw = -1;
-% rwtype = 'heuristic'; % dirty, heuristic
+% rwtype = 'dirty'; % dirty, heuristic
 % flag_homotopy = 0;
 % overlap_fraction = 0.5;
 % isnr = 50;
-
+% 
 % nChannels = 5;
 % flag_generateCube = 1;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
@@ -96,7 +96,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
 % flag_cirrus = false;
-% regtype = 'log';
+% regtype = 'inv';
 % xapprox = 'none';
 % noise_transfer = 'none';
 % reg_option = 'none';
@@ -488,12 +488,13 @@ if strcmp(algo_version, 'sara')
         F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
         Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
         operator_norm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+        precond_operator_norm = Anorm;
         
         save(fullfile(results_path, ...
             strcat('Anorm_', ...
             algo_version, ...
             '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm', 'operator_norm');
+            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm');
     else
         load(fullfile(results_path, ...
             strcat('Anorm_', ...
@@ -669,7 +670,7 @@ else
                 end
             case "log"
                 if strcmp(rwtype, "heuristic")
-                    [sig, sig_bar, mu0, mu, mu_bar, ~, l21_norm, ...
+                    [sig, sig_bar, mu0, mu, mu_bar, l21_norm, ...
                     nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = ...
                     compute_reweighting_lower_bound_log_heuristic(y, W, G, aW, At, Ny, Nx, ...
                     oy, ox, nchans, wlt_basis, filter_length, nlevel, sigma_noise, ...
