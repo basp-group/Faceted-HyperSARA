@@ -69,7 +69,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 0;
 % flag_computeOperatorNorm = 0;
@@ -475,6 +475,7 @@ else
 end
 y = y(id{ind});
 epsilons = epsilons(id{ind});
+sigma_noise = sigma_noise(id{ind});
 
 %% Compute operator norm
 if strcmp(algo_version, 'sara')

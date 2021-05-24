@@ -47,20 +47,24 @@ l11_norm = sum(d1);
 
 % compute sig (estimate of the "noise level" in SARA space) involved in the
 % reweighting scheme
-sig = std(abs(Psit_full(reshape(B, [Ny, Nx]))));
 switch regtype
     case "inv"
+        sig = std(abs(Psit_full(reshape(B, [Ny, Nx]))));
         if strcmp(rw_type, "ground_truth")
             mu = 1/l11_norm_x0;
         else
             mu = 1/l11_norm;
         end
     case "log"
+        sig = std(abs(Psit_full(reshape(B, [Ny, Nx]))));
         if strcmp(rw_type, "ground_truth")
             mu = 1/sum(sig*log(d0/sig + 1));
         else
             mu = 1/sum(sig*log(d1/sig + 1));
         end
+    case "heuristic"
+        sig = sqrt(N*(sigma_noise^2)/(squared_operator_norm*s));
+        mu = sig;
     otherwise
         error("Unknown regularization type")
 end
