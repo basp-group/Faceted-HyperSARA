@@ -127,13 +127,13 @@ Final runs (spatial faceting, inv, (none, none), SVD of the dirty image to compu
 | [x] | HS        | dirty     | inv       | psf            | none    | none                                  | 7.8432e-03 | 1.9261e+00               | 7.7626e-05 | 3.4569e-02  | 42.29 | 847555 |
 | [x] | HS        | dirty     | log       | precond        | precond | none                                  | 1.0025e-04 | 2.0726e-02               | 5.6404e-04 | 4.7098e-01  | 42.97 | 847556 |
 | [x] | HS        | heuristic | inv       | none           | none    | none                                  | 1.0965e-04 | 1.0652e-01               | 7.7626e-05 | 3.4569e-02  | 40.92 | 847557 |
-| [R] | HS        | heuristic | log       | none           | none    | none                                  |            |                          |            |             |       | 868724 |
-| [R] | FHS (4x4) | dirty     | inv       | none           | none    | none                                  |            |                          |            |             |       | 868703 | weird hdf5 error
-| [R] | FHS (4x4) | dirty     | inv       | none           | none    | dirty                                 |            |                          |            |             |       | 868630 | weird hdf5 error
-| [x] | FHS (4x4) | dirty     | inv       | psf            | none    | none                                  | 7.8432e-03 | 1.9261e+00               | 7.7626e-05 | 3.4569e-02  | 42.25 | 848745 |
-| [R] | FHS (4x4) | dirty     | log       | precond        | precond | none                                  |            |                          |            |             |       | 848746 |
-| [x] | FHS (4x4) | heuristic | inv       | none           | none    | none                                  | 1.0965e-04 | [8.8810e-03, 3.5512e-02] | 7.7626e-05 | 3.4569e-02  | 41.62 | 848748 |
-| [R] | FHS (4x4) | heuristic | log       | none           | none    | none                                  |            |                          |            |             |       | 848749 |
+| [R] | HS        | heuristic | log       | none           | none    | none                                  |            |                          |            |             |       | 877816 |
+| [R] | FHS (4x4) | dirty     | inv       | none           | none    | none                                  |            |                          |            |             |       | 868703 | -> solve
+| [R] | FHS (4x4) | dirty     | inv       | none           | none    | dirty                                 |            |                          |            |             |       | 868630 | -> solve
+| [x] | FHS (4x4) | dirty     | inv       | psf            | none    | none                                  | 7.8432e-03 | 1.9261e+00               | 7.7626e-05 | 3.4569e-02  | 42.25 | 848745 | A
+| [R] | FHS (4x4) | dirty     | log       | precond        | precond | none                                  |            |                          |            |             |       | 848746 | B
+| [x] | FHS (4x4) | heuristic | inv       | none           | none    | none                                  | 1.0965e-04 | [8.8810e-03, 3.5512e-02] | 7.7626e-05 | 3.4569e-02  | 41.62 | 848748 | C
+| [R] | FHS (4x4) | heuristic | log       | none           | none    | none                                  |            |                          |            |             |       | 848749 | D
 
 -> for inv: could move stopping criterion to 1e-5 for pdfb (would allow to run a bit longer)
 
