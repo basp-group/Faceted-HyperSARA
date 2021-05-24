@@ -36,14 +36,14 @@ covpath = '../../data/msSpecs.mat' # '../../data/vla_7.95h_dt10s.uvw256.mat'
 ncdata = 5
 flaghomotopy = 0
 exp_type = 'spectral'
-rw_type = 'dirty' # 'ground_truth'
+rw_type = 'dirty' # 'ground_truth' 'dirty' 'heuristic'
 superresolution_factor = 2
 isnr = 40
 updatereg = 0
-regtype = 'log'
-xapprox = 'precond'
-noise_transfer = 'precond'
-reg_option = 'dirty'
+regtype = 'inv' # 'inv' 'log' 'heuristic'
+xapprox = 'none' # 'none' 'precond'
+noise_transfer = 'none' # 'none' 'precond'
+reg_option = 'none' # 'none' 'dirty'
 
 params = [imagename,nchannels,Qx,Qy,overlapx,overlapy,rw,gam,nreweights,wintype,covpath,ncdata,flaghomotopy,gencube,genvis,computenorm,lowerbounds,solve] # 18 params
 

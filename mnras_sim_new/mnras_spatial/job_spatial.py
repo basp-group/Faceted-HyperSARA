@@ -36,15 +36,15 @@ wintype = 'triangular'
 covpath = '../../data/msSpecs.mat' #'../../data/vla_7.95h_dt10s.uvw.mat'
 ncdata = 20
 flaghomotopy = 0
-rw_type = 'dirty' # 'ground_truth' 'dirty'
+rw_type = 'dirty' # 'ground_truth' 'dirty' 'heuristic'
 exp_type = 'spatial' # 'test'
 superresolution_factor = 2
 isnr = 40
 updatereg = 0
-regtype = 'log'
-xapprox = 'precond'
-noise_transfer = 'precond'
-reg_option = 'dirty'
+regtype = 'inv' # 'inv' 'log' 'heuristic'
+xapprox = 'none' # 'none' 'precond'
+noise_transfer = 'none' # 'none' 'precond'
+reg_option = 'none' # 'none' 'dirty'
 
 # os.path.join(dir_name, base_filename + suffix)
 
