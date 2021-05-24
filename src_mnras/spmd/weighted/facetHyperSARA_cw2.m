@@ -475,7 +475,11 @@ tau = 0.99/(sigma0*param.nu0 + sigma1*param.nu1 + sigma2*param.nu2);
 sigma00 = parallel.pool.Constant(tau*sigma0);
 sigma11 = parallel.pool.Constant(tau*sigma1);
 sigma22 = parallel.pool.Constant(tau*sigma2);
-beta0 = parallel.pool.Constant(param.gamma0/sigma0);
+% beta0 = parallel.pool.Constant(param.gamma0/sigma0);
+beta0 = Composite();
+for q = 1:Q
+    beta0{q} = param.gamma0(q)/sigma0;
+end
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
 param.alph = alph;
 param.alph_bar = alph_bar;
@@ -595,7 +599,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             
             % update dual variables (nuclear, l21) % errors here
-            [v0_, g0] = update_dual_nuclear(v0_, x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :), w, weights0_, beta0.Value);
+            [v0_, g0] = update_dual_nuclear(v0_, x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :), w, weights0_, beta0);
             [v1_, g1] = update_dual_l21(v1_, x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :), weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
@@ -817,25 +821,28 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             param.gamma_old = param.gamma;
             param.reweighting_sig_bar_old = param.reweighting_sig_bar;
             
-            gamma0 = 0;
+            gamma0 = zeros(Q, 1);
             gamma1 = 0;
             sig_bar = zeros(Q, 1);
             %! to be fixed
             for q = 1:Q
-                gamma0 = gamma0 + gamma0_q{q};
+                gamma0(q) = gamma0_q{q};
                 gamma1 = gamma1 + gamma1_q{q};
                 sig_bar(q) = sig_bar_{q};
             end
-            gamma0 = alph_bar/gamma0;
+            gamma0 = alph_bar./gamma0;
             gamma1 = alph/gamma1;
 
             param.reweighting_sig_bar = sig_bar;
             param.gamma0 = gamma0;
             param.gamma = gamma1;
-            beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
+            % beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
+            for q = 1:q
+                beta0{q} = param.gamma0(q)/sigma0;
+            end
             beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
-            fprintf('Updated reg (%s): gamma0 = %e, gamma1 = %e \n\n', regtype, param.gamma0, param.gamma);
+            fprintf('Updated reg (%s): gamma0 = [%e, %e], gamma1 = %e \n\n', regtype, min(param.gamma0), max(param.gamma0), param.gamma);
             fprintf('Updated floor lvl (%s): sig_bar = [%e,%e] \n\n', regtype, min(param.reweighting_sig_bar), max(param.reweighting_sig_bar));
         end
         

@@ -54,7 +54,7 @@ l21_norm_x0 = sum(d0);
 
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
 % SARA space) involved in the reweighting scheme
-sig = sqrt(sum((sigma_noise.^2)./squared_operator_norm)) / 3;
+sig = sqrt(N*sum((sigma_noise.^2)./squared_operator_norm)/s);
 mu0 = 1/sum(sig*log(d0/sig + 1));
 mu = 1/sum(sig*log(d1/sig + 1));
 
