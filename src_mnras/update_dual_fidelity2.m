@@ -25,8 +25,8 @@ function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
 %     elipse_proj_min_iter (int): minimum number of iterations 
 %                                 (projection onto ellipsoid).
 %     elipse_proj_eps (int): stopping criterion for the projection.
-%     sigma22 (double): step-size for the update of the dual variable 
-%                       (tau*sigma2)
+%     sigma22 (array): step-size for the update of the dual variable 
+%                      (tau*sigma2)
 %
 % Returns:
 %     v2 (cell): data fidelity dual variable {L}{nblocks}[M, 1].
@@ -76,8 +76,7 @@ for i = 1 : nChannels
         norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
     end
     Fx_old(:,i) = Fx; 
-    Ftx(:,:,i) = real(At(g2));
+    Ftx(:,:,i) = sigma22(i)*real(At(g2));
 end
-Ftx = sigma22*Ftx;
 
 end

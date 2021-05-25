@@ -387,15 +387,19 @@ end
 %Step size for the dual variables
 sigma0 = 1.0/param.nu0;
 sigma1 = 1.0/param.nu1;
-sigma2 = 1.0/param.nu2;
+sigma2 = 1.0./param.nu2;
 
 % Step size primal
-tau = 0.99/(sigma0*param.nu0 + sigma1*param.nu1 + sigma2*param.nu2);
+tau = 0.99/3;
 
 % Update constant dual variables
 sigma00 = parallel.pool.Constant(tau*sigma0);
 sigma11 = parallel.pool.Constant(tau*sigma1);
-sigma22 = parallel.pool.Constant(tau*sigma2);
+% sigma22 = parallel.pool.Constant(tau*sigma2);
+sigma22 = Composite();
+for k = 1:K
+    sigma22{Q+k} = tau*sigma2(c_chunks{k});
+end
 beta0 = parallel.pool.Constant(param.gamma0/sigma0);
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
 param.alph = alph;
@@ -509,7 +513,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
 
             [v2_, g2_, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = ...
                 update_dual_fidelity2(v2_, yp, xi, Fxi_old, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
-                elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22.Value);
+                elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22);
             t_op = toc(tw); 
         end
     end

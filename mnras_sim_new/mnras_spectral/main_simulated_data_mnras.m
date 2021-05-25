@@ -69,7 +69,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 0;
 % flag_computeOperatorNorm = 0;
@@ -751,7 +751,7 @@ if flag_solveMinimization
     param_HSI.verbose = 2; % print log or not
     param_HSI.nu0 = 1; % bound on the norm of the Identity operator
     param_HSI.nu1 = 1; % bound on the norm of the operator Psi
-    param_HSI.nu2 = Anorm; % upper bound on the norm of the measurement operator
+    param_HSI.nu2 = precond_operator_norm; % upper bound on the norm of the measurement operator
     param_HSI.operator_norm = operator_norm;
     param_HSI.gamma0 = mu_bar;  % regularization parameter nuclear norm
     param_HSI.gamma = mu; % regularization parameter l21-norm (soft th parameter) %! for SARA, take the value given as an input to the solver
