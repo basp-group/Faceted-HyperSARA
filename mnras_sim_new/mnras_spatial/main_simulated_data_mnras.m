@@ -125,7 +125,7 @@ disp(['Reference image: ', image_name]);
 disp(['nchannels: ', num2str(nChannels)]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
-disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), '_')]);
+disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), ', ')]);
 % disp(['Number of data points p per frequency (as a fraction of image size): ', num2str(p)]);
 % disp(['Generating image cube: ', num2str(flag_generateCube)]);
 % disp(['Generating coverage: ', num2str(flag_generateCoverage)]);
@@ -263,6 +263,8 @@ end
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
 id = split_range_interleaved(Qc, nChannels);
 fc = f(id{ind}); %! beware: this is needed all the time (selected frequencies for the subcube)
+
+disp(['Number of pixels in overlap: ', strjoin(strsplit(num2str(overlap_size)), ' x ')]);
 
 if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
     x0 = x0(:,:,id{ind});

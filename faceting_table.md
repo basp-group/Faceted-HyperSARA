@@ -138,11 +138,11 @@ Final runs (spatial faceting, inv, (none, none), SVD of the dirty image to compu
 -> for inv: could move stopping criterion to 1e-5 for pdfb (would allow to run a bit longer)
 
 Using the heuristic for both $\mu = \upsilon}$, $\bar{\mu} = \bar{\upsilon}$
-| Run | Algo      | Rw. type  | Reg. type | Noise transfer | Xdirty | reg. option (SVD of noise, or Xdirty) | $\upsilon$ | $\bar{\upsilon}$         | $\mu$      | $\bar{\mu}$              | aSNR  | id              |
-| --- | --------- | --------- | --------- | -------------- | ------ | ------------------------------------- | ---------- | ------------------------ | ---------- | ------------------------ | ----- | --------------- |
-| []  | SARA      | heuristic | heuristic | none           | none   | none                                  |            | -                        |            |                          |       | 878221 - 878239 |
-| []  | HS        | heuristic | heuristic | none           | none   | none                                  | 1.0868e-04 | 1.0652e-01               | 1.0868e-04 | 1.0652e-01               | 41.87 | 878185          |
-| [x] | FHS (4x4) | heuristic | heuristic | none           | none   | none                                  | 1.0868e-04 | [8.8810e-03, 3.5512e-02] | 1.0868e-04 | [8.8810e-03, 3.5512e-02] | 41.72 | 878184          |
+| Run | Algo      | Rw. type  | Reg. type | Noise transfer | Xdirty | reg. option (SVD of noise, or Xdirty) | $\upsilon$               | $\bar{\upsilon}$         | $\mu$                    | $\bar{\mu}$              | aSNR  | id              |
+| --- | --------- | --------- | --------- | -------------- | ------ | ------------------------------------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ----- | --------------- |
+| [x] | SARA      | heuristic | heuristic | none           | none   | none                                  | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        | 35.87 | 878221 - 878239 |
+| [x] | HS        | heuristic | heuristic | none           | none   | none                                  | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               | 41.87 | 878185          |
+| [x] | FHS (4x4) | heuristic | heuristic | none           | none   | none                                  | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 41.72 | 878184          |
 
 ---
 
