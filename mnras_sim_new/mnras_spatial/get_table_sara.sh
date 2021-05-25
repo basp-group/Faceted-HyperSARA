@@ -1,7 +1,7 @@
 #!/bin/bash
 
 algoversion=sara
-wintype=triangular
+wintype=none
 overlap=0
 Qx=1
 Qy=1
