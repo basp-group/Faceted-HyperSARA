@@ -5,7 +5,6 @@ wintype=none
 overlap=0
 Qx=1
 Qy=1
-Qc=1
 rw=-1
 superresolution=2
 isnr=40
@@ -17,19 +16,20 @@ alphbar=1
 # grep pattern + sourrounding lines
 # https://stackoverflow.com/questions/9081/grep-a-file-but-show-several-surrounding-lines
 
-imagename=cygASband_Cube_512_1024_20
+imagename=cygASband_Cube_1024_2048_20
 exptype=spatial
 nchannels=20
+Qc=$nchannels
 rwtype=heuristic # dirty heuristic
 regtype=heuristic # inv log heuristic
 xapprox=none # dirty precond
 noisetransfer=none # precond none
 regoption=none # dirty none
 
-logpath=$(pwd)/results/cygASband_Cube_512_1024_20_test/${algoversion}/logs
+logpath=$(pwd)/results/${imagename}_${exptype}/${algoversion}/logs
 outputfile=$(pwd)/${algoversion}_rw=${rwtype}_reg=${regtype}.txt
 
-for l in {1..${nchannels}}; do
+for l in {1..20}; do
     echo h=${homotopy}, updatereg=${updatereg}, regtype=${regtype}, alpha=${alph}, alpha_bar=${alphbar} >> ${outputfile}
     echo ----- >> ${outputfile}
 

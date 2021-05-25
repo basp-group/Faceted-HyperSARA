@@ -26,7 +26,7 @@ xapprox=none # dirty precond
 noisetransfer=none # precond none
 regoption=none # dirty none
 
-logpath=$(pwd)/results/cygASband_Cube_512_1024_20_test/${algoversion}/logs
+logpath=$(pwd)/results/${imagename}_${exptype}/${algoversion}/logs
 outputfile=$(pwd)/${algoversion}_rw=${rwtype}_reg=${regtype}.txt
 
 for l in {1..${Qc}}; do
