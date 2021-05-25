@@ -128,21 +128,28 @@ Final runs (spatial faceting, inv, (none, none), SVD of the dirty image to compu
 | [x] | HS        | dirty     | log       | precond        | precond | none                                  | 1.0025e-04 | 2.0726e-02               | 5.6404e-04 | 4.7098e-01  | 42.97 | 847556 |
 | [x] | HS        | heuristic | inv       | none           | none    | none                                  | 1.0965e-04 | 1.0652e-01               | 7.7626e-05 | 3.4569e-02  | 40.92 | 847557 |
 | [R] | HS        | heuristic | log       | none           | none    | none                                  |            |                          |            |             |       | 877816 |
-| [R] | FHS (4x4) | dirty     | inv       | none           | none    | none                                  |            |                          |            |             |       |        | -> solve |
-| [R] | FHS (4x4) | dirty     | inv       | none           | none    | dirty                                 |            |                          |            |             |       |        | -> solve |
-| [x] | FHS (4x4) | dirty     | inv       | psf            | none    | none                                  | 7.8432e-03 | 1.9261e+00               | 7.7626e-05 | 3.4569e-02  | 42.25 | 848745 | A        |
-| [K] | FHS (4x4) | dirty     | log       | precond        | precond | none                                  | 1.0025e-04 | 2.0726e-02               | 5.6404e-04 | 4.7098e-01  | 43.51 | 848746 | B        | iter 5200 |
-| [x] | FHS (4x4) | heuristic | inv       | none           | none    | none                                  | 1.0965e-04 | [8.8810e-03, 3.5512e-02] | 7.7626e-05 | 3.4569e-02  | 41.62 | 848748 | C        |
-| [K] | FHS (4x4) | heuristic | log       | none           | none    | none                                  | 1.0965e-04 | [8.8810e-03, 3.5512e-02] | 1.1355e-03 | 2.0797e-01  | 43.02 | 848749 | D        | iter 5200 |
+| [R] | FHS (4x4) | dirty     | inv       | none           | none    | none                                  |            |                          |            |             |       |        | -> solve  |
+| [R] | FHS (4x4) | dirty     | inv       | none           | none    | dirty                                 |            |                          |            |             |       |        | -> solve  |
+| [x] | FHS (4x4) | dirty     | inv       | psf            | none    | none                                  | 7.8432e-03 | 1.9261e+00               | 7.7626e-05 | 3.4569e-02  | 42.25 | 848745 |
+| [K] | FHS (4x4) | dirty     | log       | precond        | precond | none                                  | 1.0025e-04 | 2.0726e-02               | 5.6404e-04 | 4.7098e-01  | 43.51 | 848746 | iter 5200 |
+| [x] | FHS (4x4) | heuristic | inv       | none           | none    | none                                  | 1.0965e-04 | [8.8810e-03, 3.5512e-02] | 7.7626e-05 | 3.4569e-02  | 41.62 | 848748 |
+| [K] | FHS (4x4) | heuristic | log       | none           | none    | none                                  | 1.0965e-04 | [8.8810e-03, 3.5512e-02] | 1.1355e-03 | 2.0797e-01  | 43.02 | 848749 | iter 5200 |
 
 -> for inv: could move stopping criterion to 1e-5 for pdfb (would allow to run a bit longer)
 
-Using the heuristic for both $\mu = \upsilon}$, $\bar{\mu} = \bar{\upsilon}$
-| Run | Algo      | Rw. type  | Reg. type | Noise transfer | Xdirty | reg. option (SVD of noise, or Xdirty) | $\upsilon$               | $\bar{\upsilon}$         | $\mu$                    | $\bar{\mu}$              | aSNR  | id              |
-| --- | --------- | --------- | --------- | -------------- | ------ | ------------------------------------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ----- | --------------- |
-| [x] | SARA      | heuristic | heuristic | none           | none   | none                                  | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        | 35.87 | 878221 - 878239 |
-| [x] | HS        | heuristic | heuristic | none           | none   | none                                  | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               | 41.87 | 878185          |
-| [x] | FHS (4x4) | heuristic | heuristic | none           | none   | none                                  | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 41.72 | 878184          |
+Using the heuristic for both $\mu = \upsilon}$, $\bar{\mu} = \bar{\upsilon}$ (stoppign crit: 5e-5)
+| Run | Algo      | Rw. type  | Reg. type | Noise transfer | Xdirty | reg. option | $\upsilon$               | $\bar{\upsilon}$         | $\mu$                    | $\bar{\mu}$              | aSNR  | id              |
+| --- | --------- | --------- | --------- | -------------- | ------ | ----------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ----- | --------------- |
+| [x] | SARA      | heuristic | heuristic | none           | none   | none        | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        | 35.87 | 878221 - 878239 |
+| [x] | HS        | heuristic | heuristic | none           | none   | none        | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               | 41.87 | 878185          |
+| [x] | FHS (4x4) | heuristic | heuristic | none           | none   | none        | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 41.72 | 878184          |
+
+Using the heuristic for both $\mu = \upsilon}$, $\bar{\mu} = \bar{\upsilon}$ (stoppign crit: 1e-5)
+| Run | Algo      | Rw. type  | Reg. type | Noise transfer | Xdirty | reg. option | $\upsilon$               | $\bar{\upsilon}$         | $\mu$                    | $\bar{\mu}$              | aSNR   | id              |
+| --- | --------- | --------- | --------- | -------------- | ------ | ----------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ------ | --------------- |
+| [R] | SARA      | heuristic | heuristic | none           | none   | none        | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        |        | 893579 - 893607 |
+| [R] | HS        | heuristic | heuristic | none           | none   | none        | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               | 893343 |                 |
+| [R] | FHS (4x4) | heuristic | heuristic | none           | none   | none        | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] |        | 893342          |
 
 ---
 

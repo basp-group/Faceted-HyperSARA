@@ -534,7 +534,7 @@ else
         save(fullfile(results_path, ...
             strcat('Anorm_hs', ...
             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm');
+            '_Qc=',num2str(Qc), '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm');
        
         % % operator norm per channel "l"
         % Anorm_channel = zeros(nchans, 1);
@@ -549,7 +549,11 @@ else
         load(fullfile(results_path, ...
             strcat('Anorm_hs', ...
             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')));
+            '_Qc=',num2str(Qc), '.mat')), 'operator_norm', 'precond_operator_norm');
+            
+        operator_norm = operator_norm(id{ind});
+        precond_operator_norm = precond_operator_norm(id{ind});
+        Anorm = max(precond_operator_norm);
     end
 end
 
