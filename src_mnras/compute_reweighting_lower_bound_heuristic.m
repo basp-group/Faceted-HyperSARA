@@ -11,7 +11,8 @@ N = Ny*Nx;    % number of image pixels
 s = s+N; % total number of SARA coefficients (adding number of elements from Dirac basis)
 
 % compute sig and sig_bar
-sig = sqrt(N*sum((sigma_noise.^2)./squared_operator_norm)/s) ;
+% sig = sqrt(N*sum((sigma_noise.^2)./squared_operator_norm)/s);
+sig = sqrt(sum((sigma_noise.^2)./squared_operator_norm)/numel(filters_length));
 
 % compute sig_bar
 if strcmp(algo_version, 'hypersara')

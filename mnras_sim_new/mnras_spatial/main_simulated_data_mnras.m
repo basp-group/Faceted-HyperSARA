@@ -638,6 +638,9 @@ if strcmp(algo_version, 'sara')
     fprintf('Rwt: %s, algo: %s, alpha = %.4e, mu = %.4e, upsilon = %.4e\n', rwtype, algo_version, gam, mu, sig);
 
     mu = gam*mu;
+    if strcmp(rwtype, "heuristic")
+        sig = gam*sig;
+    end
     mu_bar = 0;
 else
     fprintf('Normalization factors alpha = %e, alpha_bar = %e \n', gam, gam_bar);

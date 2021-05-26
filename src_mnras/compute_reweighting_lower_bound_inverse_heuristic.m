@@ -60,7 +60,8 @@ mu_bar_full = 1/nuclear_norm; % using the inverse
 mu_bar = mu_bar_full;
 
 % sig = std(sqrt(sum(Psit_full(reshape(B, [Ny, Nx, nChannels])).^2,2)));
-sig = sqrt(N*sum((sigma_noise.^2)./squared_operator_norm)/s);
+% sig = sqrt(N*sum((sigma_noise.^2)./squared_operator_norm)/s);
+sig = sqrt(sum((sigma_noise.^2)./squared_operator_norm)/numel(filters_length));
 
 % compute sig_bar
 if strcmp(algo_version, 'hypersara')
