@@ -384,8 +384,8 @@ else
         % D. 47750 -> 0
         load(coverage_path, 'uvw', 'obsId');
         size(uvw)
-        u1 = uvw(obsId==1, 1)*f(end)/speed_of_light;
-        v1 = uvw(obsId==1, 2)*f(end)/speed_of_light;  
+        u1 = uvw(obsId==0, 1)*f(end)/speed_of_light;
+        v1 = uvw(obsId==0, 2)*f(end)/speed_of_light;  
         clear obsId
         %! take 2x the cellsize that we had for the spatial fceting experiment,
         %! which corresponds to keeping the uv points < 0.5 bmax_spatial
