@@ -750,6 +750,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             m.t_nuclear = t_nuclear;
             m.t_data = t_data;
             m.rel_val = rel_val;
+            fitswrite(m.xsol, [name '_xsol' '.fits'])
+            fitswrite(m.res, [name '_res' '.fits'])
             clear m
             
             % Log
@@ -845,6 +847,8 @@ m.t_l21 = t_l21;
 m.t_nuclear = t_nuclear;
 m.t_data = t_data;
 m.rel_val = rel_val;
+fitswrite(m.xsol, [name '_xsol' '.fits'])
+fitswrite(m.res, [name '_res' '.fits'])
 clear m
 
 % Final log

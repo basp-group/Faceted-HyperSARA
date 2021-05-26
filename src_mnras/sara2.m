@@ -503,9 +503,6 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
 
             % Save parameters (matfile solution)
-            % m = matfile([name, '_', ...
-            %     num2str(param.cube_id), '_gam=',  num2str(param.gamma), '_rw=', num2str(reweight_step_count), '.mat'], ...
-            %     'Writable', true);
             m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
                 'Writable', true);
             m.param = param;
@@ -528,6 +525,8 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             m.t_master = t_master;
             m.t_data = t_data;
             m.rel_val = rel_val;
+            fitswrite(m.xsol, [name '_xsol' '.fits'])
+            fitswrite(m.res, [name '_res' '.fits'])
             clear m
 
             % Log
@@ -592,6 +591,8 @@ m.t_l11 = t_l11;
 m.t_master = t_master;
 m.t_data = t_data;
 m.rel_val = rel_val;
+fitswrite(m.xsol, [name '_xsol' '.fits'])
+fitswrite(m.res, [name '_res' '.fits'])
 clear m
 
 % Final log
