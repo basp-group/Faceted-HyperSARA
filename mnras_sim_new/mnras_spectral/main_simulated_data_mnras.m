@@ -636,10 +636,11 @@ if strcmp(algo_version, 'sara')
     end
 
     fprintf('Rwt: %s, algo: %s, alpha = %.4e, mu = %.4e, upsilon = %.4e\n', rwtype, algo_version, gam, mu, sig);
+
+    mu = gam*mu;
     if strcmp(rwtype, "heuristic")
         sig = gam*sig;
     end
-    mu = gam*mu;
     mu_bar = 0;
 else
     fprintf('Normalization factors alpha = %e, alpha_bar = %e \n', gam, gam_bar);
@@ -744,6 +745,10 @@ else
 
     mu = gam*mu;
     mu_bar = gam_bar*mu_bar;
+    if strcmp(rwtype, "heuristic")
+        sig = gam*sig;
+        sig_bar = gam_bar*sig_bar;
+    end
 end
 clear dirty_image
     %! --
@@ -762,7 +767,7 @@ if flag_solveMinimization
     % pdfb
     param_HSI.pdfb_min_iter = 10; % minimum number of iterations
     param_HSI.pdfb_max_iter = 2000; % maximum number of iterations
-    param_HSI.pdfb_rel_var = 5e-5; % relative variation tolerance
+    param_HSI.pdfb_rel_var = 1e-5; % relative variation tolerance
     param_HSI.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied
     param_HSI.update_regularization = update_regularization;
     param_HSI.alph = gam;
@@ -779,7 +784,7 @@ if flag_solveMinimization
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
     %! -- TO BE CHECKED
-    param_HSI.reweighting_rel_var = 5e-5;       % relative variation (reweighting)
+    param_HSI.reweighting_rel_var = 1e-5;       % relative variation (reweighting)
     if flag_homotopy
         param_HSI.reweighting_alpha = 20;
         param_HSI.reweighting_min_iter = 5; % minimum number of reweighting iterations, weights updated reweighting_min_iter times
