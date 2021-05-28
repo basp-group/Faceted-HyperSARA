@@ -398,7 +398,7 @@ sigma11 = parallel.pool.Constant(tau*sigma1);
 % sigma22 = parallel.pool.Constant(tau*sigma2);
 sigma22 = Composite();
 for k = 1:K
-    sigma22{Q+k} = tau*sigma2(c_chunks{k});
+    sigma22{2+k} = tau*sigma2(c_chunks{k});
 end
 beta0 = parallel.pool.Constant(param.gamma0/sigma0);
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
