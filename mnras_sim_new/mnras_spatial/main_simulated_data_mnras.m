@@ -69,7 +69,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'cw'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'hypersara'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 0;
 % flag_computeOperatorNorm = 0;
@@ -83,7 +83,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % update_regularization = 1;
 
 % rw = -1;
-% rwtype = 'heuristic'; % dirty, heuristic
+% rwtype = 'heuristic2'; % dirty, heuristic
 % flag_homotopy = 0;
 % overlap_fraction = 0.5;
 % isnr = 50;
@@ -96,7 +96,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
 % flag_cirrus = false;
-% regtype = 'heuristic'; % inv, log, heuristic
+% regtype = 'heuristic2'; % inv, log, heuristic
 % xapprox = 'none'; % none, precond
 % noise_transfer = 'none'; % none, precond
 % reg_option = 'none'; % dirty, none
@@ -699,6 +699,12 @@ else
                 nChannels, filter_length, nlevel, sigma_noise, ...
                 algo_version, Qx, Qy, overlap_size, window_type, ...
                 operator_norm);
+            case "heuristic2"
+                [sig, sig_bar, mu, mu_bar] = ...
+                compute_reweighting_lower_bound_heuristic2(Ny, Nx, ...
+                nChannels, filter_length, nlevel, sigma_noise, ...
+                algo_version, Qx, Qy, overlap_size, window_type, ...
+                operator_norm);
             otherwise
                 error("Unknown regularization type.")
         end
@@ -743,11 +749,15 @@ else
         gam, gam_bar, mu, min(mu_bar), max(mu_bar), sig, min(sig_bar), max(sig_bar));
     % fprintf('Rwt: %s, algo: %s, nuclear norm = %.4e, l21-norm = %.4e \n', rwtype, algo_version, nuclear_norm, l21_norm);
 
-    mu = gam*mu;
     mu_bar = gam_bar*mu_bar;
     if strcmp(rwtype, "heuristic")
         sig = gam*sig;
         sig_bar = gam_bar*sig_bar;
+    end
+    if strcmp(rwtype, "heuristic2") 
+        sig_bar = gam_bar*sig_bar;
+    else
+        mu = gam*mu;
     end
 end
 clear dirty_image

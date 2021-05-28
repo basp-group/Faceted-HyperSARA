@@ -1,5 +1,5 @@
 function [sig, sig_bar, mu, mu_bar] = ...
-    compute_reweighting_lower_bound_heuristic(Ny, Nx, ...
+    compute_reweighting_lower_bound_heuristic2(Ny, Nx, ...
     nChannels, filters_length, nlevel, sigma_noise, ...
     algo_version, Qx, Qy, overlap_size, window_type, ...
     squared_operator_norm)
@@ -11,7 +11,11 @@ N = Ny*Nx;    % number of image pixels
 s = s+N; % total number of SARA coefficients (adding number of elements from Dirac basis)
 
 % compute sig and sig_bar
-sig = sqrt(mean((sigma_noise.^2)./squared_operator_norm)/numel(filters_length));
+% sig = sqrt(N*sum((sigma_noise.^2)./squared_operator_norm)/s);
+sig_w = sqrt(mean((sigma_noise.^2)./squared_operator_norm)/numel(filters_length));
+mu_c = sqrt(2)*gamma((nChannels+1)/2)/gamma(nChannels/2);
+sig_c = sqrt(nChannels - mu_c^2); 
+sig = sig_w*(mu_c + 3*sig_c);
 
 % compute sig_bar
 if strcmp(algo_version, 'hypersara')

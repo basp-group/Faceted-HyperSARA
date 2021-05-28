@@ -152,7 +152,9 @@ Using the heuristic for both $\mu = \upsilon}$, $\bar{\mu} = \bar{\upsilon}$ (st
 | [R] | SARA (a=3)         | heuristic | heuristic | none           | none   | none        | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        | 41.33 | 1110145 - 1110164 |
 | [x] | HS (a,ab=1)        | heuristic | heuristic | none           | none   | none        | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               | 42.80 |                   |
 | [x] | FHS (4x4) (a,ab=1) | heuristic | heuristic | none           | none   | none        | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 44.07 | 893342            |
-| [x] | HS  (a,ab=3)       | heuristic | heuristic | none           | none   | none        | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               |       | 1288404           |
+| [x] | HS  (a,ab=3)       | heuristic | heuristic | none           | none   | none        | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               |       | 1306789           |
 | [x] | FHS (4x4) (a,ab=3) | heuristic | heuristic | none           | none   | none        | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] |       | 1120951           |
 
-Average "target" SNR: 47.93 dB (alpha = 1), 41.91 (alpha = 2), 38.40 (alpha = 3)
+Average "target" SNR: 47.93 dB (alpha = 1), 41.91 dB (alpha = 2), 38.40 dB (alpha = 3)
+
+Value empirical stopping criterion: 0.4764
