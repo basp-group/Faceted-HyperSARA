@@ -145,18 +145,33 @@ Using the heuristic for both $\mu = \upsilon}$, $\bar{\mu} = \bar{\upsilon}$ (st
 | [x] | FHS (4x4) | heuristic | heuristic | none           | none   | none        | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 41.72 | 878184          |
 
 Using the heuristic for both $\mu = \upsilon}$, $\bar{\mu} = \bar{\upsilon}$ (stoppign crit: 1e-5)
-| Run | Algo               | Rw. type   | Reg. type  | Noise transfer | Xdirty | reg. option | $\upsilon$               | $\bar{\upsilon}$         | $\mu$                    | $\bar{\mu}$              | aSNR  | id                |
-| --- | ------------------ | ---------- | ---------- | -------------- | ------ | ----------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ----- | ----------------- |
-| [x] | SARA (a=1)         | heuristic  | heuristic  | none           | none   | none        | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        | 36.78 | 893579 - 893607   |
-| [x] | SARA (a=2)         | heuristic  | heuristic  | none           | none   | none        | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        | 39.98 |                   |
-| [R] | SARA (a=3)         | heuristic  | heuristic  | none           | none   | none        | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        | 41.33 | 1110145 - 1110164 |
-| [x] | HS (a,ab=1)        | heuristic  | heuristic  | none           | none   | none        | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               | 42.80 |                   |
-| [x] | FHS (4x4) (a,ab=1) | heuristic  | heuristic  | none           | none   | none        | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 44.07 | 893342            |
-| [x] | HS  (a,ab=3)       | heuristic  | heuristic  | none           | none   | none        | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               | 43.11 | 1306789           |
-| [K] | FHS (4x4) (a,ab=3) | heuristic  | heuristic  | none           | none   | none        | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 43.12 | 1120950           |
-| [R] | HS  (a,ab=3)       | heuristic2 | heuristic2 | none           | none   | none        |                          |                          |                          |                          |       | 1308521           |
-| [R] | FHS (4x4) (a,ab=3) | heuristic2 | heuristic2 | none           | none   | none        |                          |                          |                          |                          |       | 1308521           |
+| Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$               | $\bar{\upsilon}$         | $\mu$                    | $\bar{\mu}$              | aSNR         | id                |
+| --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ------------ | ----------------- |
+| [x] | SARA (a=1)     | heuristic  | heuristic  | none         | none   | none        | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        | 36.78        | 893579 - 893607   |
+| [x] | SARA (a=2)     | heuristic  | heuristic  | none         | none   | none        | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        | 39.98        |                   |
+| [R] | SARA (a=3)     | heuristic  | heuristic  | none         | none   | none        | [1.7789e-05, 3.3730e-05] | -                        | [1.7789e-05, 3.3730e-05] | -                        | 41.33        | 1110145 - 1110164 |
+| [x] | HS (a,ab=1)    | heuristic  | heuristic  | none         | none   | none        | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               | 42.80        |                   |
+| [x] | FHS (a,ab=1)   | heuristic  | heuristic  | none         | none   | none        | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 44.07        | 893342            |
+| [x] | HS  (a,ab=3)   | heuristic  | heuristic  | none         | none   | none        | 1.0868e-04               | 1.0652e-01               | 1.0868e-04               | 1.0652e-01               | 43.11        | 1306789           |
+| [K] | FHS (a,ab=3)   | heuristic  | heuristic  | none         | none   | none        | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 1.0868e-04               | [8.8810e-03, 3.5512e-02] | 43.12        | 1120950           |
+| [x] | HS  (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        | 1.5997e-04               | [1.0652e-01, 1.0652e-01] | 1.5997e-04               | [1.0652e-01, 1.0652e-01] | 42.94        | 1308520           |
+| [K] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        | 1.5997e-04               | [8.8810e-03, 3.5512e-02] | 1.5997e-04               | [8.8810e-03, 3.5512e-02] | 44.01 (rw 5) | 1308860           |
+| [R] | FHS (a=1,ab=1) | heuristic2 | heuristic2 | none         | none   | none        | 1.5997e-04               | [8.8810e-03, 3.5512e-02] | 1.5997e-04               | [8.8810e-03, 3.5512e-02] |              | 1312320           |
+this one almost done
 
 Average "target" SNR: 47.93 dB (alpha = 1), 41.91 dB (alpha = 2), 38.40 dB (alpha = 3)
-
 Value empirical stopping criterion: 0.4764
+
+Setting 500 iterations max per pdfb
+| Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$               | $\bar{\upsilon}$ | $\mu$                    | $\bar{\mu}$ | aSNR | id                |
+| --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ------------------------ | ---------------- | ------------------------ | ----------- | ---- | ----------------- |
+| [x] | SARA (a=3)     | heuristic  | heuristic  | none         | none   | none        | [1.7789e-05, 3.3730e-05] | -                | [1.7789e-05, 3.3730e-05] | -           |      | 1313495 - 1313514 |
+| [R] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        |                          |                  |                          |             |      | 1313494           |
+| [ ] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |                          |                  |                          |             |      |                   |
+
+
+New data set with a differet noise realization (different folder, seed = 54321)
+data generation: job 1312342
+| Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | aSNR | id      |
+| --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ---------- | ---------------- | ----- | ----------- | ---- | ------- |
+| [ ] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             |      | 1313488 | -> errored...
