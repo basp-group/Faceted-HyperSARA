@@ -17,8 +17,8 @@ parameter_file_full_path = "job_spatial.csv"
 
 # to be activated only for the first run (generating the data), and can systematically deactivated afertwards)
 gencube = 0
-genvis = 1
-computenorm = 1
+genvis = 0
+computenorm = 0
 lowerbounds = 1
 solve = 1
 
@@ -30,18 +30,18 @@ ind = 1
 Qc = 1
 rw = -1
 gam = ['1']  # multiplicative factor affecting the ratio -> '1e-5' order of magnitude
-gam_bar = ['1e-1','1','10']
-nreweights = 30
+gam_bar = ['3']
+nreweights = 5
 wintype = 'triangular'
 covpath = '../../data/msSpecs.mat' #'../../data/vla_7.95h_dt10s.uvw.mat'
 ncdata = 20
 flaghomotopy = 0
-rw_type = 'dirty' # 'ground_truth' 'dirty' 'heuristic'
+rw_type = 'heuristic2' # 'ground_truth' 'dirty' 'heuristic' 'heuristic2'
 exp_type = 'spatial' # 'test'
 superresolution_factor = 2
 isnr = 40
 updatereg = 0
-regtype = 'inv' # 'inv' 'log' 'heuristic'
+regtype = 'heuristic2' # 'inv' 'log' 'heuristic' 'heuristic2'
 xapprox = 'none' # 'none' 'precond'
 noise_transfer = 'none' # 'none' 'precond'
 reg_option = 'none' # 'none' 'dirty'
