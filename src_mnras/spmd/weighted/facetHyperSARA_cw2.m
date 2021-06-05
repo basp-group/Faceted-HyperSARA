@@ -907,24 +907,23 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         end
         % obj = param.gamma0*nuclear + param.gamma*l21;
         
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
-            % compute SNR
-            % get xsol back from the workers
-            for q = 1:Q
-                xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-            end
-            sol = reshape(xsol(:),numel(xsol(:))/c,c);
-            SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-            psnrh = zeros(c,1);
-            for i = 1:c
-                psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-            end
-            SNR_average = mean(psnrh);
+        % compute SNR
+        % get xsol back from the workers
+        for q = 1:Q
+            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        end
+        sol = reshape(xsol(:),numel(xsol(:))/c,c);
+        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+        psnrh = zeros(c,1);
+        for i = 1:c
+            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+        end
+        SNR_average = mean(psnrh);
+        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
 
+
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
             % Save parameters (matfile solution)
-%             m = matfile([name, '_', ...
-%               num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
-%               'Writable', true);
             m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
             m.param = param;
@@ -975,7 +974,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 fprintf('Backup iter: %i\n',t);
                 fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-                fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+                % fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
             end
         end
 

@@ -496,12 +496,13 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         %     l11_ = fetchNext(f);
         %     l11 = l11 + l11_;
         % end
+
+        % compute SNR
+        SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
+        fprintf(' SNR = %e\n\n', SNR);
+
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
-
-            % compute SNR
-            SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
-
             % Save parameters (matfile solution)
             m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
                 'Writable', true);
@@ -534,7 +535,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 fprintf('Backup iter: %i\n',t);
                 fprintf('l11-norm = %e, rel_val = %e\n', l11, rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-                fprintf(' SNR = %e\n\n', SNR);
+                % fprintf(' SNR = %e\n\n', SNR);
             end
         end
 
