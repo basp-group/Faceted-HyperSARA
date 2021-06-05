@@ -394,12 +394,17 @@ else
         % v1 = v1(u1 < 0.5*bmax);
         % bmax = max(sqrt(u1.^2 + v1.^2));
     else
-        load(coverage_path, 'uvw');
-        size(uvw)
+        % load(coverage_path, 'uvw');
+        % size(uvw)
         %! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
         % units of the smallest wavelenght, associated with the highest frequency)
-        u1 = uvw(:, 1)*f(end)/speed_of_light;
-        v1 = uvw(:, 2)*f(end)/speed_of_light;  
+        % u1 = uvw(:, 1)*f(end)/speed_of_light;
+        % v1 = uvw(:, 2)*f(end)/speed_of_light;  
+        load(coverage_path, 'uvw', 'obsId');
+        size(uvw)
+        u1 = uvw(obsId==3, 1)*f(end)/speed_of_light;
+        v1 = uvw(obsId==3, 2)*f(end)/speed_of_light;  
+        clear obsId
     end
     bmax = max(sqrt(u1.^2 + v1.^2));
 
@@ -723,6 +728,7 @@ else
         '_srf=', num2str(superresolution_factor), ...
         '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
         '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
+        'overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
         '_ind=', num2str(ind), ...
         '_rwtype=', rwtype, ...
         '_regtype=', regtype, ...
@@ -737,6 +743,7 @@ else
             '_srf=', num2str(superresolution_factor), ...
             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
             '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
+            'overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
             '_ind=', num2str(ind), ...
             '_rwtype=', rwtype, ...
             '_regtype=', regtype, ...
@@ -794,7 +801,7 @@ if flag_solveMinimization
     param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
     
     %! -- TO BE CHECKED
-    param_HSI.reweighting_rel_var = 1e-5;       % relative variation (reweighting)
+    param_HSI.reweighting_rel_var = 1e-4;       % relative variation (reweighting)
     if flag_homotopy
         param_HSI.reweighting_alpha = 20;
         param_HSI.reweighting_min_iter = 5; % minimum number of reweighting iterations, weights updated reweighting_min_iter times
