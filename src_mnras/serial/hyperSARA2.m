@@ -493,7 +493,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     t_master(t) = toc(tw);
 
     for i = 1:K
-       xi{2+i} = xsol(:, :, c_chunks{i}); %! error here (xsol, not xhat)
+       xi{2+i} = xsol(:, :, c_chunks{i});
     end
     
     % update dual variables

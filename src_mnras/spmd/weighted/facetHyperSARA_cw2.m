@@ -593,7 +593,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             
             % send xhat_q (communication towards the data nodes)
             for i = 1:K
-                labSend(xsol_q(:,:,c_chunksp.Value{i}), Qp.Value+i); % xsol_q %! error here
+                labSend(xsol_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
             end
             
             % update borders (-> versions of xhat with overlap)
@@ -602,7 +602,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xhat_q;
             x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
             
-            % update dual variables (nuclear, l21) % errors here
+            % update dual variables (nuclear, l21)
             [v0_, g0] = update_dual_nuclear(v0_, x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :), w, weights0_, beta0);
             [v1_, g1] = update_dual_l21(v1_, x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :), weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
@@ -625,7 +625,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             % retrieve xhat_i from the prior/primal nodes
             for q = 1:Qp.Value
                 xi(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
-                    labReceive(q); % xhat_i
+                    labReceive(q);
             end
             tw = tic;
             %! to be modified (keep Fourier transform)
@@ -1006,9 +1006,6 @@ spmd
     end
 end
 
-% m = matfile([name, '_', ...
-%               num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
-%               'Writable', true);
 m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
     'Writable', true);
 m.param = param;
