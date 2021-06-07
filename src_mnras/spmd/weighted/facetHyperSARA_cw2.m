@@ -593,7 +593,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
             
             % send xhat_q (communication towards the data nodes)
             for i = 1:K
-                labSend(xhat_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
+                labSend(xsol_q(:,:,c_chunksp.Value{i}), Qp.Value+i); % xsol_q %! error here
             end
             
             % update borders (-> versions of xhat with overlap)
@@ -974,7 +974,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 fprintf('Backup iter: %i\n',t);
                 fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-                % fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+                fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
             end
         end
 
