@@ -105,7 +105,7 @@ for q = 1:Q
     if flag_overlap
         w{q} = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), d);
     else
-        w{q} = ones(dims_o(:,q)); %! in this case, dims = dims_o
+        w{q} = ones(dims_o(q,:)); %! in this case, dims = dims_o
     end
 end
 
