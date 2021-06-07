@@ -493,7 +493,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
     t_master(t) = toc(tw);
 
     for i = 1:K
-       xi{2+i} = xhat(:, :, c_chunks{i}); 
+       xi{2+i} = xsol(:, :, c_chunks{i}); %! error here (xsol, not xhat)
     end
     
     % update dual variables
@@ -757,7 +757,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
                 fprintf('Backup iter: %i\n',t);
                 fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-                % fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+                fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
             end
         end 
 
