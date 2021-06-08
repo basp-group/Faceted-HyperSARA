@@ -6,7 +6,7 @@ pathgroundtruth = '../../data/cygASband_Cube_1024_2048_20.fits';
 x0 = fitsread(pathgroundtruth);
 N = [size(x0, 1), size(x0, 2)];
 nChannels = size(x0, 3);
-load('results/cygASband_Cube_1024_2048_20_spatial/')
+load('results/cygASband_Cube_1024_2048_20_spatial/Anorm_hs_Ny=1024_Nx=2048_L=20.mat', 'operator_norm')
 
 % common parameters
 simulation_type = 'spatial';
