@@ -14,14 +14,14 @@ simulation_type = 'spatial';
 
 %% SARA
 filename = @(ind) fullfile('results/cygASband_Cube_1024_2048_20_spatial/sara', ...
-strcat('spatial_cygASband_Cube_1024_2048_20_sara_none_srf=2_Ny=1024_Nx=2048_L=20_Qy=1_Qx=1_Qc=20_ind=', num2str(ind),'_g=1_gb=1_overlap=0_0_hom=0_rwt=heuristic_updreg=0_regtype=heuristic_snr=40_rw=5.mat'));
+strcat('spatial_cygASband_Cube_1024_2048_20_sara_none_srf=2_Ny=1024_Nx=2048_L=20_Qy=1_Qx=1_Qc=20_ind=', num2str(ind),'_g=3_gb=1_overlap=0_0_hom=0_rwt=heuristic_updreg=0_regtype=heuristic_snr=40_rw=5.mat'));
 Q = 1;
 ncores_data = 3; % 1 for the data, 2 for the master
 ncores_prior = 9;
 algo = 'sara';
 
 [x, res, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, total_cpu_time, total_runtime, iteration_number] = ...
-    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, squared_operator_norm, Q);
+    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, operator_norm, Q);
 
 save(['results_' algo, '_', simulation_type, '.mat'], '-v7.3', 'asnr', 'ssnr', ...
     'asnr_log', 'ssnr_log', 'arun', 'srun', 'acpu', 'scpu', ...
@@ -47,7 +47,7 @@ ncores_prior = 2;
 algo = 'hypersara';
 
 [x, res, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, total_cpu_time, total_runtime, iteration_number] = ...
-    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, squared_operator_norm, Q);
+    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, operator_norm, Q);
 
 save(['results_' algo, '_', simulation_type, '.mat'], '-v7.3', 'asnr', 'ssnr', ...
     'asnr_log', 'ssnr_log', 'arun', 'srun', 'acpu', 'scpu', ...
@@ -75,7 +75,7 @@ for q = Q
     for ovl= overlap_fraction
         fprintf("Q=%i, ovl=%1.2e \n", q, ovl)
         [x, res, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, total_cpu_time, total_runtime, iteration_number] = ...
-            aggregate_results(algo, filename(q, alph, alph_bar, ovl), ncores_data, ncores_prior, x0, squared_operator_norm, q);
+            aggregate_results(algo, filename(q, alph, alph_bar, ovl), ncores_data, ncores_prior, x0, operator_norm, q);
 
         save(['results_' algo, '_', simulation_type, '.mat'], '-v7.3', 'asnr', 'ssnr', ...
             'asnr_log', 'ssnr_log', 'arun', 'srun', 'acpu', 'scpu', ...
