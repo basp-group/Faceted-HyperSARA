@@ -85,7 +85,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % rw = -1;
 % rwtype = 'heuristic2'; % dirty, heuristic
 % flag_homotopy = 0;
-% overlap_fraction = 0.5;
+% overlap_fraction = 0;
 % isnr = 50;
 
 % nChannels = 20;

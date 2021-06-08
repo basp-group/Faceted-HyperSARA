@@ -168,37 +168,45 @@ Setting 500 iterations max per pdfb (in ~/test/Faceted...)
 | [R] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        | 1.5997e-04               | [8.8810e-03, 3.5512e-02] | 1.5997e-04               | [8.8810e-03, 3.5512e-02] | 44.15 | 1313824 (in rw 19) |
 -> restart from rw 15 (1319645)
 
-Error writing to output stream. (line 680)
-: iostream error
-{^HError using fprintf
-Error writing to output stream.
-: iostream error
-
 New data set with a differet noise realization (different folder, seed = 54321), 2k pdfb iterations (in ~/Faceted...)
 data generation: job 1312342
 | Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$ | $\bar{\upsilon}$         | $\mu$      | $\bar{\mu}$              | aSNR  | id                                                  |
 | --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ---------- | ------------------------ | ---------- | ------------------------ | ----- | --------------------------------------------------- |
 | [E] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        | 1.5997e-04 | [8.8810e-03, 3.5512e-02] | 1.5997e-04 | [8.8810e-03, 3.5512e-02] | 43.90 | 1313822 (in rw 6, already more than 10k iterations) | HDF5 file error (??) | -> no need to restart or retrieve (same behaviour as before) |
 
-### New data set A+C configuration (test_configAC, not much difference to be expected in terms of quality)
+### New data set A+C configuration (test_configAC, not much difference to be expected in terms of quality) (500 iter per pdfb, 30 reweights)
 
 | Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$               | $\bar{\upsilon}$         | $\mu$                    | $\bar{\mu}$              | aSNR  | id                 |
 | --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ----- | ------------------ |
-| [R] | SARA (a=3)     | heuristic  | heuristic  | none         | none   | none        | [2.2002e-05, 4.0750e-05] | -                        | [2.2002e-05, 4.0750e-05] | -                        | 41.01 | 1318405  - 1318424 | -> channel 11 missing  1319652     |
-| [R] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        | 1.9527e-04               | 1.3003e-01               | 1.9527e-04               | 1.3003e-01               | 42.14 | 1317496, 1319676   | error in reweighting 1, hdf5 error |
-| [R] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        | 1.9527e-04               | [1.0841e-02, 4.3347e-02] | 1.9527e-04               | [1.0841e-02, 4.3347e-02] | 44.30 | 1318404            | still running     (rw 5)           |
+| [K] | SARA (a=3)     | heuristic  | heuristic  | none         | none   | none        | [2.2002e-05, 4.0750e-05] | -                        | [2.2002e-05, 4.0750e-05] | -                        | 41.01 | 1318405  - 1318424 | -> channel 11 missing  1319652     |
+| [K] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        | 1.9527e-04               | 1.3003e-01               | 1.9527e-04               | 1.3003e-01               | 42.14 | 1317496, 1319676   | error in reweighting 1, hdf5 error |
+| [K] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        | 1.9527e-04               | [1.0841e-02, 4.3347e-02] | 1.9527e-04               | [1.0841e-02, 4.3347e-02] | 44.30 | 1318404            | still running     (rw 5)           |
 
-### A configuration (test_configA)
+### A configuration (test_configA) (500 iter per pdfb, 30 reweights)
 
 | Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$               | $\bar{\upsilon}$         | $\mu$                    | $\bar{\mu}$              | aSNR  | id                |
 | --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ----- | ----------------- |
 | [x] | SARA (a=3)     | heuristic  | heuristic  | none         | none   | none        | [2.8344e-05, 4.0439e-05] | -                        | [2.8344e-05, 4.0439e-05] | -                        | 37.25 | 1317262 - 1317281 | -> retrieved files                |
-| [R] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        | 2.2254e-04               | 1.4819e-01               | 2.2254e-04               | 1.4819e-01               | 24.67 | 1314934           | -> error in rw 2, restart 1319650 | -> investigate |
-| [R] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        | 2.2254e-04               | [1.2355e-02, 4.9401e-02] | 2.2254e-04               | [1.2355e-02, 4.9401e-02] | 41.00 | 1315277           | -> error in rw 9, restart 1319649 |
+| [K] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        | 2.2254e-04               | 1.4819e-01               | 2.2254e-04               | 1.4819e-01               | 24.67 | 1314934           | -> error in rw 2, restart 1319650 | -> investigate |
+| [K] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        | 2.2254e-04               | [1.2355e-02, 4.9401e-02] | 2.2254e-04               | [1.2355e-02, 4.9401e-02] | 41.00 | 1315277           | -> error in rw 9, restart 1319649 |
 
 2k iterations, 5 reweights
-| Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | aSNR | id                |
-| --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ---------- | ---------------- | ----- | ----------- | ---- | ----------------- |
-| [R] | SARA (a=3)     | heuristic  | heuristic  | none         | none   | none        |            | -                |       | -           |      | 1320764 - 1320783 |
-| [R] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             |      | 1320762           |
-| [R] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             |      | 1320763           |
+| Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$ | $\bar{\upsilon}$         | $\mu$      | $\bar{\mu}$              | aSNR  | id                |
+| --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ---------- | ------------------------ | ---------- | ------------------------ | ----- | ----------------- |
+| [x] | SARA (a=3)     | heuristic  | heuristic  | none         | none   | none        |            | -                        |            | -                        |       | 1320764 - 1320783 |
+| [R] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          |       | 1323195           |
+| [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        | 2.2254e-04 | [1.2355e-02, 4.9401e-02] | 2.2254e-04 | [1.2355e-02, 4.9401e-02] | 40.75 | 1320763, 1322375  | 4x4, restart rw2 |
+| [R] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          |       | 1321020, 1322373  | 2x2, restart rw0 | stagnates around 33 dB...? (issue here?)
+| [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 40.75 | 1321021, 1322374  | 3x3, restart rw1 |
+| [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 38.39 | 1323194           | 0                |
+| [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 41.01 | 1322378           | 0.1              |
+| [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 41.47 | 1322379           | 0.25             |
+| [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 41.22 | 1322380           | 0.4              |
+
+### Control simulations (test/..., config A)
+
+2k iterations, 5 reweights
+| Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | aSNR | id      |
+| --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ---------- | ---------------- | ----- | ----------- | ---- | ------- |
+| [R] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             |      | 1323437 |
+| [R] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             |      | 1323438 |
