@@ -121,7 +121,7 @@ switch algo
 
         load(filename, 'xsol', 'res', 't_facet', 't_data', 'end_iter')
         x = xsol;
-        residual = res;
+        residual = res./squared_operator_norm;
         clear xsol res;
 
         % compute SNR
@@ -154,7 +154,7 @@ switch algo
     case 'hypersara'
         load(filename, 'xsol', 'res', 't_l21', 't_nuclear', 't_master', 't_data', 'end_iter')
         x = xsol;
-        residual = res;
+        residual = res./squared_operator_norm;
         clear xsol res;
 
         % compute SNR
