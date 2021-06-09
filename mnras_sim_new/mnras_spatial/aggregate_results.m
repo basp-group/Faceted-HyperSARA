@@ -29,7 +29,7 @@ residual = zeros(N(1), N(2), nChannels);
 norm2D = @(x) squeeze(sqrt(sum(sum(x.^2, 2), 1)));
 SNR = @(x, x0) 20*log10(norm2D(x0)./norm2D(x - x0));
 % SNR_log = @(x, x0) 20*log10(norm2D(log10(x0+eps))./norm2D(log10(x+eps)-log10(x0+eps)));
-SNR_log = @(x, x0) 20*log10(norm2D(log10(1 + x0./reshape(upsilon0, [1, 1, numel(upsilon0)]))))./norm2D(log10(1 + x./reshape(upsilon0, [1, 1, numel(upsilon0)]))-log10(1 + x0./reshape(upsilon0, [1, 1, numel(upsilon0)]))));
+SNR_log = @(x, x0) 20*log10(norm2D(log10(1 + x0./reshape(upsilon0, [1, 1, numel(upsilon0)])))./norm2D(log10(1 + x./reshape(upsilon0, [1, 1, numel(upsilon0)]))-log10(1 + x0./reshape(upsilon0, [1, 1, numel(upsilon0)]))));
 
 % asnr = zeros(numel(Qx), 1);
 % asnr_log = zeros(numel(Qx), 1);
