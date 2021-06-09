@@ -2,19 +2,26 @@ clc; clear all; close all
 format compact
 
 %% ground truth
+image_name = 'cygASband_Cube_1024_2048_20';
+superresolution_factor = 2;
+Ny = 1024;
+Nx = 2048;
+nChannels = 20;
+isnr = 40;
+simulation_type = 'spatial';
+
 pathgroundtruth = '../../data/cygASband_Cube_1024_2048_20.fits';
 x0 = fitsread(pathgroundtruth);
 N = [size(x0, 1), size(x0, 2)];
 nChannels = size(x0, 3);
 load('results/cygASband_Cube_1024_2048_20_spatial/Anorm_hs_Ny=1024_Nx=2048_L=20.mat', 'operator_norm')
-load(strcat('y_', ...
-exp_type,'_',image_name, '_srf=', num2str(superresolution_factor), ...
-'_Ny=',num2str(Ny),'_Nx=',num2str(Nx),'_L=', num2str(nchannels), ...
+load(strcat('results/cygASband_Cube_1024_2048_20_spatial/y_', ...
+simulation_type,'_',image_name, '_srf=', num2str(superresolution_factor), ...
+'_Ny=',num2str(Ny),'_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
 '_snr=', num2str(isnr), ...
 '.mat'), 'sigma_noise')
 
 % common parameters
-simulation_type = 'spatial';
 upsilon0 = 3*sigma_noise./sqrt(operator_norm); 
 
 %% SARA

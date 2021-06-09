@@ -1,5 +1,5 @@
 function [x, residual, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, total_cpu_time, total_runtime, iteration_number] = ...
-    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, squared_operator_norm, Q, a)
+    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, squared_operator_norm, Q, upsilon0)
 %%
 % Produce the images and metrics reported in the MNRAS paper
 % ``A Faceted Prior for Scalable Wideband Imaging: Application to Radio
@@ -29,7 +29,7 @@ residual = zeros(N(1), N(2), nChannels);
 norm2D = @(x) squeeze(sqrt(sum(sum(x.^2, 2), 1)));
 SNR = @(x, x0) 20*log10(norm2D(x0)./norm2D(x - x0));
 % SNR_log = @(x, x0) 20*log10(norm2D(log10(x0+eps))./norm2D(log10(x+eps)-log10(x0+eps)));
-SNR_log = @(x, x0) 20*log10(norm2D(log10(1 + x0./a))./norm2D(log10(1 + x./reshape(a, [1, 1, numel(a)]))-log10(1 + x0./reshape(a, [1, 1, numel(a)]))));
+SNR_log = @(x, x0) 20*log10(norm2D(log10(1 + x0./a))./norm2D(log10(1 + x./reshape(upsilon0, [1, 1, numel(upsilon0)]))-log10(1 + x0./reshape(upsilon0, [1, 1, numel(upsilon0)]))));
 
 % asnr = zeros(numel(Qx), 1);
 % asnr_log = zeros(numel(Qx), 1);
