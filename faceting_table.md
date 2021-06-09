@@ -196,25 +196,41 @@ data generation: job 1312342
 | [x] | SARA (a=3)     | heuristic  | heuristic  | none         | none   | none        |            | -                        |            | -                        |       | 1320764 - 1320783 |
 | [R] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          |       | 1323195           |
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        | 2.2254e-04 | [1.2355e-02, 4.9401e-02] | 2.2254e-04 | [1.2355e-02, 4.9401e-02] | 40.75 | 1320763, 1322375  | 4x4, restart rw2 |
-| [R] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          |       | 1321020, 1322373  | 2x2, restart rw0 | stagnates around 33 dB...? (issue here?)
+| [R] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          |       | 1321020, 1322373  | 2x2, restart rw0 | stagnates around 33 dB...? (issue here?) |
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 40.75 | 1321021, 1322374  | 3x3, restart rw1 |
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 38.39 | 1323194           | 0                |
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 41.01 | 1322378           | 0.1              |
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 41.47 | 1322379           | 0.25             |
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 41.22 | 1322380           | 0.4              |
 
-
 sara, asnr = 36.28 (6.77e-01), asnr_log = 5.65 (3.87e-01), cpu_cores = 12, iteration_number = 2590
 arun (s) = 3.34 (1.53e-01), total_runtime (h) = 2.73
 acpu (s) = 7.25 (4.28e-01) , total_cpu_time (h) = 104.38
 
+Q=4, ovl=0.00e+00
+cw, asnr = 38.39 (1.59e+00), asnr_log = 5.91 (2.11e-01), cpu_cores = 36, iteration_number = 7310
+arun (s) = 11.47 (5.66e-01), total_runtime (h) = 23.30
+acpu (s) = 281.29 (1.29e+01) , total_cpu_time (h) = 571.17
 
+Q=4, ovl=1.00e-01
+cw, asnr = 41.02 (2.73e+00), asnr_log = 5.27 (3.23e-01), cpu_cores = 36, iteration_number = 10000
+arun (s) = 11.52 (4.26e-01), total_runtime (h) = 31.99
+acpu (s) = 282.69 (1.01e+01) , total_cpu_time (h) = 785.24
 
+Q=4, ovl=2.50e-01
+cw, asnr = 41.48 (2.55e+00), asnr_log = 5.27 (3.46e-01), cpu_cores = 36, iteration_number = 10000
+arun (s) = 11.95 (4.63e-01), total_runtime (h) = 33.20
+acpu (s) = 291.61 (1.17e+01) , total_cpu_time (h) = 810.04
+
+Q=4, ovl=4.00e-01
+cw, asnr = 41.22 (2.28e+00), asnr_log = 5.64 (3.23e-01), cpu_cores = 36, iteration_number = 10000
+arun (s) = 12.84 (5.37e-01), total_runtime (h) = 35.68
+acpu (s) = 306.42 (1.38e+01) , total_cpu_time (h) = 851.16
 
 ### Control simulations (test/..., config A)
 
 2k iterations, 5 reweights
-| Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | aSNR | id      |
-| --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ---------- | ---------------- | ----- | ----------- | ---- | ------- |
-| [R] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             |      | 1323437 |
-| [R] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             |      | 1323438 |
+| Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | aSNR  | id      |
+| --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ---------- | ---------------- | ----- | ----------- | ----- | ------- |
+| [R] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             |       | 1323437 |
+| [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             | 40.79 | 1323438 |

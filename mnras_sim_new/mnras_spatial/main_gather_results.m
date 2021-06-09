@@ -1,16 +1,21 @@
 clc; clear all; close all
 format compact
 
-%% Ground truth
+%% ground truth
 pathgroundtruth = '../../data/cygASband_Cube_1024_2048_20.fits';
 x0 = fitsread(pathgroundtruth);
 N = [size(x0, 1), size(x0, 2)];
 nChannels = size(x0, 3);
 load('results/cygASband_Cube_1024_2048_20_spatial/Anorm_hs_Ny=1024_Nx=2048_L=20.mat', 'operator_norm')
+load(strcat('y_', ...
+exp_type,'_',image_name, '_srf=', num2str(superresolution_factor), ...
+'_Ny=',num2str(Ny),'_Nx=',num2str(Nx),'_L=', num2str(nchannels), ...
+'_snr=', num2str(isnr), ...
+'.mat'), 'sigma_noise')
 
 % common parameters
 simulation_type = 'spatial';
-
+upsilon0 = 3*sigma_noise./sqrt(operator_norm); 
 
 %% SARA
 filename = @(ind) fullfile('results/cygASband_Cube_1024_2048_20_spatial/sara', ...
@@ -21,7 +26,7 @@ ncores_prior = 9;
 algo = 'sara';
 
 [x, res, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, total_cpu_time, total_runtime, iteration_number] = ...
-    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, operator_norm, Q);
+    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, operator_norm, Q, upsilon0);
 
 save(['results_' algo, '_', simulation_type, '.mat'], '-v7.3', 'asnr', 'ssnr', ...
     'asnr_log', 'ssnr_log', 'arun', 'srun', 'acpu', 'scpu', ...
@@ -47,7 +52,7 @@ ncores_prior = 2;
 algo = 'hypersara';
 
 [x, res, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, total_cpu_time, total_runtime, iteration_number] = ...
-    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, operator_norm, Q);
+    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, operator_norm, Q, upsilon0);
 
 save(['results_' algo, '_', simulation_type, '.mat'], '-v7.3', 'asnr', 'ssnr', ...
     'asnr_log', 'ssnr_log', 'arun', 'srun', 'acpu', 'scpu', ...
@@ -65,17 +70,19 @@ filename = @(Q, alph, alph_bar, ovl) fullfile('results/cygASband_Cube_1024_2048_
 '_hom=0_rwt=heuristic2_updreg=0_regtype=heuristic2_snr=40_rw=5.mat']);
 alph = 1;
 alph_bar = 3;
-Q = [2, 3, 4];
-overlap_fraction = [0.1, 0.2, 0.25, 0.4, 0.5];
+Q = [4];
+overlap_fraction = [0, 0.1, 0.25, 0.4];
 ncores_data = 20;
 ncores_prior = Q.^2;
 algo = 'cw';
 
-for q = Q
-    for ovl= overlap_fraction
+for k = 1:numel(Q)
+    q = Q(k);
+    for l = 1:numel(overlap_fraction)
+        ovl = overlap_fraction(l);
         fprintf("Q=%i, ovl=%1.2e \n", q, ovl)
         [x, res, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, total_cpu_time, total_runtime, iteration_number] = ...
-            aggregate_results(algo, filename(q, alph, alph_bar, ovl), ncores_data, ncores_prior, x0, operator_norm, q);
+            aggregate_results(algo, filename(q, alph, alph_bar, ovl), ncores_data, ncores_prior, x0, operator_norm, q, upsilon0);
 
         save(['results_' algo, '_', simulation_type, '.mat'], '-v7.3', 'asnr', 'ssnr', ...
             'asnr_log', 'ssnr_log', 'arun', 'srun', 'acpu', 'scpu', ...
