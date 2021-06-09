@@ -203,9 +203,9 @@ data generation: job 1312342
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 41.47 | 1322379           | 0.25             |
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 41.22 | 1322380           | 0.4              |
 
-sara, asnr = 36.28 (6.77e-01), asnr_log = 5.65 (3.87e-01), cpu_cores = 12, iteration_number = 2590
-arun (s) = 3.34 (1.53e-01), total_runtime (h) = 2.73
-acpu (s) = 7.25 (4.28e-01) , total_cpu_time (h) = 104.38
+sara, asnr = 36.28 (6.77e-01), asnr_log = 16.90 (2.35e-01), cpu_cores = 260, iteration_number = 2590 
+arun (s) = 3.34 (1.53e-01), total_runtime (h) = 2.73 
+acpu (s) = 7.25 (4.28e-01) , total_cpu_time (h) = 104.38 
 
 Q=4, ovl=0.00e+00
 cw, asnr = 38.39 (1.59e+00), asnr_log = 5.91 (2.11e-01), cpu_cores = 36, iteration_number = 7310
