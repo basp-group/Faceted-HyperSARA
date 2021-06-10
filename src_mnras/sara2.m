@@ -502,7 +502,7 @@ for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
         fprintf(' SNR = %e\n\n', SNR);
 
         
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count,5))
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
             m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
                 'Writable', true);

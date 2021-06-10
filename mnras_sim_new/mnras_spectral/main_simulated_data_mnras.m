@@ -820,6 +820,7 @@ if flag_solveMinimization
         param_HSI.reweighting_sig_bar = sig_bar; 
     end
     % param_HSI.max_psf = max_psf;
+    param_HSI.backup_frequency = 1;
 
     % ellipsoid projection parameters (when preconditioning is active)
     param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
