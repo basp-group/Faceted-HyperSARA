@@ -203,34 +203,91 @@ data generation: job 1312342
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 41.47 | 1322379           | 0.25             |
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                          |            |                          | 41.22 | 1322380           | 0.4              |
 
-sara, asnr = 36.28 (6.77e-01), asnr_log = 16.90 (2.35e-01), cpu_cores = 260, iteration_number = 2590 
-arun (s) = 3.34 (1.53e-01), total_runtime (h) = 2.73 
-acpu (s) = 7.25 (4.28e-01) , total_cpu_time (h) = 104.38 
+2k iterations, 5 reweights
+| Run | Algo            | $\mu$ | $\bar{\mu}$ | rw0   | rw 1  | rw 2  | rw 3  | rw 4  | rw 5             | asnr_log (x10, /10)        | arun             | acpu              | total run | total_cpu | id               |
+| --- | --------------- | ----- | ----------- | ----- | ----- | ----- | ----- | ----- | ---------------- | -------------------------- | ---------------- | ----------------- | --------- | --------- | ---------------- |
+| [x] | SARA            |       |             | -     | -     | -     | -     | -     | 36.28 (6.77e-01) | 16.90                      | 3.34 (1.53e-01)  | 7.25 (4.28e-01)   |           |           | 1320764-1320783  |
+| [R] | HS              |       |             | 22.37 |       |       |       |       |                  |                            |                  |                   |           |           | 1323195          | -> takes ages! |
+| [R] | FHS (2x2, 0.25) |       |             | 24.37 |       |       |       |       |                  |                            |                  |                   |           |           | 1327578          |
+| [R] | FHS (3x3, 0.25) |       |             | 24.72 |       |       |       |       |                  |                            |                  |                   |           |           | 1327579          |
+| [x] | FHS (2x2, 0.5)  |       |             | 23.78 | 33.07 | 33.87 | 32.42 | 31.30 | 31.30 (3.34e+00) | 15.69 (2.03e+01, 1.09e+01) | 31.03 (3.84e+00) | 212.84 (2.56e+01) |           |           | 1321020, 1322373 |
+| [x] | FHS (3x3, 0.5)  |       |             | 24.72 | 36.27 | 39.83 | 40.50 | 40.69 | 40.75 (2.87e+00) | 21.57 (2.78e+01, 1.64e+01) | 17.20 (7.75e-01) | 237.49 (9.46e+00) |           |           | 1321021, 1322374 |
+| --- | --------------- | ----- | ----------- | ----- | ----- | ----- | ----- | ----- | ---------------- | -------------------------- | ---------------- | ----------------- | --------- | --------- | ---------------- |
+| [x] | FHS (4x4, 0)    |       |             | 24.31 | 36.80 | 38.17 | 38.37 | 38.44 | 38.39 (1.59e+00) | 21.41 (2.76e+01, 1.55e+01) | 11.47 (5.66e-01) | 281.29 (1.29e+01) |           |           | 1323194          |
+| [x] | FHS (4x4, 0.1)  |       |             | 24.37 | 38.34 | 40.55 | 40.93 | 41.01 | 41.02 (2.73e+00) | 21.64 (2.81e+01, 1.57e+01) | 11.52 (4.26e-01) | 282.69 (1.01e+01) |           |           | 1322378          |
+| [x] | FHS (4x4, 0.25) |       |             | 24.16 | 38.34 | 40.99 | 41.40 | 41.47 | 41.48 (2.55e+00) | 22.34 (2.89e+01, 1.65e+01) | 11.95 (4.63e-01) | 291.61 (1.17e+01) |           |           | 1322379          |
+| [x] | FHS (4x4, 0.4)  |       |             | 24.03 | 38.81 | 40.86 | 41.18 | 41.23 | 41.22 (2.28e+00) | 22.31 (2.86e+01, 1.70e+01) | 12.84 (5.37e-01) | 306.42 (1.38e+01) |           |           | 1322380          |
+| [x] | FHS (4x4, 0.5)  |       |             | 25.28 | 38.26 | 40.31 | 40.69 | 40.75 | 40.76 (2.75e+00) | 21.37 (2.76e+01, 1.62e+01) | 13.60 (5.28e-01) | 317.53 (1.58e+01) |           |           | 1320763, 1322375 |
+
+### Varying overlap
+
+sara, asnr = 36.28 (6.77e-01), asnr_log = 16.90 (2.35e-01), cpu_cores = 260, iteration_number = 2590
+arun (s) = 3.34 (1.53e-01), total_runtime (h) = 2.73
+acpu (s) = 7.25 (4.28e-01) , total_cpu_time (h) = 104.38
 
 Q=4, ovl=0.00e+00
-cw, asnr = 38.39 (1.59e+00), asnr_log = 5.91 (2.11e-01), cpu_cores = 36, iteration_number = 7310
+cw, asnr = 38.39 (1.59e+00), asnr_log = 21.41 (1.99e+00), cpu_cores = 36, iteration_number = 7310
 arun (s) = 11.47 (5.66e-01), total_runtime (h) = 23.30
 acpu (s) = 281.29 (1.29e+01) , total_cpu_time (h) = 571.17
+snr_log, 10 upsilon: 2.76e+01 (2.53e+00) , upsilon/10: 1.55e+01 (1.30e+00)
 
 Q=4, ovl=1.00e-01
-cw, asnr = 41.02 (2.73e+00), asnr_log = 5.27 (3.23e-01), cpu_cores = 36, iteration_number = 10000
+cw, asnr = 41.02 (2.73e+00), asnr_log = 21.64 (2.15e+00), cpu_cores = 36, iteration_number = 10000
 arun (s) = 11.52 (4.26e-01), total_runtime (h) = 31.99
 acpu (s) = 282.69 (1.01e+01) , total_cpu_time (h) = 785.24
+snr_log, 10 upsilon: 2.81e+01 (2.77e+00) , upsilon/10: 1.57e+01 (1.44e+00)
 
 Q=4, ovl=2.50e-01
-cw, asnr = 41.48 (2.55e+00), asnr_log = 5.27 (3.46e-01), cpu_cores = 36, iteration_number = 10000
+cw, asnr = 41.48 (2.55e+00), asnr_log = 22.34 (2.38e+00), cpu_cores = 36, iteration_number = 10000
 arun (s) = 11.95 (4.63e-01), total_runtime (h) = 33.20
 acpu (s) = 291.61 (1.17e+01) , total_cpu_time (h) = 810.04
+snr_log, 10 upsilon: 2.89e+01 (2.95e+00) , upsilon/10: 1.65e+01 (1.67e+00)
 
 Q=4, ovl=4.00e-01
-cw, asnr = 41.22 (2.28e+00), asnr_log = 5.64 (3.23e-01), cpu_cores = 36, iteration_number = 10000
+cw, asnr = 41.22 (2.28e+00), asnr_log = 22.31 (2.24e+00), cpu_cores = 36, iteration_number = 10000
 arun (s) = 12.84 (5.37e-01), total_runtime (h) = 35.68
 acpu (s) = 306.42 (1.38e+01) , total_cpu_time (h) = 851.16
+snr_log, 10 upsilon: 2.86e+01 (2.68e+00) , upsilon/10: 1.70e+01 (1.69e+00)
+
+Q=4, ovl=5.00e-01
+cw, asnr = 40.76 (2.75e+00), asnr_log = 21.37 (2.24e+00), cpu_cores = 30, iteration_number = 36
+✐, asnr = arun (s) = 13.60 (5.28e-01), total_runtime (h) = 37.77
+acpu (s) = 317.53 (1.58e+01) , total_cpu_time (h) = 882.03
+snr_log, 10 upsilon: 2.76e+01 (2.81e+00) , upsilon/10: 1.62e+01 (1.67e+00)
+
+### Vaying number of facets (ovl = 0.5)
+
+sara, asnr = 36.28 (6.77e-01), asnr_log = 16.90 (2.35e-01), cpu_cores = 260, iteration_number = 2590
+arun (s) = 3.34 (1.53e-01), total_runtime (h) = 2.73
+acpu (s) = 7.25 (4.28e-01) , total_cpu_time (h) = 104.38
+snr_log, 10 upsilon: 2.26e+01 (4.20e-01) , upsilon/10: 1.21e+01 (1.62e-01)
+
+Q=2, ovl=5.00e-01
+cw, asnr = 31.30 (3.34e+00), asnr_log = 15.69 (1.14e+00), cpu_cores = 25, iteration_number = 30
+$, asnr = 10000.00 (arun (s) = 31.03 (3.84e+00), total_runtime (h) = 86.20
+acpu (s) = 212.84 (2.56e+01) , total_cpu_time (h) = 591.23
+snr_log, 10 upsilon: 2.03e+01 (2.74e+00) , upsilon/10: 1.09e+01 (3.70e-01)
+
+Q=3, ovl=5.00e-01
+cw, asnr = 40.75 (2.87e+00), asnr_log = 21.57 (2.38e+00), cpu_cores = 25, iteration_number = 30
+$, asnr = 10000.00 (arun (s) = 17.20 (7.75e-01), total_runtime (h) = 47.76
+acpu (s) = 237.49 (9.46e+00) , total_cpu_time (h) = 659.69
+snr_log, 10 upsilon: 2.78e+01 (2.88e+00) , upsilon/10: 1.64e+01 (2.03e+00)
+
+Q=4, ovl=5.00e-01
+cw, asnr = 40.76 (2.75e+00), asnr_log = 21.37 (2.24e+00), cpu_cores = 25, iteration_number = 30
+$, asnr = 10000.00 (arun (s) = 13.60 (5.28e-01), total_runtime (h) = 37.77
+acpu (s) = 317.53 (1.58e+01) , total_cpu_time (h) = 882.03
+snr_log, 10 upsilon: 2.76e+01 (2.81e+00) , upsilon/10: 1.62e+01 (1.67e+00)
 
 ### Control simulations (test/..., config A)
 
 2k iterations, 5 reweights
 | Run | Algo           | Rw.        | Reg.       | Noise trans. | Xdirty | reg. option | $\upsilon$ | $\bar{\upsilon}$ | $\mu$ | $\bar{\mu}$ | aSNR  | id      |
 | --- | -------------- | ---------- | ---------- | ------------ | ------ | ----------- | ---------- | ---------------- | ----- | ----------- | ----- | ------- |
-| [R] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             |       | 1323437 |
+| [K] | HS (a=1,ab=3)  | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             |       | 1323437 |
 | [x] | FHS (a=1,ab=3) | heuristic2 | heuristic2 | none         | none   | none        |            |                  |       |             | 40.79 | 1323438 |
+
+## Spectral faceting (config B only)
+
+id = 1329089 (hypersara)
