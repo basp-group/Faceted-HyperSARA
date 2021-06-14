@@ -469,9 +469,9 @@ nlevel = 4; % depth of the wavelet decompositions
 wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; 
 filter_length = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
 
-%! -- TO BE CHECKED
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
 % SARA space) involved in the reweighting scheme
+% TODO: to be completely re-structured
 if strcmp(algo_version, 'sara')
     dwtmode('zpd')
     [Psi1, Psit1] = op_p_sp_wlt_basis_fhs(wlt_basis, nlevel, Ny, Nx);
@@ -526,23 +526,6 @@ if strcmp(algo_version, 'sara')
 else
     fprintf('Normalization factors alpha = %e, alpha_bar = %e \n', gam, gam_bar);
     if flag_computeLowerBounds
-        %! use normalization by operator norm
-        %! old version below
-        % [sig, sig_bar, mu0, mu, mu_bar, ~, max_psf, l21_norm, nuclear_norm, l21_norm_x0, nuclear_norm_x0, dirty_image] = compute_reweighting_lower_bound(y, W, G, A, At, Ny, Nx, oy, ox, ...
-        %     nchans, wlt_basis, filter_length, nlevel, sigma_noise, rwtype, algo_version, Qx, Qy, overlap_size, window_type, x0, Anorm);
-
-        % save(fullfile(auxiliary_path, ...
-        %     strcat('lower_bounds_old_', ...
-        %     algo_version, ...
-        %     '_srf=', num2str(superresolution_factor), ...
-        %     '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
-        %     '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
-        %     '_ind=', num2str(ind), ...
-        %     '_rwtype=', rwtype, '_regtype=', regtype, '_snr=', num2str(isnr), '.mat')), ...
-        %         'sig', 'sig_bar', 'max_psf', 'l21_norm', 'nuclear_norm', 'dirty_image', 'mu', 'l21_norm_x0', 'nuclear_norm_x0', 'mu_bar');  
-
-        %? initialization proposed in (Abdulaziz 2019) (but using dirty image obtained with preconditioned operator)
-
         switch regtype
             case "inv"
                 if strcmp(rwtype, "heuristic")
@@ -643,8 +626,9 @@ else
     end
 end
 clear dirty_image
-    %! --
+%! --
 
+%! to be re-structured (parallelize elements here whenever needed)
 if flag_solveMinimization
     %%
     if strcmp(algo_version, 'sara')

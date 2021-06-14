@@ -133,7 +133,7 @@ switch algo
         sum_data_sqr = 0;
         sum_cpu_sqr = 0;
 
-        id = split_range_interleaved(Qc(c), nChannels);
+        id = split_range_interleaved(Qc, nChannels);
         x = zeros(size(x0));
         residual = zeros(size(x0));
 
@@ -194,7 +194,7 @@ switch algo
         asnr_log = mean(a);
         ssnr_log = std(a);
 
-        residual= res./reshape(squared_operator_norm, [1, 1, nChannels]);
+        residual= residual./reshape(squared_operator_norm, [1, 1, nChannels]);
 end
 
 %% Display results (table)
