@@ -223,22 +223,21 @@ data generation: job 1312342
 | [R] | FHS (3x3, 0.25) | 1336085 | 24.71 | 36.87 | 39.36 | -> mu = 2.2254e-04, mu_bar = [3.8470e-02, 5.4859e-02]                                             |
 
 2k iterations, 5 rw, 1 sigma (output mu, sigma for l21)
-| Run | Algo            | rw0 | rw 1 | rw 2 | rw3 |     |     |     | id  |
-| --- | --------------- | --- | ---- | ---- | --- | --- | --- | --- | --- |
-| [ ] | SARA            |     |      |      |     |     |     |     |     |
-| [ ] | HS              |     |      |      |     |     |     |     |     |
-| [ ] | FHS (4x4, 0)    |     |      |      |     |     |     |     |     |
-| [ ] | FHS (4x4, 0.1)  |     |      |      |     |     |     |     |     |
-| [ ] | FHS (4x4, 0.25) |     |      |      |     |     |     |     |     |
-| [ ] | FHS (4x4, 0.4)  |     |      |      |     |     |     |     |     |
-| [ ] | FHS (4x4, 0.5)  |     |      |      |     |     |     |     |     |
-| [ ] | FHS (2x2, 0.25) |     |      |      |     |     |     |     |     |
-| [ ] | FHS (3x3, 0.25) |     |      |      |     |     |     |     |     |
+| Run | Algo            | rw0 | rw 1 | rw 2 | rw3 | rw4 | rw5 | mu  | mu_bar | mu_chi, sigma_chi | id              |
+| --- | --------------- | --- | ---- | ---- | --- | --- | --- | --- | ------ | ----------------- | --------------- |
+| [ ] | SARA            |     |      |      |     |     |     |     | -      | -                 | 1341729-1341748 |
+| [ ] | HS              |     |      |      |     |     |     |     |        |                   | 1341721         |
+| [ ] | FHS (4x4, 0)    |     |      |      |     |     |     |     |        |                   | 1341722         |
+| [ ] | FHS (4x4, 0.1)  |     |      |      |     |     |     |     |        |                   | 1341723         |
+| [ ] | FHS (4x4, 0.25) |     |      |      |     |     |     |     |        |                   | 1341724         |
+| [ ] | FHS (4x4, 0.4)  |     |      |      |     |     |     |     |        |                   | 1341725         |
+| [ ] | FHS (4x4, 0.5)  |     |      |      |     |     |     |     |        |                   | 1341726         |
+| [ ] | FHS (2x2, 0.25) |     |      |      |     |     |     |     |        |                   | 1341727         |
+| [ ] | FHS (3x3, 0.25) |     |      |      |     |     |     |     |        |                   | 1341728         |
 
 Tests (heuristic, 1 sigma for both reg. parameters)
 cw 1336086 -> poor final results (~32 dB), but might be better with a higher number of max iterations per pdfb and/or larger number of reweights
 cw 1338167, 5k -> should be fine with a higher number of reweights, but evolution quite slow in terms of the snr (not sure this is really good)
--> relaunch 1341119  (mu = 3.4109e-05, mu_bar = [2.8860e-02, 4.1161e-02])
 
 ## Spectral faceting (config C only)
 

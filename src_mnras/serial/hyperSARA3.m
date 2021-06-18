@@ -1,5 +1,5 @@
 function [xsol,param,epsilon,t,rel_val,norm_res_out,res,end_iter,SNR,SNR_average] = ...
-    hyperSARA3(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, flag_cirrus, varargin)
+    hyperSARA3(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, filters_length, c_chunks, c, init_file_name, name, flag_homotopy, alph, alph_bar, flag_cirrus, varargin)
 %HyperSARA
 %
 % ...
@@ -170,20 +170,26 @@ end
 %     end
 % end
 
-[Psi1, Psit1] = op_p_sp_wlt_basis(wavelet, nlevel, Ny, Nx);
+[Psi1, Psit1] = op_p_sp_wlt_basis(wavelet, nlevel, M, N);
 P = length(Psi1);
 Psi = cell(P, 1);
 Psit = cell(P, 1);
+s = zeros(P, 1);
 for k = 1 : P
+    if filters_length(k) == 0
+        s(k) = M*N;
+    else
+        [~, s(k)] = n_wavelet_coefficients(filters_length(k), [M, N], 'zpd', nlevel);
+    end
     f = '@(y) HS_forward_sparsity(y,Psi1{';
-    f = sprintf('%s%i},Ny,Nx);', f,k);
+    f = sprintf('%s%i},M,N);', f,k);
     Psi{k} = afclean(eval(f));
     
     ft = '@(x) HS_adjoint_sparsity(x,Psit1{';
-    ft = sprintf('%s%i},%i);', ft,k,1);
+    ft = sprintf('%s%i},%i);', ft,k,s(k));
     Psit{k} = afclean(eval(ft));
 end
-clear Psi1, Psit1
+clear Psi1 Psit1
 
 % Initializations
 init_flag = isfile(init_file_name);
@@ -268,9 +274,8 @@ else
     v1 = cell(P, 1);
     u1 = cell(P, 1);
     weights1 = cell(P, 1);
-    s = zeros(P, 1);
     for k = 1:P
-        [v1{k}, weights1{k}, s(k)] = initialize_l21_serial2(xsol, Psit{k}, 'zpd', nlevel, reweighting_alpha, param.reweighting_sig);
+        [v1{k}, weights1{k}, s(k)] = initialize_l21_serial2_2(xsol, Psit{k}, 'zpd', nlevel, reweighting_alpha, param.reweighting_sig);
     end
     fprintf('v0, v1, weigths0, weights1 initialized \n\n')
 end
@@ -322,7 +327,7 @@ else
                 norm_res_tmp{i}{j} = norm(y{k}{i}{j});
             end
         end
-        norm_res{2+k} = norm_res_tmp;
+        norm_res{1+k} = norm_res_tmp;
     end
     clear norm_res_tmp
     fprintf('norm_res initialized \n\n')
@@ -524,16 +529,16 @@ for t = t_start : max_iter
     %% L-2,1 function update
     tic
     for k = 1:P
-        f(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, xhat, weights1{k}, beta1);
+        h(k) = parfeval(@run_par_waverec, 3, v1{k}, Psit{k}, Psi{k}, xhat, weights1{k}, beta1);
     end
     
     g = g0_{1};
     for i = 1:K
-        g(:,:,c_chunks{i}) = g(:,:,c_chunks{i}) + g2_{2+i};
+        g(:,:,c_chunks{i}) = g(:,:,c_chunks{i}) + g2_{1+i};
     end
 
     for k = 1:P
-        [idx, v1_, u1_, ~] = fetchNext(f);
+        [idx, v1_, u1_, ~] = fetchNext(h);
         v1{idx} = v1_;
         u1{idx} = u1_;
         % l21_cell{idx} = l21_;
@@ -848,7 +853,6 @@ function [v1_, u1_, l21_] = run_par_waverec(v1_, Psit, Psi, xhat, weights1_, bet
 r1 = v1_ +  Psit(xhat);
 l2 = sqrt(sum(abs(r1).^2,2));
 l2_soft = max(l2 - beta1*weights1_, 0)./ (l2+eps);
-%v1_ = r1 - (repmat(l2_soft,1,c) .* r1);
 v1_ = r1 - (l2_soft .* r1);
 u1_ = Psi(v1_);
 
