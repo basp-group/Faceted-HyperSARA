@@ -500,6 +500,7 @@ else
     fprintf('t_start initialized \n\n')
 end
 
+max_iter = (param.reweighting_max_iter + 1)*param.pdfb_max_iter;
 if init_flag
     rel_val = init_m.rel_val;
     end_iter = init_m.end_iter;
@@ -507,10 +508,10 @@ if init_flag
     t_data = init_m.t_data;
     fprintf('rel_val, end_iter, t_facet and t_data uploaded \n\n')
 else
-    rel_val = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
-    end_iter = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
-    t_facet = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
-    t_data = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    rel_val = zeros(max_iter, 1);
+    end_iter = zeros(max_iter, 1);
+    t_facet = zeros(max_iter, 1);
+    t_data = zeros(max_iter, 1);
     fprintf('rel_val, end_iter, t_facet and t_data initialized \n\n')
 end
 
@@ -578,7 +579,7 @@ start_loop = tic;
 
 fprintf('START THE LOOP MNRAS ver \n\n')
 
-for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
+for t = t_start : max_iter
     
     start_iter = tic;
     

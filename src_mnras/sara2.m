@@ -193,6 +193,7 @@ end
 
 count_eps_update_down = 0;
 count_eps_update_up = 0;
+max_iter = (param.reweighting_max_iter + 1)*param.pdfb_max_iter;
 
 if init_flag
     rel_val = init_m.rel_val;
@@ -203,14 +204,14 @@ if init_flag
     t_data = init_m.t_data;
     fprintf('rel_val, l11, end_iter, t_master, t_l11, and t_data uploaded \n\n')
 else
-    rel_val = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    rel_val = zeros(max_iter, 1);
     for k = 1:P
         f(k) = parfeval(@run_par_l11, 1, Psit{k}, xsol, weights1{k});
     end
-    end_iter = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
-    t_master = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
-    t_l11 = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
-    t_data = zeros(param.reweighting_max_iter*param.pdfb_max_iter, 1);
+    end_iter = zeros(max_iter, 1);
+    t_master = zeros(max_iter, 1);
+    t_l11 = zeros(max_iter, 1);
+    t_data = zeros(max_iter, 1);
     fprintf('rel_val, l11, end_iter, t_master, t_l11, and t_data initialized \n\n')
     l11 = 0;
     for k = 1:P
@@ -276,7 +277,7 @@ Ftx = zeros(size(xsol));
 
 fprintf('START THE LOOP MNRAS ver \n\n')
 
-for t = t_start : param.reweighting_max_iter*param.pdfb_max_iter
+for t = t_start : max_iter
     
     start_iter = tic;
     
