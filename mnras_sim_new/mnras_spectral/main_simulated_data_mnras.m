@@ -393,11 +393,11 @@ else
         % u1 = u1(u1 < 0.5*bmax);
         % v1 = v1(u1 < 0.5*bmax);
         % bmax = max(sqrt(u1.^2 + v1.^2));
-    else
+    else        
+        % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
+        % units of the smallest wavelenght, associated with the highest frequency)
         % load(coverage_path, 'uvw');
         % size(uvw)
-        %! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
-        % units of the smallest wavelenght, associated with the highest frequency)
         % u1 = uvw(:, 1)*f(end)/speed_of_light;
         % v1 = uvw(:, 2)*f(end)/speed_of_light;  
         load(coverage_path, 'uvw', 'obsId');
@@ -705,12 +705,12 @@ else
                 algo_version, Qx, Qy, overlap_size, window_type, ...
                 operator_norm);
             case "heuristic2"
-                [sig, sig_bar, mu, mu_bar, mu_c, sig_c] = ...
+                [sig, sig_bar, mu, mu_bar, mu_c, sig_c, sig_w] = ...
                 compute_reweighting_lower_bound_heuristic2(Ny, Nx, ...
                 nChannels, filter_length, nlevel, sigma_noise, ...
                 algo_version, Qx, Qy, overlap_size, window_type, ...
                 operator_norm, gam);
-                fprintf('Rwt: %s, mu_c = %.4e, sig_c = %.4e \n', rwtype, mu_c, sig_c);
+                fprintf('Rwt: %s, sig_w = %.4e, sig_w*mu_c = %.4e, sig_w*sig_c = %.4e \n', rwtype, sig_w, sig_w*mu_c, sig_w*sig_c);
             otherwise
                 error("Unknown regularization type.")
         end
