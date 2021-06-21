@@ -1,11 +1,11 @@
-% function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
-%     algo_version, window_type, ncores_data, ind, overlap_fraction, nReweights, ...
-%     flag_generateCube, flag_generateVisibilities, ...
-%     flag_computeOperatorNorm, flag_solveMinimization, ...
-%     cube_path, coverage_path, gam, rw, flag_homotopy, ... 
-%     flag_computeLowerBounds, rwtype, gam_bar, exp_type, ...
-%     superresolution_factor, isnr, update_regularization, flag_cirrus, ...
-%     regtype, xapprox, noise_transfer, reg_option)
+function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
+    algo_version, window_type, ncores_data, ind, overlap_fraction, nReweights, ...
+    flag_generateCube, flag_generateVisibilities, ...
+    flag_computeOperatorNorm, flag_solveMinimization, ...
+    cube_path, coverage_path, gam, rw, flag_homotopy, ... 
+    flag_computeLowerBounds, rwtype, gam_bar, exp_type, ...
+    superresolution_factor, isnr, update_regularization, flag_cirrus, ...
+    regtype, xapprox, noise_transfer, reg_option)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -62,44 +62,44 @@
 
 %% PARAMETERS FOR DEBUGGING
 
-image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
-exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
+% image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
+% exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
 
-Qx = 2; % 4
-Qy = 1; % 4
-Qc = 1;
-nReweights = 1;
-algo_version = 'hypersara'; % 'cw', 'hypersara', 'sara';
-window_type = 'triangular'; % 'hamming', 'pc'
-flag_generateVisibilities = 0;
-flag_computeOperatorNorm = 0;
-flag_computeLowerBounds = 1;
-flag_solveMinimization = true;
-ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
-ind = 1; % index of the spectral facet to be reconstructed
-gam = 1;
-gam_bar = 1;
-coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
-update_regularization = 1;
+% Qx = 2; % 4
+% Qy = 1; % 4
+% Qc = 1;
+% nReweights = 1;
+% algo_version = 'hypersara'; % 'cw', 'hypersara', 'sara';
+% window_type = 'triangular'; % 'hamming', 'pc'
+% flag_generateVisibilities = 0;
+% flag_computeOperatorNorm = 0;
+% flag_computeLowerBounds = 1;
+% flag_solveMinimization = true;
+% ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
+% ind = 1; % index of the spectral facet to be reconstructed
+% gam = 1;
+% gam_bar = 1;
+% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
+% update_regularization = 1;
 
-rw = -1;
-rwtype = 'heuristic2'; % dirty, heuristic
-flag_homotopy = 0;
-overlap_fraction = 0;
-isnr = 50;
+% rw = -1;
+% rwtype = 'heuristic2'; % dirty, heuristic
+% flag_homotopy = 0;
+% overlap_fraction = 0;
+% isnr = 50;
 
-nChannels = 20;
-flag_generateCube = 1;
-cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
-cube_path = cubepath(nChannels);
-flag_generateCoverage = 0;
-flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-superresolution_factor = 2;
-flag_cirrus = false;
-regtype = 'heuristic2'; % inv, log, heuristic
-xapprox = 'none'; % none, precond
-noise_transfer = 'none'; % none, precond
-reg_option = 'none'; % dirty, none
+% nChannels = 20;
+% flag_generateCube = 1;
+% cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
+% cube_path = cubepath(nChannels);
+% flag_generateCoverage = 0;
+% flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
+% superresolution_factor = 2;
+% flag_cirrus = false;
+% regtype = 'heuristic2'; % inv, log, heuristic
+% xapprox = 'none'; % none, precond
+% noise_transfer = 'none'; % none, precond
+% reg_option = 'none'; % dirty, none
 %%
 
 % fixed parameters (in the mnras experiments)
@@ -396,15 +396,15 @@ else
     else        
         % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
         % units of the smallest wavelenght, associated with the highest frequency)
-        load(coverage_path, 'uvw');
+        % load(coverage_path, 'uvw');
+        % size(uvw)
+        % u1 = uvw(:, 1)*f(end)/speed_of_light;
+        % v1 = uvw(:, 2)*f(end)/speed_of_light;  
+        load(coverage_path, 'uvw', 'obsId');
         size(uvw)
-        u1 = uvw(:, 1)*f(end)/speed_of_light;
-        v1 = uvw(:, 2)*f(end)/speed_of_light;  
-%         load(coverage_path, 'uvw', 'obsId');
-%         size(uvw)
-%         u1 = uvw(obsId==3, 1)*f(end)/speed_of_light;
-%         v1 = uvw(obsId==3, 2)*f(end)/speed_of_light;  
-%         clear obsId
+        u1 = uvw(obsId==3, 1)*f(end)/speed_of_light;
+        v1 = uvw(obsId==3, 2)*f(end)/speed_of_light;  
+        clear obsId
     end
     bmax = max(sqrt(u1.^2 + v1.^2));
 
@@ -886,10 +886,10 @@ if flag_solveMinimization
         switch algo_version 
             case 'hypersara'
                 % reference HyperSARA version
-%                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
-%                     hyperSARA2(y_spmd, epsilon_spmd, ...
-%                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
-%                     wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, update_regularization, sigma_noise_spmd, flag_cirrus, regtype);
+                [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
+                    hyperSARA2(y_spmd, epsilon_spmd, ...
+                    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
+                    wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, update_regularization, sigma_noise_spmd, flag_cirrus, regtype);
 
                 % [xsol,param,epsilon,t,rel_val,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
                 %     hyperSARA3(y_spmd, epsilon_spmd, ...
@@ -897,11 +897,11 @@ if flag_solveMinimization
                 %     wlt_basis, nlevel, filter_length, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), ...
                 %     flag_homotopy, gam, gam_bar, flag_cirrus);
 
-                [xsol,param,epsilon,t,rel_val,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
-                    hyperSARA4(y_spmd, epsilon_spmd, ...
-                    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
-                    wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), ...
-                    flag_homotopy, flag_cirrus);
+                % [xsol,param,epsilon,t,rel_val,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
+                %     hyperSARA4(y_spmd, epsilon_spmd, ...
+                %     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
+                %     wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), ...
+                %     flag_homotopy, flag_cirrus);
 
             case 'cw'
                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
