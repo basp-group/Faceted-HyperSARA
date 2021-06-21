@@ -771,16 +771,6 @@ for t = t_start : max_iter
 end
 toc(start_loop)
 
-% Collect distributed values (weights0_, weights1_, v0_, v1_)
-param.init_v0 = v0_{1};
-v0_{1} = [];
-param.init_v1 = v1_{2};
-v1_{2} = [];
-param.init_weights0 = weights0_{1};
-weights0_{1} = [];
-param.init_weights1 = weights1_{2};
-weights1_{2} = [];
-
 % Calculate residual images
 res = zeros(size(xsol));
 spmd
@@ -789,9 +779,6 @@ spmd
     end
 end
 
-% m = matfile([name, '_', ...
-%             num2str(param.cube_id) '_' num2str(param.gamma) '_' num2str(reweight_step_count) '.mat'], ...
-%             'Writable', true);
 m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
     'Writable', true);
 m.param = param;
