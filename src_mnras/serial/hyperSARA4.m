@@ -485,7 +485,7 @@ for t = t_start : max_iter
     spmd
         % l21 prior node (full SARA prior)
         tw = tic;
-        [v1_, g1_] = update_dual_l21_serial(v1_, Psit_, Psi_, xhat, weights1_, beta1.Value, sigma11.Value);  
+        [v1_, g1_] = update_dual_l21_serial(v1_, Psit_, Psi_, xhat(:,:,c_chunks{labindex}), weights1_, beta1.Value, sigma11.Value);
         t_l21_ = toc(tw); 
         % data fidetliy
         tw = tic;
