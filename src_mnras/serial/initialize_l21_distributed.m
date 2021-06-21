@@ -1,4 +1,4 @@
-function [v1, weights1, s] = initialize_l21_serial3(x, Psit, extension_mode, nlevel, reweighting_alpha, sig)
+function [v1, weights1, s] = initialize_l21_distributed(x, Psit, extension_mode, nlevel, reweighting_alpha, sig)
 %initialize_l21_serial2: initalize the dual variables related to the 
 % l21-norm prior.
 %-------------------------------------------------------------------------%

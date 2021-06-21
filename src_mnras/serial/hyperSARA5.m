@@ -1,5 +1,5 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,SNR,SNR_average] = ...
-    hyperSARA4(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, flag_cirrus, varargin)
+    hyperSARA5(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, flag_cirrus, varargin)
 %HyperSARA
 %
 % ...
@@ -192,7 +192,12 @@ else
     end
     fprintf('xsol initialized \n\n')
 end
-xlast_reweight = xsol; %! assumes backup file exactly saved at the time a reweighting step occured
+
+% xlast_reweight = xsol; %! assumes backup file exactly saved at the time a reweighting step occured
+xlast_reweight_ = Composite();
+for k = 1:K
+    xlast_reweight_{k} = xsol(:,:,c_chunks{k});
+end
 %! --
 
 if init_flag
@@ -251,7 +256,8 @@ if init_flag
 else
     [v0_, weights0_] = initialize_nuclear_serial(xsol, reweighting_alpha, sig_bar_);
     spmd
-        [v1_, weights1_, s_] = initialize_l21_distributed(xsol(:,:,c_chunks{labindex}), Psit_, 'zpd', nlevel, reweighting_alphap, sig_);
+        xi = xsol(:,:,c_chunks{labindex});
+        [v1_, weights1_, s_] = initialize_l21_distributed(xi, Psit_, 'zpd', nlevel, reweighting_alphap, sig_);
     end
     fprintf('v0, v1, weigths0, weights1 initialized \n\n')
 end
@@ -270,7 +276,7 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 
 Ap = Composite();
 Atp = Composite();
-xi = Composite();
+% xi = Composite();
 Fxi_old = Composite();
 Gp = Composite();
 yp = Composite();
@@ -278,12 +284,13 @@ pUp = Composite();
 Wp = Composite();
 epsilonp = Composite();
 
-for i = 1:K
-    temp = zeros(No, numel(c_chunks{i}));
-    for l = 1:numel(c_chunks{i})
-        temp(:,l) = A(xsol(:, :, c_chunks{i}(l)));
+for k = 1:K
+    temp = zeros(No, numel(c_chunks{k}));
+    for l = 1:numel(c_chunks{k})
+        temp(:,l) = A(xsol(:, :, c_chunks{k}(l)));
     end
-    Fxi_old{i} = temp; 
+    Fxi_old{k} = temp;
+    % xi{k} = xsol(:, :, c_chunks{k});
 end
 clear temp
 
@@ -420,7 +427,7 @@ end
 if init_flag
     spmd
         [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
-        l21_ = compute_sara_prior_distributed(xsol(:,:,c_chunks{labindex}), Psit_, s_);
+        l21_ = compute_sara_prior_distributed(xi, Psit_, s_);
     end  
     norm_epsilon_check = 0;
     norm_residual_check = 0;
@@ -466,26 +473,23 @@ for t = t_start : max_iter
     
     % update primal variable
     %! to be done in parallel as well (see that aftrwards)
-    tw = tic;
-    prev_xsol = xsol;
-    xsol = max(real(xsol - g), 0);
-    xhat = 2*xsol - prev_xsol;
-    t_master(t) = toc(tw);
-
-    for k = 1:K
-       xi{k} = xsol(:, :, c_chunks{k});
-    end
-    
-    % nuclear prior node
-    tw = tic;
-    [v0_, g] = update_dual_nuclear_serial(v0_, xhat, weights0_, beta0, sigma00);
-    t_nuclear(t) = toc(tw);
+    % tw = tic;
+    % prev_xsol = xsol;
+    % xsol = max(real(xsol - g), 0);
+    % xhat = 2*xsol - prev_xsol;
+    % t_master(t) = toc(tw);
 
     % update dual variables
     spmd
+        % primal variable
+        tw = tic;
+        prev_xsol_ = xi;
+        xi = max(real(xi - g(:,:,c_chunks{labindex})), 0);
+        xhat_ = 2*xi - prev_xsol_;
+        t_master_ = toc(tw);
         % l21 prior node (full SARA prior)
         tw = tic;
-        [v1_, g1_] = update_dual_l21_distributed(v1_, Psit_, Psi_, xhat(:,:,c_chunks{labindex}), weights1_, beta1.Value, sigma11.Value);
+        [v1_, g1_] = update_dual_l21_distributed(v1_, Psit_, Psi_, xhat_, weights1_, beta1.Value, sigma11.Value);
         t_l21_ = toc(tw); 
         % data fidetliy
         tw = tic;
@@ -495,26 +499,42 @@ for t = t_start : max_iter
         g_ = g1_ + g2_;
         t_data_ = toc(tw); 
     end
+
+    % nuclear prior node
+    xhat = zeros(M,N,c);
+    for k = 1:k
+        xhat(:,:,c_chunks{k}) = xhat_{k};
+    end
+    tw = tic;
+    [v0_, g] = update_dual_nuclear_serial(v0_, xhat, weights0_, beta0, sigma00);
+    t_nuclear(t) = toc(tw);
     
     for k = 1:K
         g(:,:,c_chunks{k}) = g(:,:,c_chunks{k}) + g_{k};
     end
     
     %% Relative change of objective function
-    rel_x = norm(prev_xsol(:) - xsol(:));
-    norm_x = norm(xsol(:));
-    rel_val(t) = rel_x/norm_x;
+    % rel_x = norm(prev_xsol(:) - xsol(:));
+    % norm_x = norm(xsol(:));
+    spmd
+        rel_x_ = gplus(norm(prev_xsol_(:) - xi(:))^2, 1);
+        norm_x_ = gplus(norm(xi(:))^2, 1);
+    end
+    rel_val(t) = sqrt(rel_x_{1}/norm_x_{1});
     end_iter(t) = toc(start_iter);
     
     % retrieve update time (average for data processes)
     t_l21(t) = 0;
     t_data(t) = 0; % just in case
+    t_master(t) = 0; % just in case
     for k = 1:K
         t_l21(t) = t_l21(t) + t_l21_{k};
         t_data(t) = t_data(t) + t_data_{k};
+        t_master(t) = t_master(t) + t_master_{k};
     end
     t_data(t) = t_data(t)/K;
     t_l21(t) = t_l21(t)/K;
+    t_master(t) = t_master(t)/K;
     
     %% Retrieve value of the monitoring variables (residual norms)
     norm_epsilon_check = 0;
@@ -533,9 +553,12 @@ for t = t_start : max_iter
 
         %% compute value of the priors
         % TODO: move to l.518 if norms needs to be computed at each iteration
+        for k = 1:K
+            xsol(:,:,c_chunks{k}) = xi{k};
+        end
         nuclear = nuclear_norm(xsol);
         spmd 
-            l21_ = compute_sara_prior_distributed(xsol(:,:,c_chunks{labindex}), Psit_, s_);
+            l21_ = compute_sara_prior_distributed(xi, Psit_, s_);
         end
         l21 = l21_{1};
         % previous_obj = obj;
@@ -583,8 +606,15 @@ for t = t_start : max_iter
     
     %% Reweighting (in parallel)
     if pdfb_converged 
-        rel_x_reweighting = norm(xlast_reweight(:) - xsol(:))/norm(xlast_reweight(:));
-        xlast_reweight = xsol;        
+        % rel_x_reweighting = norm(xlast_reweight(:) - xsol(:))/norm(xlast_reweight(:));
+        % xlast_reweight = xsol;
+        
+        spmd
+            rel_x_reweighting_ = gplus(norm(xlast_reweight_(:) - xi(:))^2, 1);
+            norm_x_lr_ = gplus(norm(xlast_reweight_(:))^2, 1);
+            xlast_reweight_ = xi;
+        end
+        rel_x_reweighting = sqrt(rel_x_reweighting_{1}/norm_x_lr_ {1});
         
         reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >= param.reweighting_min_iter && ...   % minimum number of reweighting iterations
@@ -599,15 +629,19 @@ for t = t_start : max_iter
 
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count+1, rel_x_reweighting, reweighting_alpha);
 
+        for k = 1:K
+            xsol(:,:,c_chunks{k}) = xi{k};
+        end
+
         % update weights nuclear norm
         weights0_ = update_weights_nuclear_serial(xsol, reweighting_alpha, sig_bar_);
 
         spmd
             % update weights l21-norm
-            weights1_ = update_weights_l21_distributed(xsol(:,:,c_chunks{labindex}), Psit_, weights1_, reweighting_alpha, sig_);
+            weights1_ = update_weights_l21_distributed(xi, Psit_, weights1_, reweighting_alpha, sig_);
 
             % compute residual image
-            res_ = compute_residual_images(xsol(:,:,c_chunks{labindex}), yp, Gp, Ap, Atp, Wp);
+            res_ = compute_residual_images(xi, yp, Gp, Ap, Atp, Wp);
         end
 
         %! -- TO BE CHECKED
@@ -622,7 +656,7 @@ for t = t_start : max_iter
 
         nuclear = nuclear_norm(xsol);
         spmd 
-            l21_ = compute_sara_prior_distributed(xsol(:,:,c_chunks{labindex}), Psit_, s_);
+            l21_ = compute_sara_prior_distributed(xi, Psit_, s_);
         end
         l21 = l21_{1};
         % previous_obj = obj;
@@ -702,7 +736,7 @@ toc(start_loop)
 % Calculate residual images
 res = zeros(size(xsol));
 spmd
-    res_ = compute_residual_images(xsol(:,:,c_chunks{labindex}), yp, Gp, Ap, Atp, Wp);
+    res_ = compute_residual_images(xi, yp, Gp, Ap, Atp, Wp);
 end
 
 m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
@@ -734,6 +768,9 @@ for k = 1:K
     m.norm_res(k,1) = norm_res(k);
 end
 epsilon = m.epsilon;
+for k = 1:K
+    xsol(:,:,c_chunks{k}) = xi{k};
+end
 m.xsol = xsol;
 norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
 
@@ -767,7 +804,7 @@ clear m
 % Final log
 nuclear = nuclear_norm(xsol);
 spmd 
-    l21_ = compute_sara_prior_distributed(xsol(:,:,c_chunks{labindex}), Psit_, s_);
+    l21_ = compute_sara_prior_distributed(xi, Psit_, s_);
 end
 l21 = l21_{1};
 if (param.verbose > 0)
