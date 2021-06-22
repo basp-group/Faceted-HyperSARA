@@ -655,7 +655,7 @@ for t = t_start : max_iter
             m.norm_res = cell(K, 1);
             m.v0 = v0_;
             m.v1 = zeros(s_{1}, c);
-            m.weights0 = weights0_{1};
+            m.weights0 = weights0_;
             m.weights1 = weights1_{1};
             % Retrieve variables from workers
             % data nodes
