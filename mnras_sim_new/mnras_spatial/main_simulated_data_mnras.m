@@ -726,7 +726,7 @@ else
             sig_bar = sig_bar*ones(Qx*Qy, 1);
         end
 
-        if strcmp(algo_version, 'cw')  && ~(strcmp(regtype, 'heuristic') || strcmp(regtype, 'heuristic2'))
+        if strcmp(algo_version, 'cw')  && ~(strcmp(regtype, 'heuristic') || strcmp(regtype, 'heuristic2') || strcmp(regtype, 'heuristic3'))
             mu_bar = mu_bar*ones(Qx*Qy, 1);
         end
 
