@@ -718,6 +718,13 @@ else
                 algo_version, Qx, Qy, overlap_size, window_type, ...
                 operator_norm, gam);
                 fprintf('Rwt: %s, sig_w = %.4e, sig_w*mu_c = %.4e, sig_w*sig_c = %.4e \n', rwtype, sig_w, sig_w*mu_c, sig_w*sig_c);
+            case "heuristic4"
+                [sig, sig_bar, mu, mu_bar, mu_c, sig_c, sig_w] = ...
+                compute_reweighting_lower_bound_heuristic4(Ny, Nx, ...
+                nChannels, filter_length, nlevel, sigma_noise, ...
+                algo_version, Qx, Qy, overlap_size, window_type, ...
+                operator_norm, gam);
+                fprintf('Rwt: %s, sig_w = %.4e, sig_w*mu_c = %.4e, sig_w*sig_c = %.4e \n', rwtype, sig_w, sig_w*mu_c, sig_w*sig_c);
             otherwise
                 error("Unknown regularization type.")
         end
@@ -726,7 +733,7 @@ else
             sig_bar = sig_bar*ones(Qx*Qy, 1);
         end
 
-        if strcmp(algo_version, 'cw')  && ~(strcmp(regtype, 'heuristic') || strcmp(regtype, 'heuristic2') || strcmp(regtype, 'heuristic3'))
+        if strcmp(algo_version, 'cw')  && ~(strcmp(regtype, 'heuristic') || strcmp(regtype, 'heuristic2') || strcmp(regtype, 'heuristic3') || strcmp(regtype, 'heuristic4'))
             mu_bar = mu_bar*ones(Qx*Qy, 1);
         end
 
