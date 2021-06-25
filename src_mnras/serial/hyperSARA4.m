@@ -245,7 +245,7 @@ if init_flag
     for k = 1:K
         v1_{k} = init_m.v1(:,c_chunks{k});
         weights1_{k} = init_m.weights1;
-        s_{k} = size(v1_{k});
+        s_{k} = size(v1_{k}, 1);
     end
     fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
 else
