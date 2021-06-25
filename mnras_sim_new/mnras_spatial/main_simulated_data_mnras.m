@@ -67,7 +67,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 % Qx = 2; % 4
 % Qy = 1; % 4
-% Qc = 1;
+% Qc = 2;
 % nReweights = 1;
 % algo_version = 'hypersara'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
@@ -75,15 +75,15 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_computeOperatorNorm = 0;
 % flag_computeLowerBounds = 1;
 % flag_solveMinimization = true;
-% ncores_data = 1; % number of cores assigned to the data fidelity terms (groups of channels)
+% ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1; % index of the spectral facet to be reconstructed
-% gam = 1;
-% gam_bar = 1;
+% gam = 3;
+% gam_bar = 3;
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % update_regularization = 1;
 
 % rw = -1;
-% rwtype = 'heuristic2'; % dirty, heuristic
+% rwtype = 'heuristic4'; % dirty, heuristic
 % flag_homotopy = 0;
 % overlap_fraction = 0;
 % isnr = 50;
@@ -96,7 +96,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
 % flag_cirrus = false;
-% regtype = 'heuristic2'; % inv, log, heuristic
+% regtype = 'heuristic4'; % inv, log, heuristic
 % xapprox = 'none'; % none, precond
 % noise_transfer = 'none'; % none, precond
 % reg_option = 'none'; % dirty, none
@@ -776,11 +776,14 @@ else
         sig = gam*sig;
         sig_bar = gam_bar*sig_bar;
     end
-    if strcmp(rwtype, "heuristic2") 
+    if strcmp(rwtype, "heuristic2") || strcmp(rwtype, "heuristic3") || strcmp(rwtype, "heuristic4")
         sig_bar = gam_bar*sig_bar;
     else
-        mu = gam*mu;
+        mu = gam*mu; % ! mu has been probably multiplied by 3... 
     end
+    
+    fprintf('Final: %s, algo: %s, alpha = %.4e, alpha_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e], upsilon = %.4e, upsilon_bar = [%.4e, %.4e] \n', rwtype, algo_version, ...
+        gam, gam_bar, mu, min(mu_bar), max(mu_bar), sig, min(sig_bar), max(sig_bar));
 end
 clear dirty_image
     %! --
