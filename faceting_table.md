@@ -243,18 +243,23 @@ data generation: job 1312342
 | [x] | FHS (2x2, 0.25)                           | 24.71 | 32.97 | 39.02 | 39.97 | 40.07 | 40.10 | 1.7461e-04               | [5.7678e-02, 8.2316e-02] | 1.5065e-04, 2.3964e-05 | 1341727         |
 | [x] | FHS (3x3, 0.25)                           | 25.08 | 34.29 | 39.97 | 40.45 | 40.51 | 40.54 | 1.7461e-04               | [3.8470e-02, 5.4859e-02] | 1.5065e-04, 2.3964e-05 | 1341728         |
 
-heuristic 3 (test/, 3xsigma everywhere) (probably 3x mu_chi+3xsigma_chi, 1xsigma)
-| Run | Algo            | rw0   | rw 1  | rw 2  | rw3 | rw4 | rw5 | mu         | mu_bar                   | mu_chi, sigma_chi      | id      |
-| --- | --------------- | ----- | ----- | ----- | --- | --- | --- | ---------- | ------------------------ | ---------------------- | ------- |
-| [R] | HS (v4)         | 22.99 | 33.54 | 38.28 |     |     |     | 2.2254e-04 | 3x3.3136e-02             | 1.5065e-04, 2.3964e-05 | 1352436 | test_configA |
-| [R] | FHS (4x4, 0.25) |       |       |       |     |     |     | 1.7461e-04 | [2.8860e-02, 4.1161e-02] | 1.5065e-04, 2.3964e-05 | 1362906 | test         |
-| [R] | FHS (2x2, 0.25) |       |       |       |     |     |     | 1.7461e-04 | [5.7678e-02, 8.2316e-02] | 1.5065e-04, 2.3964e-05 | 1362907 | test         |
-| [R] | FHS (3x3, 0.25) |       |       |       |     |     |     | 1.7461e-04 | [3.8470e-02, 5.4859e-02] | 1.5065e-04, 2.3964e-05 | 1362908 | test         |
-
-heuristic 4 (test/, 3xsigma everywhere, NL instead of min(N,L)) (nuclear norm seems barely active) (idem)
+heuristic 3 (test/, 3xsigma everywhere) (mu_chi+3xsigma_chi, 3xsigma)
 | Run | Algo            | rw0   | rw 1  | rw 2  | rw3   | rw4   | rw5   | mu         | mu_bar                   | mu_chi, sigma_chi      | id      |
 | --- | --------------- | ----- | ----- | ----- | ----- | ----- | ----- | ---------- | ------------------------ | ---------------------- | ------- |
-| [K] | HS              | 22.94 |       |       |       |       |       | 2.2254e-04 |                          |                        | 1362470 |
+| [x] | HS (v4)         | 22.99 | 33.54 | 38.28 | 39.31 | 39.61 | 39.70 | 2.2254e-04 | 3.3136e-02               | 1.5065e-04, 2.3964e-05 | 1352436 | test_configA/heuristic3 |
+| [x] | FHS (4x4, 0.25) | 23.18 | 34.10 | 38.59 | 39.42 | 39.61 | 39.65 | 2.2254e-04 | [6.4534e-03, 9.2039e-03] | 1.5065e-04, 2.3964e-05 | 1362906 | test                    |
+| [x] | FHS (2x2, 0.25) | 23.19 | 34.09 | 38.51 | 39.38 | 39.60 | 39.65 | 2.2254e-04 | [1.2897e-02, 1.8406e-02] | 1.5065e-04, 2.3964e-05 | 1362907 | test                    |
+| [x] | FHS (3x3, 0.25) | 23.40 | 34.19 | 38.56 | 39.41 | 39.64 | 39.69 | 2.2254e-04 | [8.6022e-03, 1.2267e-02] | 1.5065e-04, 2.3964e-05 | 1362908 | test                    |
+
+hypersara, asnr = 39.61 (2.09e+00), asnr_log = 19.46 (1.44e+00), cpu_cores = 23, iteration_number = 8848
+arun (s) = 24.72 (1.18e+00), total_runtime (h) = 60.76
+acpu (s) = 86.27 (3.08e+00) , total_cpu_time (h) = 212.02
+snr_log, 10 upsilon: 2.57e+01 (1.70e+00) , upsilon/10: 1.47e+01 (1.18e+00)
+
+heuristic 4 (test/, 3xsigma everywhere, NL instead of min(N,L)) (nuclear norm seems barely active)
+| Run | Algo            | rw0   | rw 1  | rw 2  | rw3   | rw4   | rw5   | mu         | mu_bar                   | mu_chi, sigma_chi      | id      |
+| --- | --------------- | ----- | ----- | ----- | ----- | ----- | ----- | ---------- | ------------------------ | ---------------------- | ------- |
+| [K] | HS              | 22.84 |       |       |       |       |       | 2.2254e-04 |                          |                        | 1362470 |
 | [x] | FHS (4x4, 0.25) | 22.94 | 32.27 | 36.91 | 38.66 | 39.33 | 39.62 | 2.2254e-04 | [6.8377e-05, 8.5353e-05] | 1.5065e-04, 2.3964e-05 | 1355609 |
 | [x] | FHS (2x2, 0.25) | 22.94 | 32.27 | 36.91 | 38.66 | 39.33 | 39.62 | 2.2254e-04 | [7.9658e-05, 8.5315e-05] | 1.5065e-04, 2.3964e-05 | 1355610 |
 | [x] | FHS (3x3, 0.25) | 22.94 | 32.27 | 36.91 | 38.66 | 39.33 | 39.62 | 2.2254e-04 | [6.8389e-05, 8.5349e-05] | 1.5065e-04, 2.3964e-05 | 1355611 |
@@ -276,42 +281,84 @@ acpu (s) = 287.04 (1.43e+01) , total_cpu_time (h) = 217.67
 snr_log, 10 upsilon: 2.59e+01 (1.69e+00) , upsilon/10: 1.47e+01 (1.16e+00)
 
 SARA, 1xsigma
-rw 5
-sara, asnr = 30.25 (3.61e-01), asnr_log = 13.59 (2.85e-01), cpu_cores = 260, iteration_number = 5190
-arun (s) = 3.36 (1.77e-01), total_runtime (h) = 5.40
-acpu (s) = 7.19 (4.89e-01) , total_cpu_time (h) = 207.45
-snr_log, 10 upsilon: 1.84e+01 (6.20e-01) , upsilon/10: 9.05e+00 (2.69e-01)
-
 rw 3
 sara, asnr = 28.21 (4.20e-01), asnr_log = 12.13 (3.81e-01), cpu_cores = 260, iteration_number = 4419
 arun (s) = 3.36 (1.79e-01), total_runtime (h) = 4.69
 acpu (s) = 7.20 (4.95e-01) , total_cpu_time (h) = 176.74
 snr_log, 10 upsilon: 1.67e+01 (8.71e-01) , upsilon/10: 7.75e+00 (2.53e-01)
 
-SARA 3xsigma
 rw 5
-sara, asnr = 36.28 (6.77e-01), asnr_log = 16.90 (2.35e-01), cpu_cores = 260, iteration_number = 2590
-arun (s) = 3.31 (1.96e-01), total_runtime (h) = 2.69
-acpu (s) = 7.17 (5.00e-01) , total_cpu_time (h) = 103.09
-snr_log, 10 upsilon: 2.26e+01 (4.20e-01) , upsilon/10: 1.21e+01 (1.62e-01)
+sara, asnr = 30.25 (3.61e-01), asnr_log = 13.59 (2.85e-01), cpu_cores = 260, iteration_number = 5190
+arun (s) = 3.36 (1.77e-01), total_runtime (h) = 5.40
+acpu (s) = 7.19 (4.89e-01) , total_cpu_time (h) = 207.45
+snr_log, 10 upsilon: 1.84e+01 (6.20e-01) , upsilon/10: 9.05e+00 (2.69e-01)
 
+SARA 3xsigma
 rw 3
 sara, asnr = 35.10 (5.10e-01), asnr_log = 16.20 (2.16e-01), cpu_cores = 260, iteration_number = 2376
 arun (s) = 3.32 (1.72e-01), total_runtime (h) = 2.46
 acpu (s) = 7.18 (5.04e-01) , total_cpu_time (h) = 94.82
 snr_log, 10 upsilon: 2.17e+01 (4.54e-01) , upsilon/10: 1.13e+01 (1.51e-01)
 
-in test_configA, heuristic3, 3xsigma everywhere
-| Run | Algo            | rw0 | rw 1 | rw 2 | rw3 | rw4 | rw5 | mu  | mu_bar | mu_chi, sigma_chi | id  |
-| --- | --------------- | --- | ---- | ---- | --- | --- | --- | --- | ------ | ----------------- | --- |
-| [R] | HS (v4)         |     |      |      |     |     |     |     |        |                   |     |
-| [R] | FHS (4x4, 0.25) |     |      |      |     |     |     |     |        |                   |     |
-| [R] | FHS (2x2, 0.25) |     |      |      |     |     |     |     |        |                   |     |
-| [R] | FHS (3x3, 0.25) |     |      |      |     |     |     |     |        |                   |     |
+rw 5
+sara, asnr = 36.28 (6.77e-01), asnr_log = 16.90 (2.35e-01), cpu_cores = 260, iteration_number = 2590
+arun (s) = 3.31 (1.96e-01), total_runtime (h) = 2.69
+acpu (s) = 7.17 (5.00e-01) , total_cpu_time (h) = 103.09
+snr_log, 10 upsilon: 2.26e+01 (4.20e-01) , upsilon/10: 1.21e+01 (1.62e-01)
 
-## Spectral faceting (config C only, 2k iterations per pdfb)
+[test_configA] heuristic3, 3xsigma everywhere
+| --- | --------------- | ----- | ----- | ----- | ----- | ----- | ----- | ---------- | ------------------------ | ----------------- | ------- |
+| Run | Algo            | rw0   | rw1   | rw2   | rw3   | rw4   | rw5   | mu         | mu_bar                   | mu_chi, sigma_chi | id      | Debug        |
+| --- | --------------- | ----- | ----- | ----- | ----- | ----- | ----- | ---------- | ------------------------ | ----------------- | ------- | ------------ |
+| [R] | HS (v4)         | 23.59 | 30.54 | ~37   |       |       |       |            |                          |                   | 1369097 | test_configA |
+| [x] | FHS (2x2, 0.25) | 24.42 | 33.03 | 38.90 | 40.01 | 40.04 | 40.06 | 2.2254e-04 | [3.8692e-02, 5.5219e-02] |                   | 1364103 | test_configA |
+| [x] | FHS (3x3, 0.25) | 24.75 | 33.78 | 39.38 | 40.29 | 40.33 | 40.34 | 2.2254e-04 | [2.5807e-02, 3.6801e-02] |                   | 1369230 | test_configA |
+| [x] | FHS (4x4, 0)    | 24.66 | 34.42 | 39.67 | 40.57 | 40.62 | 40.64 | 2.2254e-04 | [2.4852e-02, 2.4852e-02] |                   | 1369231 | test_configA |
+| [x] | FHS (4x4, 0.1)  | 24.49 | 34.13 | 39.59 | 40.48 | 40.51 | 40.53 | 2.2254e-04 | [2.3051e-02, 2.5769e-02] |                   | 1369232 | test_configA |
+| [x] | FHS (4x4, 0.25) | 24.26 | 33.27 | 39.32 | 40.36 | 40.41 | 40.43 |            |                          |                   | 1364102 | test_configA |
+| [x] | FHS (4x4, 0.4)  | 24.24 | 32.91 | 39.03 | 40.04 | 40.26 | 40.32 | 2.2254e-04 | [1.3840e-02, 3.0367e-02] |                   | 1369233 | test_configA |
+| [x] | FHS (4x4, 0.5)  | 24.58 | 32.95 | 38.69 | 39.32 | 39.51 | 39.59 | 2.2254e-04 | [8.2878e-03, 3.3139e-02] |                   | 1369234 | test_configA |
 
-heuristic2
+Q=2, ovl=2.50e-01
+cw, asnr = 40.06 (2.26e+00), asnr_log = 20.00 (1.50e+00), cpu_cores = 25, iteration_number = 36
+ᭉ, asnr = arun (s) = 24.28 (2.06e+00), total_runtime (h) = 47.12
+acpu (s) = 179.57 (1.01e+01) , total_cpu_time (h) = 348.42
+snr_log, 10 upsilon: 2.63e+01 (1.84e+00) , upsilon/10: 1.51e+01 (1.24e+00)
+Q=3, ovl=2.50e-01
+cw, asnr = 40.35 (2.41e+00), asnr_log = 20.34 (1.68e+00), cpu_cores = 30, iteration_number = 7242
+arun (s) = 15.02 (7.71e-01), total_runtime (h) = 30.21
+acpu (s) = 224.85 (9.16e+00) , total_cpu_time (h) = 452.33
+snr_log, 10 upsilon: 2.67e+01 (2.15e+00) , upsilon/10: 1.55e+01 (1.24e+00)
+Q=4, ovl=2.50e-01
+cw, asnr = 40.43 (2.33e+00), asnr_log = 20.39 (1.65e+00), cpu_cores = 25, iteration_number = 36
+Შ, asnr = arun (s) = 12.04 (4.86e-01), total_runtime (h) = 24.54
+acpu (s) = 297.60 (1.46e+01) , total_cpu_time (h) = 606.44
+snr_log, 10 upsilon: 2.68e+01 (2.07e+00) , upsilon/10: 1.55e+01 (1.28e+00)
+
+Q=4, ovl=0.00e+00
+cw, asnr = 40.65 (2.43e+00), asnr_log = 20.82 (1.77e+00), cpu_cores = 36, iteration_number = 5686
+arun (s) = 11.75 (5.12e-01), total_runtime (h) = 18.56
+acpu (s) = 295.86 (1.34e+01) , total_cpu_time (h) = 467.29
+snr_log, 10 upsilon: 2.72e+01 (2.23e+00) , upsilon/10: 1.58e+01 (1.36e+00)
+Q=4, ovl=1.00e-01
+cw, asnr = 40.53 (2.39e+00), asnr_log = 20.57 (1.72e+00), cpu_cores = 36, iteration_number = 7277
+arun (s) = 11.73 (4.95e-01), total_runtime (h) = 23.71
+acpu (s) = 295.82 (1.39e+01) , total_cpu_time (h) = 597.96
+snr_log, 10 upsilon: 2.70e+01 (2.15e+00) , upsilon/10: 1.56e+01 (1.33e+00)
+Q=4, ovl=4.00e-01
+cw, asnr = 40.32 (2.12e+00), asnr_log = 20.29 (1.51e+00), cpu_cores = 36, iteration_number = 7808
+arun (s) = 12.89 (6.02e-01), total_runtime (h) = 27.96
+acpu (s) = 310.93 (1.87e+01) , total_cpu_time (h) = 674.38
+snr_log, 10 upsilon: 2.67e+01 (1.85e+00) , upsilon/10: 1.54e+01 (1.19e+00)
+Q=4, ovl=5.00e-01
+cw, asnr = 39.59 (2.16e+00), asnr_log = 19.65 (1.45e+00), cpu_cores = 36, iteration_number = 5837
+arun (s) = 13.76 (5.62e-01), total_runtime (h) = 22.31
+acpu (s) = 320.13 (1.95e+01) , total_cpu_time (h) = 519.06
+snr_log, 10 upsilon: 2.58e+01 (1.75e+00) , upsilon/10: 1.49e+01 (1.16e+00)
+
+## Spectral faceting (2k iterations per pdfb)
+
+heuristic2 (B config. only)
 | Run | Algo                 | rw 3  | rw 5             | asnr_log (x10, /10)        | arun  | acpu  | total run (rw3, rw5) | total_cpu (rw3, rw5) | id              |
 | --- | -------------------- | ----- | ---------------- | -------------------------- | ----- | ----- | -------------------- | -------------------- | --------------- |
 | [x] | SARA (Qc=1, 3 sigma) | 19.69 | 19.73 (3.18e+00) | 23.38 (2.43e+01, 1.96e+01) | 0.44  | 0.76  | 0.30, 0.32           | 43.73, 46.93         | 1333870-1333969 | ok    |
@@ -321,11 +368,47 @@ heuristic2
 | [R] | HS (Qc=5, 3 sigma)   |       |                  |                            |       |       |                      |                      | 1334321-1334325 |
 | [x] | HS (Qc=10, 3 sigma)  | 22.55 | 22.63            | 26.95 (2.79e+01, 2.30e+01) | 3.03  | 7.46  | 4.24, 5.94           | 72.19, 79.44         | 1332679-1332688 | ok    |
 
-heuristic 3, 3xsigma, 3xsigma (10 cores for the data + 2, v4)
-| Run | Algo                 | rw 3 | rw 5 | asnr_log (x10, /10) | arun | acpu | total run (rw3, rw5) | total_cpu (rw3, rw5) | id  |
-| --- | -------------------- | ---- | ---- | ------------------- | ---- | ---- | -------------------- | -------------------- | --- |
-| [ ] | SARA (Qc=1, 3 sigma) |      |      |                     |      |      |                      |                      |     |
-| [R] | HS (Qc=1, 3 sigma)   |      |      |                     |      |      |                      |                      |     |
-| [R] | HS (Qc=2, 3 sigma)   |      |      |                     |      |      |                      |                      |     |
-| [R] | HS (Qc=5, 3 sigma)   |      |      |                     |      |      |                      |                      |     |
-| [R] | HS (Qc=10, 3 sigma)  |      |      |                     |      |      |                      |                      |     |
+B config only
+heuristic 3, 3xsigma, 3xsigma (10 cores for the data + 5, v4) [test/]
+| Run | Algo                 | rw 3 | rw 5 | asnr_log (x10, /10) | arun | acpu | total run (rw3, rw5) | total_cpu (rw3, rw5) | id              |
+| --- | -------------------- | ---- | ---- | ------------------- | ---- | ---- | -------------------- | -------------------- | --------------- |
+| [R] | SARA (Qc=1, 3 sigma) |      |      |                     |      |      |                      |                      | 1377424-1377523 |
+| [R] | HS (Qc=1, 3 sigma)   |      |      |                     |      |      |                      |                      | 1374703         |
+| [R] | HS (Qc=2, 3 sigma)   |      |      |                     |      |      |                      |                      | 1376003-1376004 |
+| [R] | HS (Qc=5, 3 sigma)   |      |      |                     |      |      |                      |                      | 1376005-1376009 |
+| [R] | HS (Qc=10, 3 sigma)  |      |      |                     |      |      |                      |                      | 1376010-1376019 |
+
+C config only
+heuristic 3, 3xsigma, 3xsigma (10 cores for the data + 5, v4) [test/]
+| Run | Algo       | SNR (rw 5) | asnr_log (x10, /10) | arun | acpu | total run (rw3, rw5) | total_cpu (rw3, rw5) | id              |
+| --- | ---------- | ---------- | ------------------- | ---- | ---- | -------------------- | -------------------- | --------------- |
+| [x] | SARA       | 19.73      |                     |      |      |                      |                      | 1369112-1369211 |
+| [x] | HS (Qc=1)  | 20.69      |                     |      |      |                      |                      | 1364185         |
+| [x] | HS (Qc=2)  | 20.79      |                     |      |      |                      |                      | 1365425-1365426 |
+| [x] | HS (Qc=5)  | 20.86      |                     |      |      |                      |                      | 1365427-1365431 |
+| [x] | HS (Qc=10) | 20.97      |                     |      |      |                      |                      | 1365432-1365441 |
+
+sara, asnr = 19.73 (3.18e+00), asnr_log = 23.38 (3.64e-01), cpu_cores = 1300, iteration_number = 2216
+arun (s) = 0.44 (3.66e-02), total_runtime (h) = 0.33
+acpu (s) = 0.76 (4.96e-02) , total_cpu_time (h) = 46.96
+snr_log, 10 upsilon: 2.43e+01 (9.47e-01) , upsilon/10: 1.96e+01 (1.13e+00)
+Qc=1
+hypersara, asnr = 20.69 (2.31e+00), asnr_log = 23.41 (1.09e+00), cpu_cores = 16, iteration_number = 24
+arun (s) = 12.67 (9.36e-01), total_runtime (h) = 8.55
+acpu (s) = 55.52 (2.60e+00) , total_cpu_time (h) = 37.48
+snr_log, 10 upsilon: 2.53e+01 (4.47e-01) , upsilon/10: 1.81e+01 (1.49e+00)
+Qc=2
+hypersara, asnr = 20.79 (2.33e+00), asnr_log = 24.03 (9.66e-01), cpu_cores = 16, iteration_number = 50
+arun (s) = 5.46 (8.32e-01), total_runtime (h) = 4.22
+acpu (s) = 25.89 (2.43e+00) , total_cpu_time (h) = 36.06
+snr_log, 10 upsilon: 2.56e+01 (3.47e-01) , upsilon/10: 1.91e+01 (1.44e+00)
+Qc=5
+hypersara, asnr = 20.86 (2.48e+00), asnr_log = 24.77 (7.37e-01), cpu_cores = 16, iteration_number = 120
+arun (s) = 2.32 (3.32e-01), total_runtime (h) = 1.64
+acpu (s) = 10.53 (8.63e-01) , total_cpu_time (h) = 35.00
+snr_log, 10 upsilon: 2.59e+01 (2.00e-01) , upsilon/10: 2.04e+01 (1.28e+00)
+Qc=10
+hypersara, asnr = 20.97 (2.63e+00), asnr_log = 25.25 (5.42e-01), cpu_cores = 16, iteration_number = 234
+arun (s) = 1.34 (2.36e-01), total_runtime (h) = 1.01
+acpu (s) = 5.42 (6.93e-01) , total_cpu_time (h) = 35.32
+snr_log, 10 upsilon: 2.61e+01 (2.50e-01) , upsilon/10: 2.14e+01 (1.07e+00)
