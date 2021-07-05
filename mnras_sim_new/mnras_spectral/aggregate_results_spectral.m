@@ -184,7 +184,7 @@ switch algo
         scpu = sqrt((sum_cpu_sqr - iteration_number*acpu^2)/(iteration_number - 1));
         iteration_number = round(iteration_number/nChannels); % average number of iterations for each problem
 
-        ncpu = min(ncores_prior + ncores_data + 1, 36);
+        ncpu = Qc*min(ncores_prior + ncores_data + 1, 36);
 
         % compute SNR
         a = SNR(x, x0);
