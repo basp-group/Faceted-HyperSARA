@@ -102,7 +102,7 @@ for k = 1:numel(Q)
         ovl = overlap_fraction(l);
         fprintf("Q=%i, ovl=%1.2e \n", q, ovl)
         [x, res, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, total_cpu_time, total_runtime, iteration_number] = ...
-            aggregate_results(algo, filename(q, alph, alph_bar, ovl), ncores_data, ncores_prior, x0, operator_norm, q, upsilon0);
+            aggregate_results(algo, filename(q, alph, alph_bar, ovl), ncores_data, ncores_prior(k), x0, operator_norm, q, upsilon0);
 
         a10 = SNR_log(x, x0, 10*upsilon0);
         a01 = SNR_log(x, x0, upsilon0/10);
