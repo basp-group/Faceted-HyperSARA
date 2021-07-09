@@ -1,4 +1,4 @@
-function [f, h] = display_real_residual(x, fig_size, clim_log, map_img, fontsize)
+function [f, h] = display_residual(x, fig_size, clim_log, map_img, fontsize, bool_real)
 
     f=figure('visible','on');
     set(gca, 'Color', 'none'); % sets axes background
@@ -16,5 +16,7 @@ function [f, h] = display_real_residual(x, fig_size, clim_log, map_img, fontsize
     ax.TickLabelInterpreter='latex';
     h = colorbar;
     set(h,'Fontsize',fontsize)
-    set(h,'color','white')
+    if bool_real
+        set(h,'color','white')
+    end
 end
