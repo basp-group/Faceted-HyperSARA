@@ -1,5 +1,5 @@
 function [sig, sig_bar, mu, mu_bar, mu_c, sig_c, sig_w] = ...
-    compute_reweighting_lower_bound_heuristic5(Ny, Nx, ...
+    compute_reweighting_lower_bound_heuristic3b(Ny, Nx, ...
     nChannels, filters_length, nlevel, sigma_noise, ...
     algo_version, Qx, Qy, overlap_size, window_type, ...
     squared_operator_norm, alph)
@@ -19,7 +19,7 @@ sig = sig_w*(mu_c + alph*sig_c);
 
 % compute sig_bar
 if strcmp(algo_version, 'hypersara')
-    sig_bar = sqrt(Nx*Ny*sum(sigma_noise.^2./squared_operator_norm)/min(Nx*Ny, nChannels));
+    sig_bar = sqrt(Nx*Ny*sum(sigma_noise.^2./squared_operator_norm)/(min(Nx*Ny, nChannels))^2);
 else
     Q = Qx*Qy;
     rg_y = split_range(Qy, Ny);
@@ -54,7 +54,7 @@ else
         w = generate_weights(qx, qy, Qx, Qy, window_type, dims(q,:), dims_o(q,:), overlap_size);
         
         Noq = prod(dims_o(q, :));
-        sig_bar(q) = sqrt(sum(w(:).^2)*sum(sigma_noise.^2./squared_operator_norm)/min(Noq, nChannels));
+        sig_bar(q) = sqrt(sum(w(:).^2)*sum(sigma_noise.^2./squared_operator_norm)/(min(Noq, nChannels))^2);
     end
 end
 
