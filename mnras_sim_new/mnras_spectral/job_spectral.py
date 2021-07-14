@@ -30,17 +30,17 @@ overlapy = 0
 rw = -1
 gam = '1' # of the order of '1e-3'
 gam_bar = '1'
-nreweights = 30
+nreweights = 5
 wintype = 'none'
 covpath = '../../data/msSpecs.mat' # '../../data/vla_7.95h_dt10s.uvw256.mat'
-ncdata = 5
+ncdata = 10
 flaghomotopy = 0
 exp_type = 'spectral'
-rw_type = 'dirty' # 'ground_truth' 'dirty' 'heuristic'
+rw_type = 'heuristic2' # 'ground_truth' 'dirty' 'heuristic'
 superresolution_factor = 2
 isnr = 40
 updatereg = 0
-regtype = 'inv' # 'inv' 'log' 'heuristic'
+regtype = 'heuristic2' # 'inv' 'log' 'heuristic'
 xapprox = 'none' # 'none' 'precond'
 noise_transfer = 'none' # 'none' 'precond'
 reg_option = 'none' # 'none' 'dirty'
@@ -53,7 +53,7 @@ with open(parameter_file_full_path, "r") as csvfile:
 
     for job in reader:
 
-        ncores = np.minimum(int(ncdata) + 2, 36) # max number of cpus = 36
+        ncores = np.minimum(int(ncdata) + 5, 36) # max number of cpus = 36
         print("Total number of cpus: {0}".format(ncores))
 
         slurm_log_path = os.path.join(os.getcwd(), 'results', imagename + '_' + exp_type, job[0], 'slurm_logs')
