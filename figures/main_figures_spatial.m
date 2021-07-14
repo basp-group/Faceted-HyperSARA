@@ -35,8 +35,8 @@ shift_colorbar = [0,eps,0,0]; % + [left, bottom, width, height] to place it wher
 extension = '.pdf';
 map_img = cubehelix(2048);
 
-img_filenames = {[image_name,'.fits'], 'x_sara.fits', 'x_fhs_Q=4_ovl=0.1.fits', 'x_hs.fits'};
-name = {'x', 'x_l1', 'x_fhs', 'x_hs'};
+img_filenames = {[image_name,'.fits'], 'x_sara.fits', 'x_fhs_Q=4_ovl=0.1.fits', 'x_hs.fits', 'x_fhs_Q=4_ovl=0.fits'};
+name = {'x', 'x_l1', 'x_fhs', 'x_hs', 'x_fhs0'};
 clim_log = [1e-5 0.5; % band 1
             1e-5 0.5]; % last band 
 % clim_log = [1e-5 1.2; % band 1
@@ -45,7 +45,7 @@ fontsize=20;
 
 %% 
 
-for k = 1:numel(img_filenames)
+for k = numel(img_filenames)
     info        = fitsinfo(img_filenames{k});
     rowend      = info.PrimaryData.Size(1);
     colend      = info.PrimaryData.Size(2);
@@ -78,8 +78,8 @@ for k = 1:numel(img_filenames)
 end
          
 %% Plot residuals
-res_filenames = {'res_sara.fits', 'res_fhs_Q=4_ovl=0.1.fits', 'res_hs.fits'};
-name = {'res_l1', 'res_fhs', 'res_hs'};
+res_filenames = {'res_sara.fits', 'res_fhs_Q=4_ovl=0.1.fits', 'res_hs.fits', 'res_fhs_Q=4_ovl=0.fits'};
+name = {'res_l1', 'res_fhs', 'res_hs', 'res_fhs0'};
 clim_log = [-1e-5,1e-5;     %band 1
             -1e-5,1e-5];  %band end
 % fig_size = [1000, 1000];
@@ -87,7 +87,7 @@ clim_log = [-1e-5,1e-5;     %band 1
 fig_size = [600, 600];
 fontsize = 20;
 
-for k = 1:numel(res_filenames)
+for k = numel(res_filenames)
     info        = fitsinfo(res_filenames{k});
     rowend      = info.PrimaryData.Size(1);
     colend      = info.PrimaryData.Size(2);
