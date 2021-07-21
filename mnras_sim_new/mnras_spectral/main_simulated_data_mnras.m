@@ -723,6 +723,20 @@ else
                 algo_version, Qx, Qy, overlap_size, window_type, ...
                 operator_norm, gam);
                 fprintf('Rwt: %s, sig_w = %.4e, sig_w*mu_c = %.4e, sig_w*sig_c = %.4e \n', rwtype, sig_w, sig_w*mu_c, sig_w*sig_c);
+            case "heuristic2c"
+                [sig, sig_bar, mu, mu_bar, mu_c, sig_c, sig_w] = ...
+                compute_reweighting_lower_bound_heuristic2c(Ny, Nx, ...
+                nChannels, filter_length, nlevel, sigma_noise, ...
+                algo_version, Qx, Qy, overlap_size, window_type, ...
+                operator_norm, gam);
+                fprintf('Rwt: %s, sig_w = %.4e, sig_w*mu_c = %.4e, sig_w*sig_c = %.4e \n', rwtype, sig_w, sig_w*mu_c, sig_w*sig_c);
+            case "heuristic2d"
+                [sig, sig_bar, mu, mu_bar, mu_c, sig_c, sig_w] = ...
+                compute_reweighting_lower_bound_heuristic2d(Ny, Nx, ...
+                nChannels, filter_length, nlevel, sigma_noise, ...
+                algo_version, Qx, Qy, overlap_size, window_type, ...
+                operator_norm);
+                fprintf('Rwt: %s, sig_w = %.4e, sig_w*mu_c = %.4e, sig_w*sig_c = %.4e \n', rwtype, sig_w, sig_w*mu_c, sig_w*sig_c);
             case "heuristic3"
                 [sig, sig_bar, mu, mu_bar, mu_c, sig_c, sig_w] = ...
                 compute_reweighting_lower_bound_heuristic3(Ny, Nx, ...
@@ -752,7 +766,7 @@ else
             sig_bar = sig_bar*ones(Qx*Qy, 1);
         end
 
-        if strcmp(algo_version, 'cw')  && ~(strcmp(regtype, 'heuristic') || strcmp(regtype, 'heuristic2') || strcmp(regtype, 'heuristic2b') || strcmp(regtype, 'heuristic3') || strcmp(regtype, 'heuristic3b') || strcmp(regtype, 'heuristic4'))
+        if strcmp(algo_version, 'cw')  && ~(strcmp(regtype, 'heuristic') || strcmp(regtype, 'heuristic2') || strcmp(regtype, 'heuristic2b') || strcmp(regtype, 'heuristic2c') || strcmp(regtype, 'heuristic2d') || strcmp(regtype, 'heuristic3') || strcmp(regtype, 'heuristic3b') || strcmp(regtype, 'heuristic4'))
             mu_bar = mu_bar*ones(Qx*Qy, 1);
         end
 
@@ -795,10 +809,16 @@ else
         sig = gam*sig;
         sig_bar = gam_bar*sig_bar;
     end
-    if strcmp(rwtype, "heuristic2") || strcmp(rwtype, "heuristic2b")  || strcmp(rwtype, "heuristic3") || strcmp(rwtype, "heuristic3b") || strcmp(rwtype, "heuristic4")
+    if strcmp(rwtype, "heuristic2") || strcmp(rwtype, "heuristic2b") || strcmp(regtype, 'heuristic2c') || strcmp(regtype, 'heuristic2d') || strcmp(rwtype, "heuristic3") || strcmp(rwtype, "heuristic3b") || strcmp(rwtype, "heuristic4")
         sig_bar = gam_bar*sig_bar;
+        mu_bar = sig_bar;
     else
         mu = gam*mu; % ! mu has been probably multiplied by 3... 
+    end
+
+    if strcmp(rwtype, "heuristic2d")
+        sig = gam*sig;
+        mu = sig;
     end
     
     fprintf('Final: %s, algo: %s, alpha = %.4e, alpha_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e], upsilon = %.4e, upsilon_bar = [%.4e, %.4e] \n', rwtype, algo_version, ...
