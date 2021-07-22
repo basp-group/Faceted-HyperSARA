@@ -13,7 +13,7 @@ for i = 1 : c
 %         g2 = g2 + G{i}{j}' * (sqrt(aW{i}{j}) .* y{i}{j});
         g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * (y{i}{j});
     end
-    x(:,:,i) = real(At(g2));
+    x(:,:,i) = At(g2);
 end
 
 end
