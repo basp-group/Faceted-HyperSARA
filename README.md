@@ -58,3 +58,14 @@ data = fitsread('filename.fits','primary',...
           'Info', info,...
           'PixelRegion',{[1 1 rowend], [1 1 colend], [1 sliceend-1 sliceend]});
 ```
+
+## Code formatting
+
+Try the [`miss_hit`](https://github.com/florianschanda/miss_hit) package (to be checked first on a few examples before moving to the full project).
+
+```bash
+pip install miss_hit
+mh_style my_file.m # only analyse the file
+mh_style --fix my_file.m # fix the file based on the rules given in miss_hit.cfg
+mh_style folder/
+```
