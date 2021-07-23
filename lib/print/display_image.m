@@ -1,7 +1,8 @@
 function display_image(x, clim, map_img, fontsize, log)
 
 f=figure('visible','on');
-set(gca, 'Color', 'none'); % sets axes background
+% sets axes background
+set(gca, 'Color', 'none');
 set(f,'PaperUnits','centimeters')
 set(f,'PaperType','A4');
 set(f,'PaperOrientation',orient);

@@ -1,7 +1,8 @@
 function [f, h] = display_zoom(x, fig_size, pixel_shift_colorbar, clim_log, map_img, fontsize, tickLabel)
 
     f=figure('visible','on');
-    set(gca, 'Color', 'none'); % sets axes background
+    % sets axes background
+    set(gca, 'Color', 'none');
     set(f,'PaperUnits','centimeters')
     set(f,'PaperType','A4');
     set(f,'PaperOrientation',orient);
