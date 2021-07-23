@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import csv, subprocess, os
+import csv
+import os
+import subprocess
 
 parameter_file_full_path = "/lustre/home/sc004/aa61/HyperSARA_dist_Full/test7_20_triangular_d256/job_params.csv"
 

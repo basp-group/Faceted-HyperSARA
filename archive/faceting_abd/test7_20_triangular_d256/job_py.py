@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-import csv, subprocess, os
+import csv
+import os
+import subprocess
 
 parameter_file_full_path = "job_params.csv"
 

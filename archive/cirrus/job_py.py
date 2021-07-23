@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import csv, subprocess
+import csv
+import subprocess
 
 parameter_file_full_path = "job_params.csv"
 
@@ -13,7 +14,9 @@ with open(parameter_file_full_path, "rb") as csvfile:
         qsub_command = """qsub -N {1}_xy{2}_c{4} -l select=1:ncpus={7} \
         -e /lustre/home/sc004/pthouven/Dimensionality-reduced-hyper-SARA-sdwt/logs/hyperSARA_{1}_Qx={2}_Qy={3}_Qc={4}.err \
         -o /lustre/home/sc004/pthouven/Dimensionality-reduced-hyper-SARA-sdwt/logs/hyperSARA_{1}_Qx={2}_Qy={3}_Qc={4}.out \
-        -v flag_algo={0},parallel_version={1},Qx={2},Qy={3},Qc={4},tot={5},num_chunk={6} run_batch.pbs""".format(*job)
+        -v flag_algo={0},parallel_version={1},Qx={2},Qy={3},Qc={4},tot={5},num_chunk={6} run_batch.pbs""".format(
+            *job
+        )
 
         # print qsub_command # Uncomment this line when testing to view the qsub command
 
