@@ -1,6 +1,6 @@
 function [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, ...
     offset, status_q, nlevel, wavelet, Ncoefs_q, dims_overlap_ref_q, ...
-    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size_v1)
+    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size_v1)    
 % Compute the value of the faceted prior (:math:`\ell_{2,1}` + nuclear 
 % norm).
 %
