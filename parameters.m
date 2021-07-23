@@ -1,7 +1,7 @@
-%% Problem size
+%% * Problem size
 % TODO: to be filled in
 
-%% NUFFT (gridding parameters)
+%% * NUFFT (gridding parameters)
 % oversampling factors for nufft
 param_nufft.ox = 2;
 % oversampling factors for nufft
@@ -11,7 +11,7 @@ param_nufft.Kx = 8;
 % number of neighbours for nufft
 param_nufft.Ky = 8;
 
-%% Preconditioning
+%% * Preconditioning
 % number of pixels in the image
 param_precond.N = N;
 % number of Fourier points (oversampled plane)
@@ -21,7 +21,7 @@ param_precond.Noy = oy * Ny;
 param_precond.gen_uniform_weight_matrix = 1;
 param_precond.uniform_weight_sub_pixels = 1;
 
-%% Blocking
+%% * Blocking
 % density-based
 param_blocking.use_density_partitioning = 0;
 param_blocking.density_partitioning_no = 1;
@@ -54,9 +54,9 @@ param_nnls.max_iter = 1000;
 param_nnls.sol_steps = [inf];
 param_nnls.beta = 1;
 
-%% Prior
+%% * Prior
 
-%% Solver
+%% * Solver
 % * general
 % estimate of the noise level in SARA space
 param_solver.reweighting_sig = sig;
