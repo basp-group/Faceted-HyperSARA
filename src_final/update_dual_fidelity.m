@@ -50,6 +50,7 @@ function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [29/04/2021]
+% TODO: update name of variable
 %-------------------------------------------------------------------------%
 %%                         
              

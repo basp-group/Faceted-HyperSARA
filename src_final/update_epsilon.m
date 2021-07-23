@@ -44,14 +44,14 @@ function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
+% TODO: update nanme of variable
 %-------------------------------------------------------------------------%
 %%
 nChannels = length(epsilon);
 
-% if rel_fval < adapt_eps_rel_obj % can be done out of the function
 for i = 1 : nChannels
     for  j = 1 : length(epsilon{i})
-        if t > t_block{i}{j} + adapt_eps_steps %&& rel_fval < adapt_eps_rel_obj
+        if t > t_block{i}{j} + adapt_eps_steps
             if  norm_res{i}{j} < adapt_eps_tol_in * epsilon{i}{j}
                 epsilon{i}{j} = adapt_eps_change_percentage*norm_res{i}{j} + (1 - adapt_eps_change_percentage)*epsilon{i}{j};
                 t_block{i}{j} = t;
@@ -60,17 +60,12 @@ for i = 1 : nChannels
 
             if norm_res{i}{j} > adapt_eps_tol_out * epsilon{i}{j}
                 target_eps = adapt_eps_change_percentage*norm_res{i}{j} + (1 - adapt_eps_change_percentage)*epsilon{i}{j};
-%                 if target_eps > l2_upper_bound{i}{j}
-%                     epsilon{i}{j} = l2_upper_bound{i}{j};
-%                 else
-                   epsilon{i}{j} = target_eps;
-%                 end
+                epsilon{i}{j} = target_eps;
                 t_block{i}{j} = t;
                 fprintf('Updated  epsilon UP: %e\t, residual: %e\t, Block: %i, Band: %i\n', epsilon{i}{j},norm_res{i}{j},j,i);
             end
         end
     end
 end
-% end
 
 end
