@@ -16,11 +16,6 @@ No = size(W{1}{1}, 1);
 % number of pixels
 [M, N] = size(At(zeros(No, 1)));
 
-%! ask Abdullah here
-%maxNumCompThreads(12);
-% util_create_pool(15);
-% total number of workers (Q: facets workers, K: data workers)
-% numworkers = 12;
 cirrus_cluster = parcluster('local');
 cirrus_cluster.NumWorkers = numworkers;
 cirrus_cluster.NumThreads = 1;
@@ -252,8 +247,6 @@ tau = 0.99/(sigma1*param.nu1 + sigma2*param.nu2);
 sigma11 = tau*sigma1;
 sigma22 = tau*sigma2;
 
-flag = 0;
-
 beta1 = param.gamma/sigma1;
 param.alph = alph;
 
@@ -301,11 +294,6 @@ for t = t_start : max_iter
     end
     
     %% L2 ball projection update
-    %! [P.-A.]
-    % residual_check_c = 0;
-    % epsilon_check_c = 0;
-    % residual_check_a = 0;
-    % epsilon_check_a = 0;
     norm_residual_check = 0;
     norm_epsilon_check = 0;
     counter = 1;
@@ -332,14 +320,6 @@ for t = t_start : max_iter
             epsilon_check(counter) = epsilon{i}{j};
             counter = counter + 1;
 
-            %! [P.-A.] what's the difference between residual_check_c and residual_check_a?
-            % if j == 1
-            %     residual_check_c = residual_check_c + norm_res{i}{j}^2;
-            %     epsilon_check_c = epsilon_check_c + power(epsilon{i}{j},2);
-            % else
-            %     residual_check_a = residual_check_a + norm_res{i}{j}^2;
-            %     epsilon_check_a = epsilon_check_a + power(epsilon{i}{j},2);
-            % end
             norm_residual_check = norm_residual_check + norm_res{i}{j}^2;
             norm_epsilon_check = norm_epsilon_check + power(epsilon{i}{j},2);
         end
@@ -350,10 +330,6 @@ for t = t_start : max_iter
     % Free memory
     g2=[]; Fx=[];
    
-    % epsilon_check_c = sqrt(epsilon_check_c);
-    % residual_check_c = sqrt(residual_check_c);
-    % epsilon_check_a = sqrt(epsilon_check_a);
-    % residual_check_a = sqrt(residual_check_a);
     norm_epsilon_check = sqrt(norm_epsilon_check);
     norm_residual_check = sqrt(norm_residual_check);
  
@@ -388,22 +364,12 @@ for t = t_start : max_iter
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
             fprintf('l11-norm = %e, rel_val = %e\n', l11, rel_val(t));
-            %! [P.-A.] not sure why we have residual_c / residual_a, ...
-            % fprintf(' epsilon = %e, residual = %e\n', norm(epsilon_check), norm(residual_check));
-            % fprintf(' epsilon_c = %e, residual_c = %e\n', epsilon_check_c, residual_check_c);
-            % fprintf(' epsilon_a = %e, residual_a = %e\n', epsilon_check_a, residual_check_a);
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
             fprintf(' SNR = %e\n\n', SNR);
         end
     end
 
     %% Check convergence pdfb (inner solver)
-    %! -- TO BE CHECKED
-    % pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ...                                               % minimum number of pdfb iterations
-    %     ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                          % maximum number of pdfb iterations reached
-    %         (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
-    %     );
-
     pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ... % minimum number of pdfb iterations
         ( t - reweight_last_step_iter >= param.pdfb_max_iter || ... % maximum number of pdfb iterations reached
             (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) || ... % relative variation and data fidelity within tolerance
@@ -445,23 +411,23 @@ for t = t_start : max_iter
         %     f(k) = parfeval(@run_par_l11, 1, Psit{k}, xsol, weights1{k});
         % end
 
-        if update_regularization && (reweight_step_count == 0)
-            for k = 1:P
-                f(k) = parfeval(@update_regularization_l11, 1, Psit{k}, xsol, sig, regtype);
-            end
+        % if update_regularization && (reweight_step_count == 0)
+        %     for k = 1:P
+        %         f(k) = parfeval(@update_regularization_l11, 1, Psit{k}, xsol, sig, regtype);
+        %     end
 
-            param.gamma_old = param.gamma;
-            gam = 0;
-            for k = 1:P
-                [~, gam_] = fetchNext(f);
-                gam = gam + gam_;
-            end
-            gam = alph / gam;
-            param.gamma = gam;
-            beta1 = param.gamma/sigma1;
+        %     param.gamma_old = param.gamma;
+        %     gam = 0;
+        %     for k = 1:P
+        %         [~, gam_] = fetchNext(f);
+        %         gam = gam + gam_;
+        %     end
+        %     gam = alph / gam;
+        %     param.gamma = gam;
+        %     beta1 = param.gamma/sigma1;
 
-            fprintf('Updated reg: gamma=%e \n\n', gam);
-        end
+        %     fprintf('Updated reg: gamma=%e \n\n', gam);
+        % end
 
         % compute residual image
         res = zeros(size(xsol));
@@ -483,9 +449,9 @@ for t = t_start : max_iter
             weights1{k} =  upsilon ./ (upsilon + d_val);
         end
         %! -- TO BE CHECKED
-        if flag_homotopy
-            reweighting_alpha = max(reweighting_alpha_ff * reweighting_alpha, 1);
-        end
+        % if flag_homotopy
+        %     reweighting_alpha = max(reweighting_alpha_ff * reweighting_alpha, 1);
+        % end
         %! --
         param.reweighting_alpha = reweighting_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
@@ -520,7 +486,6 @@ for t = t_start : max_iter
             m.weights1 = weights1;
             m.res = res;
             m.SNR = SNR;
-            % m.SNR_average = SNR_average;
             m.l11 = l11;
             m.end_iter = end_iter;
             m.t_l11 = t_l11;
@@ -560,9 +525,6 @@ for i = 1 : c
     res(:,:,i) = real(At(g2));
 end
 
-% m = matfile([name, '_', ...
-% num2str(param.cube_id), '_gam=',  num2str(param.gamma), '_rw=', num2str(reweight_step_count), '.mat'], ...
-% 'Writable', true);
 m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
     'Writable', true);
 m.param = param;
