@@ -100,6 +100,10 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % xapprox = 'none'; % none, precond
 % noise_transfer = 'none'; % none, precond
 % reg_option = 'none'; % dirty, none
+%
+% %T = 1500; % to be set depending on the value of p
+% %hrs = 6;
+% %p = 1;
 %%
 
 % fixed parameters (in the mnras experiments)
@@ -107,10 +111,6 @@ flag_generateUndersampledCube = false;
 flag_generateCoverage = false;
 seed = 1;
 rng(seed);
-% sigma_noise = 0.1
-% T = 1500; % to be set depending on the value of p
-% hrs = 6;
-% p = 1;
 % kernel = 'minmax:tuned'; % 'kaiser', 'minmax:tuned'
 generate_eps_nnls = false;
 save_data = true;
