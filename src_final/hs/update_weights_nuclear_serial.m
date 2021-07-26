@@ -24,6 +24,5 @@ function weights = update_weights_nuclear_serial(x, reweight_alpha, sig_bar)
 d = abs(diag(D));
 upsilon_bar = sig_bar*reweight_alpha;
 weights = upsilon_bar ./ (upsilon_bar + d);
-% weights = reweight_alpha ./ (reweight_alpha + d);
 
 end
