@@ -493,18 +493,21 @@ if strcmp(algo_version, 'sara')
         %Anorm_ch(i) = pow_method_op(@(x) sqrt(cell2mat(aW{i})) .* (Gw{i}*A(x)), @(x) real(At(Gw{i}' * (sqrt(cell2mat(aW{i})) .* x))), [Ny Nx 1]);
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-        Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+        [precond_operator_norm, rel_var] = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
+        % ! make sure the pdfb convergence criterion will be strictly 
+        % ! satisfied by taking a smaller step-size 
+        Anorm = (1 + rel_var)*precond_operator_norm;
         
         F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
         Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
         operator_norm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
-        precond_operator_norm = Anorm;
         
         save(fullfile(results_path, ...
             strcat('Anorm_', ...
             algo_version, ...
             '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm');
+            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm', 'rel_var');
+            clear rel_var
     else
         load(fullfile(results_path, ...
             strcat('Anorm_', ...
@@ -515,21 +518,17 @@ if strcmp(algo_version, 'sara')
 else
     if flag_computeOperatorNorm
         % Compute full measurement operator spectral norm
-%         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
-%         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-%         Anorm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
-        
-        % F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
-        % Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
-        % operator_norm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
-
         precond_operator_norm = zeros(nchans, 1);
+        rel_var = zeros(nchans, 1);
         for l = 1:nchans
             F = afclean( @(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l)));
             Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx));
-            precond_operator_norm(l) = op_norm(F, Ft, [Ny Nx], 1e-8, 200, 2);
+            [precond_operator_norm(l), rel_var(l)] = op_norm(F, Ft, [Ny Nx], 1e-8, 200, 2);
         end
-        Anorm = max(precond_operator_norm); % operator is block diagonal
+        % ! make sure the pdfb convergence criterion will be strictly 
+        % ! satisfied by taking a smaller step-size (take precision on 
+        % ! operator norm into account)
+        Anorm = max(precond_operator_norm.*(1 + rel_var)); % operator is block diagonal
 
         operator_norm = zeros(nchans, 1);
         for l = 1:nchans
@@ -541,12 +540,8 @@ else
         save(fullfile(results_path, ...
             strcat('Anorm_hs', ...
             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
-            '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm');
-       
-        if Qc > 1
-            operator_norm = operator_norm(id{ind});
-            precond_operator_norm = precond_operator_norm(id{ind});
-        end
+            '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm', 'rel_var');
+        clear rel_var
 
         % % operator norm per channel "l"
         % Anorm_channel = zeros(nchans, 1);
@@ -561,11 +556,12 @@ else
         load(fullfile(results_path, ...
             strcat('Anorm_hs', ...
             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
-            '.mat')), 'operator_norm', 'precond_operator_norm');
-            
+            '.mat')), 'operator_norm', 'precond_operator_norm', 'rel_var');
+
         operator_norm = operator_norm(id{ind});
         precond_operator_norm = precond_operator_norm(id{ind});
-        Anorm = max(precond_operator_norm);
+        rel_var = rel_var(id{ind});
+        Anorm = max(precond_operator_norm.*(1 + rel_var));
     end
 end
 
