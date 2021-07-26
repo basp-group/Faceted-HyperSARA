@@ -22,7 +22,7 @@ simulation_type,'_',image_name, '_srf=', num2str(superresolution_factor), ...
 '.mat'), 'sigma_noise')
 
 % common parameters
-upsilon0 = 3*sigma_noise./sqrt(operator_norm); 
+upsilon0 = sigma_noise./sqrt(operator_norm); 
 
 norm2D = @(x) squeeze(sqrt(sum(sum(x.^2, 2), 1)));
 SNR_log = @(x, x0, upsilon) 20*log10(norm2D(log10(1 + x0./reshape(upsilon, [1, 1, numel(upsilon)])))./norm2D(log10(1 + x./reshape(upsilon, [1, 1, numel(upsilon)]))-log10(1 + x0./reshape(upsilon, [1, 1, numel(upsilon)]))));
