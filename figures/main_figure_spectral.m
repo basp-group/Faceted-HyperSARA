@@ -62,8 +62,7 @@ for k = 1:numel(img_filenames)
 %     end
 
     for band = 1:size(x, 3)        
-%         [f, h] = display_image(x(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize);
-        [f, h] = display_image2(x(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, true);
+        [f, h] = display_image(x(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, true);
         % export_fig(['figs/', name{k}, num2str(band), extension], '-transparent', '-q101')
         
         % https://www.mathworks.com/help/matlab/creating_plots/save-figure-at-specific-size-and-resolution.html
@@ -94,7 +93,7 @@ for k = 1:numel(res_filenames)
 
     for band = 1:size(res,3)
         % faceted hypersara
-        [f, h] = display_image2(res(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, false);
+        [f, h] = display_image(res(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, false);
         % export_fig(['figs/', name{k}, num2str(band),extension],'-transparent', '-q101')
         
         % https://www.mathworks.com/help/matlab/creating_plots/save-figure-at-specific-size-and-resolution.html

@@ -64,8 +64,7 @@ for k = numel(img_filenames)
 %     end
 
     for band = 1:size(x, 3)        
-%         [f, h] = display_image(x(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize);
-        [f, h] = display_image2(x(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, true);
+        [f, h] = display_image(x(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, true);
         % pause(0.5)
         % set(h,'XTick',[1e-5 1e-4 1e-3]);
         % export_fig(['figs/', name{k}, num2str(band), extension], '-transparent', '-q101')
@@ -100,8 +99,7 @@ for k = numel(res_filenames)
 
     for band = 1:size(res,3)
         % faceted hypersara
-        %[f, h] = display_residual(res(:,:,band), fig_size, clim_log(band,:), map_img, fontsize);
-        [f, h] = display_image2(res(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, false);
+        [f, h] = display_image(res(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, false);
         % if band ==1
         %     set(h,'XTick',[-0.01 0 0.01])
         %     h.Ruler.Exponent = -2;
