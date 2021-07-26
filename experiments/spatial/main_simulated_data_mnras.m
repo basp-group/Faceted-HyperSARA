@@ -126,9 +126,6 @@ disp(['nchannels: ', num2str(nChannels)]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
 disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), ', ')]);
-% disp(['Number of data points p per frequency (as a fraction of image size): ', num2str(p)]);
-% disp(['Generating image cube: ', num2str(flag_generateCube)]);
-% disp(['Generating coverage: ', num2str(flag_generateCoverage)]);
 disp(['Input SNR: ', num2str(isnr)]);
 disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
 
@@ -335,13 +332,7 @@ param_block_structure.uniform_partitioning_no = 4;
 param_block_structure.use_equal_partitioning = 1;
 param_block_structure.equal_partitioning_no = 1;
 param_block_structure.use_manual_frequency_partitioning = 0;
-% sparam.fpartition = [pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-% sparam.fpartition = [0, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-% sparam.fpartition = [-0.25*pi, 0, 0.25*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-% sparam.fpartition = [-64/256*pi, 0, 64/256*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
 param_block_structure.fpartition = [icdf('norm', 0.25, 0, pi/4), 0, icdf('norm', 0.75, 0, pi/4), pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-% sparam.fpartition = [-0.3*pi, -0.15*pi, 0, 0.15*pi, 0.3*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-% sparam.fpartition = [-0.35*pi, -0.25*pi, -0.15*pi, 0, 0.15*pi, 0.25*pi, 0.35*pi, pi]; % partition (symetrically) of the data to nodes (frequency ranges)
 param_block_structure.use_manual_partitioning = 0;
 
 %% Generate/load uv-coverage, setup measurement operator
@@ -419,13 +410,10 @@ else
 end
 
 % setup measurement operator
+% TODO: use spmd block here
 for i = 1:nchans
-    %! previous version
-    % uw = (f(i)/f(1)) * u;
-    % vw = (f(i)/f(1)) * v;
 
-    %? need to fix the frequencies? (just select the right ones)
-    %? i.e., need to normalize w.r.t. max over all available frequencies?
+    %? need to normalize w.r.t. max over all available frequencies
     uw = (fc(i)/f(end)) * u;
     vw = (fc(i)/f(end)) * v;
     
@@ -487,10 +475,10 @@ epsilons = epsilons(id{ind});
 sigma_noise = sigma_noise(id{ind});
 
 %% Compute operator norm
+% TODO: to be computed in spmd block
 if strcmp(algo_version, 'sara')
     % Compute measurement operator spectral norm for each channel individually
     if flag_computeOperatorNorm
-        %Anorm_ch(i) = pow_method_op(@(x) sqrt(cell2mat(aW{i})) .* (Gw{i}*A(x)), @(x) real(At(Gw{i}' * (sqrt(cell2mat(aW{i})) .* x))), [Ny Nx 1]);
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
         [precond_operator_norm, rel_var] = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
@@ -542,16 +530,6 @@ else
             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
             '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm', 'rel_var');
         clear rel_var
-
-        % % operator norm per channel "l"
-        % Anorm_channel = zeros(nchans, 1);
-        % for l = 1:nchans
-        %     F = afclean( @(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l)));
-        %     Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx));
-        %     Anorm_channel(l) = op_norm(F, Ft, [Ny Nx 1], 1e-8, 200, 2); 
-        % end
-        % save(fullfile(results_path,strcat('Anorm_channel_N=',num2str(Nx), ...
-        %     '_L=',num2str(nChannels),'_Qc=',num2str(Qc),'_ind=',num2str(ind), '.mat')),'-v7.3', 'Anorm_channel');
     else
         load(fullfile(results_path, ...
             strcat('Anorm_hs', ...
