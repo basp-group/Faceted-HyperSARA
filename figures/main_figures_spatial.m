@@ -2,7 +2,6 @@ clc; clear all; close all;
 format compact;
 
 addpath ../../CubeHelix
-addpath ../../export_fig_master
 addpath ../data
 addpath ../lib/print/
 mkdir figs_spatial
@@ -65,9 +64,6 @@ for k = numel(img_filenames)
 
     for band = 1:size(x, 3)        
         [f, h] = display_image(x(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, true);
-        % pause(0.5)
-        % set(h,'XTick',[1e-5 1e-4 1e-3]);
-        % export_fig(['figs/', name{k}, num2str(band), extension], '-transparent', '-q101')
         
         % https://www.mathworks.com/help/matlab/creating_plots/save-figure-at-specific-size-and-resolution.html
         exportgraphics(f,['figs_spatial/', name{k}, num2str(band), extension],'ContentType','vector',...
@@ -110,7 +106,6 @@ for k = numel(res_filenames)
         %     set(h,...
         %         'XTick',[-1e-3 0 1e-3])
         % end
-        % export_fig(['figs/', name{k}, num2str(band),extension],'-transparent', '-q101')
         
         % https://www.mathworks.com/help/matlab/creating_plots/save-figure-at-specific-size-and-resolution.html
         exportgraphics(f,['figs_spatial/', name{k}, num2str(band),extension],'ContentType','vector',...
