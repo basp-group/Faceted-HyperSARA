@@ -1,9 +1,0 @@
-function [v0, g0] = update_nuclear_spmd_weighted(v0, xhat, w, weights0, beta0)
-
-    [M,N,c] = size(xhat);
-    xhatm = reshape(xhat.*w,numel(xhat)/c,c);
-    [U0,S0,V0] = svd(v0 + xhatm,'econ');
-    v0 = v0 + xhatm - (U0*diag(max(diag(S0) - beta0 * weights0, 0))*V0');
-    g0 = w.*reshape(v0,M,N,c);
-
-end

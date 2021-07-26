@@ -39,7 +39,7 @@ git submodule update --remote --merge # fetch and merge latest state of the subm
 
 ## Configuration
 
-To reproduce the experiments (on CIRRUS), configure the `.cvs` file contained in ..., and run the following
+To reproduce the experiments (on CIRRUS), configure the `.csv` file contained in ..., and run the following
 
 ```bash
 cd path/to/Faceted-Hyper-SARA
