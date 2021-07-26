@@ -788,64 +788,64 @@ for t = t_start : max_iter
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count+1, rel_x_reweighting, reweighting_alpha);
 
         % update regularization parameters after the first pdfb
-        if update_regularization && (reweight_step_count == 0)
-            spmd
-                if labindex <= Qp.Value
-                    x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-                    x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+        % if update_regularization && (reweight_step_count == 0)
+        %     spmd
+        %         if labindex <= Qp.Value
+        %             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
+        %             x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
-                    bq = zeros(size(x_overlap));
-                    % send xhat_q (communication towards the data nodes)
-                    for i = 1:Kp.Value
-                        bq(overlap(1)+1:end, overlap(2)+1:end, c_chunksp.Value{i}) = labReceive(Qp.Value+i);
-                    end
+        %             bq = zeros(size(x_overlap));
+        %             % send xhat_q (communication towards the data nodes)
+        %             for i = 1:Kp.Value
+        %                 bq(overlap(1)+1:end, overlap(2)+1:end, c_chunksp.Value{i}) = labReceive(Qp.Value+i);
+        %             end
 
-                    bq = comm2d_update_borders(bq, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+        %             bq = comm2d_update_borders(bq, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
-                    sig_bar_ = update_sig_bar_q(x_overlap, w, bq);
+        %             sig_bar_ = update_sig_bar_q(x_overlap, w, bq);
 
-                    %! need to update beta0 and beta1
-                    [gamma1_q, gamma0_q] = compute_facet_log_prior_regularizer(x_overlap, Iq, ...
-                    offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_, regtype);
-                else
-                    % generate noise matrix to update sig_bar
-                    bi = create_data_noise(yp, Atp, Gp, Wp, N, M, No, sigma_noise_, labindex, operator_norm);
+        %             %! need to update beta0 and beta1
+        %             [gamma1_q, gamma0_q] = compute_facet_log_prior_regularizer(x_overlap, Iq, ...
+        %             offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
+        %             offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_, regtype);
+        %         else
+        %             % generate noise matrix to update sig_bar
+        %             bi = create_data_noise(yp, Atp, Gp, Wp, N, M, No, sigma_noise_, labindex, operator_norm);
 
-                    for q = 1:Qp.Value
-                        labSend(bi(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
-                    end
-                end
-            end
+        %             for q = 1:Qp.Value
+        %                 labSend(bi(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
+        %             end
+        %         end
+        %     end
 
-            param.gamma0_old = param.gamma0;
-            param.gamma_old = param.gamma;
-            param.reweighting_sig_bar_old = param.reweighting_sig_bar;
+        %     param.gamma0_old = param.gamma0;
+        %     param.gamma_old = param.gamma;
+        %     param.reweighting_sig_bar_old = param.reweighting_sig_bar;
             
-            gamma0 = zeros(Q, 1);
-            gamma1 = 0;
-            sig_bar = zeros(Q, 1);
-            %! to be fixed
-            for q = 1:Q
-                gamma0(q) = gamma0_q{q};
-                gamma1 = gamma1 + gamma1_q{q};
-                sig_bar(q) = sig_bar_{q};
-            end
-            gamma0 = alph_bar./gamma0;
-            gamma1 = alph/gamma1;
+        %     gamma0 = zeros(Q, 1);
+        %     gamma1 = 0;
+        %     sig_bar = zeros(Q, 1);
+        %     %! to be fixed
+        %     for q = 1:Q
+        %         gamma0(q) = gamma0_q{q};
+        %         gamma1 = gamma1 + gamma1_q{q};
+        %         sig_bar(q) = sig_bar_{q};
+        %     end
+        %     gamma0 = alph_bar./gamma0;
+        %     gamma1 = alph/gamma1;
 
-            param.reweighting_sig_bar = sig_bar;
-            param.gamma0 = gamma0;
-            param.gamma = gamma1;
-            % beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
-            for q = 1:q
-                beta0{q} = param.gamma0(q)/sigma0;
-            end
-            beta1 = parallel.pool.Constant(param.gamma/sigma1);
+        %     param.reweighting_sig_bar = sig_bar;
+        %     param.gamma0 = gamma0;
+        %     param.gamma = gamma1;
+        %     % beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
+        %     for q = 1:q
+        %         beta0{q} = param.gamma0(q)/sigma0;
+        %     end
+        %     beta1 = parallel.pool.Constant(param.gamma/sigma1);
 
-            fprintf('Updated reg (%s): gamma0 = [%e, %e], gamma1 = %e \n\n', regtype, min(param.gamma0), max(param.gamma0), param.gamma);
-            fprintf('Updated floor lvl (%s): sig_bar = [%e,%e] \n\n', regtype, min(param.reweighting_sig_bar), max(param.reweighting_sig_bar));
-        end
+        %     fprintf('Updated reg (%s): gamma0 = [%e, %e], gamma1 = %e \n\n', regtype, min(param.gamma0), max(param.gamma0), param.gamma);
+        %     fprintf('Updated floor lvl (%s): sig_bar = [%e,%e] \n\n', regtype, min(param.reweighting_sig_bar), max(param.reweighting_sig_bar));
+        % end
         
         spmd
             if labindex <= Qp.Value

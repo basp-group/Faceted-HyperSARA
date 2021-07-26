@@ -449,9 +449,9 @@ for t = t_start : max_iter
             weights1{k} =  upsilon ./ (upsilon + d_val);
         end
         %! -- TO BE CHECKED
-        % if flag_homotopy
-        %     reweighting_alpha = max(reweighting_alpha_ff * reweighting_alpha, 1);
-        % end
+        if flag_homotopy
+            reweighting_alpha = max(reweighting_alpha_ff * reweighting_alpha, 1);
+        end
         %! --
         param.reweighting_alpha = reweighting_alpha;
         param.init_reweight_step_count = reweight_step_count+1;
