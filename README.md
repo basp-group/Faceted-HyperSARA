@@ -1,6 +1,8 @@
 # Parallel faceted imaging in radio interferometry via proximal splitting
 
-**Description:** Matlab codes associated with the method described in
+## Description
+
+This repository contains Matlab codes associated with the approach described in
 
 >P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech, A. Repetti, A. Jackson, J.-P. Thiran, Y. Wiaux, Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA), submitted, [preprint available online](https://arxiv.org/abs/2003.07358), Jan. 2020.  
 
@@ -16,7 +18,15 @@
 >
 > A. Onose, A. Dabbech and Y. Wiaux, [An accelerated splitting algorithm for radio-interferometric imaging: when natural and uniform weighting meet](http://dx.doi.org/10.1093/mnras/stx755), *Mon. Not. Roy. Astron. Soc.*, 469(1):938-949, 2017.
 
-**Installation**: To properly clone the project with the submodules, you may need to do follow one of set of instructions:
+## Installation
+
+To properly clone the project with the submodules, you may need to choose one of following set of instructions:
+
+- cloning the repository from scratch
+
+```bash
+git clone --recurse-submodules https://github.com/basp-group-private/Faceted-Hyper-SARA.git
+```
 
 - updating from an existing `Faceted-Hyper-SARA` repository:
 
@@ -27,45 +37,14 @@ git submodule update --init --recursive # update the content of the submodules
 git submodule update --remote --merge # fetch and merge latest state of the submodule
 ```
 
-If you get an access error, fix the `.gitmodules` file as follows
+## Configuration
+
+To reproduce the experiments (on CIRRUS), configure the `.cvs` file contained in ..., and run the following
 
 ```bash
-[submodule "lib/faceted-wavelet-transform"]
-        path = lib/faceted-wavelet-transform
-        url = https://github.com/basp-group-private/faceted-wavelet-transform.git
-[submodule "lib/measurement-operator"]
-        path = lib/measurement-operator
-        url = https://github.com/basp-group-private/measurement-operator.git
-```
-
-- cloning the repository from scratch
-
-```bash
-git clone --recurse-submodules https://github.com/basp-group-private/Faceted-Hyper-SARA.git
-```
-
-In the long term, the `Faceted-Hyper-SARA` project might be updated to use `subtrees` instead of `submodules` (though it seems to require a recent version of git (not installed by default on `CIRRUS`)).
-
-## Note: reading selected channels from a large `.fits` file in Matlab
-
-```matlab
-% extract first and last channels from the fits file
-info        = fitsinfo('filename.fits');
-rowend      = info.PrimaryData.Size(1);
-colend      = info.PrimaryData.Size(2);
-sliceend    = info.PrimaryData.Size(3);
-data = fitsread('filename.fits','primary',...
-          'Info', info,...
-          'PixelRegion',{[1 1 rowend], [1 1 colend], [1 sliceend-1 sliceend]});
-```
-
-## Code formatting
-
-Try the [`miss_hit`](https://github.com/florianschanda/miss_hit) package (to be checked first on a few examples before moving to the full project).
-
-```bash
-pip install miss_hit
-mh_style my_file.m # only analyse the file
-mh_style --fix my_file.m # fix the file based on the rules given in miss_hit.cfg
-mh_style folder/
+cd path/to/Faceted-Hyper-SARA
+module load anaconda/python3
+# configure / update the python job script
+vi job_spatial.py
+python job_spatial.py
 ```
