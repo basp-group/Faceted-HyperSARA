@@ -1,7 +1,7 @@
 function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
     facetHyperSARA(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, sigma_noise, flag_cirrus, varargin)
+    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, sigma_noise, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -177,30 +177,6 @@ clear rg_yo rg_xo;
 % in SARA (sdwt2)
 [~, dims_overlap_ref, I_overlap, dims_overlap, status, offset, offsetL, ...
     offsetR, Ncoefs, temLIdxs, temRIdxs] = sdwt2_setup([M, N], I, dims, nlevel, wavelet, filter_length);
-
-% total number of workers (Q: facets workers, K: data workers)
-numworkers = Q + K;
-cirrus_cluster = parcluster('local');
-cirrus_cluster.NumWorkers = numworkers;
-cirrus_cluster.NumThreads = 1;
-ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
-if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
-    exit(1);
-end
-% explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-if flag_cirrus
-    cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
-end
-% maxNumCompThreads(param.num_workers);
-parpool(cirrus_cluster, numworkers);
-% % start the matlabpool with maximum available workers
-% % control how many workers by setting ntasks in your sbatch script
-% parpool(cirrus_cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
-
-dwtmode('zpd') 
-spmd
-   dwtmode('zpd') 
-end
 
 % define parallel constants (known by each worker)
 Qyp = parallel.pool.Constant(Qy);

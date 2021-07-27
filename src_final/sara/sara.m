@@ -1,5 +1,5 @@
 function [xsol,param,v1,v2,g,weights1,proj,t_block,reweighting_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, numworkers, alph, flag_cirrus, varargin)
+    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, alph, varargin)
 
 % This function solves:
 %
@@ -15,24 +15,6 @@ No = size(W{1}{1}, 1);
 
 % number of pixels
 [M, N] = size(At(zeros(No, 1)));
-
-cirrus_cluster = parcluster('local');
-cirrus_cluster.NumWorkers = numworkers;
-cirrus_cluster.NumThreads = 1;
-ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
-if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
-    exit(1);
-end
-% explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-if flag_cirrus
-    cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
-end
-% maxNumCompThreads(param.num_workers);
-parpool(cirrus_cluster, numworkers);
-dwtmode('zpd')
-spmd
-    dwtmode('zpd')
-end
 
 % Initializations
 init_flag = isfile(init_file_name);

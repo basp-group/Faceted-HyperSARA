@@ -717,6 +717,23 @@ if flag_solveMinimization
         disp('SARA')
         disp('-----------------------------------------')
 
+        cirrus_cluster = parcluster('local');
+        cirrus_cluster.NumWorkers = numworkers;
+        cirrus_cluster.NumThreads = 1;
+        ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
+        if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
+            exit(1);
+        end
+        % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
+        if flag_cirrus
+            cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+        end
+        parpool(cirrus_cluster, numworkers);
+        dwtmode('zpd')
+        spmd
+            dwtmode('zpd')
+        end
+
         [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
             sara(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI, fullfile(auxiliary_path,warm_start(nChannels)), ...
             fullfile(auxiliary_path,temp_results_name(nChannels)), x0, flag_homotopy, ncores_data, gam, flag_cirrus); %! in this case, ncores_data corresponds to the number of workers for the wavelet transform (9 maximum)
@@ -766,16 +783,61 @@ if flag_solveMinimization
         %%
         switch algo_version 
             case 'hypersara'
+
+                % total number of workers (2: facets workers, K: data workers)
+                numworkers = ncores_data;
+                cirrus_cluster = parcluster('local');
+                cirrus_cluster.NumWorkers = numworkers;
+                cirrus_cluster.NumThreads = 1;
+                ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
+                if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
+                    exit(1);
+                end
+                % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
+                if flag_cirrus
+                    cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+                end
+                parpool(cirrus_cluster, numworkers);
+
+                dwtmode('zpd')
+                spmd
+                dwtmode('zpd') 
+                end
+
                 [xsol,param,epsilon,t,rel_val,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
                     hyperSARA(y_spmd, epsilon_spmd, ...
                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
                     wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), ...
-                    flag_homotopy, flag_cirrus);
+                    flag_homotopy);
             case 'cw'
+
+                % total number of workers (Q: facets workers, K: data workers)
+                numworkers = Qx*Qy + ncores_data;
+                cirrus_cluster = parcluster('local');
+                cirrus_cluster.NumWorkers = numworkers;
+                cirrus_cluster.NumThreads = 1;
+                ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
+                if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
+                    exit(1);
+                end
+                % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
+                if flag_cirrus
+                    cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+                end
+                % maxNumCompThreads(param.num_workers);
+                parpool(cirrus_cluster, numworkers);
+                % % start the matlabpool with maximum available workers
+                % % control how many workers by setting ntasks in your sbatch script
+                % parpool(cirrus_cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
+                dwtmode('zpd') 
+                spmd
+                    dwtmode('zpd') 
+                end
+
                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                     facetHyperSARA(y_spmd, epsilon_spmd, ...
                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
-                    filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, sigma_noise_spmd, flag_cirrus);
+                    filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, sigma_noise_spmd);
             otherwise
                 error('Unknown solver version.')
         end
