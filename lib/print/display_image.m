@@ -1,10 +1,8 @@
-function [f, h] = display_image2(x, fig_size, shift_colorbar, clim, map_img, fontsize, bool_log)
+function [f, h] = display_image(x, fig_size, shift_colorbar, clim, map_img, fontsize, bool_log)
 
     f=figure('visible','on');
     % sets axes background
     set(gca, 'Color', 'none');
-    % set(f,'PaperUnits','centimeters')
-    % set(f,'PaperType','A4');
     set(f,'PaperOrientation',orient);
     set(f,'units','pixel','outerposition',[0 0 fig_size])
     
@@ -14,7 +12,6 @@ function [f, h] = display_image2(x, fig_size, shift_colorbar, clim, map_img, fon
     % nexttile;
     
     imagesc(x, clim);
-    % imagesc(x);
     colormap(gca, map_img);
 
     axis image
