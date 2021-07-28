@@ -112,14 +112,14 @@ addpath ../../lib/measurement-operator/lib/operators/
 addpath ../../lib/utils/
 addpath ../../lib/faceted-wavelet-transform/src
 addpath ../../data/
-addpath ../../src_final/
-addpath ../../src_final/heuristics/
+addpath ../../src/
+addpath ../../src/heuristics/
 if strcmp(algo_version, "sara")
-    addpath ../../src_final/sara
+    addpath ../../src/sara
 elseif strcmp(algo_version, "hypersara")
-    addpath ../../src_final/hs
+    addpath ../../src/hs
 else
-    addpath ../../src_final/fhs
+    addpath ../../src/fhs
 end
 
 % setting paths to results and reference image cube
