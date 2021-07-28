@@ -68,7 +68,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'hypersara'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'sara'; % 'cw', 'hypersara', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 0;
 % flag_computeOperatorNorm = 0;
@@ -93,7 +93,6 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
 % flag_cirrus = false;
-% reg_option = 'none'; % dirty, none
 %
 % %T = 1500; % to be set depending on the value of p
 % %hrs = 6;
@@ -148,6 +147,39 @@ auxiliary_path = fullfile(results_path, algo_version);
 mkdir(data_path)
 mkdir(results_path)
 mkdir(auxiliary_path)
+
+%% parpool setup (no parpool needed for SARA)
+switch algo_version
+    case 'sara'
+        numworkers = ncores_data;
+    case 'hypersara'
+        % total number of workers (2: facets workers (main session), ncores_data: data workers)
+        numworkers = ncores_data;
+    case 'cw'
+        % total number of workers (Q: facets workers, ncores_data: data workers)
+        numworkers = Qx*Qy + ncores_data;
+end
+
+cirrus_cluster = parcluster('local');
+cirrus_cluster.NumWorkers = numworkers;
+cirrus_cluster.NumThreads = 1;
+ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
+if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
+    exit(1);
+end
+% explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
+if flag_cirrus
+    cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+end
+% maxNumCompThreads(param.num_workers);
+parpool(cirrus_cluster, numworkers);
+% % start the matlabpool with maximum available workers
+% % control how many workers by setting ntasks in your sbatch script
+% parpool(cirrus_cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
+dwtmode('zpd')
+spmd
+    dwtmode('zpd') 
+end
 
 %% Generate/load ground-truth image cube
 % reference_cube_path = strcat(data_path, image_name, '.fits');
@@ -717,26 +749,9 @@ if flag_solveMinimization
         disp('SARA')
         disp('-----------------------------------------')
 
-        cirrus_cluster = parcluster('local');
-        cirrus_cluster.NumWorkers = numworkers;
-        cirrus_cluster.NumThreads = 1;
-        ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
-        if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
-            exit(1);
-        end
-        % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-        if flag_cirrus
-            cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
-        end
-        parpool(cirrus_cluster, numworkers);
-        dwtmode('zpd')
-        spmd
-            dwtmode('zpd')
-        end
-
         [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
             sara(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI, fullfile(auxiliary_path,warm_start(nChannels)), ...
-            fullfile(auxiliary_path,temp_results_name(nChannels)), x0, flag_homotopy, ncores_data, gam, flag_cirrus); %! in this case, ncores_data corresponds to the number of workers for the wavelet transform (9 maximum)
+            fullfile(auxiliary_path,temp_results_name(nChannels)), x0, flag_homotopy, gam); %! in this case, ncores_data corresponds to the number of workers for the wavelet transform (9 maximum)
         
         time_iter_average = mean(end_iter);
         disp(['Average time per iteration: ', num2str(time_iter_average)]);
@@ -783,57 +798,12 @@ if flag_solveMinimization
         %%
         switch algo_version 
             case 'hypersara'
-
-                % total number of workers (2: facets workers, K: data workers)
-                numworkers = ncores_data;
-                cirrus_cluster = parcluster('local');
-                cirrus_cluster.NumWorkers = numworkers;
-                cirrus_cluster.NumThreads = 1;
-                ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
-                if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
-                    exit(1);
-                end
-                % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-                if flag_cirrus
-                    cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
-                end
-                parpool(cirrus_cluster, numworkers);
-
-                dwtmode('zpd')
-                spmd
-                dwtmode('zpd') 
-                end
-
                 [xsol,param,epsilon,t,rel_val,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
                     hyperSARA(y_spmd, epsilon_spmd, ...
                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
                     wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), ...
                     flag_homotopy);
             case 'cw'
-
-                % total number of workers (Q: facets workers, K: data workers)
-                numworkers = Qx*Qy + ncores_data;
-                cirrus_cluster = parcluster('local');
-                cirrus_cluster.NumWorkers = numworkers;
-                cirrus_cluster.NumThreads = 1;
-                ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
-                if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
-                    exit(1);
-                end
-                % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-                if flag_cirrus
-                    cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
-                end
-                % maxNumCompThreads(param.num_workers);
-                parpool(cirrus_cluster, numworkers);
-                % % start the matlabpool with maximum available workers
-                % % control how many workers by setting ntasks in your sbatch script
-                % parpool(cirrus_cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
-                dwtmode('zpd') 
-                spmd
-                    dwtmode('zpd') 
-                end
-
                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                     facetHyperSARA(y_spmd, epsilon_spmd, ...
                     A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...

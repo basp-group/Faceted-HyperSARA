@@ -295,8 +295,6 @@ for t = t_start : max_iter
             g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
             
             % norm of residual
-            % norm_res{i}{j} = norm(r2{i}{j} - y{i}{j});
-            %! fixing computation of the residual
             norm_res{i}{j} = norm(G{i}{j}*Fx(W{i}{j}) - y{i}{j});
             residual_check(counter) = norm_res{i}{j};
             epsilon_check(counter) = epsilon{i}{j};
@@ -327,7 +325,8 @@ for t = t_start : max_iter
     end
     g = sigma11*g1 + sigma22*Ftx;
     end_iter(t) = toc(start_iter);
-    t_l11(t) = t_l11(t)/P; % average compute time for the dual variable
+    % average compute time for the dual variable
+    t_l11(t) = t_l11(t)/P;
     % previous_l11 = l11;
     l11 = sum(cell2mat(l11_cell));
     fprintf('Iter = %i, Time = %e, t_l11 = %e, t_data = %e, rel_val = %e, epsilon = %e, residual = %e\n', t,end_iter(t),t_data(t),t_l11(t),rel_val(t),norm_epsilon_check,norm_residual_check);
