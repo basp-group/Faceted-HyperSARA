@@ -22,8 +22,8 @@ param_nufft.Ky = 8;
 % number of pixels in the image
 param_precond.N = Nx * Ny;
 % number of Fourier points (oversampled plane)
-param_precond.Nox = ox * Nx;
-param_precond.Noy = oy * Ny;
+param_precond.Nox = param_nufft.ox * Nx;
+param_precond.Noy = param_nufft.oy * Ny;
 % set weighting type
 param_precond.gen_uniform_weight_matrix = 1;
 param_precond.uniform_weight_sub_pixels = 1;

@@ -1,6 +1,7 @@
-function [y0, y, Ml, Nm, sigma_noise] = util_gen_measurements_snr(x, G, W, A, input_snr,seed)
+function [y0, y, Ml, Nm, sigma_noise, norm_noise] = util_gen_measurements_snr(x, G, W, A, input_snr,seed)
+
 % generates the input data
-rng(seed);
+% rng(seed);
 
 c = size(x,3);
 y0 = cell(c, 1);
@@ -18,9 +19,7 @@ end
 normy0 = sqrt(normy0);
 Nm = sum(Ml);
 
-%sigma_noise = 0.1
-
-% add Gaussian i.i.d. noise
+% add i.i.d. Gaussian noise
 sigma_noise = (10.^(-input_snr/20).*normy0)./sqrt(Ml);
 
 norm_noise = 0;
@@ -34,6 +33,6 @@ for i = 1 : c
         y{i}{j} = y0{i}{j} + noise;
     end
 end
-norm_noise = sqrt(norm_noise)
+norm_noise = sqrt(norm_noise);
 
 end

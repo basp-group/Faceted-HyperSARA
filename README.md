@@ -51,7 +51,8 @@ python job_spatial.py
 
 ## TODO
 
-- [ ] Replace FB for ellopsiod projection by FISTA
+- [ ] Prepare full Python scripts for real data examples (only keep useful values, see if anything needs to be added)
+- [ ] Replace FB by FISTA for the projection onto the ellipsoids
 - [ ] Update function interface + name of variables (if necessary)
 - [ ] Adding H matrices to `measurement-operator`
 - [ ] Adapt synth data scripts to real data
