@@ -48,3 +48,11 @@ module load anaconda/python3
 vi job_spatial.py
 python job_spatial.py
 ```
+
+## TODO
+
+- [ ] Replace FB for ellopsiod projection by FISTA
+- [ ] Update function interface + name of variables (if necessary)
+- [ ] Adding H matrices to `measurement-operator`
+- [ ] Adapt synth data scripts to real data
+- [ ] Documenting all functions

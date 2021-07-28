@@ -23,8 +23,6 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 %        - 'cw'            cst_weighted: constant overlap taken for the 
 %                          faceted nuclear norm, using spatial weights 
 %                          (apodization window)
-%        - 'no'            no_overlap: no overlap for the faceted nuclear 
-%                          norm prior
 %     window_type (string): type of apodization window considered for the 
 %                           faceted nuclear norm prior. Only active with 
 %                           the following versions of the algorithm:
@@ -93,10 +91,6 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
 % flag_cirrus = false;
-%
-% %T = 1500; % to be set depending on the value of p
-% %hrs = 6;
-% %p = 1;
 %%
 
 % fixed parameters (in the mnras experiments)
@@ -257,26 +251,26 @@ else
               [1 spectral_downsampling sliceend]});
 end
 nChannels = floor(sliceend/spectral_downsampling);
-clear info rowend colend
+clear reference_cube_path info rowend colend sliceend 
+clear spatial_downsampling spectral_downsampling
 
 [Ny, Nx, nchans] = size(x0);
 N = Nx*Ny;
 X0 = reshape(x0, [N, nchans]);
 input_snr = isnr*ones(nchans, 1); % input SNR (in dB)
 
-% frequency used to generate the 2 reference cubes
-% superresolution_factor = 2; %? keep as is, or change order of magnitude
-% Freq info
+% frequency used to generate the reference cubes
 nu0 = 2.052e9; % starting freq
 dnu = 16e6;    % freq step
 L = 100;       % number of channels
 nu_vect =[nu0 (dnu*(1:L-1)+nu0)];
 f = nu_vect(1:spectral_downsampling:end);
 
-%% Generate spectral facets (interleaved sampling)
+%% Get faceting parameter (spectral + spatial)
 if strcmp(algo_version, 'sara')
+    %! force each channel to be handled separately
     window_type = 'none';
-    Qc = nChannels; %! handle each channel separately
+    Qc = nChannels;
     Qx = 1;
     Qy = 1;
 elseif strcmp(algo_version, 'hypersara')
@@ -330,7 +324,8 @@ warm_start = @(nchannels) strcat(temp_results_name(nchannels),'_rw=', num2str(rw
 data_name = data_name_function(nChannels);
 results_name = results_name_function(nChannels);
 
-%% Default config parameters (can be kept as is)
+%% Default config parameters
+% TODO: move default parameters to an auxiliary file?
 % gridding parameters
 N = Nx * Ny;
 ox = 2; % oversampling factors for nufft
@@ -362,6 +357,7 @@ param_block_structure.use_manual_partitioning = 0;
 % https://casa.nrao.edu/Release4.1.0/doc/UserMan/UserMansu259.html
 if flag_generateCoverage
     cov_type = 'vlaa';
+    p = 0.5
     dl = 1.1;
     hrs = 5;
     na = 27; % for vlaa
@@ -369,44 +365,25 @@ if flag_generateCoverage
     % Fixing Mt = 0.5 N, take T = 0.5 N / M : na = 27 for vla
     T = floor(p*(Nx*Ny)/M); % should be > 1
     [u, v, ~] = generate_uv_coverage(T, hrs, dl, cov_type);
-    % -> in the c++ code, do u.col(f) = u*freq[f]/freq[0]
-    % with freq = linspace(1, 2, L)
-    % om = [v(:), u(:)];
     u = u(:)*fc(1)/f(end);
     v = v(:)*fc(1)/f(end);
     fitswrite([u, v, ones(numel(u), 1)], coverage_path)
     fitsdisp(coverage_path);
 else
-    coverage_path	 
-    
-    %! Abdullah's version: normalization w.r.t. the minimum frequency
-    % u1 = uvw(:, 1);
-    % v1 = uvw(:, 2);
-    % r = sqrt(u1.^2 + v1.^2);
-    % bmax = max(r);
-    % v1 = v1 * pi/(bmax * 1); 
-    % u1 = u1 * pi/(bmax * 1);
-    % u = u1/2;
-    % v = v1/2;
+    coverage_path
+   
+    % VLA configuration
+    % A. 762775 -> 3
+    % B. 268448 -> 2
+    % C. 202957 -> 1
+    % D. 47750 -> 0 
 
-    %! only for spectral faceting experiment...
     if strcmp(exp_type, "spectral")
-        % VLA configuration
-        % A. 762775 -> 3
-        % B. 268448 -> 2
-        % C. 202957 -> 1
-        % D. 47750 -> 0
         load(coverage_path, 'uvw', 'obsId');
         size(uvw)
         u1 = uvw(obsId==2, 1)*f(end)/speed_of_light;
         v1 = uvw(obsId==2, 2)*f(end)/speed_of_light;  
         clear obsId
-        %! take 2x the cellsize that we had for the spatial fceting experiment,
-        %! which corresponds to keeping the uv points < 0.5 bmax_spatial
-        %! (each dimension/2 -> 2x larger cellsize)
-        % u1 = u1(u1 < 0.5*bmax);
-        % v1 = v1(u1 < 0.5*bmax);
-        % bmax = max(sqrt(u1.^2 + v1.^2));
     else        
         % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
         % units of the smallest wavelenght, associated with the highest frequency)
@@ -431,10 +408,11 @@ else
 end
 
 % setup measurement operator
-% TODO: use spmd block here
+% TODO: use spmd block here (create an auxiliary function to do it, depending on the number of channels per data worker)
+% TODO: if SARA, single instruction, spmd block otherwise
 for i = 1:nchans
 
-    %? need to normalize w.r.t. max over all available frequencies
+    % need to normalize by the maximum over all the available frequencies
     uw = (fc(i)/f(end)) * u;
     vw = (fc(i)/f(end)) * v;
     
@@ -498,7 +476,6 @@ sigma_noise = sigma_noise(id{ind});
 %% Compute operator norm
 % TODO: to be computed in spmd block
 if strcmp(algo_version, 'sara')
-    % Compute measurement operator spectral norm for each channel individually
     if flag_computeOperatorNorm
         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
@@ -565,11 +542,9 @@ else
 end
 
 fprintf('Squared operator norm: %e, with precond.: %e \n', max(operator_norm), Anorm);
-% operator_norm = sqrt(operator_norm);
 
 %% Generate initial epsilons by performing imaging with NNLS on each data block separately
 if generate_eps_nnls
-    % param_nnls.im = im; % original image, used to compute the SNR
     param_nnls.verbose = 2; % print log or not
     param_nnls.rel_obj = 1e-5; % stopping criterion
     param_nnls.max_iter = 1000; % max number of iterations
@@ -690,59 +665,59 @@ clear dirty_image
 
 if flag_solveMinimization
     %% HSI parameter structure sent to the  HSI algorithm
-    param_HSI.verbose = 2; % print log or not
-    param_HSI.nu0 = 1; % bound on the norm of the Identity operator
-    param_HSI.nu1 = 1; % bound on the norm of the operator Psi
-    param_HSI.nu2 = precond_operator_norm; % upper bound on the norm of the measurement operator
-    param_HSI.operator_norm = operator_norm;
-    param_HSI.gamma0 = mu_bar;  % regularization parameter nuclear norm
-    param_HSI.gamma = mu; % regularization parameter l21-norm (soft th parameter) %! for SARA, take the value given as an input to the solver
-    param_HSI.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
+    param_solver.verbose = 2;  % print log or not
+    param_solver.nu0 = 1;  % bound on the norm of the Identity operator
+    param_solver.nu1 = 1;  % bound on the norm of the operator Psi
+    param_solver.nu2 = precond_operator_norm;  % upper bound on the norm of the measurement operator
+    param_solver.operator_norm = operator_norm;
+    param_solver.gamma0 = mu_bar;   % regularization parameter nuclear norm
+    param_solver.gamma = mu;  % regularization parameter l21-norm (soft th parameter) %! for SARA, take the value given as an input to the solver
+    param_solver.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
 
     % pdfb
-    param_HSI.pdfb_min_iter = 10; % minimum number of iterations
-    param_HSI.pdfb_max_iter = 2000; % maximum number of iterations
-    param_HSI.pdfb_rel_var = 1e-5; % relative variation tolerance
-    param_HSI.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied
-    param_HSI.alph = gam;
-    param_HSI.alph_bar = gam_bar;
-    param_HSI.pdfb_rel_var_low = 5e-6; % minimum relative variation tolerance (allows stopping earlier if data fidelity constraint not about to be satisfied)
+    param_solver.pdfb_min_iter = 10;  % minimum number of iterations
+    param_solver.pdfb_max_iter = 2000;  % maximum number of iterations
+    param_solver.pdfb_rel_var = 1e-5;  % relative variation tolerance
+    param_solver.pdfb_fidelity_tolerance = 1.01;  % tolerance to check data constraints are satisfied
+    param_solver.alph = gam;
+    param_solver.alph_bar = gam_bar;
+    param_solver.pdfb_rel_var_low = 5e-6;  % minimum relative variation tolerance (allows stopping earlier if data fidelity constraint not about to be satisfied)
     
     % epsilon update scheme
-    param_HSI.use_adapt_eps = 0; % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
-    param_HSI.adapt_eps_start = 200; % minimum num of iter before stating adjustment
-    param_HSI.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
-    param_HSI.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
-    param_HSI.adapt_eps_steps = 100; % min num of iter between consecutive updates
-    param_HSI.adapt_eps_rel_var = 5e-5; % bound on the relative change of the solution
-    param_HSI.adapt_eps_change_percentage = (sqrt(5)-1)/2; % the weight of the update w.r.t the l2 norm of the residual data
+    param_solver.use_adapt_eps = 0;  % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
+    param_solver.adapt_eps_start = 200;  % minimum num of iter before stating adjustment
+    param_solver.adapt_eps_tol_in = 0.99;  % tolerance inside the l2 ball
+    param_solver.adapt_eps_tol_out = 1.01;  % tolerance outside the l2 ball
+    param_solver.adapt_eps_steps = 100;  % min num of iter between consecutive updates
+    param_solver.adapt_eps_rel_var = 5e-5;  % bound on the relative change of the solution
+    param_solver.adapt_eps_change_percentage = (sqrt(5)-1)/2;  % the weight of the update w.r.t the l2 norm of the residual data
     
     %! -- TO BE CHECKED
-    param_HSI.reweighting_rel_var = 1e-4;       % relative variation (reweighting)
+    param_solver.reweighting_rel_var = 1e-4;  % relative variation (reweighting)
     if flag_homotopy
-        param_HSI.reweighting_alpha = 20;
-        param_HSI.reweighting_min_iter = 5; % minimum number of reweighting iterations, weights updated reweighting_min_iter times
-        param_HSI.reweighting_alpha_ff = (1/param_HSI.reweighting_alpha)^(1/(param_HSI.reweighting_min_iter-1)); % reach the floor level after min_iter updates of the weights
+        param_solver.reweighting_alpha = 20;
+        param_solver.reweighting_min_iter = 5;  % minimum number of reweighting iterations, weights updated reweighting_min_iter times
+        param_solver.reweighting_alpha_ff = (1/param_solver.reweighting_alpha)^(1/(param_solver.reweighting_min_iter-1));  % reach the floor level after min_iter updates of the weights
         % 0.63 -> otherwise need 10 reweights minimum
     else
-        param_HSI.reweighting_min_iter = 1; % minimum number of reweighting iterations
-        param_HSI.reweighting_alpha = 1;
-        param_HSI.reweighting_alpha_ff = 1;
+        param_solver.reweighting_min_iter = 1;  % minimum number of reweighting iterations
+        param_solver.reweighting_alpha = 1;
+        param_solver.reweighting_alpha_ff = 1;
     end
     %! --
-    param_HSI.reweighting_max_iter = max(nReweights, param_HSI.reweighting_min_iter+1); % maximum number of reweighting iterations reached, weights updated nReweights times
-    param_HSI.reweighting_sig = sig; % estimate of the noise level in SARA space
+    param_solver.reweighting_max_iter = max(nReweights, param_solver.reweighting_min_iter+1); % maximum number of reweighting iterations reached, weights updated nReweights times
+    param_solver.reweighting_sig = sig; % estimate of the noise level in SARA space
     if ~strcmp(algo_version, 'sara') %! if HyperSARA or faceted HyperSARA
         % estimate of the noise level in "SVD" spaces
-        param_HSI.reweighting_sig_bar = sig_bar; 
+        param_solver.reweighting_sig_bar = sig_bar; 
     end
-    % param_HSI.max_psf = max_psf;
-    param_HSI.backup_frequency = 1;
+    % param_solver.max_psf = max_psf;
+    param_solver.backup_frequency = 1;
 
     % ellipsoid projection parameters (when preconditioning is active)
-    param_HSI.elipse_proj_max_iter = 20; % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
-    param_HSI.elipse_proj_min_iter = 1; % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
-    param_HSI.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid   
+    param_solver.elipse_proj_max_iter = 20;  % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
+    param_solver.elipse_proj_min_iter = 1;  % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
+    param_solver.elipse_proj_eps = 1e-8;  % precision of the projection onto the ellipsoid   
 
     %%
     if strcmp(algo_version, 'sara')
@@ -750,7 +725,7 @@ if flag_solveMinimization
         disp('-----------------------------------------')
 
         [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-            sara(y, epsilons, A, At, aW, G, W, Psi, Psit, param_HSI, fullfile(auxiliary_path,warm_start(nChannels)), ...
+            sara(y, epsilons, A, At, aW, G, W, Psi, Psit, param_solver, fullfile(auxiliary_path,warm_start(nChannels)), ...
             fullfile(auxiliary_path,temp_results_name(nChannels)), x0, flag_homotopy, gam); %! in this case, ncores_data corresponds to the number of workers for the wavelet transform (9 maximum)
         
         time_iter_average = mean(end_iter);
@@ -800,13 +775,13 @@ if flag_solveMinimization
             case 'hypersara'
                 [xsol,param,epsilon,t,rel_val,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
                     hyperSARA(y_spmd, epsilon_spmd, ...
-                    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, ncores_data, ...
+                    A, At, aW_spmd, G_spmd, W_spmd, param_solver, X0, ncores_data, ...
                     wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), ...
                     flag_homotopy);
             case 'cw'
                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
                     facetHyperSARA(y_spmd, epsilon_spmd, ...
-                    A, At, aW_spmd, G_spmd, W_spmd, param_HSI, X0, Qx, Qy, ncores_data, wlt_basis, ...
+                    A, At, aW_spmd, G_spmd, W_spmd, param_solver, X0, Qx, Qy, ncores_data, wlt_basis, ...
                     filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, sigma_noise_spmd);
             otherwise
                 error('Unknown solver version.')
