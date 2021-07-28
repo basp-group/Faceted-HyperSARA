@@ -20,7 +20,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 %     p (double): [description]
 %     input_snr (double): input SNR value (in dB)
 %     algo_version (string): selected version of the solver:
-%        - 'cw'            cst_weighted: constant overlap taken for the 
+%        - 'fhs'            cst_weighted: constant overlap taken for the 
 %                          faceted nuclear norm, using spatial weights 
 %                          (apodization window)
 %     window_type (string): type of apodization window considered for the 
@@ -66,7 +66,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % Qy = 1; % 4
 % Qc = 1;
 % nReweights = 1;
-% algo_version = 'hypersara'; % 'cw', 'hypersara', 'sara';
+% algo_version = 'hs'; % 'fhs', 'hs', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generateVisibilities = 1;
 % flag_computeOperatorNorm = 0;
@@ -206,7 +206,7 @@ if strcmp(algo_version, 'sara')
     Qc = nChannels;
     Qx = 1;
     Qy = 1;
-elseif strcmp(algo_version, 'hypersara')
+elseif strcmp(algo_version, 'hs')
     window_type = 'none';
     Qx = 1;
     Qy = 1;
@@ -329,11 +329,11 @@ switch algo_version
         [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
         param_precond, param_blocking, fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy);
 
-    otherwise % 'hypersara' or 'cw'
+    otherwise % 'hs' or 'fhs'
 
         % create the measurement operator operator in parallel (depending on
         % the algorithm used)
-        if strcmp(algo_version, 'hypersara')
+        if strcmp(algo_version, 'hs')
             spmd
                 local_fc = fc(rg_c(labindex, 1):rg_c(labindex, 2));
                 [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
@@ -356,8 +356,8 @@ end
 clear param_blocking param_precond;
 
 %% Generate/load visibilities (generate only full spectral dataset)
-% only generatr data in 'hypersara' configuration (otherwise, load the data)
-if flag_generateVisibilities && strcmp(algo_version, 'hypersara')
+% only generatr data in 'hs' configuration (otherwise, load the data)
+if flag_generateVisibilities && strcmp(algo_version, 'hs')
 
     param_l2_ball.type = 'sigma';
     param_l2_ball.sigma_ball = 2;
@@ -397,7 +397,7 @@ else
             y = Composite();
             epsilons = Composite();
             sigma_noise = Composite();
-            cell_id = @(k) k + (Qx*Qy)*strcmp(algo_version, 'cw');
+            cell_id = @(k) k + (Qx*Qy)*strcmp(algo_version, 'fhs');
 
             for k = 1:ncores_data %! to be verified
                 y(cell_id(k)) = datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
@@ -546,7 +546,7 @@ end
 %         operator_norm);
 %         fprintf('sig_w = %.4e, sig_w*mu_c = %.4e, sig_w*sig_c = %.4e \n', sig_w, sig_w*mu_c, sig_w*sig_c);
 
-%         if strcmp(algo_version, 'cw') && numel(sig_bar) == 1
+%         if strcmp(algo_version, 'fhs') && numel(sig_bar) == 1
 %             sig_bar = sig_bar*ones(Qx*Qy, 1);
 %         end
 
@@ -646,13 +646,13 @@ end
         
 %         %%
 %         switch algo_version 
-%             case 'hypersara'
+%             case 'hs'
 %                 [xsol,param,epsilon,t,rel_val,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
 %                     hyperSARA(y_spmd, epsilon_spmd, ...
 %                     A, At, aW_spmd, G_spmd, W_spmd, param_solver, X0, ncores_data, ...
 %                     wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), ...
 %                     flag_homotopy);
-%             case 'cw'
+%             case 'fhs'
 %                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
 %                     facetHyperSARA(y_spmd, epsilon_spmd, ...
 %                     A, At, aW_spmd, G_spmd, W_spmd, param_solver, X0, Qx, Qy, ncores_data, wlt_basis, ...
