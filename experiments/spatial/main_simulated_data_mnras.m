@@ -324,32 +324,8 @@ warm_start = @(nchannels) strcat(temp_results_name(nchannels),'_rw=', num2str(rw
 data_name = data_name_function(nChannels);
 results_name = results_name_function(nChannels);
 
-%% Default config parameters
-% TODO: move default parameters to an auxiliary file?
-% gridding parameters
-N = Nx * Ny;
-ox = 2; % oversampling factors for nufft
-oy = 2; % oversampling factors for nufft
-Kx = 8; % number of neighbours for nufft
-Ky = 8; % number of neighbours for nufft
-
-% preconditioning parameters
-param_precond.N = N;       % number of pixels in the image
-param_precond.Nox = ox*Nx; % number of Fourier points (oversampled plane)
-param_precond.Noy = oy*Ny;
-param_precond.gen_uniform_weight_matrix = 1; % set weighting type
-param_precond.uniform_weight_sub_pixels = 1;
-
-% block structure
-param_block_structure.use_density_partitioning = 0;
-param_block_structure.density_partitioning_no = 1;
-param_block_structure.use_uniform_partitioning = 0;
-param_block_structure.uniform_partitioning_no = 4;
-param_block_structure.use_equal_partitioning = 1;
-param_block_structure.equal_partitioning_no = 1;
-param_block_structure.use_manual_frequency_partitioning = 0;
-param_block_structure.fpartition = [icdf('norm', 0.25, 0, pi/4), 0, icdf('norm', 0.75, 0, pi/4), pi]; % partition (symetrically) of the data to nodes (frequency ranges)
-param_block_structure.use_manual_partitioning = 0;
+%% Define problem configuration
+parameters_problem
 
 %% Generate/load uv-coverage, setup measurement operator
 % generating u-v coverage
@@ -545,12 +521,7 @@ fprintf('Squared operator norm: %e, with precond.: %e \n', max(operator_norm), A
 
 %% Generate initial epsilons by performing imaging with NNLS on each data block separately
 if generate_eps_nnls
-    param_nnls.verbose = 2; % print log or not
-    param_nnls.rel_obj = 1e-5; % stopping criterion
-    param_nnls.max_iter = 1000; % max number of iterations
-    param_nnls.sol_steps = [inf]; % saves images at the given iterations
-    param_nnls.beta = 1;
-    % solve nnls per block
+    % solve nnls per data block
     for i = 1:nchans
         eps_b{i} = cell(length(G{i}),1);
         for j = 1 : length(G{i})
@@ -563,14 +534,6 @@ if generate_eps_nnls
 end
 
 %% Solver
-% wavelets
-nlevel = 4; % depth of the wavelet decompositions
-%! always specify Dirac basis ('self') in last position if used in the
-%! SARA dictionary 
-wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'}; 
-filter_length = [2*(1:8)'; 0]; % length of the filters (0 corresponding to the 'self' basis)
-
-%! -- TO BE CHECKED
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
 % SARA space) involved in the reweighting scheme
 if strcmp(algo_version, 'sara')
@@ -664,60 +627,9 @@ clear dirty_image
     %! --
 
 if flag_solveMinimization
-    %% HSI parameter structure sent to the  HSI algorithm
-    param_solver.verbose = 2;  % print log or not
-    param_solver.nu0 = 1;  % bound on the norm of the Identity operator
-    param_solver.nu1 = 1;  % bound on the norm of the operator Psi
-    param_solver.nu2 = precond_operator_norm;  % upper bound on the norm of the measurement operator
-    param_solver.operator_norm = operator_norm;
-    param_solver.gamma0 = mu_bar;   % regularization parameter nuclear norm
-    param_solver.gamma = mu;  % regularization parameter l21-norm (soft th parameter) %! for SARA, take the value given as an input to the solver
-    param_solver.cube_id = ind;  % id of the cube to be reconstructed (if spectral faceting active)
 
-    % pdfb
-    param_solver.pdfb_min_iter = 10;  % minimum number of iterations
-    param_solver.pdfb_max_iter = 2000;  % maximum number of iterations
-    param_solver.pdfb_rel_var = 1e-5;  % relative variation tolerance
-    param_solver.pdfb_fidelity_tolerance = 1.01;  % tolerance to check data constraints are satisfied
-    param_solver.alph = gam;
-    param_solver.alph_bar = gam_bar;
-    param_solver.pdfb_rel_var_low = 5e-6;  % minimum relative variation tolerance (allows stopping earlier if data fidelity constraint not about to be satisfied)
-    
-    % epsilon update scheme
-    param_solver.use_adapt_eps = 0;  % flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
-    param_solver.adapt_eps_start = 200;  % minimum num of iter before stating adjustment
-    param_solver.adapt_eps_tol_in = 0.99;  % tolerance inside the l2 ball
-    param_solver.adapt_eps_tol_out = 1.01;  % tolerance outside the l2 ball
-    param_solver.adapt_eps_steps = 100;  % min num of iter between consecutive updates
-    param_solver.adapt_eps_rel_var = 5e-5;  % bound on the relative change of the solution
-    param_solver.adapt_eps_change_percentage = (sqrt(5)-1)/2;  % the weight of the update w.r.t the l2 norm of the residual data
-    
-    %! -- TO BE CHECKED
-    param_solver.reweighting_rel_var = 1e-4;  % relative variation (reweighting)
-    if flag_homotopy
-        param_solver.reweighting_alpha = 20;
-        param_solver.reweighting_min_iter = 5;  % minimum number of reweighting iterations, weights updated reweighting_min_iter times
-        param_solver.reweighting_alpha_ff = (1/param_solver.reweighting_alpha)^(1/(param_solver.reweighting_min_iter-1));  % reach the floor level after min_iter updates of the weights
-        % 0.63 -> otherwise need 10 reweights minimum
-    else
-        param_solver.reweighting_min_iter = 1;  % minimum number of reweighting iterations
-        param_solver.reweighting_alpha = 1;
-        param_solver.reweighting_alpha_ff = 1;
-    end
-    %! --
-    param_solver.reweighting_max_iter = max(nReweights, param_solver.reweighting_min_iter+1); % maximum number of reweighting iterations reached, weights updated nReweights times
-    param_solver.reweighting_sig = sig; % estimate of the noise level in SARA space
-    if ~strcmp(algo_version, 'sara') %! if HyperSARA or faceted HyperSARA
-        % estimate of the noise level in "SVD" spaces
-        param_solver.reweighting_sig_bar = sig_bar; 
-    end
-    % param_solver.max_psf = max_psf;
-    param_solver.backup_frequency = 1;
-
-    % ellipsoid projection parameters (when preconditioning is active)
-    param_solver.elipse_proj_max_iter = 20;  % max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
-    param_solver.elipse_proj_min_iter = 1;  % min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
-    param_solver.elipse_proj_eps = 1e-8;  % precision of the projection onto the ellipsoid   
+    %% define parameters for the solver
+    parameters_solver  
 
     %%
     if strcmp(algo_version, 'sara')
