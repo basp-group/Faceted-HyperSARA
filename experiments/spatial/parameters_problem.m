@@ -2,13 +2,13 @@
 % TODO: to be completed
 
 %% * NUFFT (gridding parameters)
-% oversampling factors for nufft
+% oversampling factor (x)
 param_nufft.ox = 2;
-% oversampling factors for nufft
+% oversampling factor (y)
 param_nufft.oy = 2;
-% number of neighbours for nufft
+% number of neighbour (x)
 param_nufft.Kx = 8;
-% number of neighbours for nufft
+% number of neighbour (y)
 param_nufft.Ky = 8;
 
 %% * Preconditioning
