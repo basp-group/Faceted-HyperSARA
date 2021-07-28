@@ -362,11 +362,9 @@ if flag_generateVisibilities && strcmp(algo_version, 'hypersara')
     param_l2_ball.type = 'sigma';
     param_l2_ball.sigma_ball = 2;
 
-    % ! check parallel data generation works as expected in spmd?
-    % won't be strictly equivalent to the data generation used for the results reported in paper 1
-
     % TODO: modify data generation to allow reproducible parallel rng streams
     % https://fr.mathworks.com/help/matlab/math/creating-and-controlling-a-random-number-stream.html?searchHighlight=random%20number%20streams&s_tid=srchtitle#brvku_2
+    % may not be strictly equivalent to the data generation used for the results reported in paper 1
     spmd
         [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr(x0(:,:,rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, input_snr(rg_c(labindex, 1):rg_c(labindex, 2)), seed);
         [~, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, param_l2_ball, sigma_noise);
