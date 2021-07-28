@@ -1,5 +1,12 @@
+% List of default parameters related to the problem configuration (nufft,
+% preconditioning, blocking, NNLS, SARA dictionary)
+
 %% * Problem size
 % TODO: to be completed
+speed_of_light = 299792458;
+% seed for the random number generation (used only when generating data)
+seed = 1;
+rng(seed);
 
 %% * NUFFT (gridding parameters)
 % oversampling factor (x)
@@ -43,7 +50,9 @@ param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, icdf('norm', 0.75
 % sparam.fpartition = [-0.25*pi, 0, 0.25*pi, pi];
 % sparam.fpartition = [-64/256*pi, 0, 64/256*pi, pi];
 
-%% * NNLS
+%% * NNLS (estimation of the l2 contraint)
+% flag to activate NNLS
+generate_eps_nnls = false;
 % original image, used to compute the SNR
 % param_nnls.im = im;
 % print log or not

@@ -91,18 +91,7 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
 % flag_cirrus = false;
-%%
-
-% fixed parameters (in the mnras experiments)
-flag_generateUndersampledCube = false;
-flag_generateCoverage = false;
-seed = 1;
-rng(seed);
 % kernel = 'minmax:tuned'; % 'kaiser', 'minmax:tuned'
-generate_eps_nnls = false;
-save_data = true;
-speed_of_light = 299792458;
-
 %%
 format compact;
 
@@ -143,32 +132,6 @@ mkdir(auxiliary_path)
 
 %% setup parpool
 cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx*Qy, flag_cirrus);
-
-%% Generate/load ground-truth image cube
-% reference_cube_path = strcat(data_path, image_name, '.fits');
-% if flag_generateCube
-%     % frequency bandwidth from 1 to 2 GHz
-%     f = linspace(1,2,nChannels);
-%     emission_lines = 0; % insert emission lines on top of the continuous spectra
-%     % [x0,X0] = Generate_cube(reference_cube_path,f,emission_lines);
-%     [x0,X0] = Generate_cube_W28(reference_cube_path,f,emission_lines);
-%     [Ny, Nx, nChannels] = size(x0);
-%     if flag_generateUndersampledCube
-%         % undersampling factor for the channels
-%         unds = 4; % take 1/unds images
-%         [x0,X0,f,nChannels] = Generate_undersampled_cube(x0,f,Ny,Nx,nChannels,unds);
-%     end
-%     fitswrite(X0.', strcat(cube_path, '.fits'));
-%     fitsdisp(strcat(cube_path, '.fits'));
-% else
-%     X0 = fitsread(strcat(cube_path, '.fits')).';
-%     Nx = sqrt(size(X0, 1));
-%     Ny = Nx;
-%     nChannels = size(X0, 2);
-%     x0 = reshape(X0, [Ny, Nx, nChannels]);
-% end
-% % frequency bandwidth from 1 to 2 GHz
-% f = linspace(1, 2, nChannels);
 
 %%
 %! see how to load the cube prepared by Arwa
@@ -293,7 +256,8 @@ warm_start = @(nchannels) strcat(temp_results_name(nchannels),'_rw=', num2str(rw
 data_name = data_name_function(nChannels);
 results_name = results_name_function(nChannels);
 
-%% Define problem configuration
+%% Define problem configuration (rng, nufft, preconditioning, blocking,
+% NNLS (epsilon estimation), SARA dictionary)
 parameters_problem
 
 %% Generate/load uv-coverage, setup measurement operator
@@ -395,9 +359,7 @@ if flag_generateVisibilities
     [y0, y, Ml, Nm, sigma_noise] = util_gen_measurements_snr(x0, G, W, A, input_snr,seed);
     [epsilon,epsilons] = util_gen_data_fidelity_bounds2(y, Ml, param_l2_ball, sigma_noise);    
     
-    if save_data
-        save(fullfile(results_path,data_name), '-v7.3', 'y0', 'y', 'epsilon', 'epsilons', 'sigma_noise');
-    end
+    save(fullfile(results_path,data_name), '-v7.3', 'y0', 'y', 'epsilon', 'epsilons', 'sigma_noise');
     clear y0 Nm epsilon;
 else
     %! if spectral faceting or SARA, only load the portion of the data
@@ -456,9 +418,9 @@ else
             Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx));
             [precond_operator_norm(l), rel_var(l)] = op_norm(F, Ft, [Ny Nx], 1e-8, 200, 2);
         end
-        % ! make sure the pdfb convergence criterion will be strictly 
-        % ! satisfied by taking a smaller step-size (take precision on 
-        % ! operator norm into account)
+        % ! make sure the pdfb convergence criterion is strictly satisfied
+        % ! by taking a smaller step-size (take precision of the estimation
+        % ! of the operator norm into account)
         Anorm = max(precond_operator_norm.*(1 + rel_var)); % operator is block diagonal
 
         operator_norm = zeros(nchans, 1);
