@@ -266,7 +266,7 @@ parameters_problem
 % https://casa.nrao.edu/Release4.1.0/doc/UserMan/UserMansu259.html
 if flag_generateCoverage
     cov_type = 'vlaa';
-    p = 0.5
+    p = 0.5;
     dl = 1.1;
     hrs = 5;
     na = 27; % for vlaa
