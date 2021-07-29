@@ -108,6 +108,7 @@ addpath ../../lib/generate_data/
 addpath ../../lib/operators/
 addpath ../../lib/measurement-operator/nufft/
 addpath ../../lib/measurement-operator/lib/operators/
+% addpath ../../lib/measurement-operator/irt/nufft/
 addpath ../../lib/utils/
 addpath ../../lib/faceted-wavelet-transform/src
 addpath ../../data/
@@ -115,7 +116,7 @@ addpath ../../src/
 addpath ../../src/heuristics/
 if strcmp(algo_version, "sara")
     addpath ../../src/sara
-elseif strcmp(algo_version, "hypersara")
+elseif strcmp(algo_version, "hs")
     addpath ../../src/hs
 else
     addpath ../../src/fhs
@@ -128,10 +129,6 @@ auxiliary_path = fullfile(results_path, algo_version);
 mkdir(data_path)
 mkdir(results_path)
 mkdir(auxiliary_path)
-
-
-%% setup parpool
-cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx*Qy, flag_cirrus);
 
 
 %%
@@ -348,6 +345,10 @@ else
 end
 
 
+%% setup parpool
+cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx*Qy, flag_cirrus);
+
+
 %% Setup measurement operator
 switch algo_version
     case 'sara'
@@ -361,6 +362,8 @@ switch algo_version
         if strcmp(algo_version, 'hs')
             spmd
                 local_fc = fc(rg_c(labindex, 1):rg_c(labindex, 2));
+                % TODO: update util_gen_measurement_operator to enable
+                % kaiser kernels
                 [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
                 param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
             end
@@ -638,7 +641,8 @@ if flag_solveMinimization
                 xsol = hyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, ...
                     ncores_data, wlt_basis, nlevel, cell_c_chunks, ...
-                    nchans, name_warmstart, name_checkpoint, [], X0);
+                    nchans, Ny, Nx, param_nufft.oy, param_nufft.ox, ...
+                    name_warmstart, name_checkpoint, [], X0);
             case 'fhs'
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...

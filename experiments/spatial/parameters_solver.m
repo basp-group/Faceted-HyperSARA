@@ -11,8 +11,8 @@ param_solver.nu0 = 1;
 % bound on the norm of the operator Psi
 param_solver.nu1 = 1;
 % upper bound on the norm of the measurement operator
-param_solver.nu2 = precond_operator_norm; 
-param_solver.operator_norm = operator_norm;
+param_solver.nu2 = squared_operator_norm_precond; 
+param_solver.operator_norm = squared_operator_norm;
 % regularization parameter nuclear norm
 param_solver.gamma0 = mu_bar;
 % regularization parameter l21-norm (soft th parameter) 
@@ -55,7 +55,6 @@ param_solver.pdfb_max_iter = 2000;
 param_solver.pdfb_rel_var = 1e-5;
 % tolerance to check data constraints are satisfied
 param_solver.pdfb_fidelity_tolerance = 1.01;
-param_solver.update_regularization = update_regularization;
 param_solver.alph = gam;
 param_solver.alph_bar = gam_bar;
 % minimum relative variation tolerance (allows stopping earlier if data

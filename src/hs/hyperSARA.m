@@ -1,6 +1,6 @@
 function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ... 
-    wavelet, nlevel, spectral_chunk, nChannels, name_warmstart, ...
-    name_checkpoint, varargin)
+    wavelet, nlevel, spectral_chunk, nChannels, M, N, oy, ox, ...
+    name_warmstart, name_checkpoint, varargin)
 
 % TODO: to distribute before entering the solver: y, G, pU, W, X0
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
@@ -140,10 +140,7 @@ norm_epsilon_check = Inf;
 norm_residual_check = 0;
 
 % size of the oversampled Fourier space (vectorized)
-No = size(W{1}{1}{1}, 1);
-
-% number of pixels (spatial dimensions)
-[M, N] = size(At(zeros(No, 1)));
+No = M*oy*N*ox;
 
 % instantiate Psi, Psit
 spmd
@@ -284,84 +281,30 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 % TODO: load x directly on data nodes for Fourier transform
 % ! need to be applied differently (A only exists in spmd blocks)
 xi = Composite();
-Fxi_old = Composite();
-for k = 1:K
-    temp = zeros(No, numel(spectral_chunk{k}));
-    for l = 1:numel(spectral_chunk{k})
-        temp(:,l) = A{1}(xsol(:, :, spectral_chunk{k}(l)));
-    end
-    Fxi_old{k} = temp; 
+spmd
+    Fxi_old = apply_scaled_fourier(xsol(:, :, spectral_chunk{labindex}), A, No);
 end
-clear temp
 
 % ! TO BE UPDATED PROPERLY
-norm_res = Composite();
 if init_flag
+    norm_res = Composite();
+    v2_ = Composite();
+    t_block = Composite();
+    proj_ = Composite();
     for k = 1:K
         norm_res(k) = init_m.norm_res(k,1);
-    end
-    fprintf('norm_res uploaded \n\n')
-else
-    %! this assumes the primal variable has been initialized to 0
-    for k = 1:K
-        norm_res_tmp = cell(length(spectral_chunk{k}), 1);
-        for i = 1:length(spectral_chunk{k})
-            norm_res_tmp{i} = cell(length(y{k}{i}),1);
-            for j = 1 : length(y{k}{i})
-                norm_res_tmp{i}{j} = norm(y{k}{i}{j});
-            end
-        end
-        norm_res{k} = norm_res_tmp;
-    end
-    clear norm_res_tmp
-    fprintf('norm_res initialized \n\n')
-end
-
-sz_y = cell(K, 1);
-n_blocks = cell(K, 1);
-for k = 1:K
-    sz_y{k} = cell(length(spectral_chunk{k}), 1);
-    n_blocks{k} = cell(length(spectral_chunk{k}), 1);
-    for i = 1:length(spectral_chunk{k})
-        n_blocks{k}{i} = length(y{k}{i});
-        for j = 1 : length(y{k}{i})
-            sz_y{k}{i}{j} = numel(y{k}{i}{j});
-        end
-    end
-end
-
-v2_ = Composite();
-t_block = Composite();
-proj_ = Composite();
-if init_flag
-    for k = 1:K
         v2_(k) = init_m.v2(k,1);
         proj_(k) = init_m.proj(k,1);
         t_block(k) = init_m.t_block(k,1);
     end
-    fprintf('v2, proj, t_block uploaded \n\n')
+    fprintf('v2, proj, t_block, norm_res uploaded \n\n')
 else
-    for k = 1:K
-        v2_tmp = cell(length(spectral_chunk{k}), 1);
-        t_block_ = cell(length(spectral_chunk{k}), 1);
-        proj_tmp = cell(length(spectral_chunk{k}), 1);
-        for i = 1:length(spectral_chunk{k})
-            v2_tmp{i} = cell(n_blocks{k}{i},1);
-            t_block_{i} = cell(n_blocks{k}{i},1);
-            proj_tmp{i} = cell(n_blocks{k}{i},1);
-            for j = 1 : n_blocks{k}{i}
-                v2_tmp{i}{j} = zeros(sz_y{k}{i}{j} ,1);
-                t_block_{i}{j} = 0;
-                proj_tmp{i}{j} = zeros(sz_y{k}{i}{j}, 1);
-            end
-        end
-        v2_{k} = v2_tmp;
-        proj_{k} = proj_tmp;
-        t_block{k} = t_block_;
+    %! this assumes the primal variable has been initialized to 0
+    spmd
+        [v2_, norm_res, t_block, proj_] = initiliaze_data_worker(y);
     end
-    clear proj_tmp v2_tmp t_block_
-    fprintf('v2, proj, t_block initialized \n\n')
-end  
+    fprintf('v2, proj, t_block, norm_res initialized \n\n')
+end
 
 % Step size for the dual variables
 sigma0 = 1.0/param.nu0;

@@ -72,7 +72,8 @@ for i = 1:nchans
     [u1, v1, ~, ~, aW{i}, nW] = util_gen_block_structure(uw, vw, aWw, nWw, param_blocking);
     
     % measurement operator initialization
-    [A, At, G{i}, W{i}] = op_p_nufft_irt([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW, kernel);
+    % [A, At, G{i}, W{i}] = op_p_nufft_irt([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW, kernel);
+    [A, At, G{i}, W{i}] = op_p_nufft([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
 end
 
 end

@@ -353,26 +353,26 @@ adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
 adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
 adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
 
-norm_res = Composite();
 if init_flag
+    norm_res = Composite();
+    v2_ = Composite();
+    t_block = Composite();
+    proj_ = Composite();
     for k = 1:K
         norm_res(Q+k) = init_m.norm_res(k,1);
+        v2_(Q+k) = init_m.v2(k,1);
+        proj_(Q+k) = init_m.proj(k,1);
+        t_block(Q+k) = init_m.t_block(k,1);
     end
-    fprintf('norm_res uploaded \n\n')
+    fprintf('v2, proj, t_block, norm_res uploaded \n\n')
 else
     % ! assumes primal variable initialized to 0
-    for k = 1:K
-        norm_res_tmp = cell(length(spectral_chunk{k}), 1);
-        for i = 1:length(spectral_chunk{k})
-            norm_res_tmp{i} = cell(length(y{k}{i}),1);
-            for j = 1 : length(y{k}{i})
-                norm_res_tmp{i}{j} = norm(y{k}{i}{j});
-            end
+    spmd
+        if labindex > Qp.Value
+            [v2_, norm_res, t_block, proj_] = initiliaze_data_worker(y);
         end
-        norm_res{Q+k} = norm_res_tmp;
     end
-    clear norm_res_tmp
-    fprintf('norm_res initialized \n\n')
+    fprintf('v2, proj, t_block, norm_res initialized \n\n')
 end
 
 sz_y = cell(K, 1);
@@ -407,39 +407,6 @@ spmd
             Fxi_old(:, l) = A(xi(:,:,l));
         end
     end
-end
-
-v2_ = Composite();
-t_block = Composite();
-proj_ = Composite();
-if init_flag
-    for k = 1:K
-        v2_(Q+k) = init_m.v2(k,1);
-        proj_(Q+k) = init_m.proj(k,1);
-        t_block(Q+k) = init_m.t_block(k,1);
-    end
-    fprintf('v2, proj, t_block uploaded \n\n')
-else
-    for k = 1:K
-        v2_tmp = cell(length(spectral_chunk{k}), 1);
-        t_block_ = cell(length(spectral_chunk{k}), 1);
-        proj_tmp = cell(length(spectral_chunk{k}), 1);
-        for i = 1:length(spectral_chunk{k})
-            v2_tmp{i} = cell(n_blocks{k}{i},1);
-            t_block_{i} = cell(n_blocks{k}{i},1);
-            proj_tmp{i} = cell(n_blocks{k}{i},1);
-            for j = 1 : n_blocks{k}{i}
-                v2_tmp{i}{j} = zeros(sz_y{k}{i}{j} ,1);
-                t_block_{i}{j} = 0;
-                proj_tmp{i}{j} = zeros(sz_y{k}{i}{j}, 1);
-            end
-        end
-        v2_{Q+k} = v2_tmp;
-        proj_{Q+k} = proj_tmp;
-        t_block{Q+k} = t_block_;
-    end
-    clear proj_tmp v2_tmp t_block_
-    fprintf('v2, proj, t_block initialized \n\n')
 end
 
 %Step sizes for the dual variables
@@ -1005,9 +972,9 @@ end
 
 norm_epsilon_check = 0;
 norm_residual_check = 0;
-for i = Q+1:Q+K
-    norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{i};
-    norm_residual_check = norm_residual_check + norm_residual_check_i{i};
+for k = Q+1:Q+K
+    norm_epsilon_check = norm_epsilon_check + norm_epsilon_check_i{k};
+    norm_residual_check = norm_residual_check + norm_residual_check_i{k};
 end
 norm_epsilon_check = sqrt(norm_epsilon_check);
 norm_residual_check = sqrt(norm_residual_check);
