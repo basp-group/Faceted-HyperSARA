@@ -40,14 +40,6 @@ function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
 
 %-------------------------------------------------------------------------%
 %%
-% Reference:
-%
-% [1] Dabbech, A. and Onose, A. and Abdulaziz, A. and Perley, R. A. and 
-% Smirnov, O. M. and Wiaux, Y.Cygnus A Super-Resolved via Convex 
-% Optimization from VLA Data, Mon. Not. R. Astron. Soc., 476(3), 
-% pp. 2853-2866
-%-------------------------------------------------------------------------%
-%%
 % Code: P.-A. Thouvenin.
 % Last revised: [29/04/2021]
 % TODO: update name of variable

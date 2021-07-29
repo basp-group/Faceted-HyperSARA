@@ -2,6 +2,9 @@ function xsol = ...
     facetHyperSARA(y, epsilon, ...
     A, At, pU, G, W, param, Qx, Qy, K, wavelet, ...
     filter_length, nlevel, c_chunks, c, d, window_type, name_warmstart, name_checkpoint, alph, alph_bar, sigma_noise, varargin)
+
+% TODO: try to replace A, At, pU, G, W by a functor (if possible)
+
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 

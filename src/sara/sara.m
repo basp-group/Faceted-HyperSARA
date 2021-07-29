@@ -2,6 +2,7 @@ function xsol = ...
     sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, name_warsmtart, name_checkpoint, alph, varargin)
 
 % TODO: update interface to accommodate real data
+% TODO: try to replace A, At, pU, G, W by a functor (if possible)
 
 % This function solves:
 %
@@ -55,7 +56,7 @@ else
         else
             xsol = zeros(M,N,c);
         end
-        
+
         if numel(varargin) > 1
             flag_synth_data = true;
             x0 = varargin{2};

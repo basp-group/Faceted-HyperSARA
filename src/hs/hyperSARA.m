@@ -2,6 +2,7 @@ function xsol = ...
     hyperSARA(y, epsilon, A, At, pU, G, W, param, K, wavelet, nlevel, c_chunks, c, name_warmstart, name_checkpoint, varargin)
 
 % TODO: to distribute before entering the solver: y, G, pU, W, X0
+% TODO: try to replace A, At, pU, G, W by a functor (if possible)
 
 %HyperSARA
 %

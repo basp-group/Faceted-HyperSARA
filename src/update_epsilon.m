@@ -33,15 +33,6 @@ function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
 
 %-------------------------------------------------------------------------%
 %%
-% Reference:
-%
-% [1] Dabbech, A. and Onose, A. and Abdulaziz, A. and Perley, R. A. and 
-% Smirnov, O. M. and Wiaux, Y. Cygnus A Super-Resolved via Convex 
-% Optimization from VLA Data, Mon. Not. R. Astron. Soc., 476(3), 
-% pp. 2853-2866
-%
-%-------------------------------------------------------------------------%
-%%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
 % TODO: update nanme of variable

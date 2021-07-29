@@ -5,21 +5,26 @@ function [v0, g0] = update_dual_nuclear(v0, xhat, w, weights0, beta0)
 % prior over a given facet. This version includes a spatial correction for 
 % the faceted nuclear norm (tapering window).
 %
-% Args:
-%     v0 (array): dual variable associated with the nuclear norm prior 
-%                      [min(M*N, L), 1].
-%     xhat (array): auxiliary variable related to the wideband image 
-%                        [M, N, L].
-%     w (array): spatial weights applied to the facet nuclear norm 
-%                     [M, N, L].
-%     weights0 (array): weights for the reweighting [min(M*N, L), 1].
-%     beta0 (double): thresholding parameter (gamma0/sigma0). 
+% Parameters
+% ----------
+% v0 : array
+%     Dual variable associated with the nuclear norm prior [min(M*N, L), 1].
+% xhat : array
+%     Auxiliary variable related to the wideband image [M, N, L].
+% w : array
+%     Spatial weights applied to the facet nuclear norm [M, N, L].
+% weights0 : array
+%     Weights for the reweighting [min(M*N, L), 1].
+% beta0 : double
+%     Thresholding parameter (gamma0/sigma0). 
 %
-% Returns:
-%     v0 (array): dual variable associated with the nuclear norm prior 
-%                      [min(M*N, L), 1].
-%     g0 (array): auxiliary variable for the update of the primal 
-%                      variable [M, N, L].
+% Returns
+% -------
+% v0 : array
+%     Dual variable associated with the nuclear norm prior [min(M*N, L), 1].
+% g0 : array
+%     auxiliary variable for the update of the primal variable [M, N, L].
+%
 
 %-------------------------------------------------------------------------%
 %%
