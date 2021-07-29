@@ -41,6 +41,12 @@ if init_flag
         param.pdfb_rel_var_low = pdfb_rel_var_low;
     end
     epsilon = init_m.epsilon;
+    if numel(varargin) > 1
+        flag_synth_data = true;
+        x0 = varargin{2};
+    else
+        flag_synth_data = false;
+    end
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
     if ~isempty(varargin)
@@ -468,7 +474,6 @@ for t = t_start : max_iter
         % end
 
         if flag_synth_data
-            % compute SNR
             SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
             fprintf(' SNR = %e\n\n', SNR);
         end

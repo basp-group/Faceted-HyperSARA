@@ -1,6 +1,6 @@
 function xsol = ...
     facetHyperSARA(y, epsilon, ...
-    A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
+    A, At, pU, G, W, param, Qx, Qy, K, wavelet, ...
     filter_length, nlevel, c_chunks, c, d, window_type, name_warmstart, name_checkpoint, alph, alph_bar, sigma_noise, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
@@ -165,8 +165,6 @@ for qx = 1:Qx
 end
 clear rg_y rg_x;
 
-operator_norm = param.operator_norm;
-
 rg_yo = split_range(Qy, M, d(1));
 rg_xo = split_range(Qx, N, d(2));
 Io = zeros(Q, 2);
@@ -219,10 +217,27 @@ if init_flag
         param.pdfb_rel_var_low = pdfb_rel_var_low;
     end
     epsilon = init_m.epsilon;
+    if numel(varargin) > 1
+        flag_synth_data = true;
+        X0 = varargin{2};
+    else
+        flag_synth_data = false;
+    end
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
     if ~isempty(varargin)
-        xsol = varargin{0};
+        if ~isempty(varargin{1})
+            xsol = varargin{1};
+        else
+            xsol = zeros(M,N,c);
+        end
+        
+        if numel(varargin) > 1
+            flag_synth_data = true;
+            X0 = varargin{2};
+        else
+            flag_synth_data = false;
+        end
     else
         xsol = zeros(M,N,c);
     end
@@ -536,25 +551,26 @@ if init_flag
     end
     % obj = param.gamma0*nuclear + param.gamma*l21;
 
-    % SNR
-    % get xsol back from the workers
-    for q = 1:Q
-        xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-    end
-    sol = reshape(xsol(:),numel(xsol(:))/c,c);
-    SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-    psnrh = zeros(c,1);
-    for i = 1:c
-        psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-    end
-    SNR_average = mean(psnrh);
-
     % Log
     if (param.verbose >= 1)
         fprintf('Iter %i\n',max(t_start-1, 1));
         fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(max(t_start-1, 1)));
         fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+
+        if flag_synth_data
+            % get xsol back from the workers
+            for q = 1:Q
+                xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+            end
+            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+            psnrh = zeros(c,1);
+            for i = 1:c
+                psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+            end
+            SNR_average = mean(psnrh);
+            fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+        end
     end
 end
 
@@ -686,26 +702,27 @@ for t = t_start : max_iter
         % previous_obj = obj;
         % obj = (param.gamma*l21 + param.gamma0*nuclear);
         % rel_obj = abs(previous_obj - obj)/previous_obj;
-
-        % SNR
-        % get xsol back from the workers
-        for q = 1:Q
-            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
-        end
-        sol = reshape(xsol(:),numel(xsol(:))/c,c);
-        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(c,1);
-        for i = 1:c
-            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-        end
-        SNR_average = mean(psnrh);
         
         % Log
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
             fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-            fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+
+            if flag_synth_data
+                % get xsol back from the workers
+                for q = 1:Q
+                    xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+                end
+                sol = reshape(xsol(:),numel(xsol(:))/c,c);
+                SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+                psnrh = zeros(c,1);
+                for i = 1:c
+                    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+                end
+                SNR_average = mean(psnrh);
+                fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+            end
         end
     end
     
@@ -887,19 +904,20 @@ for t = t_start : max_iter
         end
         % obj = param.gamma0*nuclear + param.gamma*l21;
         
-        % compute SNR
-        % get xsol back from the workers
-        for q = 1:Q
-            xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+        if flag_synth_data
+            % get xsol back from the workers
+            for q = 1:Q
+                xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
+            end
+            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+            psnrh = zeros(c,1);
+            for i = 1:c
+                psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+            end
+            SNR_average = mean(psnrh);
+            fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
-        sol = reshape(xsol(:),numel(xsol(:))/c,c);
-        SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-        psnrh = zeros(c,1);
-        for i = 1:c
-            psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-        end
-        SNR_average = mean(psnrh);
-        fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
 
 
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
@@ -939,14 +957,16 @@ for t = t_start : max_iter
                 m.epsilon(k,1) = epsilonp(Q+k);
                 m.norm_res(k,1) = norm_res(Q+k);
             end
-            m.SNR = SNR;
-            m.SNR_average = SNR_average;
             m.end_iter = end_iter;
             m.t_facet = t_facet;
             m.t_data = t_data;
             m.rel_val = rel_val;
             fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
             fitswrite(m.res, [name_checkpoint '_res' '.fits'])
+            if flag_synth_data
+                m.SNR = SNR;
+                m.SNR_average = SNR_average;
+            end
             clear m
 
             % Log
@@ -954,7 +974,9 @@ for t = t_start : max_iter
                 fprintf('Backup iter: %i\n',t);
                 fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-                fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+                if flag_synth_data
+                    fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+                end
             end
         end
 
@@ -1041,23 +1063,23 @@ param.init_reweight_step_count = reweight_step_count;
 param.init_reweight_last_iter_step = t;
 param.init_t_start = t+1;
 m.param = param;
-
-% compute SNR (on the master node)
-sol = reshape(xsol(:),numel(xsol(:))/c,c);
-SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-psnrh = zeros(c,1);
-for i = 1:c
-    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-end
-SNR_average = mean(psnrh);
-m.SNR = SNR;
-m.SNR_average = SNR_average;
 m.end_iter = end_iter;
 m.t_facet = t_facet;
 m.t_data = t_data;
 m.rel_val = rel_val;
 fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
 fitswrite(m.res, [name_checkpoint '_res' '.fits'])
+if flag_synth_data
+    sol = reshape(xsol(:),numel(xsol(:))/c,c);
+    SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+    psnrh = zeros(c,1);
+    for i = 1:c
+        psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+    end
+    SNR_average = mean(psnrh);
+    m.SNR = SNR;
+    m.SNR_average = SNR_average;
+end
 clear m
 
 % Final log
@@ -1086,7 +1108,9 @@ if (param.verbose > 0)
     fprintf('Iter %i\n',t);
     fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
     fprintf('epsilon = %e, residual = %e\n', norm_epsilon_check,norm_residual_check);
-    fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+    if flag_synth_data
+        fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+    end
 end
 
 end_iter = end_iter(end_iter > 0);
