@@ -90,7 +90,7 @@ flag_generateCoverage = 0;
 flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 superresolution_factor = 2;
 flag_cirrus = false;
-kernel = 'minmax:tuned'; % 'kaiser', 'minmax:tuned'
+kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
 %%
 format compact;
 
@@ -252,7 +252,6 @@ if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
     X0 = reshape(x0,Nx*Ny,nchans);
     input_snr = input_snr(subcube_channels);
 end
-channels = 1:nchans;
 
 
 %% Setup name of results file
@@ -363,7 +362,7 @@ switch algo_version
             spmd
                 local_fc = fc(rg_c(labindex, 1):rg_c(labindex, 2));
                 [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
-                param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy);
+                param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
             end
         else
             spmd
@@ -371,7 +370,7 @@ switch algo_version
                 if labindex > Q
                     local_fc = fc(rg_c(labindex-Q, 1):rg_c(labindex-Q, 2));
                     [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
-                    param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy);
+                    param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
                 end
             end
         end
@@ -500,7 +499,6 @@ else
         '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
         '.mat')));
 
-        % ! to be verified
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(subcube_channels, 1);
         rel_var_precond = opnormfile.rel_var_precond(subcube_channels, 1);
         Anorm = max(squared_operator_norm_precond.*(1 + rel_var_precond));
@@ -628,7 +626,7 @@ if flag_solveMinimization
         disp('-----------------------------------------')
 
         % spectral tesselation (non-overlapping)
-        rg_c = split_range(ncores_data, channels(end)); % ! to check
+        % ! to be updated tonight (need to be careful about the different variables needed + implicit parallelization conventions)
         cell_c_chunks = cell(ncores_data, 1); % ! to check
         y_spmd = cell(ncores_data, 1); % ok
         epsilon_spmd = cell(ncores_data, 1); % ok
@@ -651,15 +649,14 @@ if flag_solveMinimization
         %%
         switch algo_version 
             case 'hs'
-                xsol = ...
-                    hyperSARA(y_spmd, epsilon_spmd, ...
-                    A, At, aW_spmd, G_spmd, W_spmd, param_solver, ncores_data, ...
-                    wlt_basis, nlevel, cell_c_chunks, channels(end), name_warmstart, name_checkpoint, [], X0);
+                xsol = hyperSARA(y_spmd, epsilon_spmd, ...
+                    A, At, aW_spmd, G_spmd, W_spmd, param_solver, ...
+                    ncores_data, wlt_basis, nlevel, cell_c_chunks, ...
+                    nchans, name_warmstart, name_checkpoint, [], X0);
             case 'fhs'
-                xsol = ...
-                    facetHyperSARA(y_spmd, epsilon_spmd, ...
+                xsol = facetHyperSARA(y_spmd, epsilon_spmd, ...
                     A, At, aW_spmd, G_spmd, W_spmd, param_solver, Qx, Qy, ncores_data, wlt_basis, ...
-                    filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, name_warmstart, name_checkpoint, gam, gam_bar, sigma_noise_spmd, [], X0);
+                    filter_length, nlevel, cell_c_chunks, nchans, overlap_size, window_type, name_warmstart, name_checkpoint, gam, gam_bar, sigma_noise_spmd, [], X0);
             otherwise
                 error('Unknown solver version.')
         end

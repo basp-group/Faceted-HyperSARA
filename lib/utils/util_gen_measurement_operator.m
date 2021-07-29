@@ -1,5 +1,5 @@
 function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
-    param_precond, param_blocking, fc, fmax, Nx, Ny, Kx, Ky, ox, oy)
+    param_precond, param_blocking, fc, fmax, Nx, Ny, Kx, Ky, ox, oy, kernel)
 % Build the measurement operator for a given uv-coverage at pre-defined
 % frequencies.
 %
@@ -30,6 +30,8 @@ function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
 %     Fourier oversampling factor(x-axis).
 % oy : int
 %     Fourier oversampling factor(y-axis).
+% kernel : string
+%     Type of interpolation kernel selected ('kaiser' or 'minmax:tuned').
 %
 % Returns
 % -------
@@ -70,7 +72,7 @@ for i = 1:nchans
     [u1, v1, ~, ~, aW{i}, nW] = util_gen_block_structure(uw, vw, aWw, nWw, param_blocking);
     
     % measurement operator initialization
-    [A, At, G{i}, W{i}] = op_p_nufft([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW);
+    [A, At, G{i}, W{i}] = op_p_nufft_irt([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW, kernel);
 end
 
 end

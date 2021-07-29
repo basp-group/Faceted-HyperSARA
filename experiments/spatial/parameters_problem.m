@@ -14,9 +14,9 @@ param_nufft.ox = 2;
 % oversampling factor (y)
 param_nufft.oy = 2;
 % number of neighbour (x)
-param_nufft.Kx = 8;
+param_nufft.Kx = 7; % 8
 % number of neighbour (y)
-param_nufft.Ky = 8;
+param_nufft.Ky = 7; % 8
 
 %% * Preconditioning
 % number of pixels in the image

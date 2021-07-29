@@ -35,7 +35,7 @@ function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
-% TODO: update nanme of variable
+% TODO: update name of variable
 %-------------------------------------------------------------------------%
 %%
 nChannels = length(epsilon);
