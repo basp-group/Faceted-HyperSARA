@@ -1,5 +1,6 @@
-function xsol = ...
-    hyperSARA(y, epsilon, A, At, pU, G, W, param, K, wavelet, nlevel, spectral_chunk, nChannels, name_warmstart, name_checkpoint, varargin)
+function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ... 
+    wavelet, nlevel, spectral_chunk, nChannels, name_warmstart, ...
+    name_checkpoint, varargin)
 
 % TODO: to distribute before entering the solver: y, G, pU, W, X0
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
@@ -144,13 +145,6 @@ No = size(W{1}{1}{1}, 1);
 % number of pixels (spatial dimensions)
 [M, N] = size(At(zeros(No, 1)));
 
-% check flag homotopy strategy
-if ~isfield(param, 'flag_homotopy')
-    flag_homotopy = false;
-else
-    flag_homotopy = param.flag_homotopy;
-end
-
 % instantiate Psi, Psit
 spmd
     [Psi_, Psit_] = op_sp_wlt_basis(wavelet, nlevel, M, N);
@@ -168,14 +162,21 @@ if init_flag
     xsol = init_m.xsol;
     pdfb_rel_var_low = param.pdfb_rel_var_low;
     param = init_m.param;
-    
+
     if ~isfield(param,'pdfb_rel_var_low')
         param.pdfb_rel_var_low = pdfb_rel_var_low;
     end
 
+    % check flag homotopy strategy
+    if ~isfield(param, 'flag_homotopy')
+        flag_homotopy = false;
+    else
+        flag_homotopy = param.flag_homotopy;
+    end
+
     epsilon = Composite();
     for k = 1:K
-        epsilon{k} = init_m.epsilons(spectral_chunk{k}, 1);
+        epsilon{k} = init_m.epsilon(spectral_chunk{k}, 1);
     end
 
     if numel(varargin) > 1
@@ -789,8 +790,5 @@ if (param.verbose > 0)
         fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
 end
-
-end_iter = end_iter(end_iter > 0);
-rel_val = rel_val(1:numel(end_iter));
 
 end

@@ -1,7 +1,7 @@
 function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
-    Qx, Qy, K, wavelet, filter_length, nlevel, window_type, c_chunks, ...
-    nChannels, overlap_size, alph, alph_bar, name_warmstart, ...
-    name_checkpoint, varargin)
+    Qx, Qy, K, wavelet, filter_length, nlevel, window_type, ...
+    spectral_chunk, nChannels, overlap_size, alph, alph_bar, ...
+    name_warmstart, name_checkpoint, varargin)
 
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
 
@@ -74,7 +74,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %               default in last position)
 % > filter_length  size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
 % > nlevel      decomposition depth [1]
-% > c_chunks    indices of the bands handled by each data node {K, 1}
+% > spectral_chunk    indices of the bands handled by each data node {K, 1}
 % > nChannels           total number of spectral channels [1]
 % > d           size of the fixed overlap for the faceted nuclear norm 
 %               [1, 2]
@@ -133,24 +133,12 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %
 %%
 
-% initialize monitoring variables (display active)
-SNR = 0;
-SNR_average = 0;
-norm_epsilon_check = Inf;
-norm_residual_check = 0;
-
 % size of the oversampled Fourier space (vectorized)
 No = size(W{1}{1}{1}, 1);
 
 % number of pixels (spatial dimensions)
-[M, N] = size(At(zeros(No, 1)));
-
-% check flag homotopy strategy
-if ~isfield(param, 'flag_homotopy')
-    flag_homotopy = false;
-else
-    flag_homotopy = param.flag_homotopy;
-end
+% ! pass image-size directly...
+[M, N] = size(At{1}(zeros(No, 1)));
 
 % -- instantiate auxiliary variables for sdwt2
 % define reference 2D facets (no overlap)
@@ -191,7 +179,7 @@ Qyp = parallel.pool.Constant(Qy);
 Qxp = parallel.pool.Constant(Qx);
 Qp = parallel.pool.Constant(Q);
 Kp = parallel.pool.Constant(K);
-c_chunksp = parallel.pool.Constant(c_chunks);
+c_chunksp = parallel.pool.Constant(spectral_chunk);
 waveletp = parallel.pool.Constant(wavelet);
 nlevelp = parallel.pool.Constant(nlevel);
 offsetp = parallel.pool.Constant(offset);
@@ -216,10 +204,23 @@ if init_flag
     xsol = init_m.xsol;
     pdfb_rel_var_low = param.pdfb_rel_var_low;
     param = init_m.param;
+
     if ~isfield(param,'pdfb_rel_var_low')
         param.pdfb_rel_var_low = pdfb_rel_var_low;
     end
-    epsilon = init_m.epsilon;
+
+    % check flag homotopy strategy
+    if ~isfield(param, 'flag_homotopy')
+        flag_homotopy = false;
+    else
+        flag_homotopy = param.flag_homotopy;
+    end
+
+    epsilon = Composite();
+    for k = 1:K
+        epsilon{k} = init_m.epsilon(spectral_chunk{k}, 1);
+    end
+    
     if numel(varargin) > 1
         flag_synth_data = true;
         X0 = varargin{2};
@@ -232,7 +233,7 @@ else
         if ~isempty(varargin{1})
             xsol = varargin{1};
         else
-            xsol = zeros(M,N,nChannels);
+            xsol = zeros(M, N, nChannels);
         end
         
         if numel(varargin) > 1
@@ -242,7 +243,7 @@ else
             flag_synth_data = false;
         end
     else
-        xsol = zeros(M,N,nChannels);
+        xsol = zeros(M, N, nChannels);
     end
     fprintf('xsol initialized \n\n')
 end
@@ -266,8 +267,6 @@ end
 
 %! -- TO BE CHECKED
 % Reweighting parameters
-% sig_bar = param.reweighting_sig_bar;
-% sig = param.reweighting_sig;
 sig_ = Composite();
 sig_bar_ = Composite();
 for q = 1:Q
@@ -346,8 +345,6 @@ else
 end
 
 %% Data node parameters
-A = afclean(A);
-At = afclean(At);
 elipse_proj_max_iter = parallel.pool.Constant(param.elipse_proj_max_iter);
 elipse_proj_min_iter = parallel.pool.Constant(param.elipse_proj_min_iter);
 elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
@@ -356,15 +353,6 @@ adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
 adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
 adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
 
-Ap = Composite();
-Atp = Composite();
-Gp = Composite();
-yp = Composite();
-pUp = Composite();
-Wp = Composite();
-epsilonp = Composite();
-sigma_noise_ = Composite();
-
 norm_res = Composite();
 if init_flag
     for k = 1:K
@@ -372,9 +360,10 @@ if init_flag
     end
     fprintf('norm_res uploaded \n\n')
 else
+    % ! assumes primal variable initialized to 0
     for k = 1:K
-        norm_res_tmp = cell(length(c_chunks{k}), 1);
-        for i = 1:length(c_chunks{k})
+        norm_res_tmp = cell(length(spectral_chunk{k}), 1);
+        for i = 1:length(spectral_chunk{k})
             norm_res_tmp{i} = cell(length(y{k}{i}),1);
             for j = 1 : length(y{k}{i})
                 norm_res_tmp{i}{j} = norm(y{k}{i}{j});
@@ -389,25 +378,15 @@ end
 sz_y = cell(K, 1);
 n_blocks = cell(K, 1);
 for k = 1:K
-    sz_y{k} = cell(length(c_chunks{k}), 1);
-    n_blocks{k} = cell(length(c_chunks{k}), 1);
-    for i = 1:length(c_chunks{k})
+    sz_y{k} = cell(length(spectral_chunk{k}), 1);
+    n_blocks{k} = cell(length(spectral_chunk{k}), 1);
+    for i = 1:length(spectral_chunk{k})
         n_blocks{k}{i} = length(y{k}{i});
         for j = 1 : length(y{k}{i})
             sz_y{k}{i}{j} = numel(y{k}{i}{j});
         end
     end
-    yp{Q+k} = y{k};
-    y{k} = [];
-    Ap{Q+k} = A;
-    Atp{Q+k} = At;
-    Gp{Q+k} = G{k};
-    G{k} = [];
-    Wp{Q+k} = W{k};
-    pUp{Q+k} = pU{k};
-    epsilonp{Q+k} = epsilon{k};
 end
-clear epsilon pU W G y
 
 % initialize xi and Fxi_old
 spmd
@@ -417,15 +396,15 @@ spmd
             labSend(xsol_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
         end
     else
-        xi = zeros(M, N, numel(yp));
+        xi = zeros(M, N, numel(y));
         for q = 1:Qp.Value
             xi(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :) = ...
                 labReceive(q);
         end
 
-        Fxi_old = zeros(No, numel(yp));
-        for l = 1:numel(yp)
-            Fxi_old(:, l) = Ap(xi(:,:,l));
+        Fxi_old = zeros(No, numel(y));
+        for l = 1:numel(y)
+            Fxi_old(:, l) = A(xi(:,:,l));
         end
     end
 end
@@ -442,10 +421,10 @@ if init_flag
     fprintf('v2, proj, t_block uploaded \n\n')
 else
     for k = 1:K
-        v2_tmp = cell(length(c_chunks{k}), 1);
-        t_block_ = cell(length(c_chunks{k}), 1);
-        proj_tmp = cell(length(c_chunks{k}), 1);
-        for i = 1:length(c_chunks{k})
+        v2_tmp = cell(length(spectral_chunk{k}), 1);
+        t_block_ = cell(length(spectral_chunk{k}), 1);
+        proj_tmp = cell(length(spectral_chunk{k}), 1);
+        for i = 1:length(spectral_chunk{k})
             v2_tmp{i} = cell(n_blocks{k}{i},1);
             t_block_{i} = cell(n_blocks{k}{i},1);
             proj_tmp{i} = cell(n_blocks{k}{i},1);
@@ -477,7 +456,7 @@ sigma11 = parallel.pool.Constant(tau*sigma1);
 % sigma22 = parallel.pool.Constant(tau*sigma2);
 sigma22 = Composite();
 for k = 1:K
-    sigma22{Q+k} = tau*sigma2(c_chunks{k});
+    sigma22{Q+k} = tau*sigma2(spectral_chunk{k});
 end
 % beta0 = parallel.pool.Constant(param.gamma0/sigma0);
 beta0 = Composite();
@@ -519,7 +498,7 @@ end
 if init_flag
     spmd
         if labindex > Qp.Value
-            [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
+            [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilon, norm_res);
         end
     end
     norm_epsilon_check = 0;
@@ -560,7 +539,6 @@ if init_flag
         fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
 
         if flag_synth_data
-            % get xsol back from the workers
             for q = 1:Q
                 xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
             end
@@ -594,8 +572,8 @@ for t = t_start : max_iter
             t_op = toc(tw);
             
             % send xhat_q (communication towards the data nodes)
-            for i = 1:K
-                labSend(xsol_q(:,:,c_chunksp.Value{i}), Qp.Value+i);
+            for k = 1:K
+                labSend(xsol_q(:,:,c_chunksp.Value{k}), Qp.Value+k);
             end
             
             % update borders (-> versions of xhat with overlap)
@@ -619,8 +597,8 @@ for t = t_start : max_iter
             g_q = g(overlap(1)+1:end, overlap(2)+1:end, :);
             
             % retrieve portions of g2 from the data nodes
-            for i = 1:Kp.Value
-                g_q(:,:,c_chunksp.Value{i}) = g_q(:,:,c_chunksp.Value{i}) + labReceive(Qp.Value+i);
+            for k = 1:Kp.Value
+                g_q(:,:,c_chunksp.Value{k}) = g_q(:,:,c_chunksp.Value{k}) + labReceive(Qp.Value+k);
             end
         else
             % data nodes (Q+1:Q+K) (no parallelisation over data blocks, just frequency)
@@ -630,7 +608,7 @@ for t = t_start : max_iter
                     labReceive(q);
             end
             tw = tic;
-            [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, yp, xi, Fxi_old, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
+            [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, y, xi, Fxi_old, proj_, A, At, G, W, pU, epsilon, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22);
             t_op = toc(tw);
 
@@ -729,12 +707,6 @@ for t = t_start : max_iter
     end
     
     %% Check convergence pdfb (inner solver)
-    %! -- TO BE CHECKED
-    % pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ...                                          % minimum number of pdfb iterations
-    %     ( t - reweight_last_step_iter >= param.pdfb_max_iter || ...                                                      % maximum number of pdfb iterations reached
-    %         (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) ... % relative variation and data fidelity within tolerance
-    %     );
-
     pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ... % minimum number of pdfb iterations 
         ( t - reweight_last_step_iter >= param.pdfb_max_iter || ... % maximum number of pdfb iterations reached
             (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance*norm_epsilon_check) || ... % relative variation solution, objective and data fidelity within tolerance
@@ -750,7 +722,7 @@ for t = t_start : max_iter
     if flag_epsilonUpdate
         spmd
             if labindex > Qp.Value
-                [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, norm_res, ...
+                [epsilon, t_block] = update_epsilon(epsilon, t, t_block, norm_res, ...
                     adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
                     adapt_eps_change_percentage.Value);
             end
@@ -788,66 +760,6 @@ for t = t_start : max_iter
         end
         
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count+1, rel_x_reweighting, reweighting_alpha);
-
-        % update regularization parameters after the first pdfb
-        % if update_regularization && (reweight_step_count == 0)
-        %     spmd
-        %         if labindex <= Qp.Value
-        %             x_overlap(overlap(1)+1:end, overlap(2)+1:end, :) = xsol_q;
-        %             x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-
-        %             bq = zeros(size(x_overlap));
-        %             % send xhat_q (communication towards the data nodes)
-        %             for i = 1:Kp.Value
-        %                 bq(overlap(1)+1:end, overlap(2)+1:end, c_chunksp.Value{i}) = labReceive(Qp.Value+i);
-        %             end
-
-        %             bq = comm2d_update_borders(bq, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-
-        %             sig_bar_ = update_sig_bar_q(x_overlap, w, bq);
-
-        %             %! need to update beta0 and beta1
-        %             [gamma1_q, gamma0_q] = compute_facet_log_prior_regularizer(x_overlap, Iq, ...
-        %             offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-        %             offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_), sig_, sig_bar_, regtype);
-        %         else
-        %             % generate noise matrix to update sig_bar
-        %             bi = create_data_noise(yp, Atp, Gp, Wp, N, M, No, sigma_noise_, labindex, operator_norm);
-
-        %             for q = 1:Qp.Value
-        %                 labSend(bi(I(q,1)+1:I(q,1)+dims(q,1), I(q,2)+1:I(q,2)+dims(q,2), :), q);
-        %             end
-        %         end
-        %     end
-
-        %     param.gamma0_old = param.gamma0;
-        %     param.gamma_old = param.gamma;
-        %     param.reweighting_sig_bar_old = param.reweighting_sig_bar;
-            
-        %     gamma0 = zeros(Q, 1);
-        %     gamma1 = 0;
-        %     sig_bar = zeros(Q, 1);
-        %     %! to be fixed
-        %     for q = 1:Q
-        %         gamma0(q) = gamma0_q{q};
-        %         gamma1 = gamma1 + gamma1_q{q};
-        %         sig_bar(q) = sig_bar_{q};
-        %     end
-        %     gamma0 = alph_bar./gamma0;
-        %     gamma1 = alph/gamma1;
-
-        %     param.reweighting_sig_bar = sig_bar;
-        %     param.gamma0 = gamma0;
-        %     param.gamma = gamma1;
-        %     % beta0 = parallel.pool.Constant(param.gamma0/sigma0); %! see if this is fine
-        %     for q = 1:q
-        %         beta0{q} = param.gamma0(q)/sigma0;
-        %     end
-        %     beta1 = parallel.pool.Constant(param.gamma/sigma1);
-
-        %     fprintf('Updated reg (%s): gamma0 = [%e, %e], gamma1 = %e \n\n', regtype, min(param.gamma0), max(param.gamma0), param.gamma);
-        %     fprintf('Updated floor lvl (%s): sig_bar = [%e,%e] \n\n', regtype, min(param.reweighting_sig_bar), max(param.reweighting_sig_bar));
-        % end
         
         spmd
             if labindex <= Qp.Value
@@ -871,7 +783,7 @@ for t = t_start : max_iter
                 %! --
             else
                 % compute residual image on the data nodes
-                res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
+                res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, G, A, At, W);
             end
         end
         %! -- TO BE CHECKED
@@ -951,12 +863,12 @@ for t = t_start : max_iter
             end
             % data nodes
             for k = 1:K
-                m.res(:,:,c_chunks{k}) = res_{Q+k};
+                m.res(:,:,spectral_chunk{k}) = res_{Q+k};
                 res_{Q+k} = [];
                 m.v2(k,1) = v2_(Q+k);
                 m.proj(k,1) = proj_(Q+k);
                 m.t_block(k,1) = t_block(Q+k);
-                m.epsilon(k,1) = epsilonp(Q+k);
+                m.epsilon(k,1) = epsilon(Q+k);
                 m.norm_res(k,1) = norm_res(Q+k);
             end
             m.end_iter = end_iter;
@@ -1006,7 +918,7 @@ spmd
             offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
     else
-        res_ = compute_residual_images(xsol(:,:,c_chunks{labindex-Qp.Value}), yp, Gp, Ap, Atp, Wp);
+        res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, G, A, At, W);
     end
 end
 
@@ -1043,7 +955,7 @@ end
 
 % data nodes
 for k = 1:K
-    m.res(:,:,c_chunks{k}) = res_{Q+k};
+    m.res(:,:,spectral_chunk{k}) = res_{Q+k};
     res_{Q+k} = [];
     m.v2(k,1) = v2_(Q+k);
     v2_{Q+k} = [];
@@ -1051,13 +963,12 @@ for k = 1:K
     proj_{Q+k} = [];
     m.t_block(k,1) = t_block(Q+k);
     t_block{Q+k} = [];
-    m.epsilon(k,1) = epsilonp(Q+k);
-    epsilonp{Q+k} = [];
+    m.epsilon(k,1) = epsilon(Q+k);
+    epsilon{Q+k} = [];
     m.norm_res(k,1) = norm_res(Q+k);
 end
-epsilon = m.epsilon;
 m.xsol = xsol;
-norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
+% norm_res_out = sqrt(sum(sum(sum((m.res).^2))));
 
 % Update param structure and save
 param.reweighting_alpha = reweighting_alpha;
@@ -1114,8 +1025,5 @@ if (param.verbose > 0)
         fprintf('SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
     end
 end
-
-end_iter = end_iter(end_iter > 0);
-rel_val = rel_val(1:numel(end_iter));
 
 end
