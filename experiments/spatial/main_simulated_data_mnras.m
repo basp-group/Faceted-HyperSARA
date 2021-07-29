@@ -196,7 +196,7 @@ nu0 = 2.052e9; % starting freq
 dnu = 16e6;    % freq step
 L = 100;       % number of channels
 nu_vect =[nu0 (dnu*(1:L-1)+nu0)];
-f = nu_vect(1:spectral_downsampling:end);
+frequencies = nu_vect(1:spectral_downsampling:end);
 
 clear reference_cube_path info rowend colend sliceend 
 clear spatial_downsampling spectral_downsampling
@@ -231,24 +231,28 @@ elseif strcmp(algo_version, 'hs')
 end
 
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
-id = split_range_interleaved(Qc, nChannels);
-subcube_channels = id{ind};
-fc = f(subcube_channels); %! beware: this is needed all the time (selected frequencies for the subcube)
-fmax = f(end);
-
 disp(['Number of pixels in overlap: ', strjoin(strsplit(num2str(overlap_size)), ' x ')]);
 
+% index of the spectral channels involved in the subcube
+interleaved_channels = split_range_interleaved(Qc, nChannels);
+subcube_channels = interleaved_channels{ind};
+
+% index of channels from the subcube to be handled on each data worker
+rg_c = split_range(ncores_data, nchans);
+
+% frequencies associated with the current subcube
+fc = frequencies(subcube_channels);
+fmax = frequencies(end);
+
+% extract ground truth subcube
 if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
-    x0 = x0(:,:,id{ind});
+    x0 = x0(:,:,subcube_channels);
     nchans = size(x0,3);
     X0 = reshape(x0,Nx*Ny,nchans);
-    input_snr = input_snr(id{ind});
+    input_snr = input_snr(subcube_channels);
 end
 channels = 1:nchans;
 
-% extract the frequencies needed for a given data worker from the current
-% subcube
-rg_c = split_range(ncores_data, nchans);
 
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_', ...
@@ -281,9 +285,11 @@ warm_start = @(nchannels) strcat(temp_results_name(nchannels),'_rw=', num2str(rw
 data_name = data_name_function(nChannels);
 results_name = results_name_function(nChannels);
 
+
 %% Define problem configuration (rng, nufft, preconditioning, blocking,
 % NNLS (epsilon estimation), SARA dictionary)
 parameters_problem
+
 
 %% Generate/load uv-coverage
 % generating u-v coverage
@@ -299,8 +305,8 @@ if flag_generateCoverage
     % Fixing Mt = 0.5 N, take T = 0.5 N / M : na = 27 for vla
     T = floor(p*(Nx*Ny)/M); % should be > 1
     [u, v, ~] = generate_uv_coverage(T, hrs, dl, cov_type);
-    u = u(:)*fc(1)/f(end);
-    v = v(:)*fc(1)/f(end);
+    u = u(:)*fc(1)/fmax;
+    v = v(:)*fc(1)/fmax;
     fitswrite([u, v, ones(numel(u), 1)], coverage_path)
     fitsdisp(coverage_path);
 else
@@ -315,20 +321,20 @@ else
     if strcmp(exp_type, "spectral")
         load(coverage_path, 'uvw', 'obsId');
         size(uvw)
-        u1 = uvw(obsId==2, 1)*f(end)/speed_of_light;
-        v1 = uvw(obsId==2, 2)*f(end)/speed_of_light;  
+        u1 = uvw(obsId==2, 1)*fmax/speed_of_light;
+        v1 = uvw(obsId==2, 2)*fmax/speed_of_light;  
         clear obsId
     else        
         % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
         % units of the smallest wavelenght, associated with the highest frequency)
         load(coverage_path, 'uvw');
         size(uvw)
-        u1 = uvw(:, 1)*f(end)/speed_of_light;
-        v1 = uvw(:, 2)*f(end)/speed_of_light;  
+        u1 = uvw(:, 1)*fmax/speed_of_light;
+        v1 = uvw(:, 2)*fmax/speed_of_light;  
 %         load(coverage_path, 'uvw', 'obsId');
 %         size(uvw)
-%         u1 = uvw(obsId==3, 1)*f(end)/speed_of_light;
-%         v1 = uvw(obsId==3, 2)*f(end)/speed_of_light;  
+%         u1 = uvw(obsId==3, 1)*fmax/speed_of_light;
+%         v1 = uvw(obsId==3, 2)*fmax/speed_of_light;  
 %         clear obsId
     end
     bmax = max(sqrt(u1.^2 + v1.^2));
@@ -340,6 +346,7 @@ else
     disp('Coverage loaded successfully')
     clear uvw u1 v1
 end
+
 
 %% Setup measurement operator
 switch algo_version
@@ -370,6 +377,7 @@ switch algo_version
         clear local_fc
 end
 
+
 %% Free memory
 clear param_blocking param_precond;
 
@@ -399,9 +407,8 @@ if flag_generateVisibilities
     datafile.sigma_noise = zeros(nchans, 1);
 
     for k = 1:ncores_data
-        % convert from local to global channel index (i.e., undo interleaving)
-        % subcube_channels(rg_c(k, 1))
-        datafile.y0(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = y0{data_worker_id(k)}; % Q + k
+        % convert from local to global channel index (i.e., index into the full spectral dimension using "subcube_channels(rg_c(k, 1))"
+        datafile.y0(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = y0{data_worker_id(k)};
         datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = y{data_worker_id(k)};
         datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = epsilons{data_worker_id(k)};
         datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = sigma_noise{data_worker_id(k)};
@@ -500,6 +507,7 @@ else
 end
 
 fprintf('Convergence parameter (measurement operator): %e \n', Anorm);
+
 
 % TODO: to be updated from here
 % %% Generate initial epsilons by performing imaging with NNLS on each data block separately
