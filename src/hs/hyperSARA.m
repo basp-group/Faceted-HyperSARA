@@ -1,5 +1,5 @@
 function xsol = ...
-    hyperSARA(y, epsilon, A, At, pU, G, W, param, K, wavelet, nlevel, c_chunks, nChannels, name_warmstart, name_checkpoint, varargin)
+    hyperSARA(y, epsilon, A, At, pU, G, W, param, K, wavelet, nlevel, spectral_chunk, nChannels, name_warmstart, name_checkpoint, varargin)
 
 % TODO: to distribute before entering the solver: y, G, pU, W, X0
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
@@ -24,7 +24,7 @@ function xsol = ...
 % > K           number of data workers
 % > wavelet     list of wavelet basis (for the SARA prior)
 % > nlevel      number of wavelet decomposition levels
-% > c_chunks    list of channels handled by each data process
+% > spectral_chunk    list of channels handled by each data process
 % > nChannels           total number of channels
 % > name_warmstart name_checkpoint of the file to restart from
 % > name_checkpoint        lambda function defining the name_checkpoint of the backup file 
@@ -75,7 +75,7 @@ function xsol = ...
 % > wavelet     wavelet doctionaries considered (should contain 'self' by
 %               default in last position)
 % > nlevel      decomposition depth [1]
-% > c_chunks    indices of the bands handled by each data node {K, 1}
+% > spectral_chunk    indices of the bands handled by each data node {K, 1}
 % > nChannels           total number of spectral channels [1]
 % > name_warmstart  name_checkpoint of a valid .mat file for initialization (for warm-restart)
 % > name_checkpoint        lambda function defining the name_checkpoint of the backup file 
@@ -134,8 +134,6 @@ function xsol = ...
 % 3. Version w/o data blocks (not in use here...)
 %%
 
-% maxNumCompThreads(param.num_workers);
-
 % initialize monitoring variables (display active)
 norm_epsilon_check = Inf;
 norm_residual_check = 0;
@@ -170,10 +168,16 @@ if init_flag
     xsol = init_m.xsol;
     pdfb_rel_var_low = param.pdfb_rel_var_low;
     param = init_m.param;
+    
     if ~isfield(param,'pdfb_rel_var_low')
         param.pdfb_rel_var_low = pdfb_rel_var_low;
     end
-    epsilon = init_m.epsilon;
+
+    epsilon = Composite();
+    for k = 1:K
+        epsilon{k} = init_m.epsilons(spectral_chunk{k}, 1);
+    end
+
     if numel(varargin) > 1
         flag_synth_data = true;
         X0 = varargin{2};
@@ -181,12 +185,13 @@ if init_flag
         flag_synth_data = false;
     end
     fprintf('xsol, param and epsilon uploaded \n\n')
+
 else
     if ~isempty(varargin)
         if ~isempty(varargin{1})
             xsol = varargin{1};
         else
-            xsol = zeros(M,N,nChannels);
+            xsol = zeros(M, N, nChannels);
         end
         
         if numel(varargin) > 1
@@ -196,7 +201,7 @@ else
             flag_synth_data = false;
         end
     else
-        xsol = zeros(M,N,nChannels);
+        xsol = zeros(M, N, nChannels);
     end
     fprintf('xsol initialized \n\n')
 end
@@ -252,7 +257,7 @@ if init_flag
     weights0_ = init_m.weights0;
     s_ = Composite();
     for k = 1:K
-        v1_{k} = init_m.v1(:,c_chunks{k});
+        v1_{k} = init_m.v1(:,spectral_chunk{k});
         weights1_{k} = init_m.weights1;
         s_{k} = size(v1_{k}, 1);
     end
@@ -260,14 +265,12 @@ if init_flag
 else
     [v0_, weights0_] = initialize_nuclear_serial(xsol, reweighting_alpha, sig_bar_);
     spmd
-        [v1_, weights1_, s_] = initialize_l21_distributed(xsol(:,:,c_chunks{labindex}), Psit_, 'zpd', nlevel, reweighting_alphap, sig_);
+        [v1_, weights1_, s_] = initialize_l21_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, 'zpd', nlevel, reweighting_alphap, sig_);
     end
     fprintf('v0, v1, weigths0, weights1 initialized \n\n')
 end
 
 %% Data node parameters
-A = afclean(A);
-At = afclean(At);
 elipse_proj_max_iter = parallel.pool.Constant(param.elipse_proj_max_iter);
 elipse_proj_min_iter = parallel.pool.Constant(param.elipse_proj_min_iter);
 elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
@@ -277,25 +280,20 @@ adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
 % adapt_eps_rel_var = parallel.pool.Constant(param.adapt_eps_rel_var);
 adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
 
-Ap = Composite();
-Atp = Composite();
+% TODO: load x directly on data nodes for Fourier transform
+% ! need to be applied differently (A only exists in spmd blocks)
 xi = Composite();
 Fxi_old = Composite();
-Gp = Composite();
-yp = Composite();
-pUp = Composite();
-Wp = Composite();
-epsilonp = Composite();
-
-for i = 1:K
-    temp = zeros(No, numel(c_chunks{i}));
-    for l = 1:numel(c_chunks{i})
-        temp(:,l) = A(xsol(:, :, c_chunks{i}(l)));
+for k = 1:K
+    temp = zeros(No, numel(spectral_chunk{k}));
+    for l = 1:numel(spectral_chunk{k})
+        temp(:,l) = A{1}(xsol(:, :, spectral_chunk{k}(l)));
     end
-    Fxi_old{i} = temp; 
+    Fxi_old{k} = temp; 
 end
 clear temp
 
+% ! TO BE UPDATED PROPERLY
 norm_res = Composite();
 if init_flag
     for k = 1:K
@@ -305,8 +303,8 @@ if init_flag
 else
     %! this assumes the primal variable has been initialized to 0
     for k = 1:K
-        norm_res_tmp = cell(length(c_chunks{k}), 1);
-        for i = 1:length(c_chunks{k})
+        norm_res_tmp = cell(length(spectral_chunk{k}), 1);
+        for i = 1:length(spectral_chunk{k})
             norm_res_tmp{i} = cell(length(y{k}{i}),1);
             for j = 1 : length(y{k}{i})
                 norm_res_tmp{i}{j} = norm(y{k}{i}{j});
@@ -321,27 +319,15 @@ end
 sz_y = cell(K, 1);
 n_blocks = cell(K, 1);
 for k = 1:K
-    sz_y{k} = cell(length(c_chunks{k}), 1);
-    n_blocks{k} = cell(length(c_chunks{k}), 1);
-    for i = 1:length(c_chunks{k})
+    sz_y{k} = cell(length(spectral_chunk{k}), 1);
+    n_blocks{k} = cell(length(spectral_chunk{k}), 1);
+    for i = 1:length(spectral_chunk{k})
         n_blocks{k}{i} = length(y{k}{i});
         for j = 1 : length(y{k}{i})
             sz_y{k}{i}{j} = numel(y{k}{i}{j});
         end
     end
-    yp{k} = y{k};
-    y{k} = [];
-    Ap{k} = A;
-    Atp{k} = At;
-    Gp{k} = G{k};
-    G{k} = [];
-    Wp{k} = W{k};
-    W{k} = [];
-    pUp{k} = pU{k};
-    pU{k} = [];
-    epsilonp{k} = epsilon{k};
 end
-clear epsilon pU W G y
 
 v2_ = Composite();
 t_block = Composite();
@@ -355,10 +341,10 @@ if init_flag
     fprintf('v2, proj, t_block uploaded \n\n')
 else
     for k = 1:K
-        v2_tmp = cell(length(c_chunks{k}), 1);
-        t_block_ = cell(length(c_chunks{k}), 1);
-        proj_tmp = cell(length(c_chunks{k}), 1);
-        for i = 1:length(c_chunks{k})
+        v2_tmp = cell(length(spectral_chunk{k}), 1);
+        t_block_ = cell(length(spectral_chunk{k}), 1);
+        proj_tmp = cell(length(spectral_chunk{k}), 1);
+        for i = 1:length(spectral_chunk{k})
             v2_tmp{i} = cell(n_blocks{k}{i},1);
             t_block_{i} = cell(n_blocks{k}{i},1);
             proj_tmp{i} = cell(n_blocks{k}{i},1);
@@ -376,8 +362,7 @@ else
     fprintf('v2, proj, t_block initialized \n\n')
 end  
 
-%Step sizes computation
-%Step size for the dual variables
+% Step size for the dual variables
 sigma0 = 1.0/param.nu0;
 sigma1 = 1.0/param.nu1;
 sigma2 = 1.0./param.nu2;
@@ -390,7 +375,7 @@ sigma00 = tau*sigma0;
 sigma11 = parallel.pool.Constant(tau*sigma1);
 sigma22 = Composite();
 for k = 1:K
-    sigma22{k} = tau*sigma2(c_chunks{k});
+    sigma22{k} = tau*sigma2(spectral_chunk{k});
 end
 beta0 = param.gamma0/sigma0;
 beta1 = parallel.pool.Constant(param.gamma/sigma1);
@@ -428,8 +413,8 @@ end
 
 if init_flag
     spmd
-        [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilonp, norm_res);
-        l21_ = compute_sara_prior_distributed(xsol(:,:,c_chunks{labindex}), Psit_, s_);
+        [norm_residual_check_i, norm_epsilon_check_i] = sanity_check(epsilon, norm_res);
+        l21_ = compute_sara_prior_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, s_);
     end  
     norm_epsilon_check = 0;
     norm_residual_check = 0;
@@ -475,7 +460,7 @@ for t = t_start : max_iter
     start_iter = tic;
     
     % update primal variable
-    %! to be done in parallel as well (see that aftrwards)
+    %! to be done in parallel as well (see that afterwards)
     tw = tic;
     prev_xsol = xsol;
     xsol = max(real(xsol - g), 0);
@@ -483,7 +468,7 @@ for t = t_start : max_iter
     t_master(t) = toc(tw);
 
     for k = 1:K
-       xi{k} = xsol(:, :, c_chunks{k});
+       xi{k} = xsol(:, :, spectral_chunk{k});
     end
     
     % nuclear prior node
@@ -495,19 +480,23 @@ for t = t_start : max_iter
     spmd
         % l21 prior node (full SARA prior)
         tw = tic;
-        [v1_, g1_] = update_dual_l21_distributed(v1_, Psit_, Psi_, xhat(:,:,c_chunks{labindex}), weights1_, beta1.Value, sigma11.Value);
+        [v1_, g1_] = ...
+            update_dual_l21_distributed(v1_, Psit_, Psi_, ...
+            xhat(:,:,spectral_chunk{labindex}), weights1_, ...
+            beta1.Value, sigma11.Value);
         t_l21_ = toc(tw); 
-        % data fidetliy
+        % data fidelity
         tw = tic;
         [v2_, g2_, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = ...
-            update_dual_fidelity(v2_, yp, xi, Fxi_old, proj_, Ap, Atp, Gp, Wp, pUp, epsilonp, ...
-            elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22);
+            update_dual_fidelity(v2_, y, xi, Fxi_old, proj_, A, At, ...
+            G, W, pU, epsilon, elipse_proj_max_iter.Value, ...
+            elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22);
         g_ = g1_ + g2_;
         t_data_ = toc(tw); 
     end
     
     for k = 1:K
-        g(:,:,c_chunks{k}) = g(:,:,c_chunks{k}) + g_{k};
+        g(:,:,spectral_chunk{k}) = g(:,:,spectral_chunk{k}) + g_{k};
     end
     
     %% Relative change of objective function
@@ -545,7 +534,7 @@ for t = t_start : max_iter
         % TODO: move to l.518 if norms needs to be computed at each iteration
         nuclear = nuclear_norm(xsol);
         spmd 
-            l21_ = compute_sara_prior_distributed(xsol(:,:,c_chunks{labindex}), Psit_, s_);
+            l21_ = compute_sara_prior_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, s_);
         end
         l21 = l21_{1};
         % previous_obj = obj;
@@ -585,8 +574,9 @@ for t = t_start : max_iter
 
     if flag_epsilonUpdate
         spmd
-            [epsilonp, t_block] = update_epsilon(epsilonp, t, t_block, norm_res, ...
-                adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
+            [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
+                norm_res, adapt_eps_tol_in.Value, ...
+                adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
                 adapt_eps_change_percentage.Value);
         end
     end
@@ -615,10 +605,10 @@ for t = t_start : max_iter
 
         spmd
             % update weights l21-norm
-            weights1_ = update_weights_l21_distributed(xsol(:,:,c_chunks{labindex}), Psit_, weights1_, reweighting_alpha, sig_);
+            weights1_ = update_weights_l21_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, weights1_, reweighting_alpha, sig_);
 
             % compute residual image
-            res_ = compute_residual_images(xsol(:,:,c_chunks{labindex}), yp, Gp, Ap, Atp, Wp);
+            res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex}), y, G, A, At, W);
         end
 
         %! -- TO BE CHECKED
@@ -633,7 +623,7 @@ for t = t_start : max_iter
 
         nuclear = nuclear_norm(xsol);
         spmd 
-            l21_ = compute_sara_prior_distributed(xsol(:,:,c_chunks{labindex}), Psit_, s_);
+            l21_ = compute_sara_prior_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, s_);
         end
         l21 = l21_{1};
         % previous_obj = obj;
@@ -673,14 +663,14 @@ for t = t_start : max_iter
             % Retrieve variables from workers
             % data nodes
             for k = 1:K
-                m.res(:,:,c_chunks{k}) = res_{k};
+                m.res(:, :, spectral_chunk{k}) = res_{k};
                 res_{k} = [];
-                m.v2(k,1) = v2_(k);
-                m.proj(k,1) = proj_(k);
-                m.t_block(k,1) = t_block(k);
-                m.epsilon(k,1) = epsilonp(k);
-                m.norm_res(k,1) = norm_res(k);
-                m.v1(:, c_chunks{k}) = v1_{k};
+                m.v2(k, 1) = v2_(k);
+                m.proj(k, 1) = proj_(k);
+                m.t_block(k, 1) = t_block(k);
+                m.epsilon(k, 1) = epsilon(k);
+                m.norm_res(k, 1) = norm_res(k);
+                m.v1(:, spectral_chunk{k}) = v1_{k};
             end
             m.end_iter = end_iter;
             m.t_master = t_master;
@@ -717,7 +707,8 @@ toc(start_loop)
 % Calculate residual images
 res = zeros(size(xsol));
 spmd
-    res_ = compute_residual_images(xsol(:,:,c_chunks{labindex}), yp, Gp, Ap, Atp, Wp);
+    res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex}), ...
+        y, G, A, At, W);
 end
 
 m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
@@ -738,15 +729,15 @@ m.weights1 = weights1_{1};
 % Retrieve variables from workers
 % data nodes
 for k = 1:K
-    res(:,:,c_chunks{k}) = res_{k};
-    m.res(:,:,c_chunks{k}) = res_{k};
+    res(:, :, spectral_chunk{k}) = res_{k};
+    m.res(:, :, spectral_chunk{k}) = res_{k};
     res_{k} = [];
-    m.v2(k,1) = v2_(k);
-    m.v1(:,c_chunks{k}) = v1_{k};
-    m.proj(k,1) = proj_(k);
-    m.t_block(k,1) = t_block(k);
-    m.epsilon(k,1) = epsilonp(k);
-    m.norm_res(k,1) = norm_res(k);
+    m.v2(k, 1) = v2_(k);
+    m.v1(:, spectral_chunk{k}) = v1_{k};
+    m.proj(k, 1) = proj_(k);
+    m.t_block(k, 1) = t_block(k);
+    m.epsilon(k, 1) = epsilon(k);
+    m.norm_res(k, 1) = norm_res(k);
 end
 epsilon = m.epsilon;
 m.xsol = xsol;
@@ -758,15 +749,6 @@ param.init_reweight_step_count = reweight_step_count;
 param.init_reweight_last_iter_step = t;
 param.init_t_start = t+1;
 m.param = param;
-
-% compute SNR (on the master node)
-sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
-SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-psnrh = zeros(nChannels,1);
-for i = 1:nChannels
-    psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
-end
-SNR_average = mean(psnrh);
 m.end_iter = end_iter;
 m.t_master = t_master;
 m.t_l21 = t_l21;
@@ -776,6 +758,13 @@ m.rel_val = rel_val;
 fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
 fitswrite(m.res, [name_checkpoint '_res' '.fits'])
 if flag_synth_data
+    sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
+    SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
+    psnrh = zeros(nChannels,1);
+    for i = 1:nChannels
+        psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
+    end
+    SNR_average = mean(psnrh);
     m.SNR = SNR;
     m.SNR_average = SNR_average;
 end
@@ -784,7 +773,7 @@ clear m
 % Final log
 nuclear = nuclear_norm(xsol);
 spmd 
-    l21_ = compute_sara_prior_distributed(xsol(:,:,c_chunks{labindex}), Psit_, s_);
+    l21_ = compute_sara_prior_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, s_);
 end
 l21 = l21_{1};
 if (param.verbose > 0)
