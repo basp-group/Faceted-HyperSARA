@@ -1,5 +1,7 @@
-function [xsol,param,v1,v2,g,weights1,proj,t_block,reweighting_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, init_file_name, name, x0, flag_homotopy, alph, varargin)
+function xsol = ...
+    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, name_wamrstart, name_checkpoint, x0, flag_homotopy, alph, varargin)
+
+% TODO: update interface to accommodate real data
 
 % This function solves:
 %
@@ -17,10 +19,10 @@ No = size(W{1}{1}, 1);
 [M, N] = size(At(zeros(No, 1)));
 
 % Initializations
-init_flag = isfile(init_file_name);
+init_flag = isfile(name_wamrstart);
 if init_flag
-    init_m = matfile(init_file_name);
-    fprintf('Resume from file %s\n\n', init_file_name)
+    init_m = matfile(name_wamrstart);
+    fprintf('Resume from file %s\n\n', name_wamrstart)
 end
 
 %! -- TO BE CHECKED (primal initialization)
@@ -452,7 +454,7 @@ for t = t_start : max_iter
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
-            m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+            m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
                 'Writable', true);
             m.param = param;
             m.res = res;
@@ -473,8 +475,8 @@ for t = t_start : max_iter
             m.t_master = t_master;
             m.t_data = t_data;
             m.rel_val = rel_val;
-            fitswrite(m.xsol, [name '_xsol' '.fits'])
-            fitswrite(m.res, [name '_res' '.fits'])
+            fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
+            fitswrite(m.res, [name_checkpoint '_res' '.fits'])
             clear m
 
             % Log
@@ -506,7 +508,7 @@ for i = 1 : c
     res(:,:,i) = real(At(g2));
 end
 
-m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
     'Writable', true);
 m.param = param;
 m.res = res;
@@ -536,8 +538,8 @@ m.t_l11 = t_l11;
 m.t_master = t_master;
 m.t_data = t_data;
 m.rel_val = rel_val;
-fitswrite(m.xsol, [name '_xsol' '.fits'])
-fitswrite(m.res, [name '_res' '.fits'])
+fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
+fitswrite(m.res, [name_checkpoint '_res' '.fits'])
 clear m
 
 % Final log

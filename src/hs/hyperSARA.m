@@ -1,5 +1,5 @@
-function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,SNR,SNR_average] = ...
-    hyperSARA(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, init_file_name, name, flag_homotopy, varargin)
+function xsol = ...
+    hyperSARA(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, name_warmstart, name_checkpoint, flag_homotopy, varargin)
 
 % TODO: to distribute before entering the solver:
 % y, G, pU, W, X0
@@ -26,8 +26,8 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,SNR
 % > nlevel      number of wavelet decomposition levels
 % > c_chunks    list of channels handled by each data process
 % > c           total number of channels
-% > init_file_name name of the file to restart from
-% > name        lambda function defining the name of the backup file 
+% > name_warmstart name_checkpoint of the file to restart from
+% > name_checkpoint        lambda function defining the name_checkpoint of the backup file 
 % > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
 % > varargin     initial value for the primal variable
 %
@@ -77,8 +77,8 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,res,end_iter,SNR
 % > nlevel      decomposition depth [1]
 % > c_chunks    indices of the bands handled by each data node {K, 1}
 % > c           total number of spectral channels [1]
-% > init_file_name  name of a valid .mat file for initialization (for warm-restart)
-% > name        lambda function defining the name of the backup file 
+% > name_warmstart  name_checkpoint of a valid .mat file for initialization (for warm-restart)
+% > name_checkpoint        lambda function defining the name_checkpoint of the backup file 
 % > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
 % > varargin     initial value for the primal variable
 %
@@ -152,10 +152,10 @@ spmd
 end
 
 % Initializations
-init_flag = isfile(init_file_name);
+init_flag = isfile(name_warmstart);
 if init_flag
-    init_m = matfile(init_file_name);
-    fprintf('Resume from file %s\n\n', init_file_name)
+    init_m = matfile(name_warmstart);
+    fprintf('Resume from file %s\n\n', name_warmstart)
 end
 
 %! -- TO BE CHECKED (primal initialization)
@@ -626,7 +626,7 @@ for t = t_start : max_iter
 
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
-            m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+            m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
                 'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
@@ -661,8 +661,8 @@ for t = t_start : max_iter
             m.t_nuclear = t_nuclear;
             m.t_data = t_data;
             m.rel_val = rel_val;
-            fitswrite(m.xsol, [name '_xsol' '.fits'])
-            fitswrite(m.res, [name '_res' '.fits'])
+            fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
+            fitswrite(m.res, [name_checkpoint '_res' '.fits'])
             clear m
             
             % Log
@@ -689,7 +689,7 @@ spmd
     res_ = compute_residual_images(xsol(:,:,c_chunks{labindex}), yp, Gp, Ap, Atp, Wp);
 end
 
-m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
     'Writable', true);
 m.param = param;
 m.res = zeros(size(xsol));
@@ -744,8 +744,8 @@ m.t_l21 = t_l21;
 m.t_nuclear = t_nuclear;
 m.t_data = t_data;
 m.rel_val = rel_val;
-fitswrite(m.xsol, [name '_xsol' '.fits'])
-fitswrite(m.res, [name '_res' '.fits'])
+fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
+fitswrite(m.res, [name_checkpoint '_res' '.fits'])
 clear m
 
 % Final log

@@ -1,7 +1,7 @@
-function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR_average] = ...
+function xsol = ...
     facetHyperSARA(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    filter_length, nlevel, c_chunks, c, d, window_type, init_file_name, name, flag_homotopy, alph, alph_bar, sigma_noise, varargin)
+    filter_length, nlevel, c_chunks, c, d, window_type, name_warmstart, name_checkpoint, flag_homotopy, alph, alph_bar, sigma_noise, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -77,8 +77,8 @@ function [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,SNR,SNR
 %               [1, 2]
 % > window_type type of apodization window affecting the faceted nuclear
 %               norm prior [string]
-% > init_file_name  name of a valid .mat file for initialization (for warm-restart)
-% > name        lambda function defining the name of the backup file 
+% > name_warmstart  name_checkpoint of a valid .mat file for initialization (for warm-restart)
+% > name_checkpoint        lambda function defining the name_checkpoint of the backup file 
 % > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
 % > varargin     initial value for the primal variable
 %
@@ -197,10 +197,10 @@ offsetp = parallel.pool.Constant(offset);
     Ncoefs, temLIdxs, temRIdxs, window_type, d);
 
 % Initializations
-init_flag = isfile(init_file_name);
+init_flag = isfile(name_warmstart);
 if init_flag
-    init_m = matfile(init_file_name);
-    fprintf('Resume from file %s\n\n', init_file_name)
+    init_m = matfile(name_warmstart);
+    fprintf('Resume from file %s\n\n', name_warmstart)
 end
 
 %! -- TO BE CHECKED (primal initialization)
@@ -897,7 +897,7 @@ for t = t_start : max_iter
 
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
-            m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+            m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
@@ -938,8 +938,8 @@ for t = t_start : max_iter
             m.t_facet = t_facet;
             m.t_data = t_data;
             m.rel_val = rel_val;
-            fitswrite(m.xsol, [name '_xsol' '.fits'])
-            fitswrite(m.res, [name '_res' '.fits'])
+            fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
+            fitswrite(m.res, [name_checkpoint '_res' '.fits'])
             clear m
 
             % Log
@@ -979,7 +979,7 @@ spmd
     end
 end
 
-m = matfile([name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
     'Writable', true);
 m.param = param;
 m.res = zeros(size(xsol));
@@ -1049,8 +1049,8 @@ m.end_iter = end_iter;
 m.t_facet = t_facet;
 m.t_data = t_data;
 m.rel_val = rel_val;
-fitswrite(m.xsol, [name '_xsol' '.fits'])
-fitswrite(m.res, [name '_res' '.fits'])
+fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
+fitswrite(m.res, [name_checkpoint '_res' '.fits'])
 clear m
 
 % Final log
