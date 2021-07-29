@@ -1,5 +1,5 @@
 function xsol = ...
-    hyperSARA(y, epsilon, A, At, pU, G, W, param, K, wavelet, nlevel, c_chunks, c, name_warmstart, name_checkpoint, varargin)
+    hyperSARA(y, epsilon, A, At, pU, G, W, param, K, wavelet, nlevel, c_chunks, nChannels, name_warmstart, name_checkpoint, varargin)
 
 % TODO: to distribute before entering the solver: y, G, pU, W, X0
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
@@ -25,7 +25,7 @@ function xsol = ...
 % > wavelet     list of wavelet basis (for the SARA prior)
 % > nlevel      number of wavelet decomposition levels
 % > c_chunks    list of channels handled by each data process
-% > c           total number of channels
+% > nChannels           total number of channels
 % > name_warmstart name_checkpoint of the file to restart from
 % > name_checkpoint        lambda function defining the name_checkpoint of the backup file 
 % > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
@@ -76,7 +76,7 @@ function xsol = ...
 %               default in last position)
 % > nlevel      decomposition depth [1]
 % > c_chunks    indices of the bands handled by each data node {K, 1}
-% > c           total number of spectral channels [1]
+% > nChannels           total number of spectral channels [1]
 % > name_warmstart  name_checkpoint of a valid .mat file for initialization (for warm-restart)
 % > name_checkpoint        lambda function defining the name_checkpoint of the backup file 
 % > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
@@ -186,7 +186,7 @@ else
         if ~isempty(varargin{1})
             xsol = varargin{1};
         else
-            xsol = zeros(M,N,c);
+            xsol = zeros(M,N,nChannels);
         end
         
         if numel(varargin) > 1
@@ -196,7 +196,7 @@ else
             flag_synth_data = false;
         end
     else
-        xsol = zeros(M,N,c);
+        xsol = zeros(M,N,nChannels);
     end
     fprintf('xsol initialized \n\n')
 end
@@ -453,10 +453,10 @@ if init_flag
         fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
 
         if flag_synth_data
-            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
             SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-            psnrh = zeros(c,1);
-            for i = 1:c
+            psnrh = zeros(nChannels,1);
+            for i = 1:nChannels
                 psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
             end
             SNR_average = mean(psnrh);
@@ -559,10 +559,10 @@ for t = t_start : max_iter
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
 
             if flag_synth_data
-                sol = reshape(xsol(:),numel(xsol(:))/c,c);
+                sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
                 SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-                psnrh = zeros(c,1);
-                for i = 1:c
+                psnrh = zeros(nChannels,1);
+                for i = 1:nChannels
                     psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
                 end
                 SNR_average = mean(psnrh);
@@ -642,10 +642,10 @@ for t = t_start : max_iter
         
         % compute SNR
         if flag_synth_data
-            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
             SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-            psnrh = zeros(c,1);
-            for i = 1:c
+            psnrh = zeros(nChannels,1);
+            for i = 1:nChannels
                 psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
             end
             SNR_average = mean(psnrh);
@@ -667,7 +667,7 @@ for t = t_start : max_iter
             m.t_block = cell(K, 1);
             m.norm_res = cell(K, 1);
             m.v0 = v0_;
-            m.v1 = zeros(s_{1}, c);
+            m.v1 = zeros(s_{1}, nChannels);
             m.weights0 = weights0_;
             m.weights1 = weights1_{1};
             % Retrieve variables from workers
@@ -732,7 +732,7 @@ m.t_block = cell(K, 1);
 m.norm_res = cell(K, 1);
 m.v0 = v0_;
 m.weights0 = weights0_;
-m.v1 = zeros(s_{1}, c);
+m.v1 = zeros(s_{1}, nChannels);
 m.weights1 = weights1_{1};
 
 % Retrieve variables from workers
@@ -760,10 +760,10 @@ param.init_t_start = t+1;
 m.param = param;
 
 % compute SNR (on the master node)
-sol = reshape(xsol(:),numel(xsol(:))/c,c);
+sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
 SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-psnrh = zeros(c,1);
-for i = 1:c
+psnrh = zeros(nChannels,1);
+for i = 1:nChannels
     psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
 end
 SNR_average = mean(psnrh);

@@ -1,7 +1,7 @@
-function xsol = ...
-    facetHyperSARA(y, epsilon, ...
-    A, At, pU, G, W, param, Qx, Qy, K, wavelet, ...
-    filter_length, nlevel, c_chunks, c, d, window_type, name_warmstart, name_checkpoint, alph, alph_bar, sigma_noise, varargin)
+function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
+    Qx, Qy, K, wavelet, filter_length, nlevel, window_type, c_chunks, ...
+    nChannels, overlap_size, alph, alph_bar, name_warmstart, ...
+    name_checkpoint, varargin)
 
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
 
@@ -75,7 +75,7 @@ function xsol = ...
 % > filter_length  size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
 % > nlevel      decomposition depth [1]
 % > c_chunks    indices of the bands handled by each data node {K, 1}
-% > c           total number of spectral channels [1]
+% > nChannels           total number of spectral channels [1]
 % > d           size of the fixed overlap for the faceted nuclear norm 
 %               [1, 2]
 % > window_type type of apodization window affecting the faceted nuclear
@@ -168,8 +168,8 @@ for qx = 1:Qx
 end
 clear rg_y rg_x;
 
-rg_yo = split_range(Qy, M, d(1));
-rg_xo = split_range(Qx, N, d(2));
+rg_yo = split_range(Qy, M, overlap_size(1));
+rg_xo = split_range(Qx, N, overlap_size(2));
 Io = zeros(Q, 2);
 dims_o = zeros(Q, 2);
 for qx = 1:Qx
@@ -202,7 +202,7 @@ offsetp = parallel.pool.Constant(offset);
     temRIdxs_q, overlap_g_south, overlap_g_east, overlap_g_south_east, overlap, ...
     w, crop_nuclear, crop_l21] = setup_priors(Qx, Qy, I, dims, dims_o, ...
     dims_overlap_ref, I_overlap, dims_overlap, status, offsetL, offsetR, ...
-    Ncoefs, temLIdxs, temRIdxs, window_type, d);
+    Ncoefs, temLIdxs, temRIdxs, window_type, overlap_size);
 
 % Initializations
 init_flag = isfile(name_warmstart);
@@ -232,7 +232,7 @@ else
         if ~isempty(varargin{1})
             xsol = varargin{1};
         else
-            xsol = zeros(M,N,c);
+            xsol = zeros(M,N,nChannels);
         end
         
         if numel(varargin) > 1
@@ -242,7 +242,7 @@ else
             flag_synth_data = false;
         end
     else
-        xsol = zeros(M,N,c);
+        xsol = zeros(M,N,nChannels);
     end
     fprintf('xsol initialized \n\n')
 end
@@ -259,7 +259,7 @@ if init_flag
 else
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
-        g_q{q} = zeros([dims(q, :), c]);
+        g_q{q} = zeros([dims(q, :), nChannels]);
     end
     fprintf('g initialized \n\n')
 end
@@ -332,7 +332,7 @@ else
 
             % weights initialized from initial primal variable, dual variables to 0
             [v0_, v1_, weights0_, weights1_] = initialize_dual_and_weights(x_overlap, ...
-                Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, c, dims_overlap_ref_q, ...
+                Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims-crop_nuclear, nChannels, dims_overlap_ref_q, ...
                 offsetLq, offsetRq, reweighting_alphap, crop_l21, crop_nuclear, w, sig_, sig_bar_);
 
             % weights and dual variables initialized from initial primal variable
@@ -406,7 +406,6 @@ for k = 1:K
     Wp{Q+k} = W{k};
     pUp{Q+k} = pU{k};
     epsilonp{Q+k} = epsilon{k};
-    sigma_noise_{Q+k} = sigma_noise{k};
 end
 clear epsilon pU W G y
 
@@ -565,10 +564,10 @@ if init_flag
             for q = 1:Q
                 xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
             end
-            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
             SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-            psnrh = zeros(c,1);
-            for i = 1:c
+            psnrh = zeros(nChannels,1);
+            for i = 1:nChannels
                 psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
             end
             SNR_average = mean(psnrh);
@@ -717,10 +716,10 @@ for t = t_start : max_iter
                 for q = 1:Q
                     xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
                 end
-                sol = reshape(xsol(:),numel(xsol(:))/c,c);
+                sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
                 SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-                psnrh = zeros(c,1);
-                for i = 1:c
+                psnrh = zeros(nChannels,1);
+                for i = 1:nChannels
                     psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
                 end
                 SNR_average = mean(psnrh);
@@ -912,10 +911,10 @@ for t = t_start : max_iter
             for q = 1:Q
                 xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :) = xsol_q{q};
             end
-            sol = reshape(xsol(:),numel(xsol(:))/c,c);
+            sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
             SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-            psnrh = zeros(c,1);
-            for i = 1:c
+            psnrh = zeros(nChannels,1);
+            for i = 1:nChannels
                 psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
             end
             SNR_average = mean(psnrh);
@@ -1073,10 +1072,10 @@ m.rel_val = rel_val;
 fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
 fitswrite(m.res, [name_checkpoint '_res' '.fits'])
 if flag_synth_data
-    sol = reshape(xsol(:),numel(xsol(:))/c,c);
+    sol = reshape(xsol(:),numel(xsol(:))/nChannels,nChannels);
     SNR = 20*log10(norm(X0(:))/norm(X0(:)-sol(:)));
-    psnrh = zeros(c,1);
-    for i = 1:c
+    psnrh = zeros(nChannels,1);
+    for i = 1:nChannels
         psnrh(i) = 20*log10(norm(X0(:,i))/norm(X0(:,i)-sol(:,i)));
     end
     SNR_average = mean(psnrh);

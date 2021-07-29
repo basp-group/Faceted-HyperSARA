@@ -628,35 +628,23 @@ if flag_solveMinimization
         % spectral tesselation (non-overlapping)
         % ! to be updated tonight (need to be careful about the different variables needed + implicit parallelization conventions)
         cell_c_chunks = cell(ncores_data, 1); % ! to check
-        y_spmd = cell(ncores_data, 1); % ok
-        epsilon_spmd = cell(ncores_data, 1); % ok
-        aW_spmd = cell(ncores_data, 1); % ok
-        W_spmd = cell(ncores_data, 1); % ok
-        G_spmd = cell(ncores_data, 1); % ok
-        sigma_noise_spmd = cell(ncores_data, 1); % ok
-
-        for i = 1:ncores_data
-            cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
-            y_spmd{i} = y(cell_c_chunks{i});
-            epsilon_spmd{i} = epsilons(cell_c_chunks{i});
-            aW_spmd{i} = aW(cell_c_chunks{i});
-            W_spmd{i} = W(cell_c_chunks{i});
-            G_spmd{i} = G(cell_c_chunks{i});
-            sigma_noise_spmd{i} = sigma_noise(cell_c_chunks{i});
+        for k = 1:ncores_data
+            cell_c_chunks{k} = rg_c(k, 1):rg_c(k, 2);
         end
-        clear y epsilon aW W G
         
         %%
         switch algo_version 
             case 'hs'
-                xsol = hyperSARA(y_spmd, epsilon_spmd, ...
-                    A, At, aW_spmd, G_spmd, W_spmd, param_solver, ...
+                xsol = hyperSARA(y, epsilons, ...
+                    A, At, aW, G, W, param_solver, ...
                     ncores_data, wlt_basis, nlevel, cell_c_chunks, ...
                     nchans, name_warmstart, name_checkpoint, [], X0);
             case 'fhs'
-                xsol = facetHyperSARA(y_spmd, epsilon_spmd, ...
-                    A, At, aW_spmd, G_spmd, W_spmd, param_solver, Qx, Qy, ncores_data, wlt_basis, ...
-                    filter_length, nlevel, cell_c_chunks, nchans, overlap_size, window_type, name_warmstart, name_checkpoint, gam, gam_bar, sigma_noise_spmd, [], X0);
+                xsol = facetHyperSARA(y, epsilons, ...
+                    A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
+                    wlt_basis, filter_length, nlevel, window_type, ...
+                    cell_c_chunks, nchans, overlap_size, gam, gam_bar, ...
+                    name_warmstart, name_checkpoint, [], X0);
             otherwise
                 error('Unknown solver version.')
         end
