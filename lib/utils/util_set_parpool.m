@@ -1,14 +1,14 @@
-function cirrus_cluster = util_set_parpool(algo_version, ncores_data, Q,  flag_cirrus)
+function cirrus_cluster = util_set_parpool(algo_version, ncores_data, Q, flag_cirrus)
 
 switch algo_version
     case 'sara'
         numworkers = ncores_data;
-    case 'hypersara'
+    case 'hs'
         % 2 facets workers (main session), ncores_data data workers
         numworkers = ncores_data;
-    case 'cw'
+    case 'fhs'
         % Q facets workers, ncores_data: data workers
-        numworkers = Q+ ncores_data;
+        numworkers = Q + ncores_data;
 end
 
 cirrus_cluster = parcluster('local');

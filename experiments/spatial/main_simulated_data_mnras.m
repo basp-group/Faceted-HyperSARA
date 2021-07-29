@@ -1,10 +1,10 @@
-function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
-    algo_version, window_type, ncores_data, ind, overlap_fraction, nReweights, ...
-    flag_generateCube, flag_generateVisibilities, ...
-    flag_computeOperatorNorm, flag_solveMinimization, ...
-    cube_path, coverage_path, gam, rw, flag_homotopy, ... 
-    flag_computeLowerBounds, gam_bar, exp_type, ...
-    superresolution_factor, isnr, flag_cirrus)
+% function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
+%     algo_version, window_type, ncores_data, ind, overlap_fraction, nReweights, ...
+%     flag_generateCube, flag_generateVisibilities, ...
+%     flag_computeOperatorNorm, flag_solveMinimization, ...
+%     cube_path, coverage_path, gam, rw, flag_homotopy, ... 
+%     flag_computeLowerBounds, gam_bar, exp_type, ...
+%     superresolution_factor, isnr, flag_cirrus)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
 % This script generates synthetic data and runs the faceted HyperSARA 
@@ -59,39 +59,39 @@ function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
 
 %% PARAMETERS FOR DEBUGGING
 
-% image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
-% exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
+image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
+exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
 
-% Qx = 1; % 4
-% Qy = 1; % 4
-% Qc = 1;
-% nReweights = 1;
-% algo_version = 'hs'; % 'fhs', 'hs', 'sara';
-% window_type = 'triangular'; % 'hamming', 'pc'
-% flag_generateVisibilities = 1;
-% flag_computeOperatorNorm = 0;
-% flag_computeLowerBounds = 1;
-% flag_solveMinimization = true;
-% ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
-% ind = 1; % index of the spectral facet to be reconstructed
-% gam = 1;
-% gam_bar = 1;
-% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
+Qx = 1; % 4
+Qy = 1; % 4
+Qc = 1;
+nReweights = 1;
+algo_version = 'hs'; % 'fhs', 'hs', 'sara';
+window_type = 'triangular'; % 'hamming', 'pc'
+flag_generateVisibilities = 0;
+flag_computeOperatorNorm = 0;
+flag_computeLowerBounds = 1;
+flag_solveMinimization = true;
+ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
+ind = 1; % index of the spectral facet to be reconstructed
+gam = 1;
+gam_bar = 1;
+coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 
-% rw = -1;
-% flag_homotopy = 0;
-% overlap_fraction = 0;
-% isnr = 50;
+rw = -1;
+flag_homotopy = 0;
+overlap_fraction = 0;
+isnr = 50;
 
-% nChannels = 20;
-% flag_generateCube = 1;
-% cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
-% cube_path = cubepath(nChannels);
-% flag_generateCoverage = 0;
-% flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-% superresolution_factor = 2;
-% flag_cirrus = false;
-% kernel = 'minmax:tuned'; % 'kaiser', 'minmax:tuned'
+nChannels = 20;
+flag_generateCube = 1;
+cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
+cube_path = cubepath(nChannels);
+flag_generateCoverage = 0;
+flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
+superresolution_factor = 2;
+flag_cirrus = false;
+kernel = 'minmax:tuned'; % 'kaiser', 'minmax:tuned'
 %%
 format compact;
 
@@ -130,8 +130,10 @@ mkdir(data_path)
 mkdir(results_path)
 mkdir(auxiliary_path)
 
+
 %% setup parpool
 cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx*Qy, flag_cirrus);
+
 
 %%
 %! see how to load the cube prepared by Arwa
@@ -152,7 +154,7 @@ switch exp_type
         spatial_downsampling = 1;
     case "local_test"
         image_name = 'cygASband_Cube_256_512_100';
-        spectral_downsampling = 5;
+        spectral_downsampling = 25; % 5
         spatial_downsampling = 1;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
     case "old_local_test"
@@ -198,6 +200,22 @@ f = nu_vect(1:spectral_downsampling:end);
 
 clear reference_cube_path info rowend colend sliceend 
 clear spatial_downsampling spectral_downsampling
+
+
+%% Auxiliary function needed to select the appropriate workers 
+% (only needed for 'hs' and 'fhs' algorithms)
+
+switch algo_version
+    case 'sara'
+        data_worker_id = @(k) k;
+    case 'hs'
+        data_worker_id = @(k) k;
+    case 'fhs'
+        data_worker_id = @(k) k + Qx*Qy;
+    otherwise
+        error('Undefined algo_version');
+end
+
 
 %% Get faceting parameter (spectral + spatial)
 if strcmp(algo_version, 'sara')
@@ -356,8 +374,8 @@ end
 clear param_blocking param_precond;
 
 %% Generate/load visibilities (generate only full spectral dataset)
-% only generatr data in 'hs' configuration (otherwise, load the data)
-if flag_generateVisibilities && strcmp(algo_version, 'hs')
+% only generatr data in 'hs' or 'fhs' configuration (otherwise, load the data)
+if flag_generateVisibilities
 
     param_l2_ball.type = 'sigma';
     param_l2_ball.sigma_ball = 2;
@@ -366,8 +384,10 @@ if flag_generateVisibilities && strcmp(algo_version, 'hs')
     % https://fr.mathworks.com/help/matlab/math/creating-and-controlling-a-random-number-stream.html?searchHighlight=random%20number%20streams&s_tid=srchtitle#brvku_2
     % may not be strictly equivalent to the data generation used for the results reported in paper 1
     spmd
-        [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr(x0(:,:,rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, input_snr(rg_c(labindex, 1):rg_c(labindex, 2)), seed);
-        [~, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, param_l2_ball, sigma_noise);
+        if labindex > Qx*Qy*strcmp(algo_version, 'fhs')
+            [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr(x0(:,:,rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, input_snr(rg_c(labindex, 1):rg_c(labindex, 2)), seed);
+            [~, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, param_l2_ball, sigma_noise);
+        end
     end
     
     % save parameters (matfile solution)
@@ -381,10 +401,10 @@ if flag_generateVisibilities && strcmp(algo_version, 'hs')
     for k = 1:ncores_data
         % convert from local to global channel index (i.e., undo interleaving)
         % subcube_channels(rg_c(k, 1))
-        datafile.y0(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = y0{k}; % Q + k
-        datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = y{k};
-        datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = epsilons{k};
-        datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = sigma_noise{k};
+        datafile.y0(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = y0{data_worker_id(k)}; % Q + k
+        datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = y{data_worker_id(k)};
+        datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = epsilons{data_worker_id(k)};
+        datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = sigma_noise{data_worker_id(k)};
     end
     clear param_l2_ball m Ml epsilons datafile
 else
@@ -397,89 +417,91 @@ else
             y = Composite();
             epsilons = Composite();
             sigma_noise = Composite();
-            cell_id = @(k) k + (Qx*Qy)*strcmp(algo_version, 'fhs');
 
-            for k = 1:ncores_data %! to be verified
-                y(cell_id(k)) = datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
-                epsilons(cell_id(k)) = datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
-                sigma_noise{cell_id(k)} = datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
+            for k = 1:ncores_data
+                y(data_worker_id(k)) = datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
+                epsilons(data_worker_id(k)) = datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
+                sigma_noise{data_worker_id(k)} = datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
             end
-            clear cell_id
     end
     disp('Data loaded successfully')
 end
 
+% TODO: finalize computation of operator norm in parallel (separate hs, fhs, sara)
+%% Compute operator norm
+% TODO: to be computed in spmd block
+if strcmp(algo_version, 'sara')
+    if flag_computeOperatorNorm
+
+        % ! beware: make sure the options to compute the operator norm are
+        % not hard-coded 
+        [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx);
+        
+        save(fullfile(results_path, ...
+            strcat('Anorm_', ...
+            algo_version, ...
+            '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
+            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm', 'squared_operator_norm', 'rel_var', 'squared_precond_operator_norm', 'rel_var_precond');
+            clear rel_var
+    else
+        load(fullfile(results_path, ...
+            strcat('Anorm_', ...
+            algo_version, ...
+            '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
+            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')), 'Anorm', 'squared_operator_norm');
+    end
+else
+    if flag_computeOperatorNorm    
+        spmd
+            if labindex > Qx*Qy*strcmp(algo_version, 'fhs')
+                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx);
+            end
+        end
+
+        % save operator norm from the different subcubes into a single .mat 
+        % file
+        opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
+        '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
+        '.mat')), 'Writable', true);
+
+        opnormfile.squared_operator_norm = zeros(nchans, 1);
+        opnormfile.rel_var = zeros(nchans, 1);
+        opnormfile.squared_operator_norm_precond = zeros(nchans, 1);
+        opnormfile.rel_var_precond = zeros(nchans, 1);
+
+        Anorm = 0;
+        for k = 1:ncores_data
+            opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm{data_worker_id(k)};
+            opnormfile.rel_var(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = rel_var{data_worker_id(k)};
+
+            opnormfile.squared_operator_norm_precond(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm_precond{data_worker_id(k)};
+            opnormfile.rel_var_precond(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = rel_var_precond{data_worker_id(k)};
+
+            Anorm = max(Anorm, An{data_worker_id(k)});
+        end
+        clear An rel_var rel_var_precond squared_operator_norm_precond
+
+    else
+        opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
+        '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
+        '.mat')));
+
+        % ! to be verified
+        squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(subcube_channels, 1);
+        rel_var_precond = opnormfile.rel_var_precond(subcube_channels, 1);
+        Anorm = max(squared_operator_norm_precond.*(1 + rel_var_precond));
+
+        squared_operator_norm = Composite();
+
+        for k = 1:ncores_data
+            squared_operator_norm{data_worker_id(k)} = opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
+        end
+    end
+end
+
+fprintf('Convergence parameter (measurement operator): %e \n', Anorm);
+
 % TODO: to be updated from here
-% %% Compute operator norm
-% % TODO: to be computed in spmd block
-% if strcmp(algo_version, 'sara')
-%     if flag_computeOperatorNorm
-%         F = afclean( @(x) HS_forward_operator_precond_G(x, G, W, A, aW));
-%         Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G, W, At, aW, Ny, Nx));
-%         [precond_operator_norm, rel_var] = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
-%         % ! make sure the pdfb convergence criterion will be strictly 
-%         % ! satisfied by taking a smaller step-size 
-%         Anorm = (1 + rel_var)*precond_operator_norm;
-        
-%         F = afclean( @(x) HS_forward_operator_G(x, G, W, A));
-%         Ft = afclean( @(y) HS_adjoint_operator_G(y, G, W, At, Ny, Nx));
-%         operator_norm = op_norm(F, Ft, [Ny Nx nchans], 1e-8, 200, 2);
-        
-%         save(fullfile(results_path, ...
-%             strcat('Anorm_', ...
-%             algo_version, ...
-%             '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
-%             '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm', 'rel_var');
-%             clear rel_var
-%     else
-%         load(fullfile(results_path, ...
-%             strcat('Anorm_', ...
-%             algo_version, ...
-%             '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
-%             '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')));
-%     end
-% else
-%     if flag_computeOperatorNorm
-%         % Compute full measurement operator spectral norm
-%         precond_operator_norm = zeros(nchans, 1);
-%         rel_var = zeros(nchans, 1);
-%         for l = 1:nchans
-%             F = afclean( @(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l)));
-%             Ft = afclean( @(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx));
-%             [precond_operator_norm(l), rel_var(l)] = op_norm(F, Ft, [Ny Nx], 1e-8, 200, 2);
-%         end
-%         % ! make sure the pdfb convergence criterion is strictly satisfied
-%         % ! by taking a smaller step-size (take precision of the estimation
-%         % ! of the operator norm into account)
-%         Anorm = max(precond_operator_norm.*(1 + rel_var)); % operator is block diagonal
-
-%         operator_norm = zeros(nchans, 1);
-%         for l = 1:nchans
-%             F = afclean( @(x) HS_forward_operator_G(x, G(l), W(l), A));
-%             Ft = afclean( @(y) HS_adjoint_operator_G(y, G(l), W(l), At, Ny, Nx));
-%             operator_norm(l) = op_norm(F, Ft, [Ny Nx], 1e-8, 200, 2);
-%         end
-
-%         save(fullfile(results_path, ...
-%             strcat('Anorm_hs', ...
-%             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
-%             '.mat')),'-v7.3', 'Anorm', 'operator_norm', 'precond_operator_norm', 'rel_var');
-%         clear rel_var
-%     else
-%         load(fullfile(results_path, ...
-%             strcat('Anorm_hs', ...
-%             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx),'_L=', num2str(nChannels), ...
-%             '.mat')), 'operator_norm', 'precond_operator_norm', 'rel_var');
-
-%         operator_norm = operator_norm(id{ind});
-%         precond_operator_norm = precond_operator_norm(id{ind});
-%         rel_var = rel_var(id{ind});
-%         Anorm = max(precond_operator_norm.*(1 + rel_var));
-%     end
-% end
-
-% fprintf('Squared operator norm: %e, with precond.: %e \n', max(operator_norm), Anorm);
-
 % %% Generate initial epsilons by performing imaging with NNLS on each data block separately
 % if generate_eps_nnls
 %     % solve nnls per data block
@@ -512,7 +534,7 @@ end
 %     if flag_computeLowerBounds
 %         fprintf('Normalization factor alpha = %e\n', gam);
 %         %! to be updated (with the different options) to be in the same configuration as faceted HyperSARA...
-%         [sig, mu] = compute_reweighting_lower_bound_sara(sigma_noise, operator_norm);
+%         [sig, mu] = compute_reweighting_lower_bound_sara(sigma_noise, squared_operator_norm);
 %         save(fullfile(auxiliary_path, ...
 %             strcat('lower_bounds_', ...
 %             algo_version, '_srf=', num2str(superresolution_factor), ...
@@ -543,7 +565,7 @@ end
 %         compute_reweighting_lower_bound_heuristic2d(Ny, Nx, ...
 %         nChannels, filter_length, nlevel, sigma_noise, ...
 %         algo_version, Qx, Qy, overlap_size, window_type, ...
-%         operator_norm);
+%         squared_operator_norm);
 %         fprintf('sig_w = %.4e, sig_w*mu_c = %.4e, sig_w*sig_c = %.4e \n', sig_w, sig_w*mu_c, sig_w*sig_c);
 
 %         if strcmp(algo_version, 'fhs') && numel(sig_bar) == 1
