@@ -66,7 +66,7 @@ Qx = 1; % 4
 Qy = 1; % 4
 Qc = 1;
 nReweights = 1;
-algo_version = 'hs'; % 'fhs', 'hs', 'sara';
+algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
 window_type = 'triangular'; % 'hamming', 'pc'
 flag_generateVisibilities = 0;
 flag_computeOperatorNorm = 0;
@@ -226,6 +226,7 @@ elseif strcmp(algo_version, 'hs')
     Qx = 1;
     Qy = 1;
 end
+Q = Qx*Qy;
 
 % convert fraction of overlap between consecutive facets into a number of pixels
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
@@ -648,6 +649,7 @@ if flag_solveMinimization
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     wlt_basis, filter_length, nlevel, window_type, ...
                     cell_c_chunks, nchans, overlap_size, gam, gam_bar, ...
+                    Ny, Nx, param_nufft.oy, param_nufft.ox, ...
                     name_warmstart, name_checkpoint, [], X0);
             otherwise
                 error('Unknown solver version.')

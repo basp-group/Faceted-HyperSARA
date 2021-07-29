@@ -1,7 +1,7 @@
 function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
     Qx, Qy, K, wavelet, filter_length, nlevel, window_type, ...
     spectral_chunk, nChannels, overlap_size, alph, alph_bar, ...
-    name_warmstart, name_checkpoint, varargin)
+    M, N, oy, ox, name_warmstart, name_checkpoint, varargin)
 
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
 
@@ -134,11 +134,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %%
 
 % size of the oversampled Fourier space (vectorized)
-No = size(W{1}{1}{1}, 1);
-
-% number of pixels (spatial dimensions)
-% ! pass image-size directly...
-[M, N] = size(At{1}(zeros(No, 1)));
+No = M*oy*N*ox;
 
 % -- instantiate auxiliary variables for sdwt2
 % define reference 2D facets (no overlap)
@@ -373,19 +369,6 @@ else
         end
     end
     fprintf('v2, proj, t_block, norm_res initialized \n\n')
-end
-
-sz_y = cell(K, 1);
-n_blocks = cell(K, 1);
-for k = 1:K
-    sz_y{k} = cell(length(spectral_chunk{k}), 1);
-    n_blocks{k} = cell(length(spectral_chunk{k}), 1);
-    for i = 1:length(spectral_chunk{k})
-        n_blocks{k}{i} = length(y{k}{i});
-        for j = 1 : length(y{k}{i})
-            sz_y{k}{i}{j} = numel(y{k}{i}{j});
-        end
-    end
 end
 
 % initialize xi and Fxi_old
