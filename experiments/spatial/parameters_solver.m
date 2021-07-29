@@ -27,7 +27,9 @@ param_solver.verbose = 2;
 % * reweighting
 % relative variation (reweighting)
 param_solver.reweighting_rel_var = 1e-4;
-if flag_homotopy
+% flag homotopy strategy
+param_solver.flag_homotopy = flag_homotopy;
+if param_solver.flag_homotopy
     % homotopy strategy
     param_solver.reweighting_alpha = 20;
     param_solver.reweighting_min_iter = 5; % minimum number of reweighting iterations, weights updated reweighting_min_iter times

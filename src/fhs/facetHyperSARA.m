@@ -1,7 +1,7 @@
 function xsol = ...
     facetHyperSARA(y, epsilon, ...
     A, At, pU, G, W, param, X0, Qx, Qy, K, wavelet, ...
-    filter_length, nlevel, c_chunks, c, d, window_type, name_warmstart, name_checkpoint, flag_homotopy, alph, alph_bar, sigma_noise, varargin)
+    filter_length, nlevel, c_chunks, c, d, window_type, name_warmstart, name_checkpoint, alph, alph_bar, sigma_noise, varargin)
 %facetHyperSARA_cw: faceted HyperSARA
 %
 % version with a fixed overlap for the faceted nuclear norm, larger or 
@@ -141,6 +141,13 @@ No = size(W{1}{1}{1}, 1);
 
 % number of pixels (spatial dimensions)
 [M, N] = size(At(zeros(No, 1)));
+
+% check flag homotopy strategy
+if ~isfield(param, 'flag_homotopy')
+    flag_homotopy = false;
+else
+    flag_homotopy = param.flag_homotopy;
+end
 
 % -- instantiate auxiliary variables for sdwt2
 % define reference 2D facets (no overlap)

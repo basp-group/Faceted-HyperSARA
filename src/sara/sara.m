@@ -1,5 +1,5 @@
 function xsol = ...
-    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, name_wamrstart, name_checkpoint, x0, flag_homotopy, alph, varargin)
+    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, name_wamrstart, name_checkpoint, alph, x0, varargin)
 
 % TODO: update interface to accommodate real data
 
@@ -17,6 +17,13 @@ No = size(W{1}{1}, 1);
 
 % number of pixels
 [M, N] = size(At(zeros(No, 1)));
+
+% check flag homotopy strategy
+if ~isfield(param, 'flag_homotopy')
+    flag_homotopy = false;
+else
+    flag_homotopy = param.flag_homotopy;
+end
 
 % Initializations
 init_flag = isfile(name_wamrstart);

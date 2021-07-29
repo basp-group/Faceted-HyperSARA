@@ -1,5 +1,5 @@
 function xsol = ...
-    hyperSARA(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, name_warmstart, name_checkpoint, flag_homotopy, varargin)
+    hyperSARA(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, name_warmstart, name_checkpoint, varargin)
 
 % TODO: to distribute before entering the solver:
 % y, G, pU, W, X0
@@ -145,6 +145,13 @@ No = size(W{1}{1}{1}, 1);
 
 % number of pixels (spatial dimensions)
 [M, N] = size(At(zeros(No, 1)));
+
+% check flag homotopy strategy
+if ~isfield(param, 'flag_homotopy')
+    flag_homotopy = false;
+else
+    flag_homotopy = param.flag_homotopy;
+end
 
 % instantiate Psi, Psit
 spmd
