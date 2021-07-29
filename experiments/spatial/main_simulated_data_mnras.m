@@ -556,7 +556,7 @@ if strcmp(algo_version, 'sara')
     end
 
     % noise level / regularization parameter
-    sig = compute_reweighting_lower_bound_sara(global_sigma_noise, squared_operator_norm);
+    sig = compute_noise_level_sara(global_sigma_noise, squared_operator_norm);
 
     % apply multiplicative factor for the regularization parameter (if needed)
     mu = gam*sig;
@@ -574,7 +574,7 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
 
     % noise level / regularization parameter
     [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
-    compute_reweighting_lower_bound_heuristic2d(Ny, Nx, ...
+    compute_noise_level(Ny, Nx, ...
     nchans, global_sigma_noise, algo_version, Qx, Qy, overlap_size, ...
     squared_operator_norm);
 
