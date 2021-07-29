@@ -595,93 +595,85 @@ parameters_solver
 
 
 %%
+% TODO: update solver interface
+name_checkpoint = fullfile(auxiliary_path, temp_results_name(nChannels));
+name_warmstart = fullfile(auxiliary_path, warm_start(nChannels));
 
-% if flag_solveMinimization
+if flag_solveMinimization
+    %%
+    if strcmp(algo_version, 'sara')
+        disp('SARA')
+        disp('-----------------------------------------')
 
-%     %% define parameters for the solver (nReweights needed here)
-%     parameters_solver  
+        % ! in this case, ncores_data corresponds 
+        % ! to the number of workers for the wavelet transform (9 maximum)
+        [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
+            sara(y, epsilons, A, At, aW, G, W, Psi, Psit, param_solver, name_warmstart, name_checkpoint, x0, flag_homotopy, gam); 
 
-%     %%
-%     if strcmp(algo_version, 'sara')
-%         disp('SARA')
-%         disp('-----------------------------------------')
+        mkdir('results/')
 
-%         [xsol,param,v1,v2,g,weights1,proj,t_block,reweight_alpha,epsilon,t,rel_val,l11,norm_res,res,t_l11,t_master,end_iter] = ...
-%             sara(y, epsilons, A, At, aW, G, W, Psi, Psit, param_solver, fullfile(auxiliary_path,warm_start(nChannels)), ...
-%             fullfile(auxiliary_path,temp_results_name(nChannels)), x0, flag_homotopy, gam); % ! in this case, ncores_data corresponds 
-%             % ! to the number of workers for the wavelet transform (9 maximum)
+        fitswrite(xsol,fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
+        '_srf=', num2str(superresolution_factor), ...
+        '_', window_type, ...
+        '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
+        '_ind=', num2str(ind), ...
+        '_gam=', num2str(gam), ...
+        '_homotopy=', num2str(flag_homotopy), ...
+        '_snr=', num2str(isnr), ...
+        '.fits')))
+    else
+        %%
+        disp('Faceted HyperSARA')
+        disp('-----------------------------------------')
+
+        % spectral tesselation (non-overlapping)
+        rg_c = split_range(ncores_data, channels(end)); % ! to check
+        cell_c_chunks = cell(ncores_data, 1); % ! to check
+        y_spmd = cell(ncores_data, 1); % ok
+        epsilon_spmd = cell(ncores_data, 1); % ok
+        aW_spmd = cell(ncores_data, 1); % ok
+        W_spmd = cell(ncores_data, 1); % ok
+        G_spmd = cell(ncores_data, 1); % ok
+        sigma_noise_spmd = cell(ncores_data, 1); % ok
+
+        for i = 1:ncores_data
+            cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
+            y_spmd{i} = y(cell_c_chunks{i});
+            epsilon_spmd{i} = epsilons(cell_c_chunks{i});
+            aW_spmd{i} = aW(cell_c_chunks{i});
+            W_spmd{i} = W(cell_c_chunks{i});
+            G_spmd{i} = G(cell_c_chunks{i});
+            sigma_noise_spmd{i} = sigma_noise(cell_c_chunks{i});
+        end
+        clear y epsilon aW W G
         
-%         time_iter_average = mean(end_iter);
-%         disp(['Average time per iteration: ', num2str(time_iter_average)]);
+        %%
+        switch algo_version 
+            case 'hs'
+                [xsol,param,epsilon,t,rel_val,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
+                    hyperSARA(y_spmd, epsilon_spmd, ...
+                    A, At, aW_spmd, G_spmd, W_spmd, param_solver, X0, ncores_data, ...
+                    wlt_basis, nlevel, cell_c_chunks, channels(end), name_warmstart, name_checkpoint, ...
+                    flag_homotopy);
+            case 'fhs'
+                [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
+                    facetHyperSARA(y_spmd, epsilon_spmd, ...
+                    A, At, aW_spmd, G_spmd, W_spmd, param_solver, X0, Qx, Qy, ncores_data, wlt_basis, ...
+                    filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, name_warmstart, name_checkpoint, flag_homotopy, gam, gam_bar, sigma_noise_spmd);
+            otherwise
+                error('Unknown solver version.')
+        end
 
-%         mkdir('results/')
-
-%         fitswrite(xsol,fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
-%         '_srf=', num2str(superresolution_factor), ...
-%         '_', window_type, ...
-%         '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
-%         '_ind=', num2str(ind), ...
-%         '_gam=', num2str(gam), ...
-%         '_homotopy=', num2str(flag_homotopy), ...
-%         '_snr=', num2str(isnr), ...
-%         '.fits')))
-%     else
-%         %%
-%         disp('Faceted HyperSARA')
-%         disp('-----------------------------------------')
-
-%         % spectral tesselation (non-overlapping)
-%         rg_c = split_range(ncores_data, channels(end));
-%         cell_c_chunks = cell(ncores_data, 1);
-%         y_spmd = cell(ncores_data, 1);
-%         epsilon_spmd = cell(ncores_data, 1);
-%         aW_spmd = cell(ncores_data, 1);
-%         W_spmd = cell(ncores_data, 1);
-%         G_spmd = cell(ncores_data, 1);
-%         sigma_noise_spmd = cell(ncores_data, 1);
-
-%         for i = 1:ncores_data
-%             cell_c_chunks{i} = rg_c(i, 1):rg_c(i, 2);
-%             y_spmd{i} = y(cell_c_chunks{i});
-%             epsilon_spmd{i} = epsilons(cell_c_chunks{i});
-%             aW_spmd{i} = aW(cell_c_chunks{i});
-%             W_spmd{i} = W(cell_c_chunks{i});
-%             G_spmd{i} = G(cell_c_chunks{i});
-%             sigma_noise_spmd{i} = sigma_noise(cell_c_chunks{i});
-%         end
-%         clear y epsilon aW W G
-        
-%         %%
-%         switch algo_version 
-%             case 'hs'
-%                 [xsol,param,epsilon,t,rel_val,norm_res_out,res,end_iter,snr_x,snr_x_average] = ...
-%                     hyperSARA(y_spmd, epsilon_spmd, ...
-%                     A, At, aW_spmd, G_spmd, W_spmd, param_solver, X0, ncores_data, ...
-%                     wlt_basis, nlevel, cell_c_chunks, channels(end), fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), ...
-%                     flag_homotopy);
-%             case 'fhs'
-%                 [xsol,param,epsilon,t,rel_val,nuclear,l21,norm_res_out,end_iter,snr_x,snr_x_average] = ...
-%                     facetHyperSARA(y_spmd, epsilon_spmd, ...
-%                     A, At, aW_spmd, G_spmd, W_spmd, param_solver, X0, Qx, Qy, ncores_data, wlt_basis, ...
-%                     filter_length, nlevel, cell_c_chunks, channels(end), overlap_size, window_type, fullfile(auxiliary_path,warm_start(nChannels)), fullfile(auxiliary_path,temp_results_name(nChannels)), flag_homotopy, gam, gam_bar, sigma_noise_spmd);
-%             otherwise
-%                 error('Unknown solver version.')
-%         end
-%         time_iter_average = mean(end_iter);
-%         disp(['snr_x: ', num2str(snr_x)]);
-%         disp(['asnr_x: ', num2str(snr_x_average)]);
-%         disp(['Average time per iteration: ', num2str(time_iter_average)]);
-
-%         mkdir('results/')
-%         fitswrite(xsol,fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
-%             '_', window_type, ...
-%             '_srf=', num2str(superresolution_factor), ...
-%             '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
-%             '_ind=', num2str(ind), ...
-%             '_gam=', num2str(gam), '_gambar=', num2str(gam_bar), ...
-%             '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
-%             '_homotopy=', num2str(flag_homotopy), ...
-%             '_snr=', num2str(isnr), ...
-%             '.fits')))
-%     end       
-% end
+        mkdir('results/')
+        fitswrite(xsol,fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
+            '_', window_type, ...
+            '_srf=', num2str(superresolution_factor), ...
+            '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
+            '_ind=', num2str(ind), ...
+            '_gam=', num2str(gam), '_gambar=', num2str(gam_bar), ...
+            '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
+            '_homotopy=', num2str(flag_homotopy), ...
+            '_snr=', num2str(isnr), ...
+            '.fits')))
+    end       
+end
