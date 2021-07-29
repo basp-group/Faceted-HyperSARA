@@ -1,8 +1,7 @@
 function xsol = ...
     hyperSARA(y, epsilon, A, At, pU, G, W, param, X0, K, wavelet, nlevel, c_chunks, c, name_warmstart, name_checkpoint, varargin)
 
-% TODO: to distribute before entering the solver:
-% y, G, pU, W, X0
+% TODO: to distribute before entering the solver: y, G, pU, W, X0
 
 %HyperSARA
 %
@@ -183,7 +182,8 @@ else
     end
     fprintf('xsol initialized \n\n')
 end
-xlast_reweight = xsol; %! assumes backup file exactly saved at the time a reweighting step occured
+%! assumes backup file exactly saved at the time a reweighting step occurred
+xlast_reweight = xsol;
 %! --
 
 if init_flag

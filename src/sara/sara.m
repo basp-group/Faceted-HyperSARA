@@ -1,5 +1,5 @@
 function xsol = ...
-    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, name_wamrstart, name_checkpoint, alph, x0, varargin)
+    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, name_warsmtart, name_checkpoint, alph, varargin)
 
 % TODO: update interface to accommodate real data
 
@@ -8,7 +8,7 @@ function xsol = ...
 % min lambda * ||Psit(X)||_2,1   s.t.  || Y - A(X) ||_2 <= epsilon and x>=0
 %
 % Author: Abdullah Abdulaziz
-c = size(y,2);
+c = numel(y);
 P = length(Psit);
 flag_convergence = 0;
 
@@ -26,10 +26,10 @@ else
 end
 
 % Initializations
-init_flag = isfile(name_wamrstart);
+init_flag = isfile(name_warsmtart);
 if init_flag
-    init_m = matfile(name_wamrstart);
-    fprintf('Resume from file %s\n\n', name_wamrstart)
+    init_m = matfile(name_warsmtart);
+    fprintf('Resume from file %s\n\n', name_warsmtart)
 end
 
 %! -- TO BE CHECKED (primal initialization)
@@ -44,7 +44,18 @@ if init_flag
     fprintf('xsol, param and epsilon uploaded \n\n')
 else
     if ~isempty(varargin)
-        xsol = varargin{0};
+        if ~isempty(varargin{1})
+            xsol = varargin{1};
+        else
+            xsol = zeros(M,N,c);
+        end
+        
+        if numel(varargin) > 1
+            flag_synth_data = true;
+            x0 = varargin{2};
+        else
+            flag_synth_data = false;
+        end
     else
         xsol = zeros(M,N,c);
     end
@@ -207,7 +218,6 @@ else
 end
 
 if init_flag
-    SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));  
     norm_residual_check = 0;
     norm_epsilon_check = 0;
     for i = 1 : c
@@ -223,7 +233,10 @@ if init_flag
         fprintf('Iter %i\n',t_start-1);
         fprintf('l11-norm = %e, rel_val = %e\n', l11, rel_val(t_start-1));
         fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-        fprintf(' SNR = %e\n', SNR);
+        if flag_synth_data
+            SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));  
+            fprintf(' SNR = %e\n', SNR);
+        end
     end
 end
 
@@ -346,16 +359,16 @@ for t = t_start : max_iter
     
     %% Display
     if ~mod(t,100)
-
-        % SNR
-        SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
-        
         % Log
         if (param.verbose >= 1)
             fprintf('Iter %i\n',t);
             fprintf('l11-norm = %e, rel_val = %e\n', l11, rel_val(t));
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-            fprintf(' SNR = %e\n\n', SNR);
+            
+            if flag_synth_data
+                SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
+                fprintf(' SNR = %e\n\n', SNR);
+            end
         end
     end
 
@@ -454,10 +467,11 @@ for t = t_start : max_iter
         %     l11 = l11 + l11_;
         % end
 
-        % compute SNR
-        SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
-        fprintf(' SNR = %e\n\n', SNR);
-
+        if flag_synth_data
+            % compute SNR
+            SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
+            fprintf(' SNR = %e\n\n', SNR);
+        end
         
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
@@ -475,7 +489,6 @@ for t = t_start : max_iter
             m.v1 = v1;
             m.weights1 = weights1;
             m.res = res;
-            m.SNR = SNR;
             m.l11 = l11;
             m.end_iter = end_iter;
             m.t_l11 = t_l11;
@@ -484,6 +497,9 @@ for t = t_start : max_iter
             m.rel_val = rel_val;
             fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
             fitswrite(m.res, [name_checkpoint '_res' '.fits'])
+            if flag_synth_data
+                m.SNR = SNR;
+            end
             clear m
 
             % Log
@@ -491,7 +507,6 @@ for t = t_start : max_iter
                 fprintf('Backup iter: %i\n',t);
                 fprintf('l11-norm = %e, rel_val = %e\n', l11, rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-                % fprintf(' SNR = %e\n\n', SNR);
             end
         end
 
@@ -536,10 +551,6 @@ param.init_reweight_step_count = reweight_step_count;
 param.init_reweight_last_iter_step = t;
 param.init_t_start = t+1;
 m.param = param;
-
-% compute SNR
-SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
-m.SNR = SNR;
 m.end_iter = end_iter;
 m.t_l11 = t_l11;
 m.t_master = t_master;
@@ -547,6 +558,10 @@ m.t_data = t_data;
 m.rel_val = rel_val;
 fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
 fitswrite(m.res, [name_checkpoint '_res' '.fits'])
+if flag_synth_data
+    SNR = 20*log10(norm(x0(:))/norm(x0(:)-xsol(:)));
+    m.SNR = SNR;
+end
 clear m
 
 % Final log
@@ -560,8 +575,11 @@ if (param.verbose > 0)
     fprintf(' L11-norm = %e, relative variation = %e\n', l11, rel_val(t));
     fprintf(' Final residual = %e\n', residual_check);
     fprintf(' epsilon = %e\n', epsilon_check);
-    fprintf('SNR = %e\n\n', SNR);
+    if flag_synth_data
+        fprintf('SNR = %e\n\n', SNR);
+    end
 end
+
 end
 
 function [v1_, u1_, l11_, t_l11_] = run_par_waverec(v1_, Psit, Psi, xhat, weights1_, beta1)

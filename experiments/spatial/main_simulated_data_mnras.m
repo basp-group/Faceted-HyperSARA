@@ -608,7 +608,7 @@ if flag_solveMinimization
         % ! in this case, ncores_data corresponds 
         % ! to the number of workers for the wavelet transform (9 maximum)
         xsol = ...
-            sara(y, epsilons, A, At, aW, G, W, Psi, Psit, param_solver, name_warmstart, name_checkpoint, gam, x0);
+            sara(y, epsilons, A, At, aW, G, W, Psi, Psit, param_solver, name_warmstart, name_checkpoint, gam, [], x0);
 
         mkdir('results/')
 
