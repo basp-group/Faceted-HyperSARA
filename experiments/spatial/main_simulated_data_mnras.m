@@ -70,8 +70,7 @@ algo_version = 'hs'; % 'fhs', 'hs', 'sara';
 window_type = 'triangular'; % 'hamming', 'pc'
 flag_generateVisibilities = 0;
 flag_computeOperatorNorm = 0;
-flag_computeLowerBounds = 1;
-flag_solveMinimization = true;
+flag_solveMinimization = 1;
 ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
 ind = 1; % index of the spectral facet to be reconstructed
 gam = 1;
@@ -218,8 +217,9 @@ end
 
 
 %% Get faceting parameter (spectral + spatial)
+% fix faceting parameters in case these are not consistent with the 
+% selected algorithm
 if strcmp(algo_version, 'sara')
-    %! force each channel to be handled separately
     window_type = 'none';
     Qc = nChannels;
     Qx = 1;
@@ -230,6 +230,7 @@ elseif strcmp(algo_version, 'hs')
     Qy = 1;
 end
 
+% convert fraction of overlap between consecutive facets into a number of pixels
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
 disp(['Number of pixels in overlap: ', strjoin(strsplit(num2str(overlap_size)), ' x ')]);
 
@@ -308,7 +309,7 @@ if flag_generateCoverage
     u = u(:)*fc(1)/fmax;
     v = v(:)*fc(1)/fmax;
     fitswrite([u, v, ones(numel(u), 1)], coverage_path)
-    fitsdisp(coverage_path);
+    disp(coverage_path);
 else
     coverage_path
    
@@ -413,23 +414,29 @@ if flag_generateVisibilities
         datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = epsilons{data_worker_id(k)};
         datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = sigma_noise{data_worker_id(k)};
     end
+    global_sigma_noise = datafile.sigma_noise;
     clear param_l2_ball m Ml epsilons datafile
 else
     datafile = matfile(fullfile(results_path,data_name));
     
     switch algo_version
         case 'sara'
-            % to be completed
+            % ! to be verified
+            % all the variables are stored on the main process for sara
+            y = datafile.y{subcube_channels}; % subcube_channels contains a single index for SARA
+            epsilons = datafile.epsilons{subcube_channels};
+            global_sigma_noise = datafile.sigma_noise{subcube_channels};
         otherwise
             y = Composite();
             epsilons = Composite();
             sigma_noise = Composite();
 
             for k = 1:ncores_data
-                y(data_worker_id(k)) = datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
-                epsilons(data_worker_id(k)) = datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
+                y{data_worker_id(k)} = datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
+                epsilons{data_worker_id(k)} = datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
                 sigma_noise{data_worker_id(k)} = datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
             end
+            global_sigma_noise = datafile.sigma_noise;
     end
     disp('Data loaded successfully')
 end
@@ -497,19 +504,19 @@ else
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(subcube_channels, 1);
         rel_var_precond = opnormfile.rel_var_precond(subcube_channels, 1);
         Anorm = max(squared_operator_norm_precond.*(1 + rel_var_precond));
+        squared_operator_norm = opnormfile.squared_operator_norm(subcube_channels, 1);
 
-        squared_operator_norm = Composite();
-
-        for k = 1:ncores_data
-            squared_operator_norm{data_worker_id(k)} = opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
-        end
+        % squared_operator_norm = Composite();
+        % for k = 1:ncores_data
+        %     squared_operator_norm{data_worker_id(k)} = opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
+        % end
     end
 end
 
 fprintf('Convergence parameter (measurement operator): %e \n', Anorm);
 
 
-% TODO: to be updated from here
+% TODO: to be added back if needed (new auxiliary functions needed)
 % %% Generate initial epsilons by performing imaging with NNLS on each data block separately
 % if generate_eps_nnls
 %     % solve nnls per data block
@@ -524,98 +531,70 @@ fprintf('Convergence parameter (measurement operator): %e \n', Anorm);
 %     save('data/eps.mat','-v7.3', 'eps_b');
 % end
 
-% %% Solver
-% % compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
-% % SARA space) involved in the reweighting scheme
-% if strcmp(algo_version, 'sara')
-%     dwtmode('zpd')
-%     [Psi1, Psit1] = op_p_sp_wlt_basis_fhs(wlt_basis, nlevel, Ny, Nx);
-%     P = length(Psi1);
-%     for k = 1 : P
-%         f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
-%         f = sprintf('%s%i},Ny,Nx);', f,k);
-%         Psi{k} = eval(f);
-%         b(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
-%         ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
-%         Psit{k} = eval(ft);
-%     end
-%     if flag_computeLowerBounds
-%         fprintf('Normalization factor alpha = %e\n', gam);
-%         %! to be updated (with the different options) to be in the same configuration as faceted HyperSARA...
-%         [sig, mu] = compute_reweighting_lower_bound_sara(sigma_noise, squared_operator_norm);
-%         save(fullfile(auxiliary_path, ...
-%             strcat('lower_bounds_', ...
-%             algo_version, '_srf=', num2str(superresolution_factor), ...
-%             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nChannels),...
-%             '_ind=', num2str(ind), ...
-%             '_snr=', num2str(isnr), '.mat')), ...
-%             'sig', 'mu');
-%     else
-%         load(fullfile(auxiliary_path, ...
-%             strcat('lower_bounds_', ...
-%             algo_version, '_srf=', num2str(superresolution_factor), ...
-%             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nChannels),...
-%             '_ind=', num2str(ind), ...
-%             '_snr=', num2str(isnr), '.mat')), ...
-%             'sig', 'mu');
-%     end
 
-%     fprintf('Algo: %s, alpha = %.4e, mu = %.4e, upsilon = %.4e\n', algo_version, gam, mu, sig);
+%% Regularization parameters and solver
 
-%     mu = gam*mu;
-%     sig = mu;
-%     mu_bar = 0;
-% else
-%     fprintf('Normalization factors alpha = %e, alpha_bar = %e \n', gam, gam_bar);
-%     if flag_computeLowerBounds
+% estimate noise level (set regularization parameters to the same value)
+% compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
+% SARA space) involved in the reweighting scheme
 
-%         [sig, sig_bar, mu, mu_bar, mu_c, sig_c, sig_w] = ...
-%         compute_reweighting_lower_bound_heuristic2d(Ny, Nx, ...
-%         nChannels, filter_length, nlevel, sigma_noise, ...
-%         algo_version, Qx, Qy, overlap_size, window_type, ...
-%         squared_operator_norm);
-%         fprintf('sig_w = %.4e, sig_w*mu_c = %.4e, sig_w*sig_c = %.4e \n', sig_w, sig_w*mu_c, sig_w*sig_c);
+if strcmp(algo_version, 'sara')
 
-%         if strcmp(algo_version, 'fhs') && numel(sig_bar) == 1
-%             sig_bar = sig_bar*ones(Qx*Qy, 1);
-%         end
+    % SARA dicionary (created out of the solver for SARA)
+    dwtmode('zpd')
+    [Psi1, Psit1] = op_p_sp_wlt_basis_fhs(wlt_basis, nlevel, Ny, Nx);
+    P = numel(Psi1);
+    Psi = cell(P, 1);
+    Psit = cell(P, 1);
+    s = zeros(P, 1); % number fo wavelet coefficients for each dictionary
 
-%         save(fullfile(auxiliary_path, ...
-%         strcat('lower_bounds_', ...
-%         algo_version, ...
-%         '_srf=', num2str(superresolution_factor), ...
-%         '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
-%         '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
-%         'overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
-%         '_ind=', num2str(ind), ...
-%         '_snr=', num2str(isnr), '.mat')), ...
-%             'sig', 'sig_bar', 'mu', 'mu_bar');            
-%     else        
-%         load(fullfile(auxiliary_path, ...
-%             strcat('lower_bounds_', ...
-%             algo_version, ...
-%             '_srf=', num2str(superresolution_factor), ...
-%             '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
-%             '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
-%             'overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
-%             '_ind=', num2str(ind), ...
-%             '_snr=', num2str(isnr), '.mat')), ...
-%             'sig', 'sig_bar', 'mu', 'mu_bar');
-%     end
-%     fprintf('Algo: %s, alpha = %.4e, alpha_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e], upsilon = %.4e, upsilon_bar = [%.4e, %.4e] \n', algo_version, ...
-%         gam, gam_bar, mu, min(mu_bar), max(mu_bar), sig, min(sig_bar), max(sig_bar));
+    for k = 1 : P
+        f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
+        f = sprintf('%s%i},Ny,Nx);', f,k);
+        Psi{k} = eval(f);
+        s(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
+        ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
+        Psit{k} = eval(ft);
+    end
 
-%     sig_bar = gam_bar*sig_bar;
-%     mu_bar = sig_bar;
+    % noise level / regularization parameter
+    sig = compute_reweighting_lower_bound_sara(global_sigma_noise, squared_operator_norm);
 
-%     sig = gam*sig;
-%     mu = sig;
-    
-%     fprintf('Final: algo: %s, alpha = %.4e, alpha_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e], upsilon = %.4e, upsilon_bar = [%.4e, %.4e] \n', algo_version, ...
-%         gam, gam_bar, mu, min(mu_bar), max(mu_bar), sig, min(sig_bar), max(sig_bar));
-% end
-% clear dirty_image
-%     %! --
+    % apply multiplicative factor for the regularization parameter (if needed)
+    mu = gam*sig;
+    fprintf('Noise level: sig = %e\n', sig);
+    fprintf('Additional multiplicative regularisation factor gam = %e\n', gam);
+    fprintf('Regularization parameter mu = %e\n', mu);
+    fprintf('Algo: %s, alpha = %.4e, mu = %.4e, sig = %.4e\n', algo_version, gam, mu, sig);
+end
+
+% % compute number of wavelet coefficients
+% [~, s] = n_wavelet_coefficients(filters_length(1:end-1), [Ny, Nx], 'zpd', nlevel);
+% s = s+N; % total number of SARA coefficients (adding number of elements from Dirac basis)
+
+if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
+
+    % noise level / regularization parameter
+    [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
+    compute_reweighting_lower_bound_heuristic2d(Ny, Nx, ...
+    nchans, global_sigma_noise, algo_version, Qx, Qy, overlap_size, ...
+    squared_operator_norm);
+
+    % apply multiplicative factor for the regularization parameters (if needed)
+    mu_bar = gam_bar*sig_bar;
+    mu = gam*sig;
+    fprintf('mu_chi = %.4e, sig_chi = %.4e, sig_sara = %.4e\n', mu_chi, sig_chi, sig_sara);
+    fprintf('Noise levels: sig = %.4e, sig_bar = [%.4e, %.4e]\n', sig, min(sig_bar), max(sig_bar));
+    fprintf('Additional multiplicative actors gam = %.4e, gam_bar = %.4e\n', gam, gam_bar);
+    fprintf('Regularization parameters: mu = %.4e, mu_bar = %.4e\n', mu, mu_bar);
+    fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_version, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
+end
+
+%% Define parameters for the solver (nReweights needed here)
+parameters_solver 
+
+
+%%
 
 % if flag_solveMinimization
 
@@ -636,9 +615,7 @@ fprintf('Convergence parameter (measurement operator): %e \n', Anorm);
 %         disp(['Average time per iteration: ', num2str(time_iter_average)]);
 
 %         mkdir('results/')
-%         save(fullfile(auxiliary_path, results_name),'-v7.3','xsol', 'X0', ...
-%         'param', 'epsilon', 'rel_val', 'l11', 'norm_res', ...
-%         'end_iter', 'time_iter_average', 't_l11','t_master', 'res');
+
 %         fitswrite(xsol,fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
 %         '_srf=', num2str(superresolution_factor), ...
 %         '_', window_type, ...
@@ -696,9 +673,6 @@ fprintf('Convergence parameter (measurement operator): %e \n', Anorm);
 %         disp(['Average time per iteration: ', num2str(time_iter_average)]);
 
 %         mkdir('results/')
-%         save(fullfile(auxiliary_path, results_name),'-v7.3','xsol', 'X0', ...
-%             'param', 'epsilon', 'rel_val', 'nuclear', 'l21', 'norm_res_out', ...
-%             'end_iter', 'time_iter_average', 'snr_x', 'snr_x_average');
 %         fitswrite(xsol,fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
 %             '_', window_type, ...
 %             '_srf=', num2str(superresolution_factor), ...

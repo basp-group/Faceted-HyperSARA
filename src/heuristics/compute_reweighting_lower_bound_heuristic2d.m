@@ -1,24 +1,16 @@
-function [sig, sig_bar, mu, mu_bar, mu_c, sig_c, sig_w] = ...
+function [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
     compute_reweighting_lower_bound_heuristic2d(Ny, Nx, ...
-    nChannels, filters_length, nlevel, sigma_noise, ...
-    algo_version, Qx, Qy, overlap_size, window_type, ...
+    nChannels, sigma_noise, algo_version, Qx, Qy, overlap_size, ...
     squared_operator_norm)
- 
-N = Ny*Nx;    % number of image pixels
-
-% compute number of wavelet coefficients
-[~, s] = n_wavelet_coefficients(filters_length(1:end-1), [Ny, Nx], 'zpd', nlevel);
-s = s+N; % total number of SARA coefficients (adding number of elements from Dirac basis)
 
 % compute sig and sig_bar
-% sig = sqrt(N*sum((sigma_noise.^2)./squared_operator_norm)/s);
-sig_w = sqrt(mean((sigma_noise.^2)./squared_operator_norm)); %/numel(filters_length));
-mu_c = sqrt(2)*gamma((nChannels+1)/2)/gamma(nChannels/2);
-sig_c = sqrt(nChannels - mu_c^2); 
-sig = sig_w*(mu_c + sig_c);
+sig_sara = sqrt(mean((sigma_noise.^2)./squared_operator_norm));
+mu_chi = sqrt(2)*gamma((nChannels+1)/2)/gamma(nChannels/2);
+sig_chi = sqrt(nChannels - mu_chi^2); 
+sig = sig_sara*(mu_chi + sig_chi);
 
 % compute sig_bar
-if strcmp(algo_version, 'hypersara')
+if strcmp(algo_version, 'hs')
     sig_bar = sqrt(Nx*Ny*sum(sigma_noise.^2./squared_operator_norm)/min(Nx*Ny, nChannels));
 else
     Q = Qx*Qy;
@@ -54,6 +46,3 @@ else
         sig_bar(q) = sqrt(Noq*sum(sigma_noise.^2./squared_operator_norm)/min(Noq, nChannels));
     end
 end
-
-mu = sig;
-mu_bar = sig_bar;
