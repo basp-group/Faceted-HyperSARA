@@ -570,10 +570,6 @@ if strcmp(algo_version, 'sara')
     fprintf('Algo: %s, alpha = %.4e, mu = %.4e, sig = %.4e\n', algo_version, gam, mu, sig);
 end
 
-% % compute number of wavelet coefficients
-% [~, s] = n_wavelet_coefficients(filters_length(1:end-1), [Ny, Nx], 'zpd', nlevel);
-% s = s+N; % total number of SARA coefficients (adding number of elements from Dirac basis)
-
 if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
 
     % noise level / regularization parameter
@@ -591,6 +587,7 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     fprintf('Regularization parameters: mu = %.4e, mu_bar = %.4e\n', mu, mu_bar);
     fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_version, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
 end
+
 
 %% Define parameters for the solver (nReweights needed here)
 parameters_solver 
@@ -626,8 +623,6 @@ if flag_solveMinimization
         '.fits')))
     else
         %%
-        disp('Faceted HyperSARA')
-        disp('-----------------------------------------')
 
         % spectral tesselation (non-overlapping)
         % ! to be updated tonight (need to be careful about the different variables needed + implicit parallelization conventions)
@@ -639,12 +634,16 @@ if flag_solveMinimization
         %%
         switch algo_version 
             case 'hs'
+                disp('HyperSARA')
+                disp('-----------------------------------------')
                 xsol = hyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, ...
                     ncores_data, wlt_basis, nlevel, cell_c_chunks, ...
                     nchans, Ny, Nx, param_nufft.oy, param_nufft.ox, ...
                     name_warmstart, name_checkpoint, [], X0);
             case 'fhs'
+                disp('Faceted HyperSARA')
+                disp('-----------------------------------------')
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     wlt_basis, filter_length, nlevel, window_type, ...
