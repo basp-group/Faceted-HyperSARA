@@ -6,14 +6,20 @@ function f = compute_sara_prior_distributed(x, Psit, s)
 % an input wideband image :math:`\mathbf{X} \in \mathbb{R}^{N\times L}`, 
 % with :math:`\boldsymbol{\Psi}^\dag` the SARA dictionary :cite:`Carrillo2012`.
 %
-% Args:
-%       x (array_like): wideband image cube [N(1), N(2), L].
-%       Psit (lambda): SARA dictionary @[1]
-%       s (int): number of wavelet coefficients (per channel) [1]
+% Parameters
+% ----------
+% x : array (3d)
+%     Wideband image cube [N(1), N(2), L].
+% Psit : lambda
+%     SARA dictionary @[1]
+% s : int
+%     Number of wavelet coefficients (per channel) [1]
 %
-% Returns:
-%       f (double): value of :math:`\Vert \boldsymbol{\Psi}^\dag \mathbf{X} 
-%                  \Vert_{2,1}`
+% Returns
+% -------
+% f : double
+%     Value of :math:`\Vert \boldsymbol{\Psi}^\dag \mathbf{X} \Vert_{2,1}`.
+%
 
 %-------------------------------------------------------------------------%
 %%

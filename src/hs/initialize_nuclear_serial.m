@@ -1,19 +1,23 @@
 function [v0, weights0] = initialize_nuclear_serial(x, reweighting_alpha, sig_bar)
-%initialize_l21_serial2: initalize the dual variables related to the 
-% l21-norm prior.
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Initalize the dual variables related to the l21-norm prior.
+% 
+% Parameters
+% ----------
+% x : array (3d)
+%     Wideband image [M, N, L].
+% reweighting_alpha : double
+%     Reweighting parameter.
+% sig_bar : double
+%     Reweighting floor level.
 %
-% > x                       wideband image [M, N, L]
-% > reweighting_alpha       reweighting parameter
-% > sig_bar                 reweighting floor level
+% Returns
+% -------
+% v0 : cell
+%     Dual variable associated with the nuclear-norm  prior [min(M*N, L), 1].
+% weights0 : cell 
+%     Associated weights for the reweigthing step.
 %
-% Output:
-%
-% < v0                      dual variable associated with the nuclear-norm 
-%                           prior [min(M*N, L), 1]
-% < weights0                assciated weights for the reweigthing step 
+              
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

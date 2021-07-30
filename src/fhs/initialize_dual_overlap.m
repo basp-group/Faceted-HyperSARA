@@ -15,7 +15,7 @@ function [v0, v1, weights0, weights1] = initialize_dual_overlap(Ncoefs, ...
 %     number of spectral channels.
 % nlevel : int
 %     Depth of the wavelet decompositions.
-
+%
 % Returns
 % -------
 % v0 : array (2d)
