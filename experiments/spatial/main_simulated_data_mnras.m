@@ -396,7 +396,7 @@ if flag_generateVisibilities
     % https://fr.mathworks.com/help/matlab/math/creating-and-controlling-a-random-number-stream.html?searchHighlight=random%20number%20streams&s_tid=srchtitle#brvku_2
     % may not be strictly equivalent to the data generation used for the results reported in paper 1
     spmd
-        if labindex > Qx*Qy*strcmp(algo_version, 'fhs')
+        if labindex > Q*strcmp(algo_version, 'fhs')
             [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr(x0(:,:,rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, input_snr(rg_c(labindex, 1):rg_c(labindex, 2)), seed);
             [~, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, param_l2_ball, sigma_noise);
         end
@@ -452,7 +452,7 @@ if strcmp(algo_version, 'sara')
 
         % ! beware: make sure the options to compute the operator norm are
         % not hard-coded 
-        [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx);
+        [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
         
         save(fullfile(results_path, ...
             strcat('Anorm_', ...
@@ -471,7 +471,7 @@ else
     if flag_computeOperatorNorm    
         spmd
             if labindex > Qx*Qy*strcmp(algo_version, 'fhs')
-                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx);
+                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
             end
         end
 
