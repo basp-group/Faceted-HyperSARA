@@ -1,20 +1,32 @@
-function [v0, v1, weights0, weights1] = initialize_dual_overlap(Ncoefs, dims_o, c, nlevel)
+function [v0, v1, weights0, weights1] = initialize_dual_overlap(Ncoefs, ...
+    dims_o, c, nlevel)
 % Initialize dual variables (constant overlap).
 %
 % Initialize all the dual variables for a given facet (nuclear and l21 
 % norms).
 %
-% Args:
-%     Ncoefs (array): number of wavelet coefficients at each scale.
-%     dims_o (array): dimension of a facet (with overlap) [1, 2].
-%     c (int): number of spectral channels.
-%     nlevel (int): depth of decomposition.
+% Parameters
+% ----------
+% Ncoefs : array (2d)
+%     Number of wavelet coefficients at each scale.
+% dims_o : array (1d)
+%     dimension of a facet (with overlap) [1, 2].
+% c : int
+%     number of spectral channels.
+% nlevel : int
+%     Depth of the wavelet decompositions.
+
+% Returns
+% -------
+% v0 : array (2d)
+%     Dual variable associated with the nuclear norm.
+% v1 : array (2d)
+%     Dual variable associated with the :math:`\ell_{2,1}` norm.
+% weights0 : array (1d)
+%     Weigths associated with the nuclear norm.
+% weights1 : array (1d)
+%     Weigths ssociated with the :math:`\ell_{2,1}` norm.
 %
-% Returns:
-%     v0 (array): dual variable associated with the nuclear norm.
-%     v1 (array): dual variable associated with the l21-norm.
-%     weights0 (array): weigths associated with the nuclear norm.
-%     weights1 (array): weigths ssociated with the l21-norm.
 
 %-------------------------------------------------------------------------%
 %%
@@ -30,7 +42,9 @@ p = prod(Ncoefs, 2);
 % else
 %     sz = 3*sum(p) - 2*sum(p(nlevel+1:nlevel+1:end));
 % end
-sz = 3*sum(p(1:end)) - 2*sum(p(nlevel+1:nlevel+1:end)) - 2*p(end); % number of coeffs with the Dirac basis
+
+% number of SARA coeffs with the Dirac basis
+sz = 3*sum(p(1:end)) - 2*sum(p(nlevel+1:nlevel+1:end)) - 2*p(end);
 
 v0 = zeros(prod(dims_o), c);
 weights0 = ones(min(prod(dims_o), c), 1);

@@ -296,11 +296,13 @@ end
 %! --
 
 % Primal / prior nodes (l21/nuclear norm dual variables)
+% ! assumes backup file exactly saved at the time a reweighting step occured
+% ! (initialized to xsol_q)
 v0_ = Composite();
 weights0_ = Composite();
 v1_ = Composite();
 weights1_ = Composite();
-xlast_reweight_q = Composite(); %! assumes backup file exactly saved at the time a reweighting step occured (initialized to xsol_q)
+xlast_reweight_q = Composite(); 
 if init_flag
     for q = 1:Q
         v0_(q) = init_m.v0(q,1);

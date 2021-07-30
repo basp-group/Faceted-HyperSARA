@@ -363,8 +363,8 @@ switch algo_version
         if strcmp(algo_version, 'hs')
             spmd
                 local_fc = fc(rg_c(labindex, 1):rg_c(labindex, 2));
-                % TODO: update util_gen_measurement_operator to enable
-                % kaiser kernels
+                % TODO: update util_gen_measurement_operator to enable kaiser kernels
+                % ! ideally, simplify irt nufft interface to do so
                 [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
                 param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
             end
@@ -393,8 +393,10 @@ if flag_generateVisibilities
     param_l2_ball.sigma_ball = 2;
 
     % TODO: modify data generation to allow reproducible parallel rng streams
+    % ! not implemented/activated yet
     % https://fr.mathworks.com/help/matlab/math/creating-and-controlling-a-random-number-stream.html?searchHighlight=random%20number%20streams&s_tid=srchtitle#brvku_2
-    % may not be strictly equivalent to the data generation used for the results reported in paper 1
+    % may not be strictly equivalent to the data initially obtained for the
+    % mnras paper
 
     % rng_stream = RandStream.create('threefry4x64_20', ...
     %     'Seed', seed, 'NumStreams', ncores_data);
@@ -413,7 +415,7 @@ if flag_generateVisibilities
     
     % save parameters (matfile solution)
     datafile = matfile(fullfile(results_path,data_name), ...
-    'Writable', true);
+        'Writable', true);
     datafile.y0 = cell(nchans, 1);
     datafile.y = cell(nchans, 1);
     datafile.epsilons = cell(nchans, 1);

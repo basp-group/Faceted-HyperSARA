@@ -1,44 +1,61 @@
-function [v1, g] = update_dual_l21(v1, x_overlap, weights, beta1, Iq, dims_q,...
-                                  I_overlap_q, dims_overlap_q, offset, ...
-                                  status_q, nlevel, wavelet, Ncoefs_q, ...
-                                  temLIdxs_q, temRIdxs_q, offsetLq, ...
-                                  offsetRq, dims_overlap_ref_q)
+function [v1, g] = update_dual_l21(v1, x_overlap, weights, beta1, Iq, ...
+    dims_q,I_overlap_q, dims_overlap_q, offset, status_q, nlevel, ...
+    wavelet, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, ...
+    dims_overlap_ref_q)
 % Update the dual variable associated with the facet l21-norm prior.
 %
 % Update a facet dual variable associated with the l21-norm prior.
 %
-% Args:
-%     v1 (array): dual variable associated with the facet l21-norm 
-%                      [s, L].
-%     x_overlap (array): overlapping image facet [M, N, L].
-%     weights (array): weights to balance the effect of redundant pixels 
-%                           due to the overlap between facets [M, N].
-%     beta1 (double): ratio between regularization and convergence 
-%                     parameter (gamma1 / sigma1).                   
-%     Iq (array): starting index of the non-overlapping base facet [1, 2].
-%     dims_q (array): dimensions of the non-overlapping base facet [1, 2].
-%     I_overlap_q (array): starting index of the facet [1, 2].
-%     dims_overlap_q (array): dimensions of the facet [1, 2].
-%     offset (cell): offset to be used from one dictionary to another 
-%                    (different overlap needed for each dictionary -> 
-%                    cropping) {nDictionaries}.
-%     status_q (array): status of the current facet (last or first 
-%                        facet along vert. or hrz. direction) [ndict, 2].
-%     nlevel (int): depth of the wavelet decompositions.
-%     wavelet (cell): name of the wavelet dictionaries {ndict}.
-%     Ncoefs_q ([type]): size of the wavelet decompositions at each
-%                        scale.
-%     temLIdxs_q (array): amount of cropping from the "left" [1, 2].
-%     temRIdxs_q (array): amount of cropping from the "rights" [1, 2].
-%     offsetLq (array): amount of zero-pading from the "left" [1, 2].
-%     offsetRq (array): amount of zero-pading from the "right" [1, 2].
-%     dims_overlap_ref_q (array): dimension of the facet [1, 2].
+% Parameters
+% ----------
+% v1 : array (2d)
+%     Dual variable associated with the :math:`\ell_{2,1}` prior [s, L].
+% x_overlap : array (3d)
+%     Overlapping image facet [M, N, L].
+% weights : array (2d)
+%     Weights to mitigate tessellation aretefacts due to the overlap
+%     between facets [M, N].
+% beta1 : double
+%     Ratio between regularization and convergence parameter 
+%     (gamma1 / sigma1). 
+% Iq : array (1d)
+%     Starting index of the non-overlapping base facet [1, 2].
+% dims_q : array (1d)
+%     Dimensions of the non-overlapping base facet [1, 2].
+% I_overlap_q : array (1d)
+%     Starting index of the facet [1, 2].
+% dims_overlap_q : array (1d)
+%     Dimensions of the facet [1, 2].
+% offset : cell
+%     Ofset to be used from one dictionary to another (different overlap
+%     needed for each dictionary -> cropping) {nDictionaries}.
+% status_q : array (1d)
+%     Status of the current facet (last or first facet along vert. or hrz. 
+%     direction) [ndict, 2].
+% nlevel : int
+%     Depth of the wavelet decompositions.
+% wavelet : cell (string)
+%     Name of the wavelet dictionaries {ndict}.
+% Ncoefs_q : array (1d)
+%     Size of the wavelet decompositions at each scale.
+% temLIdxs_q : array (1d)
+%     Amount of cropping from the "left" [1, 2].
+% temRIdxs_q : array (1d)
+%     Amount of cropping from the "right" [1, 2].
+% offsetLq : array (1d)
+%     Amount of zero-pading from the "left" [1, 2].
+% offsetRq : array (1d)
+%     Amount of zero-pading from the "left" [1, 2].
+% dims_overlap_ref_q : array (1d)
+%     Dimension of the facet [1, 2].
 %
-% Returns:
-%     v1 (array): dual variable associated with the l21-norm prior 
-%                      [s, L].
-%     g (array): auxiliary variable for the update of the primal 
-%                     variable [M, N, L].
+% Returns
+% -------
+% v1 : array (2d)
+%     Dual variable associated with the :math:`\ell_{2,1}` prior [s, L].
+% g : array (3d)
+%     Auxiliary variable for the update of the primal variable [M, N, L].
+%
 
 %-------------------------------------------------------------------------%
 %%
