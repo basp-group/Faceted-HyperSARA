@@ -1,17 +1,24 @@
-function [global_norm_res, norm_epsilon] = ...
-    sanity_check(epsilon, norm_res)
+function [global_norm_res, norm_epsilon] = sanity_check(epsilon, norm_res)
 % Update the data fidelity term in the preconditioned primal-dual algorithm.
 %
 % Update the data fidelity terms owned by each worked involved in the group
 % of data nodes (with preconditioning -> projection onto an ellipsoid).
 %
-% Args:
-%     norm_res (cell): norm of the residual {L}{nblocks}[1].    
-%     epsilon (cell): l2-ball constraints {L}{nblocks}[1].
+% Parameters
+% ----------
+% epsilon : cell
+%     Norm of the residual {L}{nblocks}[1].
+% norm_res : cell
+%     :math:`\ell_2`-ball constraints {L}{nblocks}[1].
 %
-% Returns:
-%     global_norm_res (double): square global norm of the residual.
-%     norm_epsilon (double): square global norm of epsilon.
+% Returns
+% -------
+% global_norm_res : double
+%     square global norm of the residual.
+% norm_epsilon : double
+%     square global norm of epsilon.
+%
+
 %%                         
              
 % nChannels = size(xhat, 3);

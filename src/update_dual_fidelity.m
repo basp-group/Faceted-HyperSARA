@@ -7,36 +7,57 @@ function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
 % Update the data fidelity terms owned by each worked involved in the group
 % of data nodes (with preconditioning -> projection onto an ellipsoid).
 %
-% Args:
-%     v2 (cell): data fidelity dual variable {L}{nblocks}[M, 1].
-%     y (cell): blocks of visibilities {L}{nblocks}[M, 1].
-%     x (array): primal variable [N(1), N(2), L].
-%     Fx_old (array): ... [N(1), N(2), L].
-%     proj (cell): value of the projection at the previous global 
-%                    iteration, taken as a starting {L}{nblocks}[M, 1].
-%     A (lambda): measurement operator @[1].
-%     At (lambda): adjoint measurement operator @[1].
-%     G (cell): blocked interpolation matrix {L}{nblocks}.
-%     W (cell): blocked masking operator {L}{nblocks}.
-%     pU (cell): preconditioning matrices {L}{nblocks}.
-%     epsilon (cell): l2-ball constraints {L}{nblocks}[1].
-%     elipse_proj_max_iter (int): maximum number of iterations 
-%                                 (projection onto ellipsoid).
-%     elipse_proj_min_iter (int): minimum number of iterations 
-%                                 (projection onto ellipsoid).
-%     elipse_proj_eps (int): stopping criterion for the projection.
-%     sigma22 (array): step-size for the update of the dual variable 
-%                      (tau*sigma2)
+% Parameters
+% ----------
+% v2 : cell
+%     Data fidelity dual variable {L}{nblocks}[M, 1].
+% y : cell
+%     Blocks of visibilities {L}{nblocks}[M, 1].
+% x : array (3d)
+%     Primal variable [N(1), N(2), L].
+% Fx_old : array (3d)
+%     ... [N(1), N(2), L].
+% proj : cell
+%     Value of the projection at the previous global iteration, taken as a
+%     starting point {L}{nblocks}[M, 1].
+% A : lambda
+%     Measurement operator @[1].
+% At : lambda
+%     Adjoint measurement operator @[1].
+% G : cell
+%     Blocked interpolation matrix {L}{nblocks}.
+% W : cell
+%     Blocked masking operator {L}{nblocks}.
+% pU : cell
+%     preconditioning matrices {L}{nblocks}.
+% epsilon : cell
+%     :math:`\ell_2`-ball constraints {L}{nblocks}[1].
+% elipse_proj_max_iter : int
+%     Maximum number of iterations (projection onto the ellipsoid) 
+% elipse_proj_min_iter : int
+%     Minimum number of iterations (projection onto the ellipsoid) 
+% elipse_proj_eps : double
+%     Stopping criterion for the projection.
+% sigma22 : array (1d)
+%     Step-size for the update of the dual variable (tau*sigma2).
 %
-% Returns:
-%     v2 (cell): data fidelity dual variable {L}{nblocks}[M, 1].
-%     Ftx (array): auxiliary variable for the update of the primal 
-%       variable [N(1), N(2)].
-%     Fx_old: [N(1), N(2), L]
-%     proj (cell): result of the projection step  {L}{nblocks}[M, 1].
-%     norm_res (cell): norm of the residual {L}{nblocks}[1].    
-%     global_norm_res (double): square global norm of the residual.
-%     norm_epsilon (double): square global norm of epsilon.
+% Returns
+% -------
+% v2 : cell
+%     Data fidelity dual variable {L}{nblocks}[M, 1].
+% Ftx (array):
+%     Auxiliary variable for the update of the primal variable [N(1), N(2)].
+% Fx_old
+%     [N(1), N(2), L]
+% proj (cell)
+%     Result of the projection step  {L}{nblocks}[M, 1].
+% norm_res (cell)
+%     Norm of the residual {L}{nblocks}[1].    
+% global_norm_res (double)
+%     Square global norm of the residual.
+% norm_epsilon (double)
+%     Square global norm of epsilon.
+%    
 
 %-------------------------------------------------------------------------%
 %%

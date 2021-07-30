@@ -1,34 +1,39 @@
 function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
     norm_res, adapt_eps_tol_in, adapt_eps_tol_out, adapt_eps_steps, ...
     adapt_eps_change_percentage) % l2_upper_bound
-% Adaptive update of the l2-ball constraint.
+% Adaptive update of the :math:`\ell_2`-ball constraint.
 %
-% Update of the l2-ball constraints of radius epsilon (adaptive 
-% :math:`\varepsilon`), based on the scheme introduced in :cite:`Dabbech2018`).
+% Update of the :math:`\ell_2`-ball constraints of radius ``epsilon`` 
+% (adaptive :math:`\varepsilon`), based on the scheme introduced in
+% :cite:`Dabbech2018`).
 %
-% Args:
-%     epsilon (cell): l2-ball radii {L}{nblocks}.
-%     t (int): current iteration index.
-%     t_block (cell): last iteration at which each block has
-%                     been updated {L}{nblocks}.
-%     rel_fval (double): relative variation of the solution.
-%     norm_res (cell): norm of the residual image {L}{nblocks}.
-%     adapt_eps_tol_in (double): tolerance for the norm of the residual 
-%                                (below the current value of epsilon,
-%                                within the ball).
-%     adapt_eps_tol_out (double): tolerance for the norm of the residual 
-%                                 (above current value of epsilon, out of
-%                                 the ball).
-%     adapt_eps_steps (double): number of steps between two consecutive
-%                               updates.
-%     adapt_eps_rel_obj (double): relative variation of the objective
-%                                 function
-%     adapt_eps_change_percentage (double): update factor for epsilon.
-%
-% Returns:
-%     epsilon (cell): updated l2-ball radii {L}{nblocks}.
-%     t_block (cell): last iteration at which each block has been updated 
-%                     {L}{nblocks}.
+% Parameters
+% ----------
+% epsilon : cell
+%     :math:`\ell_2`-ball constraint {L}{nblocks}.
+% t : int
+%     current iteration index.
+% t_block : cell
+%     (cell): last iteration at which each block has been updated {L}{nblocks}.
+% norm_res : cell
+%     norm of the residual image {L}{nblocks}.
+% adapt_eps_tol_in : double
+%     tolerance for the norm of the residual (below the current value of 
+%     ``epsilon``, within the ball).
+% adapt_eps_tol_out : double
+%     tolerance for the norm of the residual (above current value of 
+%     ``epsilon``, out of the ball).
+% adapt_eps_steps : int
+%     umber of steps between two consecutive updates.
+% adapt_eps_change_percentage : double
+%     update factor for ``epsilon``.
+
+% Returns
+% -------
+% epsilon : cell
+%     updated :math:`\ell_2`-ball radii {L}{nblocks}.
+% t_block : cell
+%     last iteration at which each block has been updated {L}{nblocks}.
 %
 
 %-------------------------------------------------------------------------%

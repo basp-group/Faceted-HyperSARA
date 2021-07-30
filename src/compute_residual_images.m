@@ -3,16 +3,25 @@ function residual_image = compute_residual_images(x, y, G, A, At, W)
 %
 % Compute the residual image for each spectral channel.
 %
-% Args:
-%     x (array_like): wideband image cube [N(1), N(2), L].
-%     y (cell): blocked visibilities {L}{nblocks}.
-%     G (cell): blocked gridding matrix {L}{nblocks}.
-%     A (lambda): measurement operator @[1].
-%     At (lambda): adjoint measurement operator @[1].
-%     W (cel): masking operators (selection of data blocks) {L}{nblocks}.
+% Parameters
+% ----------
+% x : array (3d)
+%     Wideband image cube [N(1), N(2), L].
+% y : cell
+%     Blocked visibilities {L}{nblocks}.
+% G : cell
+%     Blocked gridding matrix {L}{nblocks}.
+% A : lambda
+%     Measurement operator @[1].[description]
+% At : lambda
+%     Adjoint measurement operator @[1].[description]
+% W : cell
+%     Masking operators (selection of data blocks) {L}{nblocks}.[description]
 %
-% Returns:
-%     residual_image (array_like): residual image cube [N(1), N(2), L]
+% Returns
+% -------
+% residual_image : array (3d)
+%     Residual image cube [N(1), N(2), L].
 %
 
 %-------------------------------------------------------------------------%
