@@ -12,9 +12,10 @@ param_solver.nu0 = 1;
 param_solver.nu1 = 1;
 % upper bound on the norm of the measurement operator
 param_solver.nu2 = squared_operator_norm_precond; 
-param_solver.operator_norm = squared_operator_norm;
 % regularization parameter nuclear norm
-param_solver.gamma0 = mu_bar;
+if ~strcmp(algo_version, 'sara')
+    param_solver.gamma0 = mu_bar;
+end
 % regularization parameter l21-norm (soft th parameter) 
 %! for SARA, take the value given as an input to the solver
 param_solver.gamma = mu;

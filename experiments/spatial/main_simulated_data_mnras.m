@@ -66,10 +66,10 @@ Qx = 1; % 4
 Qy = 1; % 4
 Qc = 1;
 nReweights = 1;
-algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
+algo_version = 'sara'; % 'fhs', 'hs', 'sara';
 window_type = 'triangular'; % 'hamming', 'pc'
 flag_generateVisibilities = 0;
-flag_computeOperatorNorm = 0;
+flag_computeOperatorNorm = 1;
 flag_solveMinimization = 1;
 ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
 ind = 1; % index of the spectral facet to be reconstructed
@@ -435,9 +435,9 @@ else
         case 'sara'
             % ! to be verified
             % all the variables are stored on the main process for sara
-            y = datafile.y{subcube_channels}; % subcube_channels contains a single index for SARA
-            epsilons = datafile.epsilons{subcube_channels};
-            global_sigma_noise = datafile.sigma_noise{subcube_channels};
+            y = datafile.y(subcube_channels, 1); % subcube_channels contains a single index for SARA
+            epsilons = datafile.epsilons(subcube_channels, 1);
+            global_sigma_noise = datafile.sigma_noise(subcube_channels, 1);
         otherwise
             y = Composite();
             epsilons = Composite();
@@ -461,20 +461,23 @@ if strcmp(algo_version, 'sara')
 
         % ! beware: make sure the options to compute the operator norm are
         % not hard-coded 
-        [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
+        [Anorm, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
         
         save(fullfile(results_path, ...
             strcat('Anorm_', ...
             algo_version, ...
             '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')),'-v7.3', 'Anorm', 'squared_operator_norm', 'rel_var', 'squared_precond_operator_norm', 'rel_var_precond');
+            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')), ...
+            '-v7.3', 'Anorm', 'squared_operator_norm', 'rel_var', ...
+            'squared_operator_norm_precond', 'rel_var_precond');
             clear rel_var
     else
         load(fullfile(results_path, ...
             strcat('Anorm_', ...
             algo_version, ...
             '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), '_L=',num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')), 'Anorm', 'squared_operator_norm');
+            '_Qc=',num2str(Qc),'_ind=',num2str(ind), '_ch=', num2str(ind), '.mat')), ...
+            'Anorm', 'squared_operator_norm_precond', 'squared_operator_norm');
     end
 else
     if flag_computeOperatorNorm    
@@ -564,7 +567,7 @@ if strcmp(algo_version, 'sara')
         f = sprintf('%s%i},Ny,Nx);', f,k);
         Psi{k} = eval(f);
         s(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
-        ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},b(' num2str(k) '));'];
+        ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},s(' num2str(k) '));'];
         Psit{k} = eval(ft);
     end
 

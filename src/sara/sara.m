@@ -271,10 +271,6 @@ end
 
 A = afclean(A);
 At = afclean(At);
-for k = 1 : P
-    Psi{k} = afclean(Psi{k});
-    Psit{k} = afclean(Psit{k});
-end
 Ftx = zeros(size(xsol));
 
 %%
