@@ -1,5 +1,5 @@
-function xsol = ...
-    sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, name_warsmtart, name_checkpoint, alph, varargin)
+function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
+    name_warsmtart, name_checkpoint, alph, varargin)
 
 % TODO: update interface to accommodate real data
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
@@ -134,6 +134,7 @@ end
 
 if init_flag
     v2 = init_m.v2;
+    u2 = cell(c, 1);
     for i = 1 : c
         u2{i} = cell(length(G{i}),1);
         for j = 1 : length(G{i})
@@ -144,6 +145,8 @@ if init_flag
     norm_res = init_m.norm_res;
     fprintf('v2, norm_res uploaded \n\n')
 else
+    v2 = cell(c, 1);
+    u2 = cell(c, 1);
     for i = 1 : c
         v2{i} = cell(length(G{i}),1);
         u2{i} = cell(length(G{i}),1);
@@ -167,10 +170,11 @@ if init_flag
     fprintf('proj uploaded \n\n')
 else
     Fx_old = zeros(No, c);
+    proj = cell(c, 1);
     for i = 1 : c
-        proj{i} = cell(length(G{i}),1);
+        proj{i} = cell(numel(G{i}),1);
         Fx = A(xsol(:,:,i));
-        for j = 1 : length(G{i})
+        for j = 1 : numel(G{i})
             r2{i}{j} = G{i}{j} * Fx(W{i}{j});
             [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
         end
@@ -185,6 +189,7 @@ if init_flag
     t_start = param.init_t_start;
     fprintf('t_start, t_block uploaded \n\n')
 else
+    t_block = cell(c, 1);
     for i = 1 : c
         t_block{i} = cell(length(G{i}),1);
         for j = 1 : length(G{i})
@@ -195,8 +200,6 @@ else
     fprintf('t_start, t_block initialized \n\n')
 end
 
-count_eps_update_down = 0;
-count_eps_update_up = 0;
 max_iter = (param.reweighting_max_iter + 1)*param.pdfb_max_iter;
 
 if init_flag
@@ -603,20 +606,20 @@ r1 = weights1_.*abs(Psit(xhat));
 l11_ = sum(r1(:));
 end
 
-function gam_ = update_regularization_l11(Psit, xhat, sig, regtype)
-r1 = abs(Psit(xhat));
-if strcmp(regtype, "log")
-    gam_ = sig * sum(log(r1(:)/sig + 1));
-else % "inv"
-    gam_ = sum(r1(:));
-end
-% gam_ = alph / (sig * sum(log(r1(:)/sig + 1)));
-end
-
-function p = proj_l2ball(x, eps, y)
-% projection of x onto the l2 ball centered in y with radius eps
-p = x-y ;
-p = p* min(eps/norm(p(:)),1) ;
-p = p+y ;
-
-end
+% function gam_ = update_regularization_l11(Psit, xhat, sig, regtype)
+% r1 = abs(Psit(xhat));
+% if strcmp(regtype, "log")
+%     gam_ = sig * sum(log(r1(:)/sig + 1));
+% else % "inv"
+%     gam_ = sum(r1(:));
+% end
+% % gam_ = alph / (sig * sum(log(r1(:)/sig + 1)));
+% end
+% 
+% function p = proj_l2ball(x, eps, y)
+% % projection of x onto the l2 ball centered in y with radius eps
+% p = x-y ;
+% p = p* min(eps/norm(p(:)),1) ;
+% p = p+y ;
+% 
+% end
