@@ -104,7 +104,6 @@ disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), ', ')])
 disp(['Input SNR: ', num2str(isnr)]);
 disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
 
-addpath ../../lib/generate_data/
 addpath ../../lib/operators/
 addpath ../../lib/measurement-operator/nufft/
 addpath ../../lib/measurement-operator/lib/operators/

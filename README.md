@@ -53,7 +53,7 @@ To use the scripts reported in `figures`, make sure the [`Cubehelix`](...) packa
 
 ## Real data development
 
-Most of the instructions reported below refer to the content of the `experiment/real` foler.
+Most of the instructions reported below refer to the content of the `experiment/real` folder. To help you in configuring the final scripts, you can use the scripts used for the first submission of the paper (`experiments/archive/mnras_real`) or those proposed by Arwa at an earlier stgae of the development (`experiments/archive/real_data`).
 
 - All the source files for the solvers are defined in `src/`. Any modification to the measurement operator needs to be defined separately in the `measurement-operator` repository, later synchronized fron this project (see the submodules update instructions in the [installation](#installation) section).
 - All user-defined and default parameters are defined in two separate files:
