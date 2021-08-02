@@ -28,7 +28,7 @@ To properly clone the project with the submodules, you may need to choose one of
 git clone --recurse-submodules https://github.com/basp-group-private/Faceted-Hyper-SARA.git
 ```
 
-- updating from an existing `Faceted-Hyper-SARA` repository:
+- submodules update: updating from an existing `Faceted-Hyper-SARA` repository:
 
 ```bash
 git pull
@@ -51,11 +51,25 @@ python job_spatial.py
 
 To use the scripts reported in `figures`, make sure the [`Cubehelix`](...) package is installed.
 
+## Real data development
+
+Most of the instructions reported below refer to the content of the `experiment/real` foler.
+
+- All the source files for the solvers are defined in `src/`. Any modification to the measurement operator needs to be defined separately in the `measurement-operator` repository, later synchronized fron this project (see the submodules update instructions in the [installation](#installation) section).
+- All user-defined and default parameters are defined in two separate files:
+    1. `parameters_problem.m`: problem-specific parameters (blocking, nufft, ...)
+    2. `parameters_solver.m`: solver-specific parameters (pdfb, reweighting, ...)
+Note that real-data parameters, (weighting scheme, ...) if any, still need to be added in `parameters_problem.m`.
+- Before running: update and configure the sections delimited by `# !` in following files
+    1. `main.m`
+    2. `job_cyga.py`
+    3. `run_cyga.slurm`
+
 ## TODO
 
-- [ ] Prepare full Python scripts for real data examples (only keep useful values, see if anything needs to be added)
+- [x] Prepare draft Python scripts for real data examples (only keep useful values, see if anything needs to be added)
 - [ ] Replace FB by FISTA for the projection onto the ellipsoids
 - [ ] Update function interface + name of variables (if necessary)
 - [ ] Adding H matrices to `measurement-operator`
 - [ ] Adapt synth data scripts to real data
-- [ ] Documenting all functions
+- [ ] Documenting all functions (ongoing)

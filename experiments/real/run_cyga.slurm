@@ -23,8 +23,13 @@ mkdir -p /lustre/home/sc004/$USER/$SLURM_JOB_ID
 # module purge             # remove all previously loaded modules
 module load matlab/R2020b  # version to be checked on cirrus
 
+# ! ---
+# ! TO BE UPDATED WITH THE APPROPRIATE CALL TO THE MAIN SCRIPT, 
+# ! DEPENDING ON THE FORM ADOPTED FOR ITS INTERFACE
+# ! ---
 echo "fprintf('Job id: %s \n', num2str("$SLURM_JOB_ID")); main_simulated_data_mnras('"$imagename"',"$nchannels","$Qx","$Qy","$Qc",'"$algoversion"','"$wintype"',"$ncdata","$ind",["$overlapy","$overlapx"],"$nreweights","$computenorm","$solve",strcat('"$imagename"','_',num2str("$nchannels")),'"$covpath"',"$gam","$rw","$flaghomotopy", "$lowerbounds", '"$rwtype"', "$gambar", "$superresolution")" > temporary_file_${SLURM_JOB_ID}.m
 matlab -nosplash -nodesktop -nodisplay < temporary_file_${SLURM_JOB_ID}.m > ${logpath}/cyga_${imagename}_${algoversion}_${wintype}_id=${ind}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_overlap=${overlapx}_gam=${gam}_gambar=${gambar}_rw=${rw}_homotopy=${flaghomotopy}_srf=${superresolution}.txt
+# ! ---
 
 # Cleanup local work directory
 rm temporary_file_${SLURM_JOB_ID}.m
