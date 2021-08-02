@@ -128,7 +128,7 @@ for g in gam:
 
                 # Comment the following 3 lines when testing to prevent jobs from being submitted
                 exit_status = subprocess.call(slurm_command, shell=True)
-                if exit_status is 1:  # Check to make sure the job submitted
+                if exit_status == 1:  # Check to make sure the job submitted
                     print("Job {0} failed to submit".format(slurm_command))
 
                 # time.sleep(0.5)
