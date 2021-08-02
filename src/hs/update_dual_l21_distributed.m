@@ -1,27 +1,34 @@
 function [v1, g1] = update_dual_l21_distributed(v1, Psit, Psi, xhat, weights1, beta1, sigma1)
-%update_dual_nuclear_serial: update the dual variable related to the facet l21-norm
+% Update the dual variable related to the facet :math:`\ell_{2,1}` norm 
 % prior.
-%-------------------------------------------------------------------------%
-%%
-% Input:
 %
-% > v1                      dual variable associated with the facet l21-
-%                           norm [s, L]
-% > Psit                    full SARA operator @[1]                     
-% > Psi                     adjoint of the full SARA operator @[1] 
-% > xhat                    auxiliary variable related to the wideband
-%                           image [M, N, L]
-% > weights1                weights associated with the reweigthing step
-%                           pixels due to the overlap between facets [M, N]
-% > beta1                   update step (mu / gamma1) [1]
-% > sigma1                  convergence parameter [1]
+% Parameters
+% ----------
+% v1 : array (2d)
+%     Dual variable associated with the facet :math:`\ell_{2,1}` norm 
+%     [s, L].
+% Psit : lambda function
+%     Full SARA operator @[1].
+% Psi : lambda function
+%     Adjoint of the full SARA operator @[1].
+% xhat : array (3d)
+%     Auxiliary variable related to the wideband image [M, N, L].
+% weights1 : array (2d)
+%     Weights associated with the reweigthing step pixels due to the 
+%     overlap between facets [M, N].
+% beta1 : double
+%     Update step (mu / gamma1) [1]
+% sigma1 : double
+%     Convergence parameter [1]
 %
-% Output:
-%
-% < v1                      dual variable associated with the l21-norm 
-%                           prior [s, L]
-% < g1                      auxiliary variable for the update of the primal
-%                           variable [M, N, L]
+% Returns
+% -------
+% v1 : array (2d)
+%     Dual variable associated with the :math:`\ell_{2,1}` norm prior 
+%     [s, L].
+% g1 : array (3d)
+%     Auxiliary variable for the update of the primal variable [M, N, L].
+   
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

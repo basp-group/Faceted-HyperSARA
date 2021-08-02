@@ -1,20 +1,27 @@
-function weights = update_weights_l21_distributed(x, Psit, weights, reweight_alpha, sig)
-%update_weights_l21_serial: update the weigths for the reweighting of the
+function weights = update_weights_l21_distributed(x, Psit, weights, ...
+    reweight_alpha, sig)
+% Update the weigths for the reweighting of the
 % l21-norm prior.
-%-------------------------------------------------------------------------%
-%%
-% Input:
 %
-% > x                       wideband image [M, N, L]
-% > Psit                    full SARA operator @[1]                     
-% > weights                 weights associated with the reweigthing step 
-%                           [s, L]
-% > reweight_alpha          reweighting parameter [1]
+% Parameters
+% ----------
+% x : array (3d)
+%     Wideband image [M, N, L].
+% Psit : lambda functions
+%     Full SARA operator @[1].
+% weights : array (2d)
+%     Weights associated with the reweigthing step [s, L].
+% reweight_alpha : double
+%     Reweighting parameter [1].
+% sig : double
+%     Estimate of the noise level in the SARA domain.
 %
-% Output:
+% Returns
+% -------
+% weights : array (2d)
+%     Updated weights associated with the reweigthing step [s, L].
 %
-% < weights                 weights associated with the reweigthing step 
-%                           [s, L]
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

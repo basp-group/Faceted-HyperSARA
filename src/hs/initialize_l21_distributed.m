@@ -1,23 +1,32 @@
 function [v1, weights1, s] = initialize_l21_distributed(x, Psit, extension_mode, nlevel, reweighting_alpha, sig)
-%initialize_l21_serial2: initalize the dual variables related to the 
+% Initalize the dual variables related to the 
 % l21-norm prior.
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% 
+% Parameters
+% ----------
+% x : array (3d)
+%     Wideband image [M, N, L].
+% Psit : lambda function
+%     Full SARA operator @[1].
+% extension_mode : string
+%     Name of the boundary extension mode.
+% nlevel : int
+%     Depth of the wavelet decompositions.
+% reweighting_alpha : double
+%     Rewighting parameter.
+% sig : double
+%     Estimate of the noise level transferred to the SARA domain.
 %
-% > x                       wideband image [M, N, L]
-% > Psit                    full SARA operator @[1]                     
-% > extension_mode          name of the boundary extension mode 
-% > nlevel                  depth of the decomposition
+% Returns
+% -------
+% v1 : array (double, 2d)
+%     dual variable associated with the l21-norm prior [s, L].
+% weights1 : array (double, 2d)
+%     weights associated for the reweigthing step [s, L].
+% s : int
+%     number of wavelet decompostion for each channel [1].
 %
-% Output:
-%
-% < v1                      dual variable associated with the l21-norm 
-%                           prior [s, L]
-% < weights1                assciated weights for the reweigthing step 
-%                           [s, L]
-% < s                       number of wavelet decompostion for each channel
-%                           [1]
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.

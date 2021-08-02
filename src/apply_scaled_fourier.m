@@ -10,7 +10,7 @@ function Fx = apply_scaled_fourier(x, A, No)
 %     of the image
 % No : int
 %     Total number of pixels in the oversampled spatial Fourier plane.
-
+%
 % Returns
 % -------
 % Fx : array (2d)

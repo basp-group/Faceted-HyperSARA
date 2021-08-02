@@ -13,8 +13,7 @@ function weights = update_weights_nuclear_serial(x, reweight_alpha, sig_bar)
 % Returns
 % -------
 % weights : array (2d)
-%     weights associated with the reweigthing step [s, L]
-%                           
+%     Weights associated with the reweigthing step [s, L].
 %
              
 %-------------------------------------------------------------------------%

@@ -1,23 +1,28 @@
 function [v0, g0] = update_dual_nuclear_serial(v0, xhat, weights0, beta0, sigma0)
-%update_dual_nuclear_serial: update the dual variables related to the nuclear
+% Update the dual variables related to the nuclear
 % norm prior.
-%-------------------------------------------------------------------------%
-%%
-% Input:
 %
-% > v0        dual variable associated with the nuclear norm prior 
-%             [min(M*N, L), 1]
-% > xhat      auxiliary variable related to the wideband image [M, N, L]
-% > weights0  weights for the reweighting [min(M*N, L), 1]
-% > beta0     thresholding parameter (gamma0 / sigma0) [1]
-% > sigma0    convergence parameter [1]
+% Parameters
+% ----------
+% v0 : array (2d)
+%     Dual variable associated with the nuclear norm prior [min(M*N, L), 1].
+% xhat : array (3d)
+%     Auxiliary variable related to the wideband image [M, N, L]
+% weights0 : array (2d)
+%     Weights for the reweighting [min(M*N, L), 1]
+% beta0 : double
+%     Thresholding parameter (gamma0 / sigma0) [1]
+% sigma0 : double
+%     Convergence parameter [1].
 %
-% Output:
+% Returns
+% -------
+% v0 : array (2d)
+%     Dual variable associated with the nuclear norm prior [min(M*N, L), 1].
+% weights0 : array (3d)
+%     Auxiliary variable for the update of the primal variable [M, N, L].
 %
-% < v0        dual variable associated with the nuclear norm prior 
-%             [min(M*N, L), 1]
-% < g0        auxiliary variable for the update of the primal variable 
-%             [M, N, L]
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
