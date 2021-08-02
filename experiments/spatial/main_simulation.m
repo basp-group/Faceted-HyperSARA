@@ -350,6 +350,7 @@ cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx*Qy, flag_cirrus)
 
 
 %% Setup measurement operator
+% TODO: define lambda function measurement operator
 switch algo_version
     case 'sara'
         [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
