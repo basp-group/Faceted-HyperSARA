@@ -27,8 +27,8 @@ mkdir -p /lustre/home/sc004/$USER/$SLURM_JOB_ID
 # module purge             # remove all previously loaded modules
 module load matlab/R2020b  # version to be checked on cirrus
 
-echo "fprintf('Job id: %s \n', num2str("$SLURM_JOB_ID")); main_simulated_data_mnras('"$imagename"',"$nchannels","$Qx","$Qy","$Qc",'"$algoversion"','"$wintype"',"$ncdata","$ind",["$overlapy","$overlapx"],"$nreweights",'"$gencube"',"$genvis","$computenorm","$solve",strcat('"$imagename"','_',num2str("$nchannels")),'"$covpath"',"$gam","$rw","$flaghomotopy", "$lowerbounds", '"$rwtype"', "$gambar", '"$exptype"', "$superresolution","$isnr","$updatereg",1,'"$regtype"','"$xapprox"','"$noisetransfer"','"$regoption"')" > temporary_file_${SLURM_JOB_ID}.m
-matlab -nosplash -nodesktop -nodisplay < temporary_file_${SLURM_JOB_ID}.m > ${logpath}/spatial_${imagename}_${algoversion}_${wintype}_id=${ind}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_overlap=${overlapx}_gam=${gam}_gambar=${gambar}_rw=${rw}_homotopy=${flaghomotopy}_rwt=${rwtype}_exptype=${exptype}_srf=${superresolution}_snr=${isnr}_updatereg=${updatereg}_regtype=${regtype}_xapprox=${xapprox}_nt=${noisetransfer}_ropt=${regoption}.txt
+echo "fprintf('Job id: %s \n', num2str("$SLURM_JOB_ID")); main_simulation('"$imagename"',"$nchannels","$Qx","$Qy","$Qc",'"$algoversion"','"$wintype"',"$ncdata","$ind",["$overlapy","$overlapx"],"$nreweights",'"$gencube"',"$genvis","$computenorm","$solve",strcat('"$imagename"','_',num2str("$nchannels")),'"$covpath"',"$gam","$rw","$flaghomotopy", "$lowerbounds", '"$rwtype"', "$gambar", '"$exptype"', "$superresolution","$isnr",1" > temporary_file_${SLURM_JOB_ID}.m
+matlab -nosplash -nodesktop -nodisplay < temporary_file_${SLURM_JOB_ID}.m > ${logpath}/spatial_${imagename}_${algoversion}_${wintype}_id=${ind}_Qx=${Qx}_Qy=${Qy}_Qc=${Qc}_overlap=${overlapx}_gam=${gam}_gambar=${gambar}_rw=${rw}_homotopy=${flaghomotopy}_rwt=${rwtype}_exptype=${exptype}_srf=${superresolution}_snr=${isnr}.txt
 
 # Cleanup local work directory
 rm temporary_file_${SLURM_JOB_ID}.m

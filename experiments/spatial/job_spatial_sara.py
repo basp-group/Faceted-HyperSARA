@@ -88,7 +88,7 @@ for g in gam:
         -e {27}/{0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}_snr={25}_homotopy={10}_updatereg={26}_regtype={28}_xapprox={29}_nt={30}_ropt={32}.err \
         -o {27}/{0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}_snr={25}_homotopy={10}_updatereg={26}_regtype={28}_xapprox={29}_nt={30}_ropt={32}.out \
         -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={20},Qx={16},Qy={17},Qc={3},wintype={7},overlapx={18},overlapy={19},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},gambar=1,exptype={22},rwtype={23},superresolution={24},isnr={25},updatereg={26},regtype={28},xapprox={29},noisetransfer={30},logpath={31},regoption={32} \
-        run_fhs_mnras.slurm""".format(
+        run_simulation.slurm""".format(
             *params,
             cubeid,
             ncores,
