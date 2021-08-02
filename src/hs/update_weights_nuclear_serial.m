@@ -1,17 +1,22 @@
 function weights = update_weights_nuclear_serial(x, reweight_alpha, sig_bar)
-%update_weights_nuclear_serial: update the weigths for the reweighting of 
-% the nuclear norm prior.
-%-------------------------------------------------------------------------%
-%%
-% Input:
+% Update the weigths for the reweighting of the nuclear norm prior.
 %
-% > x                       wideband image [M, N, L]
-% > reweight_alpha          reweighting parameter [1]
+% Parameters
+% ----------
+% x : array (3d)
+%     Wideband image [M, N, L].
+% reweight_alpha : double
+%     Reweighting parameter [1].
+% sig_bar : double
+%     Noise level (singular value space).
 %
-% Output:
+% Returns
+% -------
+% weights : array (2d)
+%     weights associated with the reweigthing step [s, L]
+%                           
 %
-% < weights                 weights associated with the reweigthing step 
-%                           [s, L]
+             
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
