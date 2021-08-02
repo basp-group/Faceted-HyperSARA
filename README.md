@@ -49,6 +49,8 @@ vi job_spatial.py
 python job_spatial.py
 ```
 
+To use the scripts reported in `figures`, make sure the [`Cubehelix`](...) package is installed.
+
 ## TODO
 
 - [ ] Prepare full Python scripts for real data examples (only keep useful values, see if anything needs to be added)
