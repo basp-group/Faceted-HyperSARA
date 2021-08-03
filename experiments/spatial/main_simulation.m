@@ -80,6 +80,7 @@ coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/
 rw = -1;
 flag_homotopy = 0;
 overlap_fraction = 0;
+flagDR = 0;
 isnr = 50;
 
 nChannels = 20;
@@ -356,6 +357,15 @@ switch algo_version
         [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
         param_precond, param_blocking, fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy);
 
+        if ~flagDR
+            apply_G = @(Fx, G) G * Fx;
+            apply_Gdag = @(y, G, W) (G') * y(W);
+        else
+            % ! in this case, the variable T (weights, ...) needs to be defined
+            apply_G = @(Fx, G) T.* (G * Fx);
+            apply_Gdag = @(y, G) G' * (T.*y);
+        end
+
     otherwise % 'hs' or 'fhs'
 
         % create the measurement operator operator in parallel (depending on
@@ -368,6 +378,14 @@ switch algo_version
                 [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
                 param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
             end
+            if ~flagDR
+                apply_G = @(Fx, G) G * Fx;
+                apply_Gdag = @(y, G, W) (G') * y(W);
+            else
+                % ! in this case, the variable T (weights, ...) needs to be defined
+                apply_G = @(Fx, G) T.* (G * Fx);
+                apply_Gdag = @(y, G) G' * (T.*y);
+            end
         else
             spmd
                 % define operator on data workers only
@@ -375,6 +393,15 @@ switch algo_version
                     local_fc = fc(rg_c(labindex-Q, 1):rg_c(labindex-Q, 2));
                     [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
                     param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
+                else
+                    if ~flagDR
+                        apply_G = @(Fx, G) G * Fx;
+                        apply_Gdag = @(y, G, W) (G') * y(W);
+                    else
+                        % ! in this case, the variable T (weights, ...) needs to be defined
+                        apply_G = @(Fx, G) T.* (G * Fx);
+                        apply_Gdag = @(y, G) G' * (T.*y);
+                    end
                 end
             end
         end
@@ -651,7 +678,8 @@ if flag_solveMinimization
                     A, At, aW, G, W, param_solver, ...
                     ncores_data, wlt_basis, nlevel, cell_c_chunks, ...
                     nchans, Ny, Nx, param_nufft.oy, param_nufft.ox, ...
-                    name_warmstart, name_checkpoint, [], X0);
+                    name_warmstart, name_checkpoint, applyG, apply_Gdag, ...
+                    [], X0);
             case 'fhs'
                 disp('Faceted HyperSARA')
                 disp('-----------------------------------------')
@@ -660,7 +688,8 @@ if flag_solveMinimization
                     wlt_basis, filter_length, nlevel, window_type, ...
                     cell_c_chunks, nchans, overlap_size, gam, gam_bar, ...
                     Ny, Nx, param_nufft.oy, param_nufft.ox, ...
-                    name_warmstart, name_checkpoint, [], X0);
+                    name_warmstart, name_checkpoint, apply_G, apply_Gdag, ...
+                    [], X0);
             otherwise
                 error('Unknown solver version.')
         end

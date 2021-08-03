@@ -55,3 +55,11 @@ mh_style my_file.m # only analyse the file
 mh_style --fix my_file.m # fix the file based on the rules given in miss_hit.cfg
 mh_style folder/
 ```
+
+## New interface (generic measurement  operator, lambda function)
+
+Functions to be modified:
+
+- `sara`: l. 172-181, 311-333, 442-452, 527-536
+- solvers `hs`, `fhs`: update call to the 2 functions below
+- `src/`: `compute_residual_images`, `update_dual_fidelity`

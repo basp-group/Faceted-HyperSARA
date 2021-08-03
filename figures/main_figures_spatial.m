@@ -6,6 +6,7 @@ addpath ../data
 addpath ../lib/print/
 mkdir figs_spatial
 addpath ../results/final/spatial
+addpath ../lib/faceted-wavelet-transform/src
 
 %% Define experiment type
 Ny = 1024;
@@ -26,11 +27,19 @@ load(strcat('y_', ...
     '_snr=40.mat'), 'sigma_noise');
 upsilon = (sigma_noise([1,end]).^2)./operator_norm([1,end]); % ! operator_norm already squared
 
+%% Define tile limits
+Qx = 4;
+Qy = 4;
+rg_x = split_range(Qx, Nx);
+rg_y = split_range(Qy, Ny);
+mark_length = 30; % mark length of the mark
+mark_width = 2; % mark length of the mark
+
 %% Parameters
 load_images = 1;
 load_residuals = 1;
 fig_size = [600, 600]; % only change wrt Abdullah's code
-shift_colorbar = [0,eps,0,0]; % + [left, bottom, width, height] to place it where you want
+shift_colorbar = [0,-1e-2,0,0]; % + [left, bottom, width, height] to place it where you want
 extension = '.pdf';
 map_img = cubehelix(2048);
 
@@ -44,7 +53,7 @@ fontsize=20;
 
 %% 
 
-for k = numel(img_filenames)
+for k = 1:numel(img_filenames)
     info        = fitsinfo(img_filenames{k});
     rowend      = info.PrimaryData.Size(1);
     colend      = info.PrimaryData.Size(2);
@@ -54,6 +63,19 @@ for k = numel(img_filenames)
         'Info', info,...
         'PixelRegion',{[1 1 rowend], [1 1 colend], [1, nchannels-1, nchannels]});
     x = flipud(x);
+    max_x = max(x(:));
+    
+    % insert NaN to create the mark at the borders of the panel
+    % ! NaN appear in black in cubehelix !
+    for q = 1:Qy-1
+        x(rg_y(q, 2)-mark_width:rg_y(q, 2)+mark_width, 1:mark_length, :) = max_x;
+        x(rg_y(q, 2)-mark_width:rg_y(q, 2)+mark_width, end-mark_length+1:end, :) = max_x;
+    end
+    
+    for q = 1:Qx-1
+        x(1:mark_length, rg_x(q, 2)-mark_width:rg_x(q, 2)+mark_width, :) = max_x;
+        x(end-mark_length+1:end, rg_x(q, 2)-mark_width:rg_x(q, 2)+mark_width, :) = max_x;
+    end
 
     % ! see if this is fine
 %     if ~strcmp(img_filenames{k}, [image_name,'.fits'])
@@ -82,7 +104,7 @@ clim_log = [-1e-5,1e-5;     %band 1
 fig_size = [600, 600];
 fontsize = 20;
 
-for k = numel(res_filenames)
+for k = 1:numel(res_filenames)
     info        = fitsinfo(res_filenames{k});
     rowend      = info.PrimaryData.Size(1);
     colend      = info.PrimaryData.Size(2);

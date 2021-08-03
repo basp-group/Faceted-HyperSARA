@@ -30,7 +30,7 @@ upsilon = (sigma_noise([1,end]).^2)./operator_norm([1,end]); % ! operator_norm a
 load_images = 1;
 load_residuals = 1;
 fig_size = [600, 600]; % only change wrt Abdullah's code
-shift_colorbar = [0,eps,0,0]; % + [left, bottom, width, height] to place it where you want
+shift_colorbar = [0,-1e-2,0,0]; % + [left, bottom, width, height] to place it where you want
 extension = '.pdf';
 map_img = cubehelix(2048);
 
