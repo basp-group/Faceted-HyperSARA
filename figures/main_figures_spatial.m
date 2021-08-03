@@ -45,8 +45,10 @@ map_img = cubehelix(2048);
 
 img_filenames = {[image_name,'.fits'], 'x_sara.fits', 'x_fhs_Q=4_ovl=0.1.fits', 'x_hs.fits', 'x_fhs_Q=4_ovl=0.fits'};
 name = {'x', 'x_l1', 'x_fhs', 'x_hs', 'x_fhs0'};
-clim_log = [1e-5 0.5; % band 1
-            1e-5 0.5]; % last band 
+clim_log = [1e-7 0.5; % band 1
+            1e-7 0.5]; % last band 
+% clim_log = [1e-5 0.5; % band 1
+%             1e-5 0.5]; % last band 
 % clim_log = [1e-5 1.2; % band 1
 %             1e-5 1.2]; % last band 
 fontsize=20;
