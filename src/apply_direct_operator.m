@@ -1,22 +1,10 @@
-function GFx = apply_direct_operator(Fx, G, varargin)
-
-% try to avoid one operator per data block
-
-% 
+function y = apply_direct_operator(Fx, G, varargin)
 
 if isempty(varargin) % no DR
-    for l = 1:size(Fx, 3)
-        for b = 1:numel(G{l})
-            y = G * Fx(W{i}{j}), G{i}{j})
-            
-        end
-    end
+    y = G * Fx;
 else % DR
-        T = varargin{1};
-    end
-
-end
-
-    
+    % Sigma = varargin{1};
+    y = varargin{1} .* (G * Fx);
+end 
 
 end
