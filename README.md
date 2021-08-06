@@ -65,23 +65,16 @@ Note that real-data parameters, (weighting scheme, ...) if any, still need to be
     2. `job_cyga.py`
     3. `run_cyga.slurm`
 
-**DR agnostic algorithm interface**: at the moment, the algo is not completely agnostic to the presence / absence of the DR operator. The only difference lies, for DR, in the presence of an additional weighting matrix
+**DR agnostic algorithm interface**: the DR-agnostic interface is ready. Make sure the `Sigma` variable (DR thershold matrix) is preperly defined in the main script.
 
-```matlab
-% with DR
-y = T .* (G * Fx);
-% w/o DR
-y = G * Fx;
-```
-
-The only functions to be finalized are from this respect are
+<!-- The only functions to be finalized are from this respect are
 
 - `src/compute_residual_image.m`;
 - `src/update_dual_fidelity.m`;
 - `src/hs/hyperSARA.m` (update call tothe 2 first functions above);
 - `src/fhs/facetHyperSARA.m` (update call tothe 2 first functions above);
 - `src/sara/sara.m`;
-- the main script (where the lambda function needs to be created).
+- the main script (where the lambda function needs to be created). -->
 
 ## TODO
 

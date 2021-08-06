@@ -561,11 +561,7 @@ for t = t_start : max_iter
                     labReceive(q);
             end
             tw = tic;
-            % [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, y, xi, ...
-            %     Fxi_old, proj_, A, At, G, W, pU, epsilon, ...
-            %     elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, ...
-            %     elipse_proj_eps.Value, sigma22);
-            [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity2(v2_, y, xi, ...
+            [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, y, xi, ...
                 Fxi_old, proj_, A, At, G, W, pU, epsilon, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, ...
                 elipse_proj_eps.Value, sigma22, flagDR, Sigma);
@@ -742,8 +738,7 @@ for t = t_start : max_iter
                 %! --
             else
                 % compute residual image on the data nodes
-                % res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, G, A, At, W);
-                res_ = compute_residual_images2(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, A, At, G, W, flagDR, Sigma);
+                res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, A, At, G, W, flagDR, Sigma);
             end
         end
         %! -- TO BE CHECKED
@@ -878,8 +873,7 @@ spmd
             offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
     else
-        % res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, G, A, At, W);
-        res_ = compute_residual_images2(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, A, At, G, W, flagDR, Sigma);
+        res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, A, At, G, W, flagDR, Sigma);
     end
 end
 

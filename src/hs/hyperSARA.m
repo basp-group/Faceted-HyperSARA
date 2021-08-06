@@ -439,7 +439,7 @@ for t = t_start : max_iter
         %         sigma22);
         [v2_, g2_, Fxi_old, proj_, norm_res, norm_residual_check_i, ...
             norm_epsilon_check_i] = ...
-                update_dual_fidelity2(v2_, y, xi, Fxi_old, proj_, A, At, ...
+                update_dual_fidelity(v2_, y, xi, Fxi_old, proj_, A, At, ...
                 G, W, pU, epsilon, elipse_proj_max_iter.Value, ...
                 elipse_proj_min_iter.Value, elipse_proj_eps.Value, ...
                 sigma22, flagDR, Sigma);
@@ -560,8 +560,7 @@ for t = t_start : max_iter
             weights1_ = update_weights_l21_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, weights1_, reweighting_alpha, sig_);
 
             % compute residual image
-            % res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex}), y, G, A, At, W);
-            res_ = compute_residual_images2(xsol(:,:,spectral_chunk{labindex}), y, A, At, G, W, flagDR, Sigma);
+            res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex}), y, A, At, G, W, flagDR, Sigma);
         end
 
         %! -- TO BE CHECKED
@@ -660,9 +659,7 @@ toc(start_loop)
 % Calculate residual images
 res = zeros(size(xsol));
 spmd
-    % res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex}), ...
-    %     y, G, A, At, W);
-    res_ = compute_residual_images2(xsol(:,:,spectral_chunk{labindex}), y, A, At, G, W, flagDR, Sigma);
+    res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex}), y, A, At, G, W, flagDR, Sigma);
 end
 
 m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
