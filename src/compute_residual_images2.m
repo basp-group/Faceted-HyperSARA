@@ -1,4 +1,4 @@
-function residual_image = compute_residual_images_lambda(x, y, A, At, ...
+function residual_image = compute_residual_images2(x, y, A, At, ...
     G, W, flagDR, Sigma)
 % Compute residual images.
 %
@@ -10,14 +10,18 @@ function residual_image = compute_residual_images_lambda(x, y, A, At, ...
 %     Wideband image cube [N(1), N(2), L].
 % y : cell
 %     Blocked visibilities {L}{nblocks}.
-% G : cell
-%     Blocked gridding matrix {L}{nblocks}.
 % A : lambda
 %     Measurement operator @[1].
 % At : lambda
 %     Adjoint measurement operator @[1].
+% G : cell
+%     Blocked gridding matrix {L}{nblocks}.
 % W : cell
 %     Masking operators (selection of data blocks) {L}{nblocks}.
+% flagDR : bool
+%     Flag to activate DR functionality.
+% Sigma : cell
+%     Dimensionality reduction weights {L}{nblocks}.
 %
 % Returns
 % -------

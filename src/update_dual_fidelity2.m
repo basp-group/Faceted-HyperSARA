@@ -1,7 +1,7 @@
 function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
-    update_dual_fidelity_lambda(v2, y, x, Fx_old, proj, A, At, G, W, pU, epsilon, ...
-                         elipse_proj_max_iter, elipse_proj_min_iter, ...
-                         elipse_proj_eps, sigma22, Sigma)
+    update_dual_fidelity2(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
+        epsilon, elipse_proj_max_iter, elipse_proj_min_iter, ...
+        elipse_proj_eps, sigma22, flagDR, Sigma)
 % Update the data fidelity term in the preconditioned primal-dual algorithm.
 %
 % Update the data fidelity terms owned by each worked involved in the group
@@ -40,8 +40,10 @@ function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
 %     Stopping criterion for the projection.
 % sigma22 : array (1d)
 %     Step-size for the update of the dual variable (tau*sigma2).
+% flagDR : bool
+%     Flag to activate DR functionality.
 % Sigma : cell
-%     Dimensionality reduction weight matrices.
+%     Dimensionality reduction weights {L}{nblocks}.
 %
 % Returns
 % -------

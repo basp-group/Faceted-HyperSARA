@@ -1,7 +1,7 @@
 function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
     Qx, Qy, K, wavelet, filter_length, nlevel, window_type, ...
     spectral_chunk, nChannels, overlap_size, alph, alph_bar, ...
-    M, N, oy, ox, name_warmstart, name_checkpoint, apply_G, apply_Gdag, ...
+    M, N, oy, ox, name_warmstart, name_checkpoint, flagDR, Sigma, ...
     varargin)
 
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
@@ -561,8 +561,14 @@ for t = t_start : max_iter
                     labReceive(q);
             end
             tw = tic;
-            [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, y, xi, Fxi_old, proj_, A, At, G, W, pU, epsilon, ...
-                elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, elipse_proj_eps.Value, sigma22);
+            % [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity(v2_, y, xi, ...
+            %     Fxi_old, proj_, A, At, G, W, pU, epsilon, ...
+            %     elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, ...
+            %     elipse_proj_eps.Value, sigma22);
+            [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_fidelity2(v2_, y, xi, ...
+                Fxi_old, proj_, A, At, G, W, pU, epsilon, ...
+                elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, ...
+                elipse_proj_eps.Value, sigma22, flagDR, Sigma);
             t_op = toc(tw);
 
             % send portions of g2 to the prior/primal nodes
@@ -736,7 +742,8 @@ for t = t_start : max_iter
                 %! --
             else
                 % compute residual image on the data nodes
-                res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, G, A, At, W);
+                % res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, G, A, At, W);
+                res_ = compute_residual_images2(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, A, At, G, W, flagDR, Sigma);
             end
         end
         %! -- TO BE CHECKED
@@ -871,7 +878,8 @@ spmd
             offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
     else
-        res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, G, A, At, W);
+        % res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, G, A, At, W);
+        res_ = compute_residual_images2(xsol(:,:,spectral_chunk{labindex-Qp.Value}), y, A, At, G, W, flagDR, Sigma);
     end
 end
 

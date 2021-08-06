@@ -357,14 +357,14 @@ switch algo_version
         [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
         param_precond, param_blocking, fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy);
 
-        if ~flagDR
-            apply_G = @(Fx, G) G * Fx;
-            apply_Gdag = @(y, G, W) (G') * y(W);
-        else
-            % ! in this case, the variable T (weights, ...) needs to be defined
-            apply_G = @(Fx, G) T.* (G * Fx);
-            apply_Gdag = @(y, G) G' * (T.*y);
-        end
+        % if ~flagDR
+        %     apply_G = @(Fx, G) G * Fx;
+        %     apply_Gdag = @(y, G, W) (G') * y(W);
+        % else
+        %     % ! in this case, the variable T (weights, ...) needs to be defined
+        %     apply_G = @(Fx, G) T.* (G * Fx);
+        %     apply_Gdag = @(y, G) G' * (T.*y);
+        % end
 
     otherwise % 'hs' or 'fhs'
 
@@ -374,33 +374,29 @@ switch algo_version
             spmd
                 local_fc = fc(rg_c(labindex, 1):rg_c(labindex, 2));
                 % TODO: update util_gen_measurement_operator to enable kaiser kernels
-                % ! ideally, simplify irt nufft interface to do so
-                [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
-                param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
-            end
-            if ~flagDR
-                apply_G = @(Fx, G) G * Fx;
-                apply_Gdag = @(y, G, W) (G') * y(W);
-            else
-                % ! in this case, the variable T (weights, ...) needs to be defined
-                apply_G = @(Fx, G) T.* (G * Fx);
-                apply_Gdag = @(y, G) G' * (T.*y);
+                if flagDR
+                    % ! define Sigma (weight matrix involved in DR)
+                    % ! define G as the holographic matrix
+                else
+                    % ! ideally, simplify irt nufft interface to do so
+                    [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
+                    param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
+                    Sigma = [];
+                end
             end
         else
             spmd
                 % define operator on data workers only
                 if labindex > Q
                     local_fc = fc(rg_c(labindex-Q, 1):rg_c(labindex-Q, 2));
-                    [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
-                    param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
-                else
-                    if ~flagDR
-                        apply_G = @(Fx, G) G * Fx;
-                        apply_Gdag = @(y, G, W) (G') * y(W);
+                    if flagDR
+                        % ! define Sigma (weight matrix involved in DR)
+                        % ! define G as the holographic matrix
                     else
-                        % ! in this case, the variable T (weights, ...) needs to be defined
-                        apply_G = @(Fx, G) T.* (G * Fx);
-                        apply_Gdag = @(y, G) G' * (T.*y);
+                        % ! ideally, simplify irt nufft interface to do so
+                        [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
+                        param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
+                        Sigma = [];
                     end
                 end
             end
