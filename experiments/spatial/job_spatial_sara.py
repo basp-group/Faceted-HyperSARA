@@ -16,10 +16,8 @@ overlapx = 0
 overlapy = 0
 
 # to be activated only for the first run (generating the data), and can systematically deactivated afertwards)
-gencube = 0
 genvis = 0
 computenorm = 1
-lowerbounds = 1
 solve = 1
 
 # kept fixed throughout all the simulations from this folder
@@ -28,7 +26,7 @@ algoversion = "sara"
 nchannels = 20
 Qc = nchannels
 rw = -1
-gam = ["3"]
+gam = ["1"]
 nreweights = 5
 wintype = "none"
 covpath = "../../data/msSpecs.mat"  # '../../data/vla_7.95h_dt10s.uvw.mat'
@@ -64,10 +62,8 @@ for g in gam:
         covpath,
         ncdata,
         flaghomotopy,
-        gencube,
         genvis,
         computenorm,
-        lowerbounds,
         solve,
         Qx,
         Qy,
@@ -79,28 +75,28 @@ for g in gam:
 
         print("Total number of cpus: {0}".format(ncores))
 
-        slurm_command = r"""sbatch --job-name=spa_{1}_h{10}_reg{26}_rt={28}_xapprox={29}_nt={30}_a{5}_ropt{32} --ntasks-per-node={21} \
-        -e {27}/{0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}_snr={25}_homotopy={10}_updatereg={26}_regtype={28}_xapprox={29}_nt={30}_ropt={32}.err \
-        -o {27}/{0}_{1}_L={2}_Qx={16}_Qy={17}_Qc={3}_id={20}_overlapx={18}_overlapy={19}_gamma={5}_rw={4}_rwt={23}_exptype={22}_srf={24}_snr={25}_homotopy={10}_updatereg={26}_regtype={28}_xapprox={29}_nt={30}_ropt={32}.out \
-        -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={20},Qx={16},Qy={17},Qc={3},wintype={7},overlapx={18},overlapy={19},gam={5},nreweights={6},gencube={11},genvis={12},computenorm={13},solve={15},covpath={8},ncdata={9},rw={4},flaghomotopy={10},lowerbounds={14},gambar=1,exptype={22},superresolution={24},isnr={25},logpath={26}\
+        slurm_command = r"""sbatch --job-name=spa_{1}_h{10}_a{5} --ntasks-per-node={19} \
+        -e {23}/{0}_{1}_L={2}_Qx={14}_Qy={15}_Qc={3}_ind={18}_overlapx={16}_overlapy={17}_gamma={5}_rw={4}_exptype={20}_srf={21}_isnr={22}_homotopy={10}.err \
+        -o {23}/{0}_{1}_L={2}_Qx={14}_Qy={15}_Qc={3}_ind={18}_overlapx={16}_overlapy={17}_gamma={5}_rw={4}_exptype={20}_srf={21}_issnr={22}_homotopy={10}.out \
+        -v --export=ALL,imagename={0},algoversion={1},nchannels={2},ind={18},Qx={14},Qy={15},Qc={3},wintype={7},overlapx={16},overlapy={17},gam={5},nreweights={6},gencube={11},genvis={11},computenorm={12},solve={13},covpath={8},ncdata={9},rw={4},flaghomotopy={10},gambar=1,exptype={20},superresolution={21},isnr={22},logpath={24}\
         run_simulation.slurm""".format(
-            *params,  # +20
-            cubeid,  # 20
-            ncores,  # 21
-            exp_type,  # 22
-            superresolution_factor,  # 23
-            isnr,  # 24
-            slurm_log_path,  # 25
-            log_path,  # 26
+            *params,  # +18
+            cubeid,  # 18
+            ncores,  # 19
+            exp_type,  # 20
+            superresolution_factor,  # 21
+            isnr,  # 22
+            slurm_log_path,  # 23
+            log_path,  # 24
         )
 
-        # print(slurm_command) # Uncomment this line when testing to view the sbatch command
+        # Uncomment this line when testing to view the sbatch command
+        # print(slurm_command)
 
-        # # Comment the following 3 lines when testing to prevent jobs from being submitted
+        # Comment the following 3 lines when testing to prevent jobs from being
+        # submitted
         exit_status = subprocess.call(slurm_command, shell=True)
-        if exit_status == 1:  # Check to make sure the job submitted
+        if exit_status == 1:
             print("Job {0} failed to submit".format(slurm_command))
-
-        # time.sleep(0.5)
 
 print("Submission complete.")

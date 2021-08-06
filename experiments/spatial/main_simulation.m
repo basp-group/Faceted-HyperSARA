@@ -1,97 +1,117 @@
-% function main_simulated_data_mnras(image_name, nChannels, Qx, Qy, Qc, ...
-%     algo_version, window_type, ncores_data, ind, overlap_fraction, nReweights, ...
-%     flag_generateCube, flag_generateVisibilities, ...
-%     flag_computeOperatorNorm, flag_solveMinimization, ...
-%     cube_path, coverage_path, gam, rw, flag_homotopy, ... 
-%     flag_computeLowerBounds, gam_bar, exp_type, ...
-%     superresolution_factor, isnr, flag_cirrus)
+function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
+    algo_version, window_type, ncores_data, ind, overlap_fraction, ...
+    nReweights, coverage_path, gam, gam_bar, rw, exp_type, ...
+    superresolution_factor, isnr, flag_generateVisibilities, ...
+    flag_computeOperatorNorm, flag_solveMinimization, flagDR, ...
+    flag_cirrus, flag_homotopy)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 % 
-% This script generates synthetic data and runs the faceted HyperSARA 
-% approach to reconstruct an :math:`N \times L` wideband image cube.
-% 
-% Args:
-%     image_name (string): name of the reference synthetic image (from the 
-%     data/ folder)
-%     nChannels (int): number of channels
-%     Qx (int): number of spatial facets along axis 2 (x)
-%     Qy (int): number of spatial facets along axis 1 (y)
-%     Qc (int): number of spectral facets
-%     p (double): [description]
-%     input_snr (double): input SNR value (in dB)
-%     algo_version (string): selected version of the solver:
-%        - 'fhs'            cst_weighted: constant overlap taken for the 
-%                          faceted nuclear norm, using spatial weights 
-%                          (apodization window)
-%     window_type (string): type of apodization window considered for the 
-%                           faceted nuclear norm prior. Only active with 
-%                           the following versions of the algorithm:
-%        - 'triangular'
-%        - 'hamming'
-%        - 'pc' (piecewise-constant)
-%     ncores_data (int): number of cores handlig the data fidelity terms 
-%                        ("data cores"). The total number of cores is 
-%                        Qx*Qy + ncores_data + 1
-%     ind (int): index of the spectral facet to be reconstructed (set to -1
-%                to deactivate spectral faceting)
-%     overlap_size (int): number of overlapping pixels between contiguous 
-%                         facets (only active for  the 'cst' and 
-%                         'cst_overlap' versions of the solver)
-%     flag_generateCube (bool): flag specifying whether the ground truth image 
-%                           cube needs to be generated or loaded from an 
-%                           existing .fits file
-%     flag_generateCoverage (bool): flag specifying whether the uv-coverage 
-%     needs to be generated or loaded from an existing .fits file
-%     flag_generateVisibilities (bool): flag specifying whether the 
-%     visibilities need to be generated or loaded from an existing .mat 
-%     file
-%     flag_generateUndersampledCube (bool): flag to generate an undersampled 
-%     version (by a factor 4) of the ground-truth wideband image cube
-%     flag_computeOperatorNorm (bool): compute norm of the measurement 
-%     operator, or load it from an existing .mat file (e.g., computed from 
-%     a previous run)
-%     flag_solveMinimization (bool): flag triggering the faceted HyperSARA 
-%     solver
-%     cube_path (string): path and name of the wideband cube .fits file 
-%     (w/o file extension)
-%     coverage_path (string): path and name of the uv-coverage .fits file 
-%     (w/o file extension) 
+% This script generates synthetic data and runs the SARA, HyperSARA or 
+% faceted HyperSARA approach to reconstruct an :math:`N \times L` wideband 
+% image cube.
+%
+% Parameters
+% ----------
+% image_name : string
+%     Name of the reference synthetic image (from the data/ folder).
+% nChannels : int
+%     Number of spectral channels considered.
+% Qx : int
+%     Number of spatial facets along axis 2 (x).
+% Qy : int
+%     Number of spatial facets along axis 1 (y).
+% Qc : int
+%     Number of spectral facets.
+% algo_version : string ('sara', 'hs' or 'fhs')
+%     Selected solver.
+% window_type : string ('triangular', 'hamming' or 'pc' (piecewise-constant))
+%     Type of apodization window considered for the faceted nuclear norm 
+%     prior (FHS solver).
+% ncores_data : int
+%     Number of cores handlig the data fidelity terms ("data cores"). 
+%     For Faceted HyperSARA, the total number of cores used is Qx*Qy + 
+%     ncores_data + 1. For SARA and HyperSARA, represents the number of 
+%     cores used for the parallelization.
+% ind : int
+%     Index of the spectral facet to be reconstructed (set to -1 to 
+%     deactivate spectral faceting).
+% overlap_fraction : array (1d)
+%     Fraction of the total size of a facet overlapping with a neighbour
+%     facet.
+% nReweights : int
+%     Maximum number of reweighting steps.
+% coverage_path : string
+%     Path and name of the uv-coverage .fits file (w/o file extension).
+% gam : double
+%     Additional multiplicative factor affecting the joint-sparsity
+%     regularization term.
+% gam_bar : double
+%     Additional multiplicative factor affecting the low-rankness
+%     regularization term.
+% rw : int
+%     [description]
+% exp_type : string ('spatial' or 'spectral')
+%     Type of the experiment to be reproduced.
+% superresolution_factor : double
+%     Coverage superresolution factor.
+% isnr : double
+%     Input SNR used to generate the synthetic visibilities (value in dB).
+% flag_generateVisibilities : bool
+%     Flag specifying whether the visibilities need to be generated or 
+%     loaded from an existing .mat file.
+% flag_computeOperatorNorm : bool
+%     Flag triggering the computation of the (preconditioned) operator 
+%     norm.
+% flag_solveMinimization : bool
+%     Flag triggering the solver (SARA, HS or FHS).
+% flagDR : bool
+%     Flag to activate DR features in the definition of the measurement 
+%     operator. 
+% flag_cirrus : bool
+%     Specify whether the solver runs on cirrus or not (for the creation of
+%     the parpool).
+% flag_homotopy : bool
+%     Activate the homotopy strategy within the solver.
+%
+% ..note::
+%    DR features still need to be implemented in the main script. 
+%
 
 %% PARAMETERS FOR DEBUGGING
-
-image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
-exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-
-Qx = 1; % 4
-Qy = 1; % 4
-Qc = 1;
-nReweights = 1;
-algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
-window_type = 'triangular'; % 'hamming', 'pc'
-flag_generateVisibilities = 0;
-flag_computeOperatorNorm = 0;
-flag_solveMinimization = 1;
-ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
-ind = 1; % index of the spectral facet to be reconstructed
-gam = 1;
-gam_bar = 1;
-coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
-
-rw = -1;
-flag_homotopy = 0;
-overlap_fraction = 0;
-flagDR = 0;
-isnr = 50;
-
-nChannels = 20;
-flag_generateCube = 1;
-cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
-cube_path = cubepath(nChannels);
-flag_generateCoverage = 0;
-flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-superresolution_factor = 2;
-flag_cirrus = false;
-kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
+%
+% image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
+% exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
+%
+% Qx = 1; % 4
+% Qy = 1; % 4
+% Qc = 1;
+% nReweights = 1;
+% algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
+% window_type = 'triangular'; % 'hamming', 'pc'
+% flag_generateVisibilities = 0;
+% flag_computeOperatorNorm = 0;
+% flag_solveMinimization = 1;
+% ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
+% ind = 1; % index of the spectral facet to be reconstructed
+% gam = 1;
+% gam_bar = 1;
+% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
+%
+% rw = -1;
+% flag_homotopy = 0;
+% overlap_fraction = 0;
+% flagDR = 0;
+% isnr = 50;
+%
+% nChannels = 20;
+% flag_generateCube = 1;
+% cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
+% cube_path = cubepath(nChannels);
+% flag_generateCoverage = 0;
+% flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
+% superresolution_factor = 2;
+% flag_cirrus = false;
+% kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
 %%
 format compact;
 
