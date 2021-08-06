@@ -66,10 +66,10 @@ Qx = 1; % 4
 Qy = 1; % 4
 Qc = 1;
 nReweights = 1;
-algo_version = 'sara'; % 'fhs', 'hs', 'sara';
+algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
 window_type = 'triangular'; % 'hamming', 'pc'
 flag_generateVisibilities = 0;
-flag_computeOperatorNorm = 1;
+flag_computeOperatorNorm = 0;
 flag_solveMinimization = 1;
 ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
 ind = 1; % index of the spectral facet to be reconstructed
@@ -354,9 +354,16 @@ cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx*Qy, flag_cirrus)
 % TODO: define lambda function measurement operator
 switch algo_version
     case 'sara'
-        [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
-        param_precond, param_blocking, fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy);
-
+        if flagDR
+            % ! define Sigma (weight matrix involved in DR)
+            % ! define G as the holographic matrix
+        else
+            [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
+                param_precond, param_blocking, fc, fmax, Nx, Ny, ...
+                param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy);
+            Sigma = [];
+        end
+        
         % if ~flagDR
         %     apply_G = @(Fx, G) G * Fx;
         %     apply_Gdag = @(y, G, W) (G') * y(W);
