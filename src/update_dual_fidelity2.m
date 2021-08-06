@@ -91,7 +91,7 @@ if flagDR
             u2 = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j});
             g2(W{i}{j}) = g2(W{i}{j}) + u2;
             
-            norm_res{i}{j} = norm(apply_G(Fx(W{i}{j}), G{i}{j}) - y{i}{j}, 2);
+            norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})) - y{i}{j}, 2);
             global_norm_res = global_norm_res + norm_res{i}{j}^2;
             norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
         end

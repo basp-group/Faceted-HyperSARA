@@ -1,5 +1,5 @@
 function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
-    name_warsmtart, name_checkpoint, alph, varargin)
+    name_warsmtart, name_checkpoint, alph, flagDR, Sigma, varargin)
 
 % TODO: update interface to accommodate real data
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
@@ -171,14 +171,26 @@ if init_flag
 else
     Fx_old = zeros(No, c);
     proj = cell(c, 1);
-    for i = 1 : c
-        proj{i} = cell(numel(G{i}),1);
-        Fx = A(xsol(:,:,i));
-        for j = 1 : numel(G{i})
-            r2{i}{j} = G{i}{j} * Fx(W{i}{j});
-            [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+    if flagDR
+        for i = 1 : c
+            proj{i} = cell(numel(G{i}),1);
+            Fx = A(xsol(:,:,i));
+            for j = 1 : numel(G{i})
+                r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+                [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+            end
+            Fx_old(:,i) = Fx;
         end
-        Fx_old(:,i) = Fx;
+    else
+        for i = 1 : c
+            proj{i} = cell(numel(G{i}),1);
+            Fx = A(xsol(:,:,i));
+            for j = 1 : numel(G{i})
+                r2{i}{j} = G{i}{j} * Fx(W{i}{j});
+                [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+            end
+            Fx_old(:,i) = Fx;
+        end
     end
     fprintf('proj initialized \n\n')
 end
@@ -308,31 +320,62 @@ for t = t_start : max_iter
     norm_epsilon_check = 0;
     counter = 1;
     tw = tic;
-    for i = 1 : c
-        Fx = A(xsol(:,:,i));
-        g2 = zeros(No,1);
-        for j = 1 : length(G{i})
-            r2{i}{j} = G{i}{j} * (2*Fx(W{i}{j}) - Fx_old(W{i}{j},i));
-            [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
-            v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
-            
-            % projection onto the l2-ball
-            %v2{i}{j} = v2{i}{j} + r2{i}{j} - proj_l2ball(v2{i}{j} + r2{i}{j}, epsilon{i}{j}, y{i}{j});
+    if flagDR
+        for i = 1 : c
+            Fx = A(xsol(:,:,i));
+            g2 = zeros(No,1);
+            for j = 1 : length(G{i})
+                r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * (2*Fx(W{i}{j}) ...
+                    - Fx_old(W{i}{j},i)));
 
-            u2{i}{j} = Gt{i}{j} * v2{i}{j};
-            g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
-            
-            % norm of residual
-            norm_res{i}{j} = norm(G{i}{j}*Fx(W{i}{j}) - y{i}{j});
-            residual_check(counter) = norm_res{i}{j};
-            epsilon_check(counter) = epsilon{i}{j};
-            counter = counter + 1;
+                [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+                v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
+                
+                % projection onto the l2-ball
+                %v2{i}{j} = v2{i}{j} + r2{i}{j} - proj_l2ball(v2{i}{j} + r2{i}{j}, epsilon{i}{j}, y{i}{j});
 
-            norm_residual_check = norm_residual_check + norm_res{i}{j}^2;
-            norm_epsilon_check = norm_epsilon_check + power(epsilon{i}{j},2);
+                u2{i}{j} = Gt{i}{j} * (Sigma{i}{j} .* v2{i}{j});
+                g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+                
+                % norm of residual
+                norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j}*Fx(W{i}{j})) - y{i}{j});
+                residual_check(counter) = norm_res{i}{j};
+                epsilon_check(counter) = epsilon{i}{j};
+                counter = counter + 1;
+
+                norm_residual_check = norm_residual_check + norm_res{i}{j}^2;
+                norm_epsilon_check = norm_epsilon_check + power(epsilon{i}{j},2);
+            end
+            Fx_old(:,i) = Fx;
+            Ftx(:,:,i) = real(At(g2));
         end
-        Fx_old(:,i) = Fx;
-        Ftx(:,:,i) = real(At(g2));
+    else
+        for i = 1 : c
+            Fx = A(xsol(:,:,i));
+            g2 = zeros(No,1);
+            for j = 1 : length(G{i})
+                r2{i}{j} = G{i}{j} * (2*Fx(W{i}{j}) - Fx_old(W{i}{j},i));
+                [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+                v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
+                
+                % projection onto the l2-ball
+                %v2{i}{j} = v2{i}{j} + r2{i}{j} - proj_l2ball(v2{i}{j} + r2{i}{j}, epsilon{i}{j}, y{i}{j});
+
+                u2{i}{j} = Gt{i}{j} * v2{i}{j};
+                g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+                
+                % norm of residual
+                norm_res{i}{j} = norm(G{i}{j}*Fx(W{i}{j}) - y{i}{j});
+                residual_check(counter) = norm_res{i}{j};
+                epsilon_check(counter) = epsilon{i}{j};
+                counter = counter + 1;
+
+                norm_residual_check = norm_residual_check + norm_res{i}{j}^2;
+                norm_epsilon_check = norm_epsilon_check + power(epsilon{i}{j},2);
+            end
+            Fx_old(:,i) = Fx;
+            Ftx(:,:,i) = real(At(g2));
+        end
     end
     t_data(t) = toc(tw);
     % Free memory
@@ -440,15 +483,28 @@ for t = t_start : max_iter
 
         % compute residual image
         res = zeros(size(xsol));
-        for i = 1 : c
-            Fx = A(xsol(:,:,i));
-            g2 = zeros(No,1);
-            for j = 1 : length(G{i})
-                res_f = y{i}{j} - G{i}{j} * Fx(W{i}{j});
-                u2{i}{j} = Gt{i}{j} * res_f;
-                g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+        if flagDR
+            for i = 1 : c
+                Fx = A(xsol(:,:,i));
+                g2 = zeros(No, 1);
+                for j = 1 : length(G{i})
+                    res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+                    u2{i}{j} = Gt{i}{j} * (Sigma{i}{j} .* res_f);
+                    g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+                end
+                res(:,:,i) = real(At(g2));
             end
-            res(:,:,i) = real(At(g2));
+        else
+            for i = 1 : c
+                Fx = A(xsol(:,:,i));
+                g2 = zeros(No, 1);
+                for j = 1 : length(G{i})
+                    res_f = y{i}{j} - G{i}{j} * Fx(W{i}{j});
+                    u2{i}{j} = Gt{i}{j} * res_f;
+                    g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+                end
+                res(:,:,i) = real(At(g2));
+            end
         end
 
         % update weights
@@ -524,15 +580,28 @@ for t = t_start : max_iter
 end
 
 % Calculate residual images
-for i = 1 : c
-    Fx = A(xsol(:,:,i));
-    g2 = zeros(No,1);
-    for j = 1 : length(G{i})
-        res_f = y{i}{j} - G{i}{j} * Fx(W{i}{j});
-        u2{i}{j} = Gt{i}{j} * res_f;
-        g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+if flagDR
+    for i = 1 : c
+        Fx = A(xsol(:,:,i));
+        g2 = zeros(No,1);
+        for j = 1 : length(G{i})
+            res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+            u2{i}{j} = Gt{i}{j} * (Sigma{i}{j} .* res_f);
+            g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+        end
+        res(:,:,i) = real(At(g2));
     end
-    res(:,:,i) = real(At(g2));
+else
+    for i = 1 : c
+        Fx = A(xsol(:,:,i));
+        g2 = zeros(No,1);
+        for j = 1 : length(G{i})
+            res_f = y{i}{j} - G{i}{j} * Fx(W{i}{j});
+            u2{i}{j} = Gt{i}{j} * res_f;
+            g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+        end
+        res(:,:,i) = real(At(g2));
+    end
 end
 
 m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
