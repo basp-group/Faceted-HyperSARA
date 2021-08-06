@@ -1,7 +1,7 @@
 function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
     update_dual_fidelity_lambda(v2, y, x, Fx_old, proj, A, At, G, W, pU, epsilon, ...
                          elipse_proj_max_iter, elipse_proj_min_iter, ...
-                         elipse_proj_eps, sigma22, apply_G, apply_Gdag)
+                         elipse_proj_eps, sigma22, Sigma)
 % Update the data fidelity term in the preconditioned primal-dual algorithm.
 %
 % Update the data fidelity terms owned by each worked involved in the group
@@ -40,6 +40,8 @@ function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
 %     Stopping criterion for the projection.
 % sigma22 : array (1d)
 %     Step-size for the update of the dual variable (tau*sigma2).
+% Sigma : cell
+%     Dimensionality reduction weight matrices.
 %
 % Returns
 % -------
@@ -72,25 +74,49 @@ nChannels = size(x, 3);
 norm_res = cell(nChannels, 1);
 norm_epsilon = 0;
 global_norm_res = 0;
-for i = 1 : nChannels
-    Fx = A(x(:,:,i));
-    g2 = zeros(size(Fx));
-    norm_res{i} = cell(length(G{i}), 1);
-    for j = 1 : length(G{i})
-        r2 = apply_G(2*Fx(W{i}{j}) - Fx_old(W{i}{j}, i), G{i}{j});
-        proj{i}{j} = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, ...
-            r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, ...
-            elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
-        v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2 - pU{i}{j} .* proj{i}{j};        
-        u2 = apply_Gdag(v2{i}{j}, G{i}{j});
-        g2(W{i}{j}) = g2(W{i}{j}) + u2;
-        
-        norm_res{i}{j} = norm(apply_G(Fx(W{i}{j}), G{i}{j}) - y{i}{j}, 2);
-        global_norm_res = global_norm_res + norm_res{i}{j}^2;
-        norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
+
+if flagDR
+    for i = 1 : nChannels
+        Fx = A(x(:,:,i));
+        g2 = zeros(size(Fx));
+        norm_res{i} = cell(length(G{i}), 1);
+        for j = 1 : length(G{i})
+            r2 = Sigma{i}{j} .* (G{i}{j} * (2*Fx(W{i}{j}) - Fx_old(W{i}{j}, i)));
+            proj{i}{j} = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, ...
+                r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, ...
+                elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
+            v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2 - pU{i}{j} .* proj{i}{j};
+            u2 = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j});
+            g2(W{i}{j}) = g2(W{i}{j}) + u2;
+            
+            norm_res{i}{j} = norm(apply_G(Fx(W{i}{j}), G{i}{j}) - y{i}{j}, 2);
+            global_norm_res = global_norm_res + norm_res{i}{j}^2;
+            norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
+        end
+        Fx_old(:,i) = Fx; 
+        Ftx(:,:,i) = sigma22(i)*real(At(g2));
     end
-    Fx_old(:,i) = Fx; 
-    Ftx(:,:,i) = sigma22(i)*real(At(g2));
+else
+    for i = 1 : nChannels
+        Fx = A(x(:,:,i));
+        g2 = zeros(size(Fx));
+        norm_res{i} = cell(length(G{i}), 1);
+        for j = 1 : length(G{i})
+            r2 = G{i}{j} * (2*Fx(W{i}{j}) - Fx_old(W{i}{j}, i));
+            proj{i}{j} = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, ...
+                r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, ...
+                elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
+            v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2 - pU{i}{j} .* proj{i}{j};        
+            u2 = G{i}{j}' * v2{i}{j};
+            g2(W{i}{j}) = g2(W{i}{j}) + u2;
+            
+            norm_res{i}{j} = norm(G{i}{j}*Fx(W{i}{j}) - y{i}{j}, 2);
+            global_norm_res = global_norm_res + norm_res{i}{j}^2;
+            norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
+        end
+        Fx_old(:,i) = Fx; 
+        Ftx(:,:,i) = sigma22(i)*real(At(g2));
+    end
 end
 
 end
