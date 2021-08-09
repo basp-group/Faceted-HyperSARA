@@ -78,13 +78,13 @@ with open(parameter_file_full_path, "r") as csvfile:
 
         for cubeid in range(1, int(job[1]) + 1):
 
-            slurm_command = r"""sbatch --job-name=spectral_{16}_{17}_{20} --ntasks-per-node={19} \
-            -e {28}/{0}_{16}_L={1}_Qx={2}_Qy={3}_Qc={17}_ind={6}_overlapx={4}_overlapy={5}_gamma={7}_gammabar={20}_rw={6}_exptype={21}_srf={22}_isnr={23}_homotopy={12}.err \
-            -o {28}/{0}_{16}_L={1}_Qx={2}_Qy={3}_Qc={17}_ind={18}_overlapx={4}_overlapy={5}_gamma={7}_gammabar={20}_rw={6}_exptype={21}_srf={22}_isnr={23}_homotopy={12}.out \
-            -v --export=ALL,imagename={0},algoversion={16},nchannels={1},ind={18},Qx={2},Qy={3},Qc={17},wintype={9},overlapx={4},overlapy={5},gam={7},nreweights={8},gencube={13},genvis={13},computenorm={14},solve={15},covpath={10},ncdata={11},rw={6},flaghomotopy={12},lowerbounds={16},rwtype={22},gambar={20},exptype={21},superresolution={22},isnr={23},logpath={25}\
+            slurm_command = r"""sbatch --job-name=spectral_{1}_{17}_{18} --ntasks-per-node={19} \
+            -e {24}/{0}_{16}_L={1}_Qx={2}_Qy={3}_Qc={17}_ind={18}_overlapx={4}_overlapy={5}_gamma={7}_gammabar={20}_rw={6}_exptype={21}_srf={22}_isnr={23}_homotopy={12}.err \
+            -o {24}/{0}_{16}_L={1}_Qx={2}_Qy={3}_Qc={17}_ind={18}_overlapx={4}_overlapy={5}_gamma={7}_gammabar={20}_rw={6}_exptype={21}_srf={22}_isnr={23}_homotopy={12}.out \
+            -v --export=ALL,imagename={0},algoversion={16},nchannels={1},ind={18},Qx={2},Qy={3},Qc={17},wintype={9},overlapx={4},overlapy={5},gam={7},nreweights={8},genvis={13},computenorm={14},solve={15},covpath={10},ncdata={11},rw={6},flaghomotopy={12},gambar={20},exptype={21},superresolution={22},isnr={23},logpath={25}\
             run_fhs_mnras.slurm""".format(
                 *params,  # +16
-                *job,  # + 2 
+                *job,  # + 2
                 cubeid,  # 18
                 ncores,  # 19
                 gam_bar,  # 20
@@ -95,13 +95,13 @@ with open(parameter_file_full_path, "r") as csvfile:
                 log_path,  # 25
             )
 
-            # print(slurm_command) # Uncomment this line when testing to view the sbatch command
+            # Uncomment this line when testing to view the sbatch command
+            print(slurm_command)
 
-            # Comment the following 3 lines when testing to prevent jobs from being submitted
-            exit_status = subprocess.call(slurm_command, shell=True)
-            if exit_status == 1:  # Check to make sure the job submitted
-                print("Job {0} failed to submit".format(slurm_command))
-
-            # time.sleep(0.5)
+            # Comment the following 3 lines when testing to prevent jobs from
+            # being submitted
+            # exit_status = subprocess.call(slurm_command, shell=True)
+            # if exit_status == 1:
+            #     print("Job {0} failed to submit".format(slurm_command))
 
 print("Submission complete.")
