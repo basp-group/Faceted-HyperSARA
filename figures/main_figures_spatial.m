@@ -5,7 +5,7 @@ addpath ../../CubeHelix
 addpath ../data
 addpath ../lib/print/
 mkdir figs_spatial
-addpath ../results/final/spatial
+addpath ../results/final/spatial_new
 addpath ../lib/faceted-wavelet-transform/src
 
 %% Define experiment type

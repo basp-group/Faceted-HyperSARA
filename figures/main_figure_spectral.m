@@ -5,7 +5,7 @@ addpath ../../CubeHelix
 addpath ../data
 addpath ../lib/print/
 mkdir figs_spectral
-addpath ../results/final/spectral
+addpath ../results/final/spectral_new
 
 %% Define experiment type
 Ny = 256;
