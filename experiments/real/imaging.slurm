@@ -28,6 +28,8 @@ module load matlab/R2020b
 RUNFILENAME='./runs/cube-'$SUBCUBE'_job-'$RUNID'.m'
 cp fixed_main_input.m    $RUNFILENAME 
 
+echo "imagename='"$IMAGENAME"'" >> $RUNFILENAME
+echo "algoversion='"$ALGO"'" >> $RUNFILENAME
 echo "subcube_ind="$SUBCUBE  >>$RUNFILENAME
 echo "param_reg.gam="$GAM  >>$RUNFILENAME
 echo "param_reg.gam_bar="$GAMBAR  >>$RUNFILENAME
