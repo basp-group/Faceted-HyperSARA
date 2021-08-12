@@ -1,10 +1,10 @@
-This is a very very basic Readme. Will be updated soon!
+**This is a very very basic Readme. Will be updated soon!
 
-Step 1. clone the full repo
+**Step 1.** clone the full repo
 
-Step 2. go to  `./experiments/real` to launch the job
+**Step 2.** go to  `./experiments/real` to launch the job
 
-Step 3. launch these 2 commands:
+**Step 3.**  launch these 2 commands:
 
 `module load anaconda/python3`
 
