@@ -16,6 +16,10 @@
 
 cd $PDIR
 
+#### create tmp dir
+path_jobs_all='/lustre/home/sc004/'$USER'/'$SLURM_JOB_ID
+mkdir $path_jobs_all
+
 #### load matlab module (setup environment)
 
 module load matlab/R2020b
@@ -33,7 +37,9 @@ echo "param_reg.nReweights="$nRW  >>$RUNFILENAME
 echo "%% main script"  >>$RUNFILENAME
 echo "main_real_data_dev_ad(imagename,cube_filename,subcube_ind,channels2image,algoversion,ncoredata,param_global,param_reg,input_flags,cirrus) ;" >>$RUNFILENAME
 
-cat $RUNFILENAME
+
+
 ### run Matlab job
 matlab -nodisplay < $RUNFILENAME  >> $LOG
 
+rm -rf $path_jobs_all
