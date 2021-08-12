@@ -35,5 +35,5 @@ echo "main_real_data_dev_ad(imagename,cube_filename,subcube_ind,channels2image,a
 
 cat $RUNFILENAME
 ### run Matlab job
-##matlab -nodisplay < $RUNFILENAME  >> $LOG
+matlab -nodisplay < $RUNFILENAME  >> $LOG
 
