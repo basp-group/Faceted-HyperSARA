@@ -117,10 +117,10 @@ if ~isfield(param_global, 'GEnergyL2') , param_global.GEnergyL2 =1-1e-4; end
 
 % flags
 
-if ~isfield(input_flags,'computeOperatorNorm' ), param_global.computeOperatorNorm = 1 ; end
-if ~isfield(input_flags,'solveMinimization' ), param_global.solveMinimization = 1 ; end
-if ~isfield(input_flags,'dr' ), param_global.dr = 0 ; end
-if ~isfield(input_flags,'homotopy' ), param_global.homotopy = 0 ; end
+if ~isfield(input_flags,'computeOperatorNorm' ), input_flags.computeOperatorNorm = 1 ; end
+if ~isfield(input_flags,'solveMinimization' ), input_flags.solveMinimization = 1 ; end
+if ~isfield(input_flags,'dr' ), input_flags.dr = 0 ; end
+if ~isfield(input_flags,'homotopy' ), input_flags.homotopy = 0 ; end
 
 %project dir
 if ~isfield(param_global,'main_dir' ), param_global.main_dir = [pwd,filesep] ; end
