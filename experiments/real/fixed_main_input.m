@@ -2,7 +2,6 @@
 cirrus = 1;
 calib_dir = '/lustre/home/shared/sc004/FACETED_HYPERSARA_EXPERIMENTS/calib/'
 cube_filename = '/lustre/home/shared/sc004/FACETED_HYPERSARA_EXPERIMENTS/data/cyga_data_subcube_'
-
 project_dir = pwd;
 
 %% general params
@@ -27,21 +26,17 @@ param_global.model_filename = @(subcube,ch) strcat(calib_dir,'/model_image/subcu
 %% flags 
 input_flags.computeOperatorNorm = 1  ;
 input_flags.solveMinimization = 1  ;
-input_flags.homotopy = 0  ;
 input_flags.dr =0;
 input_flags.wprojection =0
 
 
-% cd ([project_dir,filesep,'experiments',filesep,'real']);
-imagename = 'CygA'  ;
-
-algoversion = 'fhs';
-
-ncoredata = 30  ; %30 for cyga
+%% params 
 
 channels2image = [1:17 19 21:32]; %ids of the channels to be imaged from subcube=subcube_ind;
 %if 'sara', make sure to select the id of the channel to be imaged.
+
+ncoredata = numel(channels2image)  ; %30 for cyga
 ncoredata =param_global.Qx *param_global.Qy+ numel(channels2image)+1; %30 for cyga
 
-
+fprintf('\nINFO:  %d cores deployed !\n',ncoredata) 
 
