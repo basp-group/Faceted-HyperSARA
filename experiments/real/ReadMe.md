@@ -18,13 +18,13 @@
 
 2. run id
 
-3.subcube id 
+3. subcube id 
 
 4. algo
 
-5.gam 
+5. gam 
 
-6.gambar
+6. gambar
 
 7. rw
 
