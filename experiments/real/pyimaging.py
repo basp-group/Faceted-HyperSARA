@@ -25,7 +25,7 @@ def main():
 
    parameter_file ="%s/%s"%(project_path_run, sys.argv[1]);
 
-   print("Current experiment Dir %s"project_path_run)
+   print("Current experiment Dir %s"%project_path_run)
    print("Param file: %s"%parameter_file)
 
    with open(parameter_file, "rt") as csvfile:
