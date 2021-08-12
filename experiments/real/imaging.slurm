@@ -5,7 +5,7 @@
 #SBATCH --nodes=2
 #SBATCH --tasks-per-node=36
 #SBATCH --cpus-per-task=1
-
+#SBATCH --exclusive
 #SBATCH --account=ec110-guest
 #SBATCH --partition=standard
 #SBATCH --qos=standard
@@ -21,8 +21,8 @@ cd $PDIR
 module load matlab/R2020b
 
 #### create a  copy of file 
-RUNFILENAME='./runs/test_'$SUBCUBE'_JOBID'$RUNID'.m'
-cp fixed_main_input.m    $RUNFILENAME 
+RUNFILENAME='./runs/cube-'$SUBCUBE'_job-'$RUNID'.m'
+echo "cp fixed_main_input.m    "$RUNFILENAME 
 
 echo "subcube_ind="$SUBCUBE  >>$RUNFILENAME
 echo "param_reg.gam="$GAM  >>$RUNFILENAME

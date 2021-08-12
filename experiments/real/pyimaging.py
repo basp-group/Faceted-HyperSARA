@@ -19,7 +19,7 @@ except OSError as error:
     print(error)
 
 slurm_file = "%s/imaging.slurm"%project_path_run
-
+print(slurm_file)
 def main():
 
    parameter_file ="%s/%s"%(project_path_run, sys.argv[1]);
@@ -30,23 +30,21 @@ def main():
    with open(parameter_file, "rt") as csvfile:
         reader = csv.reader(csvfile)
         for job in reader:
-            job_name="""{0}_ID{1}_Subcube{2}Algo{3}""".format(*job)
+            job_name="""{3}_{0}_ID{1}_Subcube-{2}""".format(*job)
             #log file
             log_file = """{logpath}/{jobname}""".format(jobname=job_name,logpath=log_path)
             
             # command to launch
-            sbatch_command = """sbatch --job-name {jobname} --error {log}.err --output {log}.out \
-                    --export=LOG={log}.log,PDIR={projectpath},GAM={4},GAMBAR={5},  \
-                    SUBCUBE={2},ALGO={3},RUNID={1},IMAGENAME={0},RW={6},nRW={7},LOG={log}.log \ 
-                    {slurmFile}""".format(*job,jobname=job_name,slurmFile=slurm_file,log=log_file,projectpath=project_path_run) 
+            sbatch_command = """sbatch --job-name {jobname} --error {log}.err --output {log}.out  --export=LOG={log}.log,PDIR={projectpath},GAM={4},GAMBAR={5},SUBCUBE={2},RUNID={1},RW={6},nRW={7},LOG={log}.log  {slurmFile}""".format(*job,jobname=job_name,slurmFile=slurm_file,log=log_file,projectpath=project_path_run) 
             
+            print(" ")
             print(sbatch_command) # Uncomment this line when testing to view the sbatch command
             
             #launch job
             exit_status = subprocess.call(sbatch_command, shell=True)
            
             if exit_status is 1:  # Check to make sure the job submitted
-              print("Job {11} failed to submit".format(*job))
+              print("Job failed to submit".format(*job))
 
 
 
