@@ -25,7 +25,7 @@ mkdir $path_jobs_all
 module load matlab/R2020b
 
 #### create a  copy of file 
-RUNFILENAME='./runs/cube-'$SUBCUBE'_job-'$RUNID'.m'
+RUNFILENAME='./runs/cube-'$SUBCUBE'_job-'$RUNID'_gam-'$GAM'_gambar-'$GAMBAR'.m'
 cp fixed_main_input.m    $RUNFILENAME 
 
 echo "imagename='"$IMAGENAME"'" >> $RUNFILENAME
