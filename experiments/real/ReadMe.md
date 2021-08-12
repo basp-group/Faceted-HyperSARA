@@ -1,4 +1,6 @@
-**This is a very very basic Readme. Will be updated soon!
+**This is a very very basic Readme. Will be updated soon!**
+
+
 
 **Step 1.** clone the full repo
 
@@ -10,7 +12,7 @@
 
 `./pyimaging.py params.csv`
 
-** INPUT in `.csv`
+**INPUT** in `.csv`
 
 1. imagename
 
@@ -28,5 +30,7 @@
 
 8. nReweights
 
+**PS:** data files and G matrices from calib are in ` /lustre/home/shared/sc004/FACETED_HYPERSARA_EXPERIMENTS` . Do not create copies as these are read only and the code is already directed to them. 
 
-**PS** new matlab functions are in `./experiments/real/real_data`
+**PPS:** new matlab functions are in `./experiments/real/real_data`
+
