@@ -5,7 +5,6 @@ import os
 # global vars
 project_path_run=os.path.dirname(os.path.realpath(__file__))
 #project_path_run="%s/experiments/real/"%project_path
-os.cd(project_path_run)
 #setting paths 
 log_path  = "%s/logs"%project_path_run
 try:
