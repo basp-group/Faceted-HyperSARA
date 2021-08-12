@@ -22,7 +22,7 @@ module load matlab/R2020b
 
 #### create a  copy of file 
 RUNFILENAME='./runs/cube-'$SUBCUBE'_job-'$RUNID'.m'
-echo "cp fixed_main_input.m    "$RUNFILENAME 
+cp fixed_main_input.m    $RUNFILENAME 
 
 echo "subcube_ind="$SUBCUBE  >>$RUNFILENAME
 echo "param_reg.gam="$GAM  >>$RUNFILENAME
@@ -35,5 +35,5 @@ echo "main_real_data_dev_ad(imagename,cube_filename,subcube_ind,channels2image,a
 
 cat $RUNFILENAME
 ### run Matlab job
-matlab -nodisplay < $RUNFILENAME  >> $LOG
+##matlab -nodisplay < $RUNFILENAME  >> $LOG
 
