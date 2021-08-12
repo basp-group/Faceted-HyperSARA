@@ -2,11 +2,11 @@
 
 
 
-**Step 1.** clone the full repo
+**Step 1.** clone the full repo & submodules
 
 **Step 2.** go to  `./experiments/real` to launch the job
 
-**Step 3.**  launch these 2 commands:
+**Step 3.** launch these 2 commands:
 
 `module load anaconda/python3`
 
@@ -30,7 +30,7 @@
 
 8. nReweights
 
-**PS:** data files and G matrices from calib are in ` /lustre/home/shared/sc004/FACETED_HYPERSARA_EXPERIMENTS` . Do not create copies as these are read only and the code is already directed to them. 
+**PS:** data files and G matrices from calib pre-processing step are in ` /lustre/home/shared/sc004/FACETED_HYPERSARA_EXPERIMENTS` . Do not create copies as these are read only and the code is already directed to them. 
 
 **PPS:** new matlab functions are in `./experiments/real/real_data`
 
