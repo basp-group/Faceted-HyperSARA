@@ -4,7 +4,6 @@ import csv
 import os
 import pathlib
 import subprocess
-import time
 
 import numpy as np
 
@@ -17,7 +16,8 @@ parameter_file_full_path = "job_spatial.csv"
 # overlapx = 0.5
 # overlapy = 0.5
 
-# to be activated only for the first run (generating the data), and can systematically deactivated afertwards)
+# to be activated only for the first run (generating the data), and can
+#  systematically deactivated afertwards)
 genvis = 0
 computenorm = 0
 solve = 1
@@ -110,7 +110,7 @@ for g in gam:
                 # Uncomment this line when testing to view the sbatch command
                 # print(slurm_command)
 
-                # Comment the following 3 lines when testing to prevent jobs 
+                # Comment the following 3 lines when testing to prevent jobs
                 # from being submitted
                 exit_status = subprocess.call(slurm_command, shell=True)
                 if exit_status == 1:
