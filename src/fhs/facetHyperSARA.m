@@ -249,7 +249,8 @@ end
 g_q = Composite();
 xsol_q = Composite();
 if init_flag
-    for q = 1:Q
+   size(xsol)
+       	for q = 1:Q
         xsol_q{q} = xsol(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
         g_q{q} = init_m.g(I(q, 1)+1:I(q, 1)+dims(q, 1), I(q, 2)+1:I(q, 2)+dims(q, 2), :);
     end
@@ -368,7 +369,7 @@ else
     % ! assumes primal variable initialized to 0
     spmd
         if labindex > Qp.Value
-            [v2_, norm_res, t_block, proj_] = initiliaze_data_worker(y);
+            [v2_, norm_res, t_block, proj_] = initilize_data_worker(y);
         end
     end
     fprintf('v2, proj, t_block, norm_res initialized \n\n')
