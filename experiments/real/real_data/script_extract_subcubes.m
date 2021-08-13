@@ -2,10 +2,10 @@ clear; clc; close all;
 SpeedOfLight = 299792458;
 
 obsFileName = {'5','7'};
-configFileName = {'C'}; 
+configFileName = {'A','C'}; 
 pixelSize = 0.06;%asec
 Qc=16;
-direname=['/Users/ad33/CodesScience/Faceted-Hyper-SARA-main',filesep,'data',filesep,'CYG',filesep];
+direname=['/lustre/home/shared/sc004/FACETED_HYPERSARA_EXPERIMENTS/data',filesep];
 file2save = [direname,'cyga_data_subcube_'];
 file2load = cell(length(configFileName),length(obsFileName));
 for conf = 1 : length(configFileName) %visibility file
@@ -16,10 +16,9 @@ end
 % % util_get_real_vis_data_ad(file2load,file2save,pixelSize,Qc);
   
 
-
 for conf = 1 : length(configFileName) %visibility file
-    ch = 1;
-    for m = 1 : length(obsFileName)  %visibility file
+        ch =1;
+    	for m = 1 : length(obsFileName)  %visibility file
         
         load(file2load{conf,m});
         
@@ -54,15 +53,15 @@ for conf = 1 : length(configFileName) %visibility file
                 I = Data(:,j);
                 ind = (temp==0).*(abs(I)>0);
                 if ~isempty(ind)
-                    time_{ch,1}{conf} = double(Times(ind>0));
-                    nW_{ch,1}{conf} = double(Weights_ch(ind>0,j));
-                    y_{ch,1}{conf} = double(I(ind>0)) .* nW_{ch,1}{conf};
+                    time_{ch}{conf} = double(Times(ind>0));
+                    nW_{ch}{conf} = double(Weights_ch(ind>0,j));
+                    y_{ch}{conf} = double(I(ind>0)) .* nW_{ch}{conf};
                     UVW_ = UVW(ind>0,:)./wavelength;
-                    u_{ch,1}{conf}  = UVW_(:,1);
-                    v_{ch,1}{conf}  = - UVW_(:,2);
-                    w_{ch,1}{conf} = UVW_(:,3);UVW_=[];
-                    maxBaselinePerCh(ch,conf) = max(sqrt(u_{ch,1}{conf}.^2 + v_{ch,1}{conf}.^2));
-                    pos_{ch,1}(conf) = length(y_{ch,1}{conf});
+                    u_{ch}{conf}  = UVW_(:,1);
+                    v_{ch}{conf}  = - UVW_(:,2);
+                    w_{ch}{conf} = UVW_(:,3);UVW_=[];
+                    maxBaselinePerCh(ch,conf) = max(sqrt(u_{ch}{conf}.^2 + v_{ch}{conf}.^2));
+                    pos_{ch}(conf) = length(y_{ch}{conf});
                     
                     ch = ch + 1;
                 end
@@ -90,14 +89,15 @@ ScaleNUFFT =  pi/(maxBaseline * SuperResolutionScale); % convert uv pts in ]-pi,
 nChannels =length(u_);
 for i = 1 : nChannels
     for j = 1 : length(u_{i}) % aggregate configurations once done (blocking per config): simple reshape
-        u_{i,j} = u_{i}{j} *ScaleNUFFT;
-        v_{i,j} = v_{i}{j} *ScaleNUFFT;
+        u_{i}{j} = u_{i}{j} *ScaleNUFFT;
+        v_{i}{j} = v_{i}{j} *ScaleNUFFT;
     end
 end
 fprintf('\nSaving interleaved data .. \n')
 interleaved_channels = split_range_interleaved(Qc, nChannels);
 for iSubCube = 1:numel(interleaved_channels)
-    subcube_channels = interleaved_channels{iSubCube};
+    iSubCube
+	subcube_channels = interleaved_channels{iSubCube}
     u=cell(numel(subcube_channels),1);
     v =cell(numel(subcube_channels),1);
     w=cell(numel(subcube_channels),1);
@@ -106,13 +106,14 @@ for iSubCube = 1:numel(interleaved_channels)
     y=cell(numel(subcube_channels),1);
     pos =cell(numel(subcube_channels),1);
     for j =1:numel(subcube_channels)
-        u{j,1} =u_{subcube_channels(j)};          u_{subcube_channels(j)} =[];
+          u{j,1} =u_{subcube_channels(j)};          u_{subcube_channels(j)} =[];
         v{j,1} =v_{subcube_channels(j)};          v_{subcube_channels(j)} =[];
         w{j,1} =w_{subcube_channels(j)};          w_{subcube_channels(j)} =[];
         time{j,1} = time_{subcube_channels(j)};   time_{subcube_channels(j)} =[];
         nW{j,1} = nW_{subcube_channels(j)};       nW_{subcube_channels(j)} =[];
         y{j,1} =y_{subcube_channels(j)};          y_{subcube_channels(j)}=[];
-        pos{j,1}=pos_{subcube_channels(j)};     pos_{subcube_channels(j)}=[];
+        pos{j,1}=pos_{subcube_channels(j)};     pos_{subcube_channels(j)}=[]; 
+	    
     end
     save([file2save,num2str(iSubCube),'.mat'],'-v7.3', 'y', 'u', 'v','w', 'nW', 'time', 'pos', 'pixelSize');
     clear u v w y time nW pos ;
