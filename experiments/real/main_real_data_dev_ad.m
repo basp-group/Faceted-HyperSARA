@@ -440,7 +440,7 @@ switch algo_version
         % ! to be verified
         % all the variables are stored on the main process for sara
         epsilons = l2bounds(1);
-        global_sigma_noise = 1;% data are whitened already%datafile.sigma_noise(subcube_channels, 1);
+     %   global_sigma_noise =1 ;% data are whitened already%datafile.sigma_noise(subcube_channels, 1);
     otherwise
         yCmpst = Composite();
         epsilons = Composite();
@@ -449,7 +449,7 @@ switch algo_version
             yCmpst{data_worker_id(k)} = y(freqRangeCores(k, 1):freqRangeCores(k, 2));
             epsilons{data_worker_id(k)} = l2bounds(freqRangeCores(k, 1):freqRangeCores(k, 2));
         end
-        global_sigma_noise = 1;%data are whitened already %datafile.sigma_noise;
+      %  global_sigma_noise = 1;%data are whitened already %datafile.sigma_noise;
 end
 disp('Data loaded successfully')
 
@@ -458,39 +458,58 @@ disp('Data loaded successfully')
 %% Compute operator norm
 if strcmp(algo_version, 'sara')
     if flag_computeOperatorNorm
+	fprintf('\nComputing operators norm .. ')
+	tic
         [Anorm, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 200);%AD: changed tolerance to 1e-6 instead of 1e-8 Oo
-        save(fullfile(results_path, ...
+        toc
+        fprintf('.. done. \n')
+	save(fullfile(results_path, ...
             strcat('Anorm_', algo_version, ...
             '_Ny',num2str(Ny),'_Nx',num2str(Nx), ...
             '_L',num2str(nChannels), ...
-            '_Qc',num2str(Qc),'_ind',num2str(subcube_ind), ...
-            '_ch', num2str(subcube_ind), '.mat')), ...
+            '_Qc',num2str(Qc),'_cube',num2str(subcube_ind), ...
+            '_ch', num2str(channels2image), '.mat')), ...
             '-v7.3', 'Anorm', 'squared_operator_norm', 'rel_var', ...
             'squared_operator_norm_precond', 'rel_var_precond');
         clear rel_var
     else
+	fprintf('\nLoading operators norm .. ') 
         load(fullfile(results_path, ...
             strcat('Anorm_', algo_version, ...
             '_Ny',num2str(Ny),'_Nx',num2str(Nx), ...
             '_L',num2str(nChannels), ...
-            '_Qc',num2str(Qc),'_ind',num2str(subcube_ind), ...
-            '_ch', num2str(subcube_ind), '.mat')), ...
+            '_Qc',num2str(Qc),'_cube',num2str(subcube_ind), ...
+            '_ch', num2str(channels2image), '.mat')), ...
             'Anorm', 'squared_operator_norm_precond', 'squared_operator_norm');
     end
 else
-    if flag_computeOperatorNorm
-        spmd
-            if labindex > Qx*Qy*strcmp(algo_version, 'fhs')
-                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
-            end
-        end
-        
-        % save operator norm from the different subcubes into a single .mat
-        % file
-        opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
+    
+    % save operator norm from the different subcubes into a single .mat  file
+    opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
             '_Ny',num2str(Ny), '_Nx',num2str(Nx), ...
-            '_L', num2str(nChannels), '.mat')), 'Writable', true);
-        
+            '_cube-', num2str(subcube_ind), '.mat')), 'Writable', true);	
+    if flag_computeOperatorNorm
+        fprintf('\nComputing operators norm .. ')
+	tic
+	spmd
+            if labindex > Qx*Qy*strcmp(algo_version, 'fhs')
+                [An_Cmpst, squared_operator_norm_Cmpst, rel_var_Cmpst, squared_operator_norm_precond_Cmpst, rel_var_precond_Cmpst] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 200);  %tol increased!!!!
+ 	    end
+        end
+        toc
+	fprintf('.. done. \n')
+	squared_operator_norm =  zeros(nchans, 1);
+	squared_operator_norm_precond =  zeros(nchans, 1);
+	rel_var_precond =  zeros(nchans, 1);
+	rel_var =   zeros(nchans, 1);
+	for k = 1:ncores_data
+ 	    rel_var(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) =rel_var_Cmpst{data_worker_id(k)};
+            rel_var_precond(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) =rel_var_precond_Cmpst{data_worker_id(k)};
+            squared_operator_norm(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) =squared_operator_norm_Cmpst{data_worker_id(k)};
+	    squared_operator_norm_precond(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) =squared_operator_norm_precond_Cmpst{data_worker_id(k)};
+	end
+
+        % save operator norm from the different subcubes into a single .mat
         opnormfile.squared_operator_norm = zeros(nchans, 1);
         opnormfile.rel_var = zeros(nchans, 1);
         opnormfile.squared_operator_norm_precond = zeros(nchans, 1);
@@ -498,30 +517,24 @@ else
         
         Anorm = 0;
         for k = 1:ncores_data
-            opnormfile.squared_operator_norm(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = squared_operator_norm{data_worker_id(k)};
-            opnormfile.rel_var(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = rel_var{data_worker_id(k)};
+	    selected_channels = channels2image(freqRangeCores(k, 1):freqRangeCores(k, 2));
+            opnormfile.squared_operator_norm(selected_channels, 1) =   squared_operator_norm_Cmpst{data_worker_id(k)};
+            opnormfile.rel_var(selected_channels, 1) = rel_var_Cmpst{data_worker_id(k)};
             
-            opnormfile.squared_operator_norm_precond(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = squared_operator_norm_precond{data_worker_id(k)};
-            opnormfile.rel_var_precond(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = rel_var_precond{data_worker_id(k)};
+            opnormfile.squared_operator_norm_precond(selected_channels, 1) = squared_operator_norm_precond_Cmpst{data_worker_id(k)};
+            opnormfile.rel_var_precond(selected_channels, 1) = rel_var_precond_Cmpst{data_worker_id(k)};
             
-            Anorm = max(Anorm, An{data_worker_id(k)});
+            Anorm = max(Anorm, An_Cmpst{data_worker_id(k)});
         end
-        clear An rel_var rel_var_precond squared_operator_norm_precond
+        clear An_Cmpst  rel_var_Cmpst rel_var_precond_Cmpst squared_operator_norm_precond_Cmpst
         
     else
-        opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
-            '_Ny',num2str(Ny), '_Nx',num2str(Nx), ...
-            '_L', num2str(nChannels), '.mat')));
-        
-        squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(subcube_channels, 1);
-        rel_var_precond = opnormfile.rel_var_precond(subcube_channels, 1);
+	fprintf('\nLoading operators norm .. ')
+        squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(channels2image, 1);
+        rel_var_precond = opnormfile.rel_var_precond(channels2image, 1);
         Anorm = max(squared_operator_norm_precond.*(1 + rel_var_precond));
-        squared_operator_norm = opnormfile.squared_operator_norm(subcube_channels, 1);
+        squared_operator_norm = opnormfile.squared_operator_norm(channels2image, 1);
         
-        % squared_operator_norm = Composite();
-        % for k = 1:ncores_data
-        %     squared_operator_norm{data_worker_id(k)} = opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
-        % end
     end
 end
 
