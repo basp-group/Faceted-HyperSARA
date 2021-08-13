@@ -4,7 +4,6 @@ import csv
 import os
 import pathlib
 import subprocess
-import time
 
 import numpy as np
 
@@ -96,12 +95,12 @@ with open(parameter_file_full_path, "r") as csvfile:
             )
 
             # Uncomment this line when testing to view the sbatch command
-            print(slurm_command)
+            # print(slurm_command)
 
             # Comment the following 3 lines when testing to prevent jobs from
             # being submitted
-            # exit_status = subprocess.call(slurm_command, shell=True)
-            # if exit_status == 1:
-            #     print("Job {0} failed to submit".format(slurm_command))
+            exit_status = subprocess.call(slurm_command, shell=True)
+            if exit_status == 1:
+                print("Job {0} failed to submit".format(slurm_command))
 
 print("Submission complete.")

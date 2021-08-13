@@ -4,7 +4,6 @@ import csv
 import os
 import pathlib
 import subprocess
-import time
 
 import numpy as np
 

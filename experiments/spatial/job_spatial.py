@@ -4,7 +4,6 @@ import csv
 import os
 import pathlib
 import subprocess
-import time
 
 import numpy as np
 
@@ -110,7 +109,7 @@ for g in gam:
                 # Uncomment this line when testing to view the sbatch command
                 # print(slurm_command)
 
-                # Comment the following 3 lines when testing to prevent jobs 
+                # Comment the following 3 lines when testing to prevent jobs
                 # from being submitted
                 exit_status = subprocess.call(slurm_command, shell=True)
                 if exit_status == 1:
