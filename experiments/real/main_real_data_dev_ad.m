@@ -422,7 +422,6 @@ switch algo_version
             spmd
                 % define operator on data workers only
                 if labindex > Q
-                    
                     local_fc = (freqRangeCores(labindex-Q, 1):freqRangeCores(labindex-Q, 2));
                     param_preproc.ch = channels2image(local_fc);
 		    if flag_dr
@@ -504,10 +503,11 @@ else
 	tic
 	spmd
             if labindex > Qx*Qy*strcmp(algo_version, 'fhs')
-                [An_Cmpst, squared_operator_norm_Cmpst, rel_var_Cmpst, squared_operator_norm_precond_Cmpst, rel_var_precond_Cmpst] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 200);  %tol increased!!!!
- 	    end
+                [An_Cmpst, squared_operator_norm_Cmpst, rel_var_Cmpst, squared_operator_norm_precond_Cmpst, rel_var_precond_Cmpst] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 2);  %tol increased!!!!
+            end
+ 
         end
-        toc
+         toc
 	fprintf('.. done. \n')
 	squared_operator_norm =  zeros(nchans, 1);
 	squared_operator_norm_precond =  zeros(nchans, 1);
@@ -607,8 +607,8 @@ end
 if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     
     % noise level / regularization parameter
-    [sig, sig_bar, mu_chi, sig_chi, sig_sara] = compute_noise_level(Ny, Nx, nchans, global_sigma_noise, ...
-        algo_version, Qx, Qy, overlap_size, squared_operator_norm);
+    [sig, sig_bar, mu_chi, sig_chi, sig_sara] = compute_noise_level(Ny, Nx, nchans, global_sigma_noise(:), ...
+        algo_version, Qx, Qy, overlap_size, squared_operator_norm(:));
     
     % apply multiplicative factor for the regularization parameters (if needed)
     mu_bar = param_reg.gam_bar*sig_bar;

@@ -32,7 +32,7 @@ input_flags.wprojection =0
 
 %% params 
 
-channels2image =[1:17 19 21:32]; %ids of the channels to be imaged from subcube=subcube_ind;
+channels2image = [1:17 19 21:32]; %ids of the channels to be imaged from subcube=subcube_ind;
 %if 'sara', make sure to select the id of the channel to be imaged.
 
 ncoredata = numel(channels2image)  ; %30 for cyga

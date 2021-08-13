@@ -88,7 +88,8 @@ for i = 1:nchans
         G{i}= cell(numel(u{i}),1);
 	W{i}=cell(numel(u{i}),1);
         for j =1:numel(u{i})
-            W{i}{j} = (sum(abs(Gw{j}),1)>0).' ;%, 1).';
+	    
+	    W{i}{j} = (sum(abs(Gw{j}),1)>0).' ;%, 1).';
             G{i}{j} = Gw{j}(:,W{i}{j});
             Gw{j} =[];
         end
