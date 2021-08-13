@@ -71,8 +71,9 @@ for i = 1:nchans
         %     nWw = ones(length(u{i}), 1);
         [u{i}, v{i}, ~, ~, aW{i}, nW] = util_gen_block_structure(u{i}, v{i}, aWw{i}, nWw{i}, param_blocking);
     else
+	aW{i}=cell(numel(u{i}),1);
         for j =1:numel(u{i})
-            aW{i}{j,1} = util_gen_preconditioning_matrix(u{i}{j}, v{i}{j}, param_precond);
+            aW{i}{j} = util_gen_preconditioning_matrix(u{i}{j}, v{i}{j}, param_precond);
         end
         nW =  nWw{i};
     end
@@ -83,15 +84,19 @@ for i = 1:nchans
     if ~(param_preproc.done)
         [~,~, G{i}, W{i}] = op_p_nufft_wproj_dde([v{i} u{i}],w{i},param_nufft,param_wproj );
     else
-        load(param_preproc.G_filename(param_preproc.subcube,param_preproc.ch(i)),'Gw');
         
+	load(param_preproc.G_filename(param_preproc.subcube,param_preproc.ch(i)),'Gw');
+        G{i}= cell(numel(u{i}),1);
+	W{i}=cell(numel(u{i}),1);
         for j =1:numel(u{i})
-            W{i}{j,1} = any(abs(Gw{j}), 1).';
-            G{i}{j,1} = Gw{j}(:,W{i}{j,1});
+            W{i}{j} = any(abs(Gw{j}), 1).';
+            G{i}{j} = Gw{j}(:,W{i}{j});
             Gw{j} =[];
         end
     end
-    
+   G
+  W
+ aW 
 end
 
 end

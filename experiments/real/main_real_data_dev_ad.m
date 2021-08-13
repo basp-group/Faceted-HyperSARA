@@ -244,11 +244,14 @@ nW = nW(channels2image);
 time = time(channels2image);
 pos = pos(channels2image);
 nchans  = numel(channels2image);
+channels2image
+
 if ~isempty(l2bounds_filename)
     fprintf('\nLoading estimates of the l2-bounds ...')
     for iCh =1:nchans
-        loaded = load(param_preproc.l2bounds_filename(subcube_ind,channels2image(iCh)),'l2bounds');
+        loaded = load(param_preproc.l2bounds_filename(subcube_ind,channels2image(iCh)),'l2bounds','sigmac');
         l2bounds{iCh} = loaded.l2bounds;
+	global_sigma_noise(iCh) = loaded.sigmac;
     end
 else
     sigma_ball = 2;
@@ -258,6 +261,7 @@ else
         for iConfig = 1 : numel(pos{iCh})
             l2bounds{iCh}(iConfig,1) =  sqrt(pos{iCh}(iConfig) + sigma_ball*sqrt(pos{iCh}(iConfig))) ;
         end
+	global_sigma_noise(iCh) =1;
     end
 end
 %
@@ -270,7 +274,6 @@ switch algo_version
         else
             xinit =fitsread(param_preproc.model_filename(subcube_ind,channels2image));
         end
-        x0 = sparse(Ny,Nx);
     otherwise
         xinit = zeros(N, nchans);
         if param_preproc.done
@@ -280,7 +283,6 @@ switch algo_version
         end
 end
 
-X0 = sparse(N, nchans); %init cube
 
 %% Auxiliary function needed to select the appropriate workers
 % (only needed for 'hs' and 'fhs' algorithms)
@@ -315,7 +317,10 @@ disp(['Number of pixels in overlap: ', strjoin(strsplit(num2str(overlap_size)), 
 
 % index of channels from the subcube to be handled on each data worker
 ncores_data = min(ncores_data,nchans);
-freqRangeCores = split_range(ncores_data, nchans); %
+freqRangeCores = split_range(ncores_data, nchans) %
+
+channels2image(freqRangeCores)
+
 
 %% Setup name of results file
 results_name_function = @(nchannels) strcat(exp_type,'_',image_name,'_', ...
@@ -390,9 +395,8 @@ switch algo_version
         if strcmp(algo_version, 'hs')
             spmd
                 local_fc = (freqRangeCores(labindex, 1):freqRangeCores(labindex, 2));
-                param_preproc.ch = channels2image(local_fc);
-                
-                % TODO: update util_gen_measurement_operator to enable kaiser kernels
+		param_preproc.ch = channels2image(local_fc);
+		% TODO: update util_gen_measurement_operator to enable kaiser kernels
                 if flag_dr
                     % ! define Sigma (weight matrix involved in DR)
                     % ! define G as the holographic matrix
@@ -409,8 +413,8 @@ switch algo_version
                 if labindex > Q
                     
                     local_fc = (freqRangeCores(labindex-Q, 1):freqRangeCores(labindex-Q, 2));
-                    param_preproc.ch = local_fc;
-                    if flag_dr
+                    param_preproc.ch = channels2image(local_fc);
+		    if flag_dr
                         % ! define Sigma (weight matrix involved in DR)
                         % ! define G as the holographic matrix
                     else
