@@ -135,28 +135,14 @@ if ~isfield(param_global,'l2bounds_filename' ), param_global.l2bounds_filename =
 if ~isfield(param_global,'G_filename' ), param_global.G_filename = [] ; end
 if ~isfield(param_global,'model_filename' ), param_global.model_filename = [] ; end
 
-%-------------------------------------------------------------------------%
-%-------------------------------------------------------------------------%
-% get flags
-% meas. op.: data blocks
-% data blocks
-nDataBlk= param_global.nDataBlk ;
-szDataBlk= param_global.sizeDataBlk ;
-l2bounds_filename = param_global.l2bounds_filename ; % available l2bounds
-% meas. op.: w projection
-param_wproj.CEnergyL2 = param_global.CEnergyL2 ;
-param_wproj.GEnergyL2 = param_global.GEnergyL2 ;
-param_wproj.do = param_global.wprojection;
-%% get params
-% facet related
-Qx = param_global.Qx;
-Qy = param_global.Qy;
-Qc = param_global.Qc;
-window_type = param_global.window_type;
-overlap_fraction = param_global.overlap_fraction;
+%%-------------------------------------------------------------------------%
+%%-------------------------------------------------------------------------%
+%% get imaging setting
+
 % image dimensions & resolution
 Nx = param_global.Nx;
 Ny = param_global.Ny;
+N = Nx*Ny;
 pixelSize  = param_global.pixelSize;
 switch imageResolution
     case 'nominal'
@@ -164,22 +150,43 @@ switch imageResolution
     otherwise
         fprintf('\nINFO: Pixelsize provided by user: %f asec.\n',pixelSize);
 end
-%* Prior
+
+% facet related
+Qx = param_global.Qx;
+Qy = param_global.Qy;
+Qc = param_global.Qc;
+window_type = param_global.window_type;
+overlap_fraction = param_global.overlap_fraction;
+
+% meas. op. :  data blocks
+nDataBlk= param_global.nDataBlk ;
+szDataBlk= param_global.sizeDataBlk ;
+l2bounds_filename = param_global.l2bounds_filename ; % available l2bounds
+
+% meas. op.: w projection
+param_wproj.CEnergyL2 = param_global.CEnergyL2 ;
+param_wproj.GEnergyL2 = param_global.GEnergyL2 ;
+param_wproj.do = param_global.wprojection;
+
+%* l21 Prior
 dict.nlevel = param_global.wavelet_level ; % depth of the wavelet decompositions
 dict.basis  = param_global.wavelet_basis; % %! always specify Dirac basis ('self') in last position if ever used
 dict.filter_length = [2*(1:(numel(dict.basis)-1))'; 0]; % length of the filters (0 corresponding to the 'self' basis)
-% flags
+
+%* flags
 flag_computeOperatorNorm = input_flags.computeOperatorNorm;
 flag_solveMinimization = input_flags.solveMinimization;
 flag_dr = input_flags.dr;
 flag_homotopy =input_flags.homotopy ;
 exp_type = param_global.exp_type;
-%% pre-processing step
+
+%* pre-processing step
 param_preproc.G_filename  = param_global.G_filename;
 param_preproc.l2bounds_filename = param_global.l2bounds_filename;
 param_preproc.model_filename = param_global.model_filename;
 param_preproc.subcube = subcube_ind;
 param_preproc.done = ~isempty(param_preproc.l2bounds_filename ) * ~isempty(param_preproc.model_filename )* ~isempty(param_preproc.G_filename );
+%%-------------------------------------------------------------------------%
 %% info + paths
 format compact;
 project_dir = param_global.main_dir;
@@ -225,29 +232,31 @@ mkdir(auxiliary_path)
 addpath([current_dir,filesep,'real_data'])
 addpath([current_dir,filesep,'real_data',filesep,'wproj_utilities'])
 
-%%
+%%  LOAD SUBCUBE DATA
 %! see how to load the cube prepared by Arwa
 %! load the appropriate portion of the reference image cube
 % if spectral faceting, just load the intersting portion of the full image cub
-
-N = Nx*Ny;
+% AD: each subcue is dealt with independantly: in fact data from subcubes has been extracted in separate files already
 % load real_data;%:AD: modified path
 load([data_file,num2str(subcube_ind),'.mat'],'y', 'u', 'v', 'w', 'nW', 'time', 'pos','pixelSize');
 fprintf('\nINFO: reading data from a saved mat file..\nINFO: uv coor. are scaled in [-pi pi].')
 fprintf('\nINFO: pixelsize: %f asec\n',pixelSize)
 
-y = y(channels2image);
-u = u(channels2image);
-v = v(channels2image);
-w = w(channels2image);
-nW = nW(channels2image);
-time = time(channels2image);
-pos = pos(channels2image);
-nchans  = numel(channels2image);
-channels2image
+y = y(channels2image); %Stokes I data
+u = u(channels2image); % u coordinate
+v = v(channels2image); % v coordinate
+w = w(channels2image); % w coordinate
+nW = nW(channels2image); % natural weights
+time = time(channels2image); % time 
+pos = pos(channels2image);   % number of measurements per freq and data set
+nchans  = numel(channels2image); % number of channels to be imaged of the considered subcubes
+nChannels =nchans;               % number of channels to be imaged, not that each subcube is stored seperately, hence processed independently
 
+fprintf('\nIds of the channels to be imaged: ')
+disp(channels2image)
+%load  l2 bounds if available, otherwise assuming theoretical Chi squared dist. (may be have nnls option here ?)
 if ~isempty(l2bounds_filename)
-    fprintf('\nLoading estimates of the l2-bounds ...')
+    fprintf('\nLoading estimates of the l2-bounds and noise statistics ..')
     for iCh =1:nchans
         loaded = load(param_preproc.l2bounds_filename(subcube_ind,channels2image(iCh)),'l2bounds','sigmac');
         l2bounds{iCh} = loaded.l2bounds;
@@ -255,17 +264,15 @@ if ~isempty(l2bounds_filename)
     end
 else
     sigma_ball = 2;
-    % assuming Chi squared dist.
+    fprintf('\nAssuming Chi squared dist., to determine l2 bounds. ');
     for iCh =  1 : nchans
-        %         l2bounds{iCh} = cell(numel(pos{iCh}), 1);
         for iConfig = 1 : numel(pos{iCh})
             l2bounds{iCh}(iConfig,1) =  sqrt(pos{iCh}(iConfig) + sigma_ball*sqrt(pos{iCh}(iConfig))) ;
         end
 	global_sigma_noise(iCh) =1;
     end
 end
-%
-nChannels =nchans;
+
 %% image cube initialisation
 switch algo_version
     case 'sara'
@@ -275,10 +282,10 @@ switch algo_version
             xinit =fitsread(param_preproc.model_filename(subcube_ind,channels2image));
         end
     otherwise
-        xinit = zeros(N, nchans);
+        xinit = zeros(Ny,Nx, nchans);
         if param_preproc.done
             for  iCh =  1 : nchans
-                xinit(:,iCh) = reshape(fitsread(param_preproc.model_filename(subcube_ind,channels2image(iCh))),N,1);
+                xinit(:,:,iCh) = fitsread(param_preproc.model_filename(subcube_ind,channels2image(iCh)));
             end
         end
 end
@@ -315,11 +322,12 @@ Q = Qx*Qy;
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
 disp(['Number of pixels in overlap: ', strjoin(strsplit(num2str(overlap_size)), ' x ')]);
 
+
+%% data distribution
 % index of channels from the subcube to be handled on each data worker
 ncores_data = min(ncores_data,nchans);
 freqRangeCores = split_range(ncores_data, nchans) %
-
-channels2image(freqRangeCores)
+%channels2image(freqRangeCores)
 
 
 %% Setup name of results file
@@ -327,20 +335,19 @@ results_name_function = @(nchannels) strcat(exp_type,'_',image_name,'_', ...
     algo_version,'_',window_type, '_pixelsize', num2str(pixelSize), ...
     '_Ny',num2str(Ny), '_Nx',num2str(Nx), '_L',num2str(nchannels), ...
     '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
-    '_ind', num2str(subcube_ind), '_g', num2str(param_reg.gam), '_gb', num2str(param_reg.gam_bar), ...
-    '_overlap', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
-    '_hom', num2str(flag_homotopy),'.mat');
+    '_cube', num2str(subcube_ind), '_g', num2str(param_reg.gam), '_gb', num2str(param_reg.gam_bar), ...
+    '_overlap', strjoin(strsplit(num2str(overlap_fraction))),'.mat');
+  %  '_hom', num2str(flag_homotopy),
 
 temp_results_name = @(nchannels) strcat(exp_type,'_',image_name,'_', ...
     algo_version,'_',window_type, '_pixelsize', num2str(pixelSize), ...
     '_Ny',num2str(Ny), '_Nx',num2str(Nx), '_L',num2str(nchannels), ...
     '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
-    '_ind', num2str(subcube_ind), '_g', num2str(param_reg.gam), '_gb', num2str(param_reg.gam_bar), ...
-    '_overlap', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
-    '_hom', num2str(flag_homotopy));
+    '_cube', num2str(subcube_ind), '_g', num2str(param_reg.gam), '_gb', num2str(param_reg.gam_bar), ...
+    '_overlap', strjoin(strsplit(num2str(overlap_fraction))),'_') ;
+    %'_hom', num2str(flag_homotopy));
 
 warm_start = @(nchannels) strcat(temp_results_name(nchannels),'_rw', num2str(param_reg.rw), '.mat');
-
 results_name = results_name_function(nChannels);
 
 %% Define problem configuration (rng, nufft, preconditioning, blocking,NNLS (epsilon estimation))
@@ -349,15 +356,19 @@ param_nufft =[];
 param_blocking =[];
 param_precond =[];
 param_nnls =[];
-%
+
+% param script (AD: for transparancy maybe better have it here ..)
 parameters_problem_dev_ad;
-% param_blocking: config blocking already
+
+% param_blocking:(AD: config blocking already , extra blocking should be allowed ..!!)
 if isempty(nDataBlk)
     param_blocking =[]; % no further blocking required
 end
+
 % nufft kernel
 param_nufft.kernel = kernel;
-% FoV info
+
+% FoV info, relevant for w correction
 param_wproj.FoVx = pixelSize * Nx *pi/180/3600;
 param_wproj.FoVy = pixelSize * Ny *pi/180/3600;
 param_wproj.uGridSize   = 1/(param_nufft.ox*param_wproj.FoVx);
@@ -372,7 +383,7 @@ disp('param_precond')
 disp(param_precond)
 
 %% setup parpool
-cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx*Qy, cirrus);
+cirrus_cluster = util_set_parpool_dev_ad(algo_version, ncores_data, Qx*Qy, cirrus);
 
 %% Setup measurement operator
 % TODO: define lambda function measurement operator
@@ -596,8 +607,7 @@ end
 if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     
     % noise level / regularization parameter
-    [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
-        compute_noise_level(Ny, Nx, nchans, global_sigma_noise, ...
+    [sig, sig_bar, mu_chi, sig_chi, sig_sara] = compute_noise_level(Ny, Nx, nchans, global_sigma_noise, ...
         algo_version, Qx, Qy, overlap_size, squared_operator_norm);
     
     % apply multiplicative factor for the regularization parameters (if needed)
@@ -638,10 +648,8 @@ if flag_solveMinimization
             '_pixelsize', num2str(pixelSize), ...
             '_', window_type, ...
             '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
-            '_ind', num2str(subcube_ind), ...
-            '_gam', num2str(param_reg.gam), ...
-            '_homotopy', num2str(flag_homotopy), ...
-            '.fits')))
+            '_cube', num2str(subcube_ind), ...
+            '_gam', num2str(param_reg.gam),'.fits')))
     else
         %%
         
@@ -682,10 +690,8 @@ if flag_solveMinimization
             '_', window_type, ...
             '_pixelsize', num2str(pixelSize), ...
             '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
-            '_ind', num2str(subcube_ind), ...
+            '_cube', num2str(subcube_ind), ...
             '_gam', num2str(param_reg.gam), '_gambar', num2str(param_reg.gam_bar), ...
-            '_overlap', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
-            '_homotopy', num2str(flag_homotopy), ...
-            '.fits')))
+            '_overlap', strjoin(strsplit(num2str(overlap_fraction))), '.fits')))
     end
 end

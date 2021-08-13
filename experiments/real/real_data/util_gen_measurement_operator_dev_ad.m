@@ -84,19 +84,16 @@ for i = 1:nchans
     if ~(param_preproc.done)
         [~,~, G{i}, W{i}] = op_p_nufft_wproj_dde([v{i} u{i}],w{i},param_nufft,param_wproj );
     else
-        
 	load(param_preproc.G_filename(param_preproc.subcube,param_preproc.ch(i)),'Gw');
         G{i}= cell(numel(u{i}),1);
 	W{i}=cell(numel(u{i}),1);
         for j =1:numel(u{i})
-            W{i}{j} = any(abs(Gw{j}), 1).';
+            W{i}{j} = (sum(abs(Gw{j}),1)>0).' ;%, 1).';
             G{i}{j} = Gw{j}(:,W{i}{j});
             Gw{j} =[];
         end
+	clear Gw nW ;
     end
-   G
-  W
- aW 
 end
 
 end
