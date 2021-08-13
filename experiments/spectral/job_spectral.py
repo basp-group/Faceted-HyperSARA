@@ -14,7 +14,8 @@ parameter_file_full_path = "job_spectral.csv"
 # algoversion = 'hypersara' or 'sara'
 # sara, 100
 
-# to be activated only for the first run (generating the data), and can systematically deactivated afertwards)
+# to be activated only for the first run (generating the data), and can 
+# systematically deactivated afertwards)
 genvis = 1
 computenorm = 1
 solve = 1

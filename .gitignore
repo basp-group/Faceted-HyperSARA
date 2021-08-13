@@ -14,13 +14,8 @@
 *.pbs
 *.fits
 result*
-real_data_dr/logs
 
 # project directories
-mnras_real/mnras_real_data_sc1
-mnras_sim/mnras_hypersara_2
-main_fouRed/WB_new
-irt*
 test*
 figs*
 logs*
@@ -34,10 +29,5 @@ docs/_*
 *.err
 *.txt
 *.out
-
-abd_hypersara2
 *local_cluster_jobs*
 *pref_*
-*dr_reweight*/
-data/dr
-mnras_faceted_corrected/

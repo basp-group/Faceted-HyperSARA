@@ -16,7 +16,8 @@ parameter_file_full_path = "job_spatial.csv"
 # overlapx = 0.5
 # overlapy = 0.5
 
-# to be activated only for the first run (generating the data), and can systematically deactivated afertwards)
+# to be activated only for the first run (generating the data), and can
+#  systematically deactivated afertwards)
 genvis = 0
 computenorm = 0
 solve = 1
