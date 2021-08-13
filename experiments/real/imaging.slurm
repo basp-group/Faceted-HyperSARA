@@ -2,10 +2,10 @@
 
 #### select resources
 #SBATCH --time=24:00:00
-#SBATCH --nodes=2
-#SBATCH --tasks-per-node=36
+#SBATCH --nodes=1
+#SBATCH --tasks-per-node=18
 #SBATCH --cpus-per-task=1
-#SBATCH --exclusive
+####SBATCH --exclusive
 #SBATCH --account=ec110-guest
 #SBATCH --partition=standard
 #SBATCH --qos=standard
@@ -17,7 +17,8 @@
 cd $PDIR
 
 #### create tmp dir
-path_jobs_all='/lustre/home/sc004/'$USER'/'$SLURM_JOB_ID
+mkdir '/lustre/home/sc004/'$USER'/matlab_jobs_tmp/'
+path_jobs_all='/lustre/home/sc004/'$USER'/matlab_jobs_tmp/'$SLURM_JOB_ID
 mkdir $path_jobs_all
 
 #### load matlab module (setup environment)
