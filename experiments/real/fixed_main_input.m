@@ -10,8 +10,8 @@ param_global.Nx = 2560;
 param_global.Ny = 1536;
 param_global.pixelSize = 0.06 ;%asec
 %faceting params
-param_global.Qx =5;
-param_global.Qy =3;
+param_global.Qx =2*5;
+param_global.Qy =2*3;
 param_global.Qc =1;
 param_global.window_type="triangular";
 param_global.overlap_fraction =[0.5,0.5];
