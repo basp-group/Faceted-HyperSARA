@@ -177,7 +177,7 @@ dict.filter_length = [2*(1:(numel(dict.basis)-1))'; 0]; % length of the filters 
 flag_computeOperatorNorm = input_flags.computeOperatorNorm;
 flag_solveMinimization = input_flags.solveMinimization;
 flag_dr = input_flags.dr;
-flag_homotopy =input_flags.homotopy ;
+flag_homotopy =input_flags.homotopy 
 exp_type = param_global.exp_type;
 
 %* pre-processing step
@@ -541,10 +541,13 @@ else
         
     else
 	fprintf('\nLoading operators norm .. ')
-        squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(channels2image, 1);
-        rel_var_precond = opnormfile.rel_var_precond(channels2image, 1);
+        squared_operator_norm_precond = opnormfile.squared_operator_norm_precond;%(channels2image, 1);
+        squared_operator_norm_precond = squared_operator_norm_precond(channels2image);
+       	rel_var_precond = opnormfile.rel_var_precond;
+	rel_var_precond= rel_var_precond(channels2image, 1);
         Anorm = max(squared_operator_norm_precond.*(1 + rel_var_precond));
-        squared_operator_norm = opnormfile.squared_operator_norm(channels2image, 1);
+        squared_operator_norm = opnormfile.squared_operator_norm;
+	squared_operator_norm = squared_operator_norm(channels2image, 1);
         
     end
 end
