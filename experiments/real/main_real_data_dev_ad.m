@@ -503,8 +503,8 @@ else
 	tic
 	spmd
             if labindex > Qx*Qy*strcmp(algo_version, 'fhs')
-                [An_Cmpst, squared_operator_norm_Cmpst, rel_var_Cmpst, squared_operator_norm_precond_Cmpst, rel_var_precond_Cmpst] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 2);  %tol increased!!!!
-            end
+                [An_Cmpst, squared_operator_norm_Cmpst, rel_var_Cmpst, squared_operator_norm_precond_Cmpst, rel_var_precond_Cmpst] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 200);  %tol increased!!!!
+   	    end
  
         end
          toc

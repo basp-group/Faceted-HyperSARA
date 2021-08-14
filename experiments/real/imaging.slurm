@@ -32,9 +32,9 @@ cp fixed_main_input.m    $RUNFILENAME
 echo "imagename='"$IMAGENAME"'" >> $RUNFILENAME
 echo "algoversion='"$ALGO"'" >> $RUNFILENAME
 echo "subcube_ind="$SUBCUBE  >>$RUNFILENAME
-echo "param_reg.gam="$GAM  >>$RUNFILENAME
-echo "param_reg.gam_bar="$GAMBAR  >>$RUNFILENAME
-echo "param_reg.rw="$RW  >>$RUNFILENAME
+echo "param_reg.gam="$GAM";"  >>$RUNFILENAME
+echo "param_reg.gam_bar="$GAMBAR";"  >>$RUNFILENAME
+echo "param_reg.rw="$RW";"  >>$RUNFILENAME
 echo "param_reg.nReweights="$nRW  >>$RUNFILENAME
 
 echo "%% main script"  >>$RUNFILENAME
