@@ -197,6 +197,13 @@ if init_flag
 end
 
 %! -- TO BE CHECKED (primal initialization)
+%AD:  check flag homotopy strategy --> AD: added due to error otherwise
+    if ~isfield(param, 'flag_homotopy')
+        flag_homotopy = false;
+    else
+        flag_homotopy = param.flag_homotopy;
+    end
+
 if init_flag
     xsol = init_m.xsol;
     pdfb_rel_var_low = param.pdfb_rel_var_low;
@@ -792,7 +799,8 @@ for t = t_start : max_iter
 
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
-            m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
+            [name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat']
+	    m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
               'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
