@@ -838,8 +838,8 @@ for t = t_start : max_iter
             m.t_facet = t_facet;
             m.t_data = t_data;
             m.rel_val = rel_val;
-            fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits'])
-            fitswrite(m.res, [name_checkpoint '_res' '.fits'])
+            fitswrite(m.xsol, [name_checkpoint ,'_xsol' ,'.fits'])
+            fitswrite(m.res, [name_checkpoint, '_res', '.fits'])
             if flag_synth_data
                 m.SNR = SNR;
                 m.SNR_average = SNR_average;
