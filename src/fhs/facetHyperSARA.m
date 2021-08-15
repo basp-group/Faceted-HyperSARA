@@ -799,8 +799,7 @@ for t = t_start : max_iter
 
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
-            [name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat']
-	    m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
+	    m = matfile(strcat(name_checkpoint, '_rw=', num2str(reweight_step_count) ,'.mat'), ...
               'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
