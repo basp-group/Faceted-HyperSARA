@@ -15,6 +15,12 @@ Faceted-Hyper-SARA
    lib
    figures
 
+.. toctree::
+   :maxdepth: 2
+   :caption: References
+
+   biblio
+
 
 .. note::
 

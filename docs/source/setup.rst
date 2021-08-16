@@ -69,5 +69,8 @@ Building the documentation
 
 .. code-block:: bash
 
+   conda install -c anaconda sphinx
+   conda install -c conda-forge sphinxcontrib-bibtex
+   pip install -U sphinxcontrib-matlabdomain
    cd build docs/build/html
    make html

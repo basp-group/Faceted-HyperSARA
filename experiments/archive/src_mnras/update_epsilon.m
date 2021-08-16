@@ -4,7 +4,8 @@ function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
 % Adaptive update of the l2-ball constraint.
 %
 % Update of the l2-ball constraints of radius epsilon (adaptive 
-% :math:`\varepsilon`), based on the scheme introduced in :cite:`Dabbech2018`).
+% :math:`\varepsilon`), based on the scheme introduced in 
+% :cite:p:`Dabbech2018`).
 %
 % Args:
 %     epsilon (cell): l2-ball radii {L}{nblocks}.

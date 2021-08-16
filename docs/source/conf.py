@@ -12,15 +12,19 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
-import sphinx_rtd_theme
+# import sphinx_rtd_theme
 
+# sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
+matlab_src_dir = os.path.abspath(os.path.join('..', '..'))
 
 # -- Project information -----------------------------------------------------
 
 project = 'faceted-hypersara'
 copyright = '2021, pthouvenin'
 author = 'pthouvenin'
+# project = "Facet HyperSARA"
+# copyright = "2019, P.-A. Thouvenin, A. Abdulaziz, M. Jiang"
+# author = "P.-A. Thouvenin, A. Abdulaziz, M. Jiang"
 
 
 # -- General configuration ---------------------------------------------------
@@ -35,21 +39,29 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx_rtd_theme',
+    "sphinxcontrib.bibtex",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
+# The suffix(es) of source filenames.
+# You can specify multiple suffix as a list of string:
+#
+# source_suffix = ['.rst', '.md']
+source_suffix = ".rst"
+
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-# The name of the default domain.
-# primary_domain = 'mat'
-
-# matlab_src_dir = '/Users/pthouvenin/Documents/codes/matlab/Faceted-Hyper-SARA/'
-
+# Bibliography
+# .. https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html
+bibtex_bibfiles = ['strings_all_ref.bib', 'biblio.bib']
+bibtex_encoding = 'utf-8-sig'
+bibtex_default_style = 'alpha'
+bibtex_reference_style = 'author_year'
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -68,7 +80,7 @@ html_theme_options = {
     "display_version": True,
     "prev_next_buttons_location": "bottom",
     "style_external_links": False,
-    "vcs_pageview_mode": "",
+    # "vcs_pageview_mode": "",
     # 'style_nav_header_background': 'white',
     # Toc options
     "collapse_navigation": True,
