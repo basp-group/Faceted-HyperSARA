@@ -14,7 +14,7 @@ param_global.Qx =2*5;
 param_global.Qy =2*3;
 param_global.Qc =1;
 param_global.window_type="triangular";
-param_global.overlap_fraction =[0.5,0.5];
+param_global.overlap_fraction =[0.25,0.25];
 %
 param_global.exp_type = 'realexp';
 param_global.main_dir ='../../';
@@ -24,7 +24,7 @@ param_global.model_filename = @(subcube,ch) strcat(calib_dir,'/model_image/subcu
 
 
 %% flags 
-input_flags.computeOperatorNorm = 1  ;
+input_flags.computeOperatorNorm = 1; 
 input_flags.solveMinimization = 1  ;
 input_flags.dr =0;
 input_flags.wprojection =0
