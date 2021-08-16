@@ -31,3 +31,4 @@ docs/_*
 *.out
 *local_cluster_jobs*
 *pref_*
+docs/build
