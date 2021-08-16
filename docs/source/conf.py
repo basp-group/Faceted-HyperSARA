@@ -61,7 +61,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 bibtex_bibfiles = ['strings_all_ref.bib', 'biblio.bib']
 bibtex_encoding = 'utf-8-sig'
 bibtex_default_style = 'alpha'
-bibtex_reference_style = 'author_year'
+# bibtex_reference_style =  # 'author_year'
 
 # -- Options for HTML output -------------------------------------------------
 

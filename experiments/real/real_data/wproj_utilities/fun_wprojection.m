@@ -72,7 +72,7 @@ parfor wrow = 1: nActiveRows
         nufft_kernel.j=cGNUFFT(:,wrow);
         nufft_kernel.a =  vGNUFFT(:,wrow);
         % conv
-        full_kernel = (sconv2_modified(nufft_kernel,w_kernel,'same')); % conj for G^\dagger
+        full_kernel = (sconv2_modified(nufft_kernel,w_kernel,'same')); % conj for G^\daggerger
     else
         full_kernel = sparse(rGNUFFT(:,wrow),cGNUFFT(:,wrow),vGNUFFT(:,wrow),ImFourierDims(1),ImFourierDims(2));
     end

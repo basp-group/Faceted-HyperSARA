@@ -2,9 +2,9 @@ function f = compute_sara_prior_distributed(x, Psit, s)
 % Compute the l21-norm of the wavelet cofficients associated with the SARA 
 % dictionary.
 %
-% Compute :math:`\Vert \boldsymbol{\Psi}^\dag \mathbf{X} \Vert_{2,1}` for 
+% Compute :math:`\Vert \boldsymbol{\Psi}^\dagger \mathbf{X} \Vert_{2,1}` for 
 % an input wideband image :math:`\mathbf{X} \in \mathbb{R}^{N\times L}`, 
-% with :math:`\boldsymbol{\Psi}^\dag` the SARA dictionary :cite:`Carrillo2012`.
+% with :math:`\boldsymbol{\Psi}^\dagger` the SARA dictionary :cite:`Carrillo2012`.
 %
 % Parameters
 % ----------
@@ -18,7 +18,7 @@ function f = compute_sara_prior_distributed(x, Psit, s)
 % Returns
 % -------
 % f : double
-%     Value of :math:`\Vert \boldsymbol{\Psi}^\dag \mathbf{X} \Vert_{2,1}`.
+%     Value of :math:`\Vert \boldsymbol{\Psi}^\dagger \mathbf{X} \Vert_{2,1}`.
 %
 
 %-------------------------------------------------------------------------%
