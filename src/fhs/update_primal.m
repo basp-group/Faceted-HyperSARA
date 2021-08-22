@@ -18,7 +18,7 @@ function [xsol, xhat, rel_x, norm_x] = update_primal(xsol, g)
 % xhat : array
 %     Auxiliary variable related to the wideband facet [M, N, L].
 % rel_x : double
-%     Squared relative variation b etween two consecutive iterates.
+%     Squared relative variation between two consecutive iterates.
 % norm_x : double
 %     Squared Euclidean norm of `xsol`.
 %

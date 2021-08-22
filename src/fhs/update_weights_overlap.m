@@ -7,38 +7,51 @@ function [weights1, weights0] = update_weights_overlap(x_overlap, size_v1, ...
 % faceted l21 and nuclear norms. This version includes a spatial weighting 
 % correction for the nuclear norm (tapering window).
 %
-% Args:
-%     x_overlap (array): overlapping image facet [M, N, L].
-%     size_v1 (int): size of the dual variable associated with the facet 
-%                    l21-norm [1, 2].
-%     I (array): starting index of the non-overlapping facet [1, 2].
-%     offset (array): offset to be used from one dictionary to
-%                          another (different overlap needed for each 
-%                          dictionary -> cropping) {nDictionaries}.
-%     status (array): status of the current facet (last or first 
-%                          facet along vert. / hrz. direction).
-%     nlevel (int): depth of the wavelet decompositions.
-%     wavelet (cell): name of the wavelet dictionaries.
-%     Ncoefs (array): size of the wavelet decompositions at each scale.
-%     dims_overlap_ref (array): dimension of the facet [1, 2].
-%     offsetL (array): amount of zero-pading from the "left" [1, 2].
-%     offsetR (array): amount of zero-padding from the "right" [1, 2].
-%     reweight_alpha (double): reweighting parameter.
-%     crop_l21 (array): relative cropping necessary for the facet 
-%                            l21-norm [1, 2].
-%     crop_nuclear (array): relative cropping necessary for the facet
-%                                nuclear norm [1, 2].
-%     w (array): spatial weights applied to the facet nuclear norm 
-%                     (same size as x_overlap after cropping by 
-%                      crop_nuclear)
-%     sig (double): noise level (wavelet space) [1]
-%     sig_bar (double): noise level (singular value space) [1]
+% Parameters
+% ----------
+% x_overlap : array, double
+%     Overlapping image facet [M, N, L].
+% size_v1 : int
+%     Size of the dual variable associated with the facet 
+%     :math:`\ell_{2,1}` norm [1, 2].
+% I : array,int
+%     Starting index of the non-overlapping facet [1, 2].
+% offset : array, int
+%     Offset to be used from one dictionary to another (different overlap 
+%     needed for each dictionary -> cropping) {nDictionaries}.
+% status : array, int
+%     Status of the current facet (last or first facet along vert. / hrz.
+%     direction) [1, 2].
+% nlevel : int
+%     Depth of the wavelet decompositions.
+% wavelet : cell, string
+%     Name of the wavelet dictionaries.
+% Ncoefs : array, int
+%     Size of the wavelet decompositions at each scale.
+% dims_overlap_ref : array, int
+%     Dimension of the facet [1, 2].
+% offsetL : array, int
+%     Amount of zero-pading from the "left" [1, 2].
+% offsetR : array, int
+%     Amount of zero-padding from the "right" [1, 2].
+% reweight_alpha : double
+%     Reweighting parameter.
+% crop_l21 : array, int
+%     Relative cropping necessary for the facet l21-norm [1, 2].
+% crop_nuclear : array, int
+%     Relative cropping necessary for the facet nuclear norm [1, 2].
+% w : array, double
+%     Spatial weights applied to the facet nuclear norm (same size as 
+%     ``x_overlap`` after cropping by ``crop_nuclear``).
 %
-% Returns:
-%     weights1 (array): weights for the reweighting of the facet l21-
-%                            norm [size_v1(1), size_v1(2)].
-%     weights0 (array): weights for the reweighting of the nuclear 
-%                            norm [min(M*N, L), 1].
+% Returns
+% -------
+% weights1 : array, double
+%      Weights for the reweighting of the facet :math:`\ell_{2,1}`-norm 
+%      [size_v1(1), size_v1(2)].
+% weights0 : array, double
+%     Weights for the reweighting of the nuclear norm [min(M*N, L), 1]. 
+%                    
 
 %-------------------------------------------------------------------------%
 %%

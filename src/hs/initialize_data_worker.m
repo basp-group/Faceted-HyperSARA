@@ -5,7 +5,7 @@ function [v2, norm_res, t_block, proj] = initialize_data_worker(y)
 % ----------
 % y : cell
 %     Input data, stored as 2-layer cell, the first for channels, the
-%     second and data blocks within each channel.
+%     second for data blocks within each channel.
 %
 % Returns
 % -------
