@@ -376,7 +376,7 @@ else
     % ! assumes primal variable initialized to 0
     spmd
         if labindex > Qp.Value
-            [v2_, norm_res, t_block, proj_] = initilize_data_worker(y);
+            [v2_, norm_res, t_block, proj_] = initialize_data_worker(y);
         end
     end
     fprintf('v2, proj, t_block, norm_res initialized \n\n')

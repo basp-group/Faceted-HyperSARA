@@ -301,7 +301,7 @@ if init_flag
 else
     %! this assumes the primal variable has been initialized to 0
     spmd
-        [v2_, norm_res, t_block, proj_] = initiliaze_data_worker(y);
+        [v2_, norm_res, t_block, proj_] = initialize_data_worker(y);
     end
     fprintf('v2, proj, t_block, norm_res initialized \n\n')
 end

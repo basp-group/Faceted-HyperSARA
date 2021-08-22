@@ -42,7 +42,7 @@ function [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, .
 %     norm.
 % size_v1 : array (1d)
 %     Size of the dual variable associated with the facet 
-%     :math:`\ell_{2,1}` norm [1, 2].     
+%     :math:`\ell_{2,1}` norm [1, 2].
 %
 % Returns
 % -------
@@ -51,9 +51,12 @@ function [l21_norm, nuclear_norm] = compute_facet_prior_overlap(x_overlap, Iq, .
 % nuclear_norm  : double
 %     Facet nuclear norm.
 %
-% ..note:: 
+% ..note::
+%
 %   The l21 and nuclear norms do not act on the same facet, hence the 
 %   cropping step.
+%
+
 %-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
