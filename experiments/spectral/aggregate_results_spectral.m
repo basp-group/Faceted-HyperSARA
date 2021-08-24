@@ -102,7 +102,7 @@ switch algo
         %
         acpu = total_cpu_time/iteration_number;
         scpu = sqrt((sum_cpu_sqr - iteration_number*acpu^2)/(iteration_number - 1));
-        iteration_number = round(iteration_number/nChannels); % average number of iterations for each SARA problem
+        iteration_number = round(iteration_number/nChannels); % average number of iterations for each SARA problem (Qc = nChannels)
         
         % compute SNR
         a = SNR(x, x0);
@@ -182,7 +182,7 @@ switch algo
         % 
         acpu = total_cpu_time/iteration_number;
         scpu = sqrt((sum_cpu_sqr - iteration_number*acpu^2)/(iteration_number - 1));
-        iteration_number = round(iteration_number/nChannels); % average number of iterations for each problem
+        iteration_number = round(iteration_number/Qc); % average number of iterations for each problem
 
         ncpu = Qc*min(ncores_prior + ncores_data + 1, 36);
 
