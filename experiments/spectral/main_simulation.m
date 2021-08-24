@@ -211,8 +211,8 @@ input_snr = isnr*ones(nchans, 1); % input SNR (in dB)
 nu0 = 2.052e9; % starting freq
 dnu = 16e6;    % freq step
 L = 100;       % number of channels
-nu_vect =[nu0 (dnu*(1:L-1)+nu0)];
-frequencies = nu_vect(1:spectral_downsampling:end);
+nu_vect = [nu0 (dnu*(1:L-1)+nu0)];
+frequencies = nu_vect(1:floor(L/nChannels):end); % nu_vect(1:spectral_downsampling:end);
 
 clear reference_cube_path info rowend colend sliceend 
 clear spatial_downsampling spectral_downsampling
