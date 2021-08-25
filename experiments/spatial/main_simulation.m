@@ -49,7 +49,7 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 %     Additional multiplicative factor affecting the low-rankness
 %     regularization term.
 % rw : int
-%     [description]
+%     Index of the reweighting step to restart from.
 % exp_type : string ('spatial' or 'spectral')
 %     Type of the experiment to be reproduced.
 % superresolution_factor : double
@@ -73,8 +73,9 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 % flag_homotopy : bool
 %     Activate the homotopy strategy within the solver.
 %
-% ..note::
-%    DR features still need to be implemented in the main script. 
+% Note
+% ----
+% DR features still need to be implemented in the main script. 
 %
 
 %% PARAMETERS FOR DEBUGGING
