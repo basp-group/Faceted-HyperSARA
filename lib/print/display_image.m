@@ -1,4 +1,4 @@
-function [f, h] = display_image(x, fig_size, shift_colorbar, clim, map_img, fontsize, bool_log)
+function [f, h] = display_image(x, fig_size, shift_colorbar, clim, map_img, fontsize, bool_log, location)
 
     f=figure('visible','on');
     % sets axes background
@@ -23,7 +23,7 @@ function [f, h] = display_image(x, fig_size, shift_colorbar, clim, map_img, font
         set(ax,'ColorScale','log'); 
     end
     h = colorbar;
-    set(h,'Location','southoutside');
+    set(h,'Location', location); % 'southoutside'
     set(h,'Fontsize',fontsize);
     pause(0.5)
     h.Position = h.Position + shift_colorbar;

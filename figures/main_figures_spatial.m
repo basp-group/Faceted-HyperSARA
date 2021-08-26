@@ -16,6 +16,7 @@ Qc = 1;
 ind = 1;
 exp_type = 'spatial';
 image_name = 'cygASband_Cube_1024_2048_20';
+location = 'southoutside'; % location of the colorbar in the image
 
 %% Load upsilon value
 load(strcat('Anorm_hs', ...
@@ -87,7 +88,7 @@ for k = 1:numel(img_filenames)
 %     end
 
     for band = 1:size(x, 3)        
-        [f, h] = display_image(x(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, true);
+        [f, h] = display_image(x(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, true, location);
         
         % https://www.mathworks.com/help/matlab/creating_plots/save-figure-at-specific-size-and-resolution.html
         exportgraphics(f,['figs_spatial/', name{k}, num2str(band), extension],'ContentType','vector',...
@@ -119,7 +120,7 @@ for k = 1:numel(res_filenames)
 
     for band = 1:size(res,3)
         % faceted hypersara
-        [f, h] = display_image(res(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, false);
+        [f, h] = display_image(res(:,:,band), fig_size, shift_colorbar, clim_log(band,:), map_img, fontsize, false, location);
         % if band ==1
         %     set(h,'XTick',[-0.01 0 0.01])
         %     h.Ruler.Exponent = -2;
