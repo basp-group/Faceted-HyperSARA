@@ -1,0 +1,34 @@
+# system files
+*.DS_Store
+._*
+
+# MATLAB
+*.m~
+*.asv
+*.mat
+.*~
+
+# data/log/remote jobs
+*.swo
+*.swp
+*.pbs
+*.fits
+result*
+
+# project directories
+test*
+figs*
+logs*
+
+# docs
+docs/_*
+
+# editor
+.vscode*
+
+*.err
+*.txt
+*.out
+*local_cluster_jobs*
+*pref_*
+docs/build
