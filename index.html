@@ -21,16 +21,16 @@
         <p class="view"><a href="https://github.com/basp-group/Faceted-HyperSARA">View the Project on GitHub <small>basp-group/Faceted-Hyper-SARA</small></a></p>
 
 
-        <ul>
+        <!-- <ul>
           <li><a href="https://github.com/basp-group/Faceted-HyperSARA/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/basp-group/Faceted-HyperSARA/tarball/master">Download <strong>TAR Ball</strong></a></li>
           <li><a href="https://github.com/basp-group/Faceted-HyperSARA">View On <strong>GitHub</strong></a></li>
-        </ul>
+        </ul> -->
       </header>
 
        <section>
        <h2>Faceted-Hyper-SARA</h2>
-       <!--<p>The code will be made available soon.</p>-->
+       <p>The code will be made available upon acceptance of the paper.</p>
        </section>
 
       
@@ -41,8 +41,8 @@
 
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h3>
 
-<p>Upcoming radio interferometers are aiming to image the sky at new levels of resolution and sensitivity, with wide-band image cubes reaching close to the Petabyte scale for SKA.
-  Modern proximal optimization algorithms have recently shown a potential to significantly outperform clean thanks to their ability to inject complex image models to regularize the inverse problem for image formation from visibility data. They are also scalable to large data volumes thanks to a splitting functionality enabling the decomposition of data into blocks, for parallel processing of all block-specific data-fidelity terms of the objective function. In the present work, the same splitting functionality is further exploited to decompose the target image cube into spatio-spectral facets, and enable parallel processing of facet-specific regularization terms in the objective. The resulting algorithm, dubbed ``Faceted HyperSARA'', was implemented in MATLAB (code available on the Puri-Psi webpage). Extensive simulation results on synthetic image cubes confirm that faceting can provide a major increase in scalability at no cost in imaging quality. A proof-of-concept reconstruction of a 15~GB image cube of Cyg A from 7.4 GB of VLA data, utilizing 496 CPU cores on a High Performance Computing system for 68 hours, confirms both scalability and a quantum jump in imaging quality from clean. Last but not least, we also combined Faceted HyperSARA with a joint image and data dimensionality reduction technique, under the assumption of a slow spectral slope of Cyg A in the frequency range of interest. Our results show that dimensionality reduction enables utilizing no more than 31 CPU cores for 142 hours to form the image while preserving the overall reconstruction quality, thus demonstrating a second scalability feature beyond faceting. All Cyg A reconstructed image cubes are available online.</p>
+<p>Upcoming radio interferometers are aiming to image the sky at new levels of resolution and sensitivity, with wide-band image cubes reaching close to the Petabyte scale for SKA. Modern proximal optimization algorithms have recently shown a potential to significantly outperform clean thanks to their ability to inject complex image models to regularize the inverse problem for image formation from visibility data. They are also scalable to large data volumes thanks to a splitting functionality enabling the decomposition of data into blocks, for parallel processing of all block-specific data-fidelity terms of the objective function. In the present work, the same splitting functionality is further exploited to decompose the target image cube into spatio-spectral facets, and enable parallel processing of facet-specific regularization terms in the objective. The resulting algorithm, dubbed ``Faceted HyperSARA'', was implemented in MATLAB (code available on the Puri-Psi webpage). Extensive simulation results on synthetic image cubes confirm that faceting can provide a major increase in scalability at no cost in imaging quality. A proof-of-concept reconstruction of a 15~GB image cube of Cyg A from 7.4 GB of VLA data, utilizing 496 CPU cores on a High Performance Computing system for 68 hours, confirms both scalability and a quantum jump in imaging quality from clean. Last but not least, we also combined Faceted HyperSARA with a joint image and data dimensionality reduction technique, under the assumption of a slow spectral slope of Cyg A in the frequency range of interest. Our results show that dimensionality reduction enables utilizing no more than 31 CPU cores for 142 hours to form the image while preserving the overall reconstruction quality, thus demonstrating a second scalability feature beyond faceting. All Cyg A reconstructed image cubes are available online.</p>
+
 <p>The codes made available here represent a proof of concept MATLAB implementation of the proposed algorithm.</p>
 
 <h3>
