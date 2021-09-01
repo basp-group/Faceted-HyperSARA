@@ -46,20 +46,11 @@ To run a representative example of the experiments, configure and run the `main.
 Contributing
 ------------
 
-- Issue Tracker: `https://github.com/pthouvenin/async_sampling/issues <https://github.com/pthouvenin/async_sampling/issues>`_
-- Source Code: `https://github.com/pthouvenin/async_sampling <https://github.com/pthouvenin/async_sampling>`_
+- Issue Tracker: `https://github.com/basp-group-private/Faceted-Hyper-SARA/issues <https://github.com/basp-group-private/Faceted-Hyper-SARA/issues>`_
+- Source Code: `https://github.com/basp-group-private/Faceted-Hyper-SARA <https://github.com/basp-group-private/Faceted-Hyper-SARA>`_
 
 To contribute to the project, make sure the following elements are properly configured before submitting any pull request (PR).
 
-Recommended text editor
-^^^^^^^^^^^^^^^^^^^^^^^
-
-For any contribution development, the ``vscode`` text editor is highly recommended with the following packages.
-
-1. `python <https://marketplace.visualstudio.com/items?itemName=ms-python.python>`_
-2. `python docstring generator <https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring>`_
-3. better comments
-4. `markdown all in one <https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one>`_
 
 Building the documentation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

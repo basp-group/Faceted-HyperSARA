@@ -63,6 +63,7 @@ bibtex_encoding = 'utf-8-sig'
 bibtex_default_style = 'alpha'
 # bibtex_reference_style =  # 'author_year'
 
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
