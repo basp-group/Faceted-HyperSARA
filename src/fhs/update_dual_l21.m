@@ -27,7 +27,7 @@ function [v1, g] = update_dual_l21(v1, x_overlap, weights, beta1, Iq, ...
 % dims_overlap_q : array (1d)
 %     Dimensions of the facet [1, 2].
 % offset : cell
-%     Ofset to be used from one dictionary to another (different overlap
+%     Offset to be used from one dictionary to another (different overlap
 %     needed for each dictionary -> cropping) {nDictionaries}.
 % status_q : array (1d)
 %     Status of the current facet (last or first facet along vert. or hrz. 

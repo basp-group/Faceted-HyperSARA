@@ -6,7 +6,7 @@ function [v1, weights1, s] = initialize_l21_distributed(x, Psit, extension_mode,
 % ----------
 % x : array (3d)
 %     Wideband image [M, N, L].
-% Psit : lambda function
+% Psit : anonymous function
 %     Full SARA operator @[1].
 % extension_mode : string
 %     Name of the boundary extension mode.
@@ -20,11 +20,11 @@ function [v1, weights1, s] = initialize_l21_distributed(x, Psit, extension_mode,
 % Returns
 % -------
 % v1 : array (double, 2d)
-%     dual variable associated with the l21-norm prior [s, L].
+%     Dual variable associated with the l21-norm prior [s, L].
 % weights1 : array (double, 2d)
-%     weights associated for the reweigthing step [s, L].
+%     Weights associated for the reweigthing step [s, L].
 % s : int
-%     number of wavelet decompostion for each channel [1].
+%     Number of wavelet decompostion for each channel [1].
 %
 
 %-------------------------------------------------------------------------%

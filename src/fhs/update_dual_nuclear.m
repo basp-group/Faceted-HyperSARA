@@ -23,7 +23,7 @@ function [v0, g0] = update_dual_nuclear(v0, xhat, w, weights0, beta0)
 % v0 : array
 %     Dual variable associated with the nuclear norm prior [min(M*N, L), 1].
 % g0 : array
-%     auxiliary variable for the update of the primal variable [M, N, L].
+%     Auxiliary variable for the update of the primal variable [M, N, L].
 %
 
 %-------------------------------------------------------------------------%

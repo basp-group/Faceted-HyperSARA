@@ -14,9 +14,9 @@ function [global_norm_res, norm_epsilon] = sanity_check(epsilon, norm_res)
 % Returns
 % -------
 % global_norm_res : double
-%     square global norm of the residual.
+%     Square global norm of the residual.
 % norm_epsilon : double
-%     square global norm of epsilon.
+%     Square global norm of epsilon.
 %
 
 %%                         

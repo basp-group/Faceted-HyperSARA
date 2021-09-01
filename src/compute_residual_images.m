@@ -10,9 +10,9 @@ function residual_image = compute_residual_images(x, y, A, At, ...
 %     Wideband image cube [N(1), N(2), L].
 % y : cell
 %     Blocked visibilities {L}{nblocks}.
-% A : lambda
+% A : anonymous function
 %     Measurement operator @[1].
-% At : lambda
+% At : anonymous function
 %     Adjoint measurement operator @[1].
 % G : cell
 %     Blocked gridding matrix {L}{nblocks}.

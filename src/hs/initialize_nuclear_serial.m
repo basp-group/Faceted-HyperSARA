@@ -13,7 +13,8 @@ function [v0, weights0] = initialize_nuclear_serial(x, reweighting_alpha, sig_ba
 % Returns
 % -------
 % v0 : cell
-%     Dual variable associated with the nuclear-norm  prior [min(M*N, L), 1].
+%     Dual variable associated with the nuclear-norm  prior 
+%     [min(M*N, L), 1].
 % weights0 : cell 
 %     Associated weights for the reweigthing step.
 %

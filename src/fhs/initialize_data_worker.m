@@ -5,7 +5,7 @@ function [v2, norm_res, t_block, proj] = initialize_data_worker(y)
 % ----------
 % y : cell
 %     Input data, stored as 2-layer cell, the first for channels, the
-%     second and data blocks within each channel.
+%     second for data blocks within each channel.
 %
 % Returns
 % -------
@@ -14,9 +14,12 @@ function [v2, norm_res, t_block, proj] = initialize_data_worker(y)
 % norm_res : cell
 %     Norm of the residual. Same structure as ``y``.
 % t_block : cell
-%     ... Same structure as ``y``.
+%     Last iteration at which each block has been updated {L}{nblocks}. 
+%     Same structure as
+%     ``y``.
 % proj : cell
-%     ... Same structure as ``y``.
+%     Result of the projection step  {L}{nblocks}[M, 1]. Same structure as
+%     ``y``.
 %
 
 nChannels = numel(y);

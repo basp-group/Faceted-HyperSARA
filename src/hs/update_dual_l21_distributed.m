@@ -7,9 +7,9 @@ function [v1, g1] = update_dual_l21_distributed(v1, Psit, Psi, xhat, weights1, b
 % v1 : array (2d)
 %     Dual variable associated with the facet :math:`\ell_{2,1}` norm 
 %     [s, L].
-% Psit : lambda function
+% Psit : anonymous function
 %     Full SARA operator @[1].
-% Psi : lambda function
+% Psi : anonymous function
 %     Adjoint of the full SARA operator @[1].
 % xhat : array (3d)
 %     Auxiliary variable related to the wideband image [M, N, L].

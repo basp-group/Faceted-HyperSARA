@@ -11,9 +11,9 @@ function f = compute_sara_prior_distributed(x, Psit, s)
 % x : array (3d)
 %     Wideband image cube [N(1), N(2), L].
 % Psit : lambda
-%     SARA dictionary @[1]
+%     SARA dictionary @[1].
 % s : int
-%     Number of wavelet coefficients (per channel) [1]
+%     Number of wavelet coefficients (per channel) [1].
 %
 % Returns
 % -------
