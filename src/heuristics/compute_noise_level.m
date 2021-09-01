@@ -1,17 +1,16 @@
 function [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
-    compute_noise_level(Ny, Nx, ...
-    nChannels, sigma_noise, algo_version, Qx, Qy, overlap_size, ...
-    squared_operator_norm)
+    compute_noise_level(Ny, Nx, n_channels, std_noise, algo_version, ...
+    Qx, Qy, overlap_size, squared_operator_norm)
 
 % compute sig and sig_bar
-sig_sara = sqrt(mean((sigma_noise.^2)./squared_operator_norm));
-mu_chi = sqrt(2)*gamma((nChannels+1)/2)/gamma(nChannels/2);
-sig_chi = sqrt(nChannels - mu_chi^2); 
+sig_sara = sqrt(mean((std_noise.^2)./squared_operator_norm));
+mu_chi = sqrt(2)*gamma((n_channels+1)/2)/gamma(n_channels/2);
+sig_chi = sqrt(n_channels - mu_chi^2); 
 sig = sig_sara*(mu_chi + sig_chi);
 
 % compute sig_bar
 if strcmp(algo_version, 'hs')
-    sig_bar = sqrt(Nx*Ny*sum(sigma_noise.^2./squared_operator_norm)/min(Nx*Ny, nChannels));
+    sig_bar = sqrt(Nx*Ny*sum(std_noise.^2./squared_operator_norm)/min(Nx*Ny, n_channels));
 else
     Q = Qx*Qy;
     rg_y = split_range(Qy, Ny);
@@ -43,6 +42,6 @@ else
     sig_bar = zeros(Q, 1);
     for q = 1:Q    
         Noq = prod(dims_o(q, :));
-        sig_bar(q) = sqrt(Noq*sum(sigma_noise.^2./squared_operator_norm)/min(Noq, nChannels));
+        sig_bar(q) = sqrt(Noq*sum(std_noise.^2./squared_operator_norm)/min(Noq, n_channels));
     end
 end
