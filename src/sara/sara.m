@@ -463,24 +463,6 @@ for t = t_start : max_iter
         %     f(k) = parfeval(@run_par_l11, 1, Psit{k}, xsol, weights1{k});
         % end
 
-        % if update_regularization && (reweight_step_count == 0)
-        %     for k = 1:P
-        %         f(k) = parfeval(@update_regularization_l11, 1, Psit{k}, xsol, sig, regtype);
-        %     end
-
-        %     param.gamma_old = param.gamma;
-        %     gam = 0;
-        %     for k = 1:P
-        %         [~, gam_] = fetchNext(f);
-        %         gam = gam + gam_;
-        %     end
-        %     gam = alph / gam;
-        %     param.gamma = gam;
-        %     beta1 = param.gamma/sigma1;
-
-        %     fprintf('Updated reg: gamma=%e \n\n', gam);
-        % end
-
         % compute residual image
         res = zeros(size(xsol));
         if flagDR
@@ -674,21 +656,3 @@ r1 = weights1_.*abs(Psit(xhat));
 % local L11 norm of current solution
 l11_ = sum(r1(:));
 end
-
-% function gam_ = update_regularization_l11(Psit, xhat, sig, regtype)
-% r1 = abs(Psit(xhat));
-% if strcmp(regtype, "log")
-%     gam_ = sig * sum(log(r1(:)/sig + 1));
-% else % "inv"
-%     gam_ = sum(r1(:));
-% end
-% % gam_ = alph / (sig * sum(log(r1(:)/sig + 1)));
-% end
-% 
-% function p = proj_l2ball(x, eps, y)
-% % projection of x onto the l2 ball centered in y with radius eps
-% p = x-y ;
-% p = p* min(eps/norm(p(:)),1) ;
-% p = p+y ;
-% 
-% end
