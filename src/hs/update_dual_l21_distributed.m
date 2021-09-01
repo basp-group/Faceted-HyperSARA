@@ -28,6 +28,7 @@ function [v1, g1] = update_dual_l21_distributed(v1, Psit, Psi, xhat, weights1, b
 %     [s, L].
 % g1 : array (3d)
 %     Auxiliary variable for the update of the primal variable [M, N, L].
+%
    
 %-------------------------------------------------------------------------%
 %%

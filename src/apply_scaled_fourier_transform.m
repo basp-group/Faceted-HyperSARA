@@ -1,5 +1,5 @@
-function Fx = apply_scaled_fourier(x, A, No)
-% Apply scaled Fourier transform to a wideband image cube.
+function Fx = apply_scaled_fourier_transform(x, A, No)
+% Apply scaled Fourier transform to a wideband image cube :math:`x`.
 %
 % Parameters
 % ----------

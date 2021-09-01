@@ -282,7 +282,7 @@ adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_perc
 % ! need to be applied differently (A only exists in spmd blocks)
 xi = Composite();
 spmd
-    Fxi_old = apply_scaled_fourier(xsol(:, :, spectral_chunk{labindex}), A, No);
+    Fxi_old = apply_scaled_fourier_transform(xsol(:, :, spectral_chunk{labindex}), A, No);
 end
 
 % ! TO BE UPDATED PROPERLY
