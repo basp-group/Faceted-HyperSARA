@@ -1,10 +1,92 @@
 function [Iq, dims_q, dims_oq, dims_overlap_ref_q, I_overlap_q, ...
     dims_overlap_q, status_q, offsetLq, offsetRq, Ncoefs_q, temLIdxs_q, ...
-    temRIdxs_q, overlap_g_south, overlap_g_east, overlap_g_south_east, overlap, ...
-    w, crop_nuclear, crop_l21] = setup_priors(Qx, Qy, I, dims, dims_o, ...
-    dims_overlap_ref, I_overlap, dims_overlap, status, offsetL, offsetR, ...
-    Ncoefs, temLIdxs, temRIdxs, window_type, d)
+    temRIdxs_q, overlap_g_south, overlap_g_east, overlap_g_south_east, ...
+    overlap, w, crop_nuclear, crop_l21] = setup_priors(Qx, Qy, I, dims, ...
+    dims_o, dims_overlap_ref, I_overlap, dims_overlap, status, offsetL, ...
+    offsetR, Ncoefs, temLIdxs, temRIdxs, window_type, d)
+% Setup all the composite arrays for the faceted low-rankness and average 
+% joint sparsity priors involed in Faceted HyperSARA.
+%
+% Parameters
+% ----------
+% Qx : int
+%     Number of facets (axis x).
+% Qy : int
+%     Number of facets (axis y).
+% I : array (int)
+%     [description]
+% dims : array (int)
+%     [description]
+% dims_o : array (int)
+%     [description]
+% dims_overlap_ref : array (int)
+%     [description]
+% I_overlap : array (int)
+%     [description]
+% dims_overlap : array (int)
+%     [description]
+% status : [type]
+%     [description]
+% offsetL : array (int)
+%     [description]
+% offsetR : array (int)
+%     [description]
+% Ncoefs : array (int)
+%     [description]
+% temLIdxs : array (int)
+%     [description]
+% temRIdxs : array (int)
+%     [description]
+% window_type : string
+%     Type of apodization window considered for the faceted low-rankness 
+%     prior.
+% d : array (int)
+%     Number of overlapping pixels in the current facet along each 
+%     direction [1, 2].
+%
+% Returns
+% -------
+% Iq : array (int) 
+%     [description]
+% dims_q : array (int) 
+%     [description]
+% dims_oq : array (int) 
+%     [description]
+% dims_overlap_ref_q : array (int) 
+%     [description]
+% I_overlap_q : array (int) 
+%     [description]
+% dims_overlap_q : array (int) 
+%     [description]
+% status_q : 
+%     [description]
+% offsetLq : array (int) 
+%     [description]
+% offsetRq : array (int) 
+%     [description]
+% Ncoefs_q : array (int) 
+%     [description]
+% temLIdxs_q : array (int) 
+%     [description]
+% temRIdxs_q : array (int) 
+%     [description]
+% overlap_g_south : array (int) 
+%     [description]
+% overlap_g_east : array (int) 
+%     [description]
+% overlap_g_south_east : array (int) 
+%     [description]
+% overlap : array (int) 
+%     [description]
+% w : array (double)
+%     Apodization window considered for the faceted low-rankness prior.
+% crop_nuclear : array (int) 
+%     [description]
+% crop_l21 : array (int) 
+%     [description]
+%
 
+% ![DOCUMENTATION TO BE UPDATED]
 %! change: d contains already 2 elements (overlap along each dimension)
 
 % define composite variables (local to a given worker)
