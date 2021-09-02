@@ -1,21 +1,21 @@
 lib package
 ===========
 
-Module generate_cube
---------------------
+.. Module generate_cube
+.. --------------------
 
-.. mat:automodule:: lib.generate_cube
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. .. mat:automodule:: lib.generate_cube
+..     :members:
+..     :undoc-members:
+..     :show-inheritance:
 
-Module generate_data
---------------------
+.. Module generate_data
+.. --------------------
 
-.. mat:automodule:: lib.generate_data
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. .. mat:automodule:: lib.generate_data
+..     :members:
+..     :undoc-members:
+..     :show-inheritance:
 
 Module operators
 ----------------
@@ -33,10 +33,10 @@ Module print
     :undoc-members:
     :show-inheritance:
 
-Module utils
-------------
+.. Module utils
+.. ------------
 
-.. mat:automodule:: lib.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. .. mat:automodule:: lib.utils
+..     :members:
+..     :undoc-members:
+..     :show-inheritance:

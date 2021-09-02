@@ -1,7 +1,7 @@
 function f = nuclear_norm(x)
 % Compute the nuclear norm of a wideband image.
 %
-% Compute :math:`\Vert \mathbf{X} \Vert_*` for :math:`\mathbf{X}` \in 
+% Compute :math:`\Vert \mathbf{X} \Vert_*` for :math:`\mathbf{X} \in 
 % \mathbb{R}^{N \times L}`.
 %
 % Parameters
