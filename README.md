@@ -37,6 +37,22 @@ git submodule update --init --recursive # update the content of the submodules
 git submodule update --remote --merge # fetch and merge latest state of the submodule
 ```
 
+- to generate the synthetic data cubes used in the spatial and spectral experiments, you will need to download the `S_DDE_MODEL.fits` image file associated with the following paper.
+
+> A. Dabbech, A. Repetti, R. A. Perley, O. M. Smirnov, Y. Wiaux, [Cygnus A jointly calibrated and imaged via non-convex optimization from VLA data](https://doi.org/10.1093/mnras/stab1903), *Mon. Not. Roy. Astron. Soc.*, 506(4):4855-4876, Oct. 2021.
+
+To do so, issue the following commands in a terminal.
+
+```bash
+# if on MAC: 
+# brew install wget
+cd path/to/Faceted-Hyper-SARA
+cd data
+wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
+```
+
+You can then execute the `sim_script_cyga_cubes.m` script to generate all the different synthetic data cubes considered.
+
 ## Configuration
 
 To reproduce the experiments (on CIRRUS), configure the `.csv` file contained in ..., and run the following
@@ -82,5 +98,5 @@ Note that real-data parameters, (weighting scheme, ...) if any, still need to be
 - [ ] Replace FB by FISTA for the projection onto the ellipsoids
 - [ ] Update function interface + name of variables (if necessary)
 - [ ] Adding H matrices to `measurement-operator`
-- [ ] Adapt synth data scripts to real data
+- [x] Adapt synth data scripts to real data
 - [ ] Documenting all functions (ongoing)
