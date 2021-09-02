@@ -1,5 +1,5 @@
 function [v0, v1, weights0, weights1] = fhs_initialize_facet_dual(Ncoefs, ...
-    dims_o, c, nlevel)
+    dims_o, n_channels, nlevel)
 % Initialize dual variables (constant overlap).
 %
 % Initialize all the dual variables for a given facet (nuclear and l21
@@ -11,7 +11,7 @@ function [v0, v1, weights0, weights1] = fhs_initialize_facet_dual(Ncoefs, ...
 %     Number of wavelet coefficients at each scale.
 % dims_o : array (1d)
 %     Dimension of a facet (with overlap) [1, 2].
-% c : int
+% n_channels : int
 %     Number of spectral channels.
 % nlevel : int
 %     Depth of the wavelet decompositions.
@@ -46,9 +46,9 @@ p = prod(Ncoefs, 2);
 % number of SARA coeffs with the Dirac basis
 sz = 3 * sum(p(1:end)) - 2 * sum(p(nlevel + 1:nlevel + 1:end)) - 2 * p(end);
 
-v0 = zeros(prod(dims_o), c);
-weights0 = ones(min(prod(dims_o), c), 1);
-v1 = zeros(sz, c);
+v0 = zeros(prod(dims_o), n_channels);
+weights0 = ones(min(prod(dims_o), n_channels), 1);
+v1 = zeros(sz, n_channels);
 weights1 = ones(sz, 1);
 
 end

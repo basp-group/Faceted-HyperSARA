@@ -1,7 +1,7 @@
-function [v1, g] = fhs_update_dual_sparsity(v1, x_overlap, weights, ...
-    beta1, Iq, dims_q, I_overlap_q, dims_overlap_q, offset, status_q, ...
-    nlevel, wavelet, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, ...
-    offsetRq, dims_overlap_ref_q)
+function [v1, g] = fhs_update_dual_sparsity(v1, x_facet, ...
+    apodization_window, beta1, Iq, dims_q, I_overlap_q, ...
+    dims_overlap_q, offset, status_q, nlevel, wavelet, Ncoefs_q, ...
+    temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q)
 % Update the dual variable associated with the facet l21-norm prior.
 %
 % Update a facet dual variable associated with the l21-norm prior.
@@ -10,9 +10,9 @@ function [v1, g] = fhs_update_dual_sparsity(v1, x_overlap, weights, ...
 % ----------
 % v1 : array (2d)
 %     Dual variable associated with the :math:`\ell_{2,1}` prior [s, L].
-% x_overlap : array (3d)
+% x_facet : array (3d)
 %     Overlapping image facet [M, N, L].
-% weights : array (2d)
+% apodization_window : array (2d)
 %     Weights to mitigate tessellation aretefacts due to the overlap
 %     between facets [M, N].
 % beta1 : double
@@ -64,10 +64,10 @@ function [v1, g] = fhs_update_dual_sparsity(v1, x_overlap, weights, ...
 % -------------------------------------------------------------------------%
 %%
 
-zerosNum = dims_overlap_ref_q + offsetLq + offsetRq; % offset for the zero-padding
-x_ = zeros([zerosNum, size(x_overlap, 3)]);
-x_(offsetLq(1) + 1:end - offsetRq(1), offsetLq(2) + 1:end - offsetRq(2), :) = x_overlap;
-g = zeros(size(x_overlap));
+spatial_size = dims_overlap_ref_q + offsetLq + offsetRq; % offset for the zero-padding
+x_ = zeros([spatial_size, size(x_facet, 3)]);
+x_(offsetLq(1) + 1:end - offsetRq(1), offsetLq(2) + 1:end - offsetRq(2), :) = x_facet;
+g = zeros(size(x_facet));
 
 tmp = sdwt2_sara_faceting(x_(:, :, 1), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
 w = zeros(numel(tmp), size(x_, 3));
@@ -77,7 +77,7 @@ for l = 2:size(x_, 3)
 end
 w = v1 +  w;
 l2 = sqrt(sum(abs(w).^2, 2));
-l2_soft = max(l2 - beta1 * weights, 0) ./ (l2 + eps);
+l2_soft = max(l2 - beta1 * apodization_window, 0) ./ (l2 + eps);
 v1 = w - l2_soft .* w;
 
 for l = 1:size(x_, 3)

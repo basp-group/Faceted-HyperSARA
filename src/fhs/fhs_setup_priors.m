@@ -1,9 +1,9 @@
 function [Iq, dims_q, dims_oq, dims_overlap_ref_q, I_overlap_q, ...
     dims_overlap_q, status_q, offsetLq, offsetRq, Ncoefs_q, temLIdxs_q, ...
     temRIdxs_q, overlap_g_south, overlap_g_east, overlap_g_south_east, ...
-    overlap, w, crop_nuclear, crop_l21] = fhs_setup_priors(Qx, Qy, I, dims, ...
+    overlap, w, crop_low_rank, crop_sparsity] = fhs_setup_priors(Qx, Qy, I, dims, ...
     dims_o, dims_overlap_ref, I_overlap, dims_overlap, status, offsetL, ...
-    offsetR, Ncoefs, temLIdxs, temRIdxs, window_type, d)
+    offsetR, Ncoefs, temLIdxs, temRIdxs, window_type, overlap_size)
 % Setup all the composite arrays for the faceted low-rankness and average
 % joint sparsity priors involed in Faceted HyperSARA.
 %
@@ -41,7 +41,7 @@ function [Iq, dims_q, dims_oq, dims_overlap_ref_q, I_overlap_q, ...
 % window_type : string
 %     Type of apodization window considered for the faceted low-rankness
 %     prior.
-% d : array, int
+% overlap_size : array, int
 %     Number of overlapping pixels in the current facet along each
 %     direction [1, 2].
 %
@@ -82,10 +82,10 @@ function [Iq, dims_q, dims_oq, dims_overlap_ref_q, I_overlap_q, ...
 %     Number of overlapping pixels along each direction.
 % w : array (double)
 %     Apodization window considered for the faceted low-rankness prior.
-% crop_nuclear : array, int
+% crop_low_rank : array, int
 %     [Relative cropping necessary for the faceted low-rankness prior
 %     [1, 2].
-% crop_l21 : array, int
+% crop_sparsity : array, int
 %     Relative cropping necessary for the faceted joint-sparsity prior
 %     [1, 2].
 %
@@ -111,12 +111,12 @@ overlap_g_south_east = Composite();
 overlap = Composite();
 % constant overlap: facet size
 dims_oq = Composite();
-crop_nuclear = Composite();
-crop_l21 = Composite();
+crop_low_rank = Composite();
+crop_sparsity = Composite();
 
 Q = Qx * Qy;
 
-flag_overlap = any(d > 0);
+flag_overlap = any(overlap_size > 0);
 
 % initialize composite variables and constants for the faceted prior (l21
 % and nuclear norms)
@@ -152,8 +152,8 @@ for q = 1:Q
     else
         tmp_crop_l21(2) = dims_o(q, 2) - dims_overlap_ref(q, 2);
     end
-    crop_l21{q} = tmp_crop_l21;
-    crop_nuclear{q} = tmp_crop_nuclear;
+    crop_sparsity{q} = tmp_crop_l21;
+    crop_low_rank{q} = tmp_crop_nuclear;
     overlap{q} = max(max(dims_overlap{q}) - dims(q, :), dims_o(q, :) - dims(q, :));
     % amount of overlap necessary for each facet
     dims_oq{q} = dims_o(q, :);
@@ -186,7 +186,7 @@ for q = 1:Q
 
     % define the weights (depends on the position of the facet inside the grid)
     if flag_overlap
-        w{q} = generate_weights(qx, qy, Qx, Qy, window_type, dims(q, :), dims_o(q, :), d);
+        w{q} = generate_weights(qx, qy, Qx, Qy, window_type, dims(q, :), dims_o(q, :), overlap_size);
     else
         w{q} = ones(dims_o(q, :)); % ! in this case, dims = dims_o
     end

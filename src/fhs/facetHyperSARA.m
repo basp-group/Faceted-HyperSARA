@@ -1,7 +1,8 @@
 function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
     Qx, Qy, K, wavelet, filter_length, nlevel, window_type, ...
-    spectral_chunk, nChannels, overlap_size, alph, alph_bar, ...
-    M, N, oy, ox, name_warmstart, name_checkpoint, flagDR, Sigma, ...
+    spectral_chunk, n_channels, overlap_size, alph, alph_bar, ...
+    M, N, oy, ox, warmstart_name, name_checkpoint, ...
+    flag_dimensionality_reduction, Sigma, ...
     varargin)
 
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
@@ -65,7 +66,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %   > .adapt_eps_tol_out (1.001)     tolerance outside the l2 ball
 %   > .adapt_eps_steps (100)         min num of iter between consecutive updates
 %   > .adapt_eps_rel_var (5e-4)      bound on the relative change of the solution
-%   > .adapt_eps_change_percentage  (0.5*(sqrt(5)-1)) weight of the update w.r.t the l2 norm of the residual data
+%   > .adapt_eps_change_percentage  (0.5*(sqrt(5)-1)) weight of the update apodization_window.r.t the l2 norm of the residual data
 %
 % > X0          ground truth wideband image [M*N, L]
 % > Qx          number of facets along dimension x [1]
@@ -76,12 +77,12 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % > filter_length  size of the wavelet filters considered (by cinvention, 0 for the Dirac basis)
 % > nlevel      decomposition depth [1]
 % > spectral_chunk    indices of the bands handled by each data node {K, 1}
-% > nChannels           total number of spectral channels [1]
-% > d           size of the fixed overlap for the faceted nuclear norm
+% > n_channels        total number of spectral channels [1]
+% > overlap_size      size of the fixed overlap for the faceted nuclear norm
 %               [1, 2]
 % > window_type type of apodization window affecting the faceted nuclear
 %               norm prior [string]
-% > name_warmstart  name_checkpoint of a valid .mat file for initialization (for warm-restart)
+% > warmstart_name  name_checkpoint of a valid .mat file for initialization (for warm-restart)
 % > name_checkpoint        lambda function defining the name_checkpoint of the backup file
 % > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
 % > varargin     initial value for the primal variable
@@ -119,10 +120,9 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % -------------------------------------------------------------------------%
 %%
 % SPMD version: use spmd for all the priors, deal with the data fidelity
-% term in a single place. Constant overlap for the nuclear norm assuming d
-% is smaller than the smallest overlap for the sdwt2 (the other option
-% would also change the communication process (borders and reduction
-% operation)). d <= (power(2, nlevel)-1)*(max(filter_length(:)-1))
+% term in a  le place. Constant overlap for the nuclear norm assuming overlap_size smaller than the smallest overlap for the sdwt2 (the other option
+% would also change the com cation process (borders and reduction
+% operation)). overlap_sizepower(2, nlevel)-1)*(max(filter_length(:)-1))
 
 %% NOTE:
 % this version relies on a specialised version of sdwt2, slightly less
@@ -176,7 +176,7 @@ Qyp = parallel.pool.Constant(Qy);
 Qxp = parallel.pool.Constant(Qx);
 Qp = parallel.pool.Constant(Q);
 Kp = parallel.pool.Constant(K);
-c_chunksp = parallel.pool.Constant(spectral_chunk);
+spectral_chunkp = parallel.pool.Constant(spectral_chunk);
 waveletp = parallel.pool.Constant(wavelet);
 nlevelp = parallel.pool.Constant(nlevel);
 offsetp = parallel.pool.Constant(offset);
@@ -184,25 +184,25 @@ offsetp = parallel.pool.Constant(offset);
 % define auxiliary composite variables (local to a given worker)
 [Iq, dims_q, dims_oq, dims_overlap_ref_q, I_overlap_q, ...
     dims_overlap_q, status_q, offsetLq, offsetRq, Ncoefs_q, temLIdxs_q, ...
-    temRIdxs_q, overlap_g_south, overlap_g_east, overlap_g_south_east, overlap, ...
-    w, crop_nuclear, crop_l21] = fhs_setup_priors(Qx, Qy, I, dims, dims_o, ...
-    dims_overlap_ref, I_overlap, dims_overlap, status, offsetL, offsetR, ...
-    Ncoefs, temLIdxs, temRIdxs, window_type, overlap_size);
+    temRIdxs_q, overlap_g_south, overlap_g_east, overlap_g_south_east, ...
+    overlap, apodization_window, crop_low_rank, crop_sparsity] = fhs_setup_priors(Qx, Qy, ...
+    I, dims, dims_o, dims_overlap_ref, I_overlap, dims_overlap, status, ...
+    offsetL, offsetR, Ncoefs, temLIdxs, temRIdxs, window_type, overlap_size);
 
 % Initializations
-init_flag = isfile(name_warmstart);
+init_flag = isfile(warmstart_name);
 if init_flag
-    init_m = matfile(name_warmstart);
-    fprintf('Resume from file %s\n\n', name_warmstart);
+    init_m = matfile(warmstart_name);
+    fprintf('Resume from file %s\n\n', warmstart_name);
 end
 
 % ! -- TO BE CHECKED (primal initialization)
-% AD:  check flag homotopy strategy --> AD: added due to error otherwise
-    if ~isfield(param, 'flag_homotopy')
-        flag_homotopy = false;
-    else
-        flag_homotopy = param.flag_homotopy;
-    end
+% AD: check flag homotopy strategy --> AD: added due to error otherwise
+if ~isfield(param, 'flag_homotopy')
+    flag_homotopy = false;
+else
+    flag_homotopy = param.flag_homotopy;
+end
 
 if init_flag
     xsol = init_m.xsol;
@@ -211,13 +211,6 @@ if init_flag
 
     if ~isfield(param, 'pdfb_rel_var_low')
         param.pdfb_rel_var_low = pdfb_rel_var_low;
-    end
-
-    % check flag homotopy strategy
-    if ~isfield(param, 'flag_homotopy')
-        flag_homotopy = false;
-    else
-        flag_homotopy = param.flag_homotopy;
     end
 
     epsilon = Composite();
@@ -237,7 +230,7 @@ else
         if ~isempty(varargin{1})
             xsol = varargin{1};
         else
-            xsol = zeros(M, N, nChannels);
+            xsol = zeros(M, N, n_channels);
         end
 
         if numel(varargin) > 1
@@ -247,7 +240,7 @@ else
             flag_synth_data = false;
         end
     else
-        xsol = zeros(M, N, nChannels);
+        xsol = zeros(M, N, n_channels);
     end
     fprintf('xsol initialized \n\n');
 end
@@ -265,7 +258,7 @@ if init_flag
 else
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :);
-        g_q{q} = zeros([dims(q, :), nChannels]);
+        g_q{q} = zeros([dims(q, :), n_channels]);
     end
     fprintf('g initialized \n\n');
 end
@@ -332,19 +325,19 @@ else
             max_dims = max(dims_overlap_ref_q, dims_oq);
             xlast_reweight_q = xsol_q;
             % !-- TO BE CHECKED
-            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
-            x_overlap(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
-            x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            x_facet = zeros([max_dims, size(xsol_q, 3)]);
+            x_facet(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
+            x_facet = comm2d_update_borders(x_facet, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
             % weights initialized from initial primal variable, dual variables to 0
-            [v0_, v1_, weights0_, weights1_] = fhs_initialize_dual_and_weights(x_overlap, ...
-                Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims - crop_nuclear, nChannels, dims_overlap_ref_q, ...
-                offsetLq, offsetRq, reweighting_alphap, crop_l21, crop_nuclear, w, sig_, sig_bar_);
+            [v0_, v1_, weights0_, weights1_] = fhs_initialize_dual_and_weights(x_facet, ...
+                Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, max_dims - crop_low_rank, n_channels, dims_overlap_ref_q, ...
+                offsetLq, offsetRq, reweighting_alphap, crop_sparsity, crop_low_rank, apodization_window, sig_, sig_bar_);
 
             % weights and dual variables initialized from initial primal variable
-            % [v0, v1, weights0, weights1] = fhs_initialize_dual and_weights2(x_overlap, ...
+            % [v0, v1, weights0, weights1] = fhs_initialize_dual and_weights2(x_facet, ...
             %     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            %     offsetLq, offsetRq, reweighting_alphap, crop_l21, crop_nuclear, w);
+            %     offsetLq, offsetRq, reweighting_alphap, crop_sparsity, crop_low_rank, apodization_window);
             % !--
         end
     end
@@ -387,7 +380,7 @@ spmd
     if labindex <= Qp.Value
         % send xhat_q (communication towards the data nodes)
         for i = 1:K
-            labSend(xsol_q(:, :, c_chunksp.Value{i}), Qp.Value + i);
+            labSend(xsol_q(:, :, spectral_chunkp.Value{i}), Qp.Value + i);
         end
     else
         xi = zeros(M, N, numel(y));
@@ -475,12 +468,12 @@ if init_flag
     spmd
         if labindex <= Qp.Value
             % compute values for the prior terms
-            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
-            x_overlap(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
-            x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-            [l21_norm, nuclear_norm] = fhs_compute_facet_prior(x_overlap, Iq, ...
+            x_facet = zeros([max_dims, size(xsol_q, 3)]);
+            x_facet(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
+            x_facet = comm2d_update_borders(x_facet, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            [l21_norm, nuclear_norm] = fhs_compute_facet_prior(x_facet, Iq, ...
                 offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+                offsetLq, offsetRq, crop_sparsity, crop_low_rank, apodization_window, size(v1_));
         end
     end
 
@@ -503,10 +496,10 @@ if init_flag
             for q = 1:Q
                 xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = xsol_q{q};
             end
-            sol = reshape(xsol(:), numel(xsol(:)) / nChannels, nChannels);
+            sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
             SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));
-            psnrh = zeros(nChannels, 1);
-            for i = 1:nChannels
+            psnrh = zeros(n_channels, 1);
+            for i = 1:n_channels
                 psnrh(i) = 20 * log10(norm(X0(:, i)) / norm(X0(:, i) - sol(:, i)));
             end
             SNR_average = mean(psnrh);
@@ -534,23 +527,23 @@ for t = t_start:max_iter
 
             % send xhat_q (communication towards the data nodes)
             for k = 1:K
-                labSend(xsol_q(:, :, c_chunksp.Value{k}), Qp.Value + k);
+                labSend(xsol_q(:, :, spectral_chunkp.Value{k}), Qp.Value + k);
             end
 
             % update borders (-> versions of xhat with overlap)
             tw = tic;
-            x_overlap = zeros([max_dims, size(xsol_q, 3)]);
-            x_overlap(overlap(1) + 1:end, overlap(2) + 1:end, :) = xhat_q;
-            x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            x_facet = zeros([max_dims, size(xsol_q, 3)]);
+            x_facet(overlap(1) + 1:end, overlap(2) + 1:end, :) = xhat_q;
+            x_facet = comm2d_update_borders(x_facet, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
             % update dual variables (nuclear, l21)
-            [v0_, g0] = fhs_update_dual_lowrankness(v0_, x_overlap(crop_nuclear(1) + 1:end, crop_nuclear(2) + 1:end, :), w, weights0_, beta0);
-            [v1_, g1] = fhs_update_dual_sparsity(v1_, x_overlap(crop_l21(1) + 1:end, crop_l21(2) + 1:end, :), weights1_, beta1.Value, Iq, ...
+            [v0_, g0] = fhs_update_dual_lowrankness(v0_, x_facet(crop_low_rank(1) + 1:end, crop_low_rank(2) + 1:end, :), apodization_window, weights0_, beta0);
+            [v1_, g1] = fhs_update_dual_sparsity(v1_, x_facet(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :), weights1_, beta1.Value, Iq, ...
                 dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
                 nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
-            g = zeros(size(x_overlap));
-            g(crop_nuclear(1) + 1:end, crop_nuclear(2) + 1:end, :) = sigma00.Value * g0;
-            g(crop_l21(1) + 1:end, crop_l21(2) + 1:end, :) = g(crop_l21(1) + 1:end, crop_l21(2) + 1:end, :) + sigma11.Value * g1;
+            g = zeros(size(x_facet));
+            g(crop_low_rank(1) + 1:end, crop_low_rank(2) + 1:end, :) = sigma00.Value * g0;
+            g(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :) = g(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :) + sigma11.Value * g1;
             g = comm2d_reduce(g, overlap, Qyp.Value, Qxp.Value);
             t_op = t_op + toc(tw);
 
@@ -559,7 +552,7 @@ for t = t_start:max_iter
 
             % retrieve portions of g2 from the data nodes
             for k = 1:Kp.Value
-                g_q(:, :, c_chunksp.Value{k}) = g_q(:, :, c_chunksp.Value{k}) + labReceive(Qp.Value + k);
+                g_q(:, :, spectral_chunkp.Value{k}) = g_q(:, :, spectral_chunkp.Value{k}) + labReceive(Qp.Value + k);
             end
         else
             % data nodes (Q+1:Q+K) (no parallelisation over data blocks, just frequency)
@@ -572,7 +565,7 @@ for t = t_start:max_iter
             [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_data_fidelity(v2_, y, xi, ...
                 Fxi_old, proj_, A, At, G, W, pU, epsilon, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, ...
-                elipse_proj_eps.Value, sigma22, flagDR, Sigma);
+                elipse_proj_eps.Value, sigma22, flag_dimensionality_reduction, Sigma);
             t_op = toc(tw);
 
             % send portions of g2 to the prior/primal nodes
@@ -626,12 +619,12 @@ for t = t_start:max_iter
         spmd
             if labindex <= Qp.Value
                 % compute values for the prior terms
-                % x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-                x_overlap(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
-                x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-                [l21_norm, nuclear_norm] = fhs_compute_facet_prior(x_overlap, Iq, ...
+                % x_facet = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+                x_facet(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
+                x_facet = comm2d_update_borders(x_facet, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+                [l21_norm, nuclear_norm] = fhs_compute_facet_prior(x_facet, Iq, ...
                     offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                    offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+                    offsetLq, offsetRq, crop_sparsity, crop_low_rank, apodization_window, size(v1_));
             end
         end
 
@@ -657,10 +650,10 @@ for t = t_start:max_iter
                 for q = 1:Q
                     xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = xsol_q{q};
                 end
-                sol = reshape(xsol(:), numel(xsol(:)) / nChannels, nChannels);
+                sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
                 SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));
-                psnrh = zeros(nChannels, 1);
-                for i = 1:nChannels
+                psnrh = zeros(n_channels, 1);
+                for i = 1:n_channels
                     psnrh(i) = 20 * log10(norm(X0(:, i)) / norm(X0(:, i) - sol(:, i)));
                 end
                 SNR_average = mean(psnrh);
@@ -727,21 +720,21 @@ for t = t_start:max_iter
         spmd
             if labindex <= Qp.Value
                 % update weights
-                x_overlap(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
-                x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+                x_facet(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
+                x_facet = comm2d_update_borders(x_facet, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
                 % ! -- TO BE CHECKED (using new reweighting with proper floor level)
-                [weights1_, weights0_] = fhs_update_weights(x_overlap, size(v1_), ...
+                [weights1_, weights0_] = fhs_update_weights(x_facet, size(v1_), ...
                 Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                 Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-                reweighting_alphap, crop_l21, crop_nuclear, w, sig_, sig_bar_);
+                reweighting_alphap, crop_sparsity, crop_low_rank, apodization_window, sig_, sig_bar_);
                 if flag_homotopy
                     reweighting_alphap = max(reweighting_alpha_ffp.Value * reweighting_alphap, 1);
                 end
                 % ! --
             else
                 % compute residual image on the data nodes
-                res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex - Qp.Value}), y, A, At, G, W, flagDR, Sigma);
+                res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex - Qp.Value}), y, A, At, G, W, flag_dimensionality_reduction, Sigma);
             end
         end
         % ! -- TO BE CHECKED
@@ -758,12 +751,12 @@ for t = t_start:max_iter
         spmd
             if labindex <= Qp.Value
             % compute values for the prior terms
-            % x_overlap = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
-            x_overlap(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
-            x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-            [l21_norm, nuclear_norm] = fhs_compute_facet_prior(x_overlap, Iq, ...
+            % x_facet = zeros([dims_overlap_ref_q, size(xsol_q, 3)]);
+            x_facet(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
+            x_facet = comm2d_update_borders(x_facet, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            [l21_norm, nuclear_norm] = fhs_compute_facet_prior(x_facet, Iq, ...
                 offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-                offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+                offsetLq, offsetRq, crop_sparsity, crop_low_rank, apodization_window, size(v1_));
             end
         end
 
@@ -781,10 +774,10 @@ for t = t_start:max_iter
             for q = 1:Q
                 xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = xsol_q{q};
             end
-            sol = reshape(xsol(:), numel(xsol(:)) / nChannels, nChannels);
+            sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
             SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));
-            psnrh = zeros(nChannels, 1);
-            for i = 1:nChannels
+            psnrh = zeros(n_channels, 1);
+            for i = 1:n_channels
                 psnrh(i) = 20 * log10(norm(X0(:, i)) / norm(X0(:, i) - sol(:, i)));
             end
             SNR_average = mean(psnrh);
@@ -868,14 +861,14 @@ end
 % Calculate residual images
 spmd
     if labindex <= Qp.Value
-        x_overlap(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
-        x_overlap = comm2d_update_borders(x_overlap, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+        x_facet(overlap(1) + 1:end, overlap(2) + 1:end, :) = xsol_q;
+        x_facet = comm2d_update_borders(x_facet, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
-        [l21_norm, nuclear_norm] = fhs_compute_facet_prior(x_overlap, Iq, ...
+        [l21_norm, nuclear_norm] = fhs_compute_facet_prior(x_facet, Iq, ...
             offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
-            offsetLq, offsetRq, crop_l21, crop_nuclear, w, size(v1_));
+            offsetLq, offsetRq, crop_sparsity, crop_low_rank, apodization_window, size(v1_));
     else
-        res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex - Qp.Value}), y, A, At, G, W, flagDR, Sigma);
+        res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex - Qp.Value}), y, A, At, G, W, flag_dimensionality_reduction, Sigma);
     end
 end
 
@@ -940,10 +933,10 @@ m.rel_val = rel_val;
 fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits']);
 fitswrite(m.res, [name_checkpoint '_res' '.fits']);
 if flag_synth_data
-    sol = reshape(xsol(:), numel(xsol(:)) / nChannels, nChannels);
+    sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
     SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));
-    psnrh = zeros(nChannels, 1);
-    for i = 1:nChannels
+    psnrh = zeros(n_channels, 1);
+    for i = 1:n_channels
         psnrh(i) = 20 * log10(norm(X0(:, i)) / norm(X0(:, i) - sol(:, i)));
     end
     SNR_average = mean(psnrh);

@@ -22,14 +22,14 @@ function [v2, norm_res, t_block, proj] = fhs_initialize_data_worker(y)
 %     ``y``.
 %
 
-nChannels = numel(y);
-norm_res = cell(nChannels, 1);
-v2 = cell(nChannels, 1);
-t_block = cell(nChannels, 1);
-proj = cell(nChannels, 1);
+n_channels = numel(y);
+norm_res = cell(n_channels, 1);
+v2 = cell(n_channels, 1);
+t_block = cell(n_channels, 1);
+proj = cell(n_channels, 1);
 
 % loop over channels
-for l = 1:nChannels
+for l = 1:n_channels
     norm_res{l} = cell(numel(y{l}), 1);
     v2{l} = cell(numel(y{l}), 1);
     t_block{l} = cell(numel(y{l}), 1);

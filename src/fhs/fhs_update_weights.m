@@ -1,6 +1,7 @@
-function [weights1, weights0] = fhs_update_weights(x_overlap, size_v1, ...
+function [weights1, weights0] = fhs_update_weights(x_facet, size_v1, ...
     I, offset, status, nlevel, wavelet, Ncoefs, dims_overlap_ref, ...
-    offsetL, offsetR, reweight_alpha, crop_l21, crop_nuclear, w, sig, sig_bar)
+    offsetL, offsetR, reweight_alpha, crop_sparsity, crop_low_rank, ...
+    apodization_window, sig, sig_bar)
 % Update the weights of the per facet priors.
 %
 % Update the weights involved in the reweighting procedure applied to the
@@ -9,7 +10,7 @@ function [weights1, weights0] = fhs_update_weights(x_overlap, size_v1, ...
 %
 % Parameters
 % ----------
-% x_overlap : array, double
+% x_facet : array, double
 %     Overlapping image facet [M, N, L].
 % size_v1 : int
 %     Size of the dual variable associated with the facet
@@ -36,13 +37,13 @@ function [weights1, weights0] = fhs_update_weights(x_overlap, size_v1, ...
 %     Amount of zero-padding from the "right" [1, 2].
 % reweight_alpha : double
 %     Reweighting parameter.
-% crop_l21 : array, int
+% crop_sparsity : array, int
 %     Relative cropping necessary for the facet l21-norm [1, 2].
-% crop_nuclear : array, int
+% crop_low_rank : array, int
 %     Relative cropping necessary for the facet nuclear norm [1, 2].
-% w : array, double
+% apodization_window : array, double
 %     Spatial weights applied to the facet nuclear norm (same size as
-%     ``x_overlap`` after cropping by ``crop_nuclear``).
+%     ``x_facet`` after cropping by ``crop_low_rank``).
 % sig : double
 %     Noise level (wavelet space).
 % sig_bar : double
@@ -69,8 +70,8 @@ function [weights1, weights0] = fhs_update_weights(x_overlap, size_v1, ...
 %%
 
 % nuclear norm
-sol = w .* x_overlap(crop_nuclear(1) + 1:end, crop_nuclear(2) + 1:end, :);
-sol = reshape(sol, [numel(sol) / size(sol, 3), size(x_overlap, 3)]);
+sol = apodization_window .* x_facet(crop_low_rank(1) + 1:end, crop_low_rank(2) + 1:end, :);
+sol = reshape(sol, [numel(sol) / size(sol, 3), size(x_facet, 3)]);
 [~, S00, ~] = svd(sol, 'econ');
 d0 = abs(diag(S00));
 upsilon_bar = sig_bar * reweight_alpha;
@@ -78,10 +79,10 @@ weights0 = upsilon_bar ./ (upsilon_bar + d0);
 
 % l21 norm
 % ! offset for the zero-padding
-zerosNum = dims_overlap_ref + offsetL + offsetR;
+spatial_size = dims_overlap_ref + offsetL + offsetR;
 
-x_ = zeros([zerosNum, size(x_overlap, 3)]);
-x_(offsetL(1) + 1:end - offsetR(1), offsetL(2) + 1:end - offsetR(2), :) = x_overlap(crop_l21(1) + 1:end, crop_l21(2) + 1:end, :);
+x_ = zeros([spatial_size, size(x_facet, 3)]);
+x_(offsetL(1) + 1:end - offsetR(1), offsetL(2) + 1:end - offsetR(2), :) = x_facet(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :);
 z = zeros(size_v1);
 for l = 1:size(x_, 3)
     z(:, l) = sdwt2_sara_faceting(x_(:, :, l), I, offset, status, nlevel, wavelet, Ncoefs);
