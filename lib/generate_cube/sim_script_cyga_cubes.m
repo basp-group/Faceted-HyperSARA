@@ -1,15 +1,21 @@
 clear; clc; close all
+
 %% Freq info
 nu_1 = 2.052e9; %starting freq
 dnu = 16e6;     % freq step
 L = 100   ;     %number of channels
 nu_vect =[nu_1 (dnu*(1:L-1)+nu_1)];
+
 %% for info
 dfreqSamples =5;
 nu_2k = nu_vect(1:dfreqSamples:end);
 nu_512 = nu_vect;
+
 %% Cyg A images at different resolutions
-im_ref = fitsread('cygA_Sband_Dabbech2021.fits');
+% Note: dataset to be retrived at
+% https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits,
+% DOI: 10.17861/529cdcbc-7c18-47a6-970f-755a5da19071
+im_ref = fitsread('S_DDE_MODEL.fits');
 % adjust the FoV desired and the image size 2kx1k
 Nh = 3000; 
 imr = imresize(im_ref,[Nh,Nh]); 
@@ -21,15 +27,17 @@ im_512 =imresize(im_2k,[256,512]);
 im_512=im_512.*(im_512>8e-5);
 fitswrite(im_512,['cygASband_' num2str(size(im_512,1)) '_' num2str(size(im_512,2)) '.fits'])
 
-%% get spectral maps
+%% generate spectral maps
 im_512_init = im_512;
 im_2k_init = im_2k;
 fact_dim = size(im_2k,1)./[size(im_2k,1) size(im_512,1)];
+
 % spectral index map: 1st component:smooth image and then take the log10
 N_ =[64,64];
 [X,Y] = meshgrid(-N_(1)/2:N_(1)/2 -1, -N_(1)/2:N_(2)/2  -1);
 h= [X(:) Y(:)];
 theta=0;
+
 % 2kx1k
 sig_x0=10;
 sig_y0=10;
@@ -38,7 +46,7 @@ beam_2k = reshape(rho(h),N_(1),N_(2));
 beam_2k_nz = beam_2k./sum(sum(reshape(rho(h),N_(1),N_(2))));
 im_2kSLog = log10(conv2(im_2k,beam_2k_nz,'same').*(im_2k_init>0));
 
-%512x256
+% 512x256
 sig_x = sig_x0/fact_dim(2);
 sig_y = sig_y0/fact_dim(2);
 rho =gauss2d(sig_x,sig_y,theta);
@@ -78,7 +86,7 @@ spectralIds512 =(spectralIds512 -max(max(spectralIds512)) -0.3);
 spectralIds2k(spectralIds2k<-5) =NaN;
 spectralIds512(spectralIds512<-5) =NaN;
 
-%% curvature map 
+%% generate curvature map 
 scale =0.5;
 theta= max(min(randn(1,1),1),-1)*pi;
 % 2kx1k
@@ -126,9 +134,11 @@ fitswrite(Curv2k,['CurvMap' num2str(size(cube2k,1)) '_' num2str(size(cube2k,2)) 
 fitswrite(Curv512,['CurvMap' num2str(size(cube512,1)) '_' num2str(size(cube512,2))  '_' num2str(size(cube512,3))    '.fits']);
 
 
-function rho =gauss2d(sig_x,sig_y,theta)
+function rho = gauss2d(sig_x,sig_y,theta)
+
 a =cos(theta).^2/(2*sig_x^2) +sin(theta).^2/(2*sig_y^2);
 b = sin(2*theta).^2/(4*sig_x^2) +sin(2*theta).^2/(4*sig_y^2);
 c =sin(theta).^2/(2*sig_x^2) +cos(theta).^2/(2*sig_y^2);
 rho = @(h) exp(-(a.*h(:,1).^2 +2*b.*h(:,1).*h(:,2)+c*h(:,2).^2));
+
 end

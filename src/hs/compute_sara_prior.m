@@ -19,7 +19,10 @@ function f = compute_sara_prior(x, Psit, s)
 % Returns
 % -------
 % f : double
-%       Value of :math:`\Vert \boldsymbol{\Psi}^\dagger \mathbf{X} \Vert_{2,1}`.
+%       Value of 
+%       :math:`\Vert \boldsymbol{\Psi}^\dagger \mathbf{X} \Vert_{2,1}`, 
+%       with :math:`\boldsymbol{\Psi}^\dagger` the SARA dictionary 
+%       :cite:p:`Carrillo2012`.
 %            
 
 %-------------------------------------------------------------------------%
