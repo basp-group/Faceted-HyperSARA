@@ -206,6 +206,7 @@ disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), ', ')])
 addpath([project_dir,filesep,'lib',filesep,'operators',filesep])
 addpath([project_dir,filesep,'lib',filesep,'measurement-operator',filesep,'nufft'])
 addpath([project_dir,filesep,'lib',filesep,'measurement-operator',filesep,'lib',filesep,'operators'])
+addpath([project_dir,filesep,'lib',filesep,'measurement-operator',filesep,'lib',filesep,'utils'])
 % addpath ../../lib/measurement-operator/irt/nufft/
 addpath([project_dir,'lib',filesep,'utils',filesep,''])
 addpath([project_dir,'lib',filesep,'faceted-wavelet-transform',filesep,'src'])
