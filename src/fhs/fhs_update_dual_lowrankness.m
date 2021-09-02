@@ -1,4 +1,4 @@
-function [v0, g0] = update_dual_nuclear(v0, xhat, w, weights0, beta0)
+function [v0, g0] = fhs_update_dual_lowrankness(v0, xhat, w, weights0, beta0)
 % Update the dual variable related to the weighted nuclear norm prior.
 %
 % Update step for the facet dual variable related to the nuclear norm 

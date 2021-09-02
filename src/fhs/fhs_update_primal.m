@@ -1,4 +1,4 @@
-function [xsol, xhat, rel_x, norm_x] = update_primal(xsol, g)
+function [xsol, xhat, rel_x, norm_x] = fhs_update_primal(xsol, g)
 % Update the wideband facet (primal variable).
 %
 % Update step for the primal variable in the preconditioned primal-dual 

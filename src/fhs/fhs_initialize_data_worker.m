@@ -1,4 +1,4 @@
-function [v2, norm_res, t_block, proj] = initialize_data_worker(y)
+function [v2, norm_res, t_block, proj] = fhs_initialize_data_worker(y)
 % Initialize the variables stored on the data workers.
 %
 % Parameters

@@ -73,13 +73,13 @@ function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
 %%                         
              
 Ftx = zeros(size(x));
-nChannels = size(x, 3);
-norm_res = cell(nChannels, 1);
+n_channels = size(x, 3);
+norm_res = cell(n_channels, 1);
 norm_epsilon = 0;
 global_norm_res = 0;
 
 if flagDR
-    for i = 1 : nChannels
+    for i = 1 : n_channels
         Fx = A(x(:,:,i));
         g2 = zeros(size(Fx));
         norm_res{i} = cell(length(G{i}), 1);
@@ -100,7 +100,7 @@ if flagDR
         Ftx(:,:,i) = sigma22(i)*real(At(g2));
     end
 else
-    for i = 1 : nChannels
+    for i = 1 : n_channels
         Fx = A(x(:,:,i));
         g2 = zeros(size(Fx));
         norm_res{i} = cell(length(G{i}), 1);
