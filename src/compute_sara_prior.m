@@ -1,4 +1,4 @@
-function f = compute_sara_prior(x, Psit, s)
+function f = compute_sara_prior(x, Psit, n_wavelet_coefficients)
 % Compute the l21-norm of the wavelet cofficients associated with the SARA
 % dictionary.
 %
@@ -13,7 +13,7 @@ function f = compute_sara_prior(x, Psit, s)
 %       Wideband image cube [N(1), N(2), L].
 % Psit : anonymous function
 %       SARA dictionary @[1].
-% s : int
+% n_wavelet_coefficients : int
 %       Number of wavelet coefficients (per channel) [1].
 %
 % Returns
@@ -32,7 +32,7 @@ function f = compute_sara_prior(x, Psit, s)
 % -------------------------------------------------------------------------%
 %%
 
-r = zeros(s, size(x, 3));
+r = zeros(n_wavelet_coefficients, size(x, 3));
 
 for l = 1:size(x, 3)
     r(:, l) = Psit(x(:, :, l));

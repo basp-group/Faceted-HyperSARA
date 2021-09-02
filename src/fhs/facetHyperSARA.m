@@ -1,7 +1,7 @@
 function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
     Qx, Qy, K, wavelet, filter_length, nlevel, window_type, ...
     spectral_chunk, n_channels, overlap_size, alph, alph_bar, ...
-    M, N, oy, ox, warmstart_name, name_checkpoint, ...
+    M, N, oy, ox, warmstart_name, checkpoint_name, ...
     flag_dimensionality_reduction, Sigma, ...
     varargin)
 
@@ -82,8 +82,8 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %               [1, 2]
 % > window_type type of apodization window affecting the faceted nuclear
 %               norm prior [string]
-% > warmstart_name  name_checkpoint of a valid .mat file for initialization (for warm-restart)
-% > name_checkpoint        lambda function defining the name_checkpoint of the backup file
+% > warmstart_name  checkpoint_name of a valid .mat file for initialization (for warm-restart)
+% > checkpoint_name        lambda function defining the checkpoint_name of the backup file
 % > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
 % > varargin     initial value for the primal variable
 %
@@ -786,7 +786,7 @@ for t = t_start:max_iter
 
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
-        m = matfile(strcat(name_checkpoint, '_rw=', num2str(reweight_step_count), '.mat'), ...
+        m = matfile(strcat(checkpoint_name, '_rw=', num2str(reweight_step_count), '.mat'), ...
               'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
@@ -825,8 +825,8 @@ for t = t_start:max_iter
             m.t_facet = t_facet;
             m.t_data = t_data;
             m.rel_val = rel_val;
-            fitswrite(m.xsol, [name_checkpoint, '_xsol', '.fits']);
-            fitswrite(m.res, [name_checkpoint, '_res', '.fits']);
+            fitswrite(m.xsol, [checkpoint_name, '_xsol', '.fits']);
+            fitswrite(m.res, [checkpoint_name, '_res', '.fits']);
             if flag_synth_data
                 m.SNR = SNR;
                 m.SNR_average = SNR_average;
@@ -872,7 +872,7 @@ spmd
     end
 end
 
-m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
+m = matfile([checkpoint_name, '_rw=' num2str(reweight_step_count) '.mat'], ...
     'Writable', true);
 m.param = param;
 m.res = zeros(size(xsol));
@@ -930,8 +930,8 @@ m.end_iter = end_iter;
 m.t_facet = t_facet;
 m.t_data = t_data;
 m.rel_val = rel_val;
-fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits']);
-fitswrite(m.res, [name_checkpoint '_res' '.fits']);
+fitswrite(m.xsol, [checkpoint_name '_xsol' '.fits']);
+fitswrite(m.res, [checkpoint_name '_res' '.fits']);
 if flag_synth_data
     sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
     SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));

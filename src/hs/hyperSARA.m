@@ -1,6 +1,6 @@
 function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
-    wavelet, nlevel, spectral_chunk, nChannels, M, N, oy, ox, ...
-    name_warmstart, name_checkpoint, flagDR, Sigma, varargin)
+    wavelet, nlevel, spectral_chunk, n_channels, M, N, oy, ox, ...
+    warmstart_name, checkpoint_name, flag_dimensionality_reduction, Sigma, varargin)
 
 % TODO: to distribute before entering the solver: y, G, pU, W, X0
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
@@ -26,9 +26,9 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 % > wavelet     list of wavelet basis (for the SARA prior)
 % > nlevel      number of wavelet decomposition levels
 % > spectral_chunk    list of channels handled by each data process
-% > nChannels           total number of channels
-% > name_warmstart name_checkpoint of the file to restart from
-% > name_checkpoint        lambda function defining the name_checkpoint of the backup file
+% > n_channels           total number of channels
+% > warmstart_name checkpoint_name of the file to restart from
+% > checkpoint_name        lambda function defining the checkpoint_name of the backup file
 % > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
 % > varargin     initial value for the primal variable
 %
@@ -77,9 +77,9 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 %               default in last position)
 % > nlevel      decomposition depth [1]
 % > spectral_chunk    indices of the bands handled by each data node {K, 1}
-% > nChannels           total number of spectral channels [1]
-% > name_warmstart  name_checkpoint of a valid .mat file for initialization (for warm-restart)
-% > name_checkpoint        lambda function defining the name_checkpoint of the backup file
+% > n_channels           total number of spectral channels [1]
+% > warmstart_name  checkpoint_name of a valid .mat file for initialization (for warm-restart)
+% > checkpoint_name        lambda function defining the checkpoint_name of the backup file
 % > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
 % > varargin     initial value for the primal variable
 %
@@ -148,10 +148,10 @@ spmd
 end
 
 % Initializations
-init_flag = isfile(name_warmstart);
+init_flag = isfile(warmstart_name);
 if init_flag
-    init_m = matfile(name_warmstart);
-    fprintf('Resume from file %s\n\n', name_warmstart);
+    init_m = matfile(warmstart_name);
+    fprintf('Resume from file %s\n\n', warmstart_name);
 end
 
 % ! -- TO BE CHECKED (primal initialization)
@@ -189,7 +189,7 @@ else
         if ~isempty(varargin{1})
             xsol = varargin{1};
         else
-            xsol = zeros(M, N, nChannels);
+            xsol = zeros(M, N, n_channels);
         end
 
         if numel(varargin) > 1
@@ -199,7 +199,7 @@ else
             flag_synth_data = false;
         end
     else
-        xsol = zeros(M, N, nChannels);
+        xsol = zeros(M, N, n_channels);
     end
     fprintf('xsol initialized \n\n');
 end
@@ -382,10 +382,10 @@ if init_flag
         fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
 
         if flag_synth_data
-            sol = reshape(xsol(:), numel(xsol(:)) / nChannels, nChannels);
+            sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
             SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));
-            psnrh = zeros(nChannels, 1);
-            for i = 1:nChannels
+            psnrh = zeros(n_channels, 1);
+            for i = 1:n_channels
                 psnrh(i) = 20 * log10(norm(X0(:, i)) / norm(X0(:, i) - sol(:, i)));
             end
             SNR_average = mean(psnrh);
@@ -442,7 +442,7 @@ for t = t_start:max_iter
                 update_dual_data_fidelity(v2_, y, xi, Fxi_old, proj_, A, At, ...
                 G, W, pU, epsilon, elipse_proj_max_iter.Value, ...
                 elipse_proj_min_iter.Value, elipse_proj_eps.Value, ...
-                sigma22, flagDR, Sigma);
+                sigma22, flag_dimensionality_reduction, Sigma);
         g_ = g1_ + g2_;
         t_data_ = toc(tw);
     end
@@ -500,10 +500,10 @@ for t = t_start:max_iter
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
 
             if flag_synth_data
-                sol = reshape(xsol(:), numel(xsol(:)) / nChannels, nChannels);
+                sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
                 SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));
-                psnrh = zeros(nChannels, 1);
-                for i = 1:nChannels
+                psnrh = zeros(n_channels, 1);
+                for i = 1:n_channels
                     psnrh(i) = 20 * log10(norm(X0(:, i)) / norm(X0(:, i) - sol(:, i)));
                 end
                 SNR_average = mean(psnrh);
@@ -560,7 +560,7 @@ for t = t_start:max_iter
             weights1_ = hs_update_weights_sparsity_distributed(xsol(:, :, spectral_chunk{labindex}), Psit_, weights1_, reweighting_alpha, sig_);
 
             % compute residual image
-            res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex}), y, A, At, G, W, flagDR, Sigma);
+            res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex}), y, A, At, G, W, flag_dimensionality_reduction, Sigma);
         end
 
         % ! -- TO BE CHECKED
@@ -584,10 +584,10 @@ for t = t_start:max_iter
 
         % compute SNR
         if flag_synth_data
-            sol = reshape(xsol(:), numel(xsol(:)) / nChannels, nChannels);
+            sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
             SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));
-            psnrh = zeros(nChannels, 1);
-            for i = 1:nChannels
+            psnrh = zeros(n_channels, 1);
+            for i = 1:n_channels
                 psnrh(i) = 20 * log10(norm(X0(:, i)) / norm(X0(:, i) - sol(:, i)));
             end
             SNR_average = mean(psnrh);
@@ -596,7 +596,7 @@ for t = t_start:max_iter
 
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
-            m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
+            m = matfile([checkpoint_name, '_rw=' num2str(reweight_step_count) '.mat'], ...
                 'Writable', true);
             m.param = param;
             m.res = zeros(size(xsol));
@@ -608,7 +608,7 @@ for t = t_start:max_iter
             m.t_block = cell(K, 1);
             m.norm_res = cell(K, 1);
             m.v0 = v0_;
-            m.v1 = zeros(s_{1}, nChannels);
+            m.v1 = zeros(s_{1}, n_channels);
             m.weights0 = weights0_;
             m.weights1 = weights1_{1};
             % Retrieve variables from workers
@@ -629,8 +629,8 @@ for t = t_start:max_iter
             m.t_nuclear = t_nuclear;
             m.t_data = t_data;
             m.rel_val = rel_val;
-            fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits']);
-            fitswrite(m.res, [name_checkpoint '_res' '.fits']);
+            fitswrite(m.xsol, [checkpoint_name '_xsol' '.fits']);
+            fitswrite(m.res, [checkpoint_name '_res' '.fits']);
             if flag_synth_data
                 m.SNR = SNR;
                 m.SNR_average = SNR_average;
@@ -658,10 +658,10 @@ toc(start_loop);
 % Calculate residual images
 res = zeros(size(xsol));
 spmd
-    res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex}), y, A, At, G, W, flagDR, Sigma);
+    res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex}), y, A, At, G, W, flag_dimensionality_reduction, Sigma);
 end
 
-m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
+m = matfile([checkpoint_name, '_rw=' num2str(reweight_step_count) '.mat'], ...
     'Writable', true);
 m.param = param;
 m.res = zeros(size(xsol));
@@ -673,7 +673,7 @@ m.t_block = cell(K, 1);
 m.norm_res = cell(K, 1);
 m.v0 = v0_;
 m.weights0 = weights0_;
-m.v1 = zeros(s_{1}, nChannels);
+m.v1 = zeros(s_{1}, n_channels);
 m.weights1 = weights1_{1};
 
 % Retrieve variables from workers
@@ -705,13 +705,13 @@ m.t_l21 = t_l21;
 m.t_nuclear = t_nuclear;
 m.t_data = t_data;
 m.rel_val = rel_val;
-fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits']);
-fitswrite(m.res, [name_checkpoint '_res' '.fits']);
+fitswrite(m.xsol, [checkpoint_name '_xsol' '.fits']);
+fitswrite(m.res, [checkpoint_name '_res' '.fits']);
 if flag_synth_data
-    sol = reshape(xsol(:), numel(xsol(:)) / nChannels, nChannels);
+    sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
     SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));
-    psnrh = zeros(nChannels, 1);
-    for i = 1:nChannels
+    psnrh = zeros(n_channels, 1);
+    for i = 1:n_channels
         psnrh(i) = 20 * log10(norm(X0(:, i)) / norm(X0(:, i) - sol(:, i)));
     end
     SNR_average = mean(psnrh);

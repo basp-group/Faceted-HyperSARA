@@ -36,11 +36,11 @@ function residual_image = compute_residual_images(x, y, A, At, ...
 % -------------------------------------------------------------------------%
 %%
 
-nChannels = size(x, 3);
+n_channels = size(x, 3);
 residual_image = zeros(size(x));
 
 if flagDR
-    for i = 1:nChannels
+    for i = 1:n_channels
         Fx = A(x(:, :, i));
         r = zeros(numel(Fx), 1);
         for j = 1:length(G{i})
@@ -51,7 +51,7 @@ if flagDR
         residual_image(:, :, i) = real(At(r));
     end
 else
-    for i = 1:nChannels
+    for i = 1:n_channels
         Fx = A(x(:, :, i));
         r = zeros(numel(Fx), 1);
         for j = 1:length(G{i})

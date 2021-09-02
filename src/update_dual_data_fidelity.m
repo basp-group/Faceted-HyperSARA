@@ -1,7 +1,9 @@
 function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
 update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
-                            epsilon, elipse_proj_max_iter, elipse_proj_min_iter, ...
-                            elipse_proj_eps, sigma22, flagDR, Sigma)
+                            epsilon, elipse_proj_max_iter, ...
+                            elipse_proj_min_iter, ...
+                            elipse_proj_eps, sigma22, ...
+                            flag_dimensionality_reduction, Sigma)
 % Update the data fidelity term in the preconditioned primal-dual algorithm.
 %
 % Update the data fidelity terms owned by each worked involved in the group
@@ -41,7 +43,7 @@ update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
 %     Stopping criterion for the projection.
 % sigma22 : array (1d)
 %     Step-size for the update of the dual variable (tau*sigma2).
-% flagDR : bool
+% flag_dimensionality_reduction : bool
 %     Flag to activate DR functionality.
 % Sigma : cell
 %     Dimensionality reduction weights {L}{nblocks}.
@@ -78,7 +80,7 @@ norm_res = cell(n_channels, 1);
 norm_epsilon = 0;
 global_norm_res = 0;
 
-if flagDR
+if flag_dimensionality_reduction
     for i = 1:n_channels
         Fx = A(x(:, :, i));
         g2 = zeros(size(Fx));

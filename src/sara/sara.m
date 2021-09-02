@@ -1,5 +1,6 @@
 function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
-    name_warsmtart, name_checkpoint, alph, flagDR, Sigma, varargin)
+    warsmtart_name, checkpoint_name, alph, ...
+    flag_dimensionality_reduction, Sigma, varargin)
 
 % TODO: update interface to accommodate real data
 % TODO: try to replace A, At, pU, G, W by a functor (if possible)
@@ -27,10 +28,10 @@ else
 end
 
 % Initializations
-init_flag = isfile(name_warsmtart);
+init_flag = isfile(warsmtart_name);
 if init_flag
-    init_m = matfile(name_warsmtart);
-    fprintf('Resume from file %s\n\n', name_warsmtart);
+    init_m = matfile(warsmtart_name);
+    fprintf('Resume from file %s\n\n', warsmtart_name);
 end
 
 % ! -- TO BE CHECKED (primal initialization)
@@ -170,7 +171,7 @@ if init_flag
 else
     Fx_old = zeros(No, c);
     proj = cell(c, 1);
-    if flagDR
+    if flag_dimensionality_reduction
         for i = 1:c
             proj{i} = cell(numel(G{i}), 1);
             Fx = A(xsol(:, :, i));
@@ -318,7 +319,7 @@ for t = t_start:max_iter
     norm_epsilon_check = 0;
     counter = 1;
     tw = tic;
-    if flagDR
+    if flag_dimensionality_reduction
         for i = 1:c
             Fx = A(xsol(:, :, i));
             g2 = zeros(No, 1);
@@ -463,7 +464,7 @@ for t = t_start:max_iter
 
         % compute residual image
         res = zeros(size(xsol));
-        if flagDR
+        if flag_dimensionality_reduction
             for i = 1:c
                 Fx = A(xsol(:, :, i));
                 g2 = zeros(No, 1);
@@ -516,7 +517,7 @@ for t = t_start:max_iter
 
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
-            m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
+            m = matfile([checkpoint_name, '_rw=' num2str(reweight_step_count) '.mat'], ...
                 'Writable', true);
             m.param = param;
             m.res = res;
@@ -536,8 +537,8 @@ for t = t_start:max_iter
             m.t_master = t_master;
             m.t_data = t_data;
             m.rel_val = rel_val;
-            fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits']);
-            fitswrite(m.res, [name_checkpoint '_res' '.fits']);
+            fitswrite(m.xsol, [checkpoint_name '_xsol' '.fits']);
+            fitswrite(m.res, [checkpoint_name '_res' '.fits']);
             if flag_synth_data
                 m.SNR = SNR;
             end
@@ -560,7 +561,7 @@ for t = t_start:max_iter
 end
 
 % Calculate residual images
-if flagDR
+if flag_dimensionality_reduction
     for i = 1:c
         Fx = A(xsol(:, :, i));
         g2 = zeros(No, 1);
@@ -584,7 +585,7 @@ else
     end
 end
 
-m = matfile([name_checkpoint, '_rw=' num2str(reweight_step_count) '.mat'], ...
+m = matfile([checkpoint_name, '_rw=' num2str(reweight_step_count) '.mat'], ...
     'Writable', true);
 m.param = param;
 m.res = res;
@@ -610,8 +611,8 @@ m.t_l11 = t_l11;
 m.t_master = t_master;
 m.t_data = t_data;
 m.rel_val = rel_val;
-fitswrite(m.xsol, [name_checkpoint '_xsol' '.fits']);
-fitswrite(m.res, [name_checkpoint '_res' '.fits']);
+fitswrite(m.xsol, [checkpoint_name '_xsol' '.fits']);
+fitswrite(m.res, [checkpoint_name '_res' '.fits']);
 if flag_synth_data
     SNR = 20 * log10(norm(x0(:)) / norm(x0(:) - xsol(:)));
     m.SNR = SNR;
