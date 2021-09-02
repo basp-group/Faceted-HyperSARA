@@ -1,12 +1,10 @@
 function x = HS_adjoint_operator_precond_G(y, G, W, At, aW, N, M)
 
-    % Parameters
     c = length(y);
     x = zeros(N, M, c);
     % No = size(G{1}{1}, 2);
     No = size(W{1}{1}, 1);
 
-    %
     for i = 1:c
         g2 = zeros(No, 1);
         for j = 1:length(G{i})
