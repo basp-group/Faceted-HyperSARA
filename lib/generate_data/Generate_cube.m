@@ -1,4 +1,4 @@
-function [x0,X0] = Generate_cube(file_name,f,emission_lines)
+function [x0,X0] = generate_cube(file_name,f,emission_lines)
 disp '/*----------------------------------------------------------------*/'
 disp ' example: Simulation of wide band radio interferometric data'
 disp '/*----------------------------------------------------------------*/'

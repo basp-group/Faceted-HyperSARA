@@ -1,4 +1,4 @@
-function [x0_new,X0_new,f_new,c_new] = Generate_undersampled_cube(x0,f,Ny,Nx,c,unds)
+function [x0_new,X0_new,f_new,c_new] = generate_undersampled_cube(x0,f,Ny,Nx,c,unds)
 
 %Subsample the maps and reduce to desired size
 x0_new = zeros(Ny,Nx,c/unds);
