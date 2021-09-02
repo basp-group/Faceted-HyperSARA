@@ -54,6 +54,7 @@ pip install miss_hit
 mh_style my_file.m # only analyse the file
 mh_style --fix my_file.m # fix the file based on the rules given in miss_hit.cfg
 mh_style folder/
+mh_style --fix .
 ```
 
 ## New interface (generic measurement  operator, lambda function)
