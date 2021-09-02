@@ -1,5 +1,6 @@
 function [x, residual, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, total_cpu_time, total_runtime, iteration_number] = ...
-    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, squared_operator_norm, Q, upsilon0)
+    aggregate_results(algo, filename, ncores_data, ncores_prior, x0, ...
+    squared_operator_norm, Q, upsilon0)
 %%
 % Produce the images and metrics reported in the MNRAS paper
 % ``A Faceted Prior for Scalable Wideband Imaging: Application to Radio
@@ -20,9 +21,9 @@ function [x, residual, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, t
 % -------------------------------------------------------------------------%
 %%
 N = [size(x0, 1), size(x0, 2)];
-nChannels = size(x0, 3);
-x = zeros(N(1), N(2), nChannels);
-residual = zeros(N(1), N(2), nChannels);
+n_channels = size(x0, 3);
+x = zeros(N(1), N(2), n_channels);
+residual = zeros(N(1), N(2), n_channels);
 
 % Reconstruction metrics
 % DR = @(x, res, n) sqrt(prod(N))*squeeze(max(max(x,[],2),[],1))*n./norm2D(res); % per band input
@@ -68,7 +69,7 @@ switch algo
         sum_data_sqr = 0;
         sum_cpu_sqr = 0;
 
-        for l = 1:nChannels
+        for l = 1:n_channels
             load(filename(l), 'xsol', 't_l11', 't_master', 't_data', 'end_iter', 'res');
             x(:, :, l) = xsol;
             residual(:, :, l) = res / squared_operator_norm(l);
@@ -106,7 +107,7 @@ switch algo
         %
         acpu = total_cpu_time / iteration_number;
         scpu = sqrt((sum_cpu_sqr - iteration_number * acpu^2) / (iteration_number - 1));
-        iteration_number = round(iteration_number / nChannels); % average number of iterations for each SARA problem
+        iteration_number = round(iteration_number / n_channels); % average number of iterations for each SARA problem
 
         % compute SNR
         a = SNR(x, x0);
@@ -116,13 +117,13 @@ switch algo
         asnr_log = mean(a);
         ssnr_log = std(a);
 
-        ncpu = nChannels * (ncores_data + ncores_prior + 1);
+        ncpu = n_channels * (ncores_data + ncores_prior + 1);
 
-    case 'cw'
+    case 'fhs'
 
         load(filename, 'xsol', 'res', 't_facet', 't_data', 'end_iter');
         x = xsol;
-        residual = res ./ reshape(squared_operator_norm, [1, 1, nChannels]);
+        residual = res ./ reshape(squared_operator_norm, [1, 1, n_channels]);
         clear xsol res;
 
         % compute SNR
@@ -152,10 +153,10 @@ switch algo
 
         ncpu = min(ncores_prior + ncores_data + 1, 36);
 
-    case 'hypersara'
+    case 'hs'
         load(filename, 'xsol', 'res', 't_l21', 't_nuclear', 't_master', 't_data', 'end_iter');
         x = xsol;
-        residual = res ./ reshape(squared_operator_norm, [1, 1, nChannels]);
+        residual = res ./ reshape(squared_operator_norm, [1, 1, n_channels]);
         clear xsol res;
 
         % compute SNR

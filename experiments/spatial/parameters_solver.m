@@ -47,8 +47,8 @@ else
     param_solver.reweighting_alpha_ff = 1;
 end
 % maximum number of reweighting iterations reached (weights updated
-% nReweights times)
-param_solver.reweighting_max_iter = max(nReweights, param_solver.reweighting_min_iter + 1);
+% n_reweights times)
+param_solver.reweighting_max_iter = max(n_reweights, param_solver.reweighting_min_iter + 1);
 
 % * pdfb
 % minimum number of iterations

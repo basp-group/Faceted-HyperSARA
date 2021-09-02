@@ -65,7 +65,7 @@ Qc = [1, 2, 5, 10];
 overlap_fraction = 0;
 ncores_data = 10;
 ncores_prior = 5;
-algo = 'hypersara';
+algo = 'hs';
 
 for k = 1:numel(Qc)
     qc = Qc(k);

@@ -1,8 +1,8 @@
-function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
+function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
     algo_version, window_type, ncores_data, ind, overlap_fraction, ...
-    nReweights, coverage_path, gam, gam_bar, rw, exp_type, ...
-    superresolution_factor, isnr, flag_generateVisibilities, ...
-    flag_computeOperatorNorm, flag_solveMinimization, flagDR, ...
+    n_reweights, coverage_path, gam, gam_bar, rw, exp_type, ...
+    superresolution_factor, isnr, flag_generate_visibilities, ...
+    flag_compute_operator_norm, flag_solve_minimization, flagDR, ...
     flag_cirrus, flag_homotopy)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 %
@@ -14,7 +14,7 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 % ----------
 % image_name : string
 %     Name of the reference synthetic image (from the data/ folder).
-% nChannels : int
+% n_channels : int
 %     Number of spectral channels considered.
 % Qx : int
 %     Number of spatial facets along axis 2 (x).
@@ -38,7 +38,7 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 % overlap_fraction : array (1d)
 %     Fraction of the total size of a facet overlapping with a neighbour
 %     facet.
-% nReweights : int
+% n_reweights : int
 %     Maximum number of reweighting steps.
 % coverage_path : string
 %     Path and name of the uv-coverage .fits file (w/o file extension).
@@ -56,13 +56,13 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 %     Coverage superresolution factor.
 % isnr : double
 %     Input SNR used to generate the synthetic visibilities (value in dB).
-% flag_generateVisibilities : bool
+% flag_generate_visibilities : bool
 %     Flag specifying whether the visibilities need to be generated or
 %     loaded from an existing .mat file.
-% flag_computeOperatorNorm : bool
+% flag_compute_operator_norm : bool
 %     Flag triggering the computation of the (preconditioned) operator
 %     norm.
-% flag_solveMinimization : bool
+% flag_solve_minimization : bool
 %     Flag triggering the solver (SARA, HS or FHS).
 % flagDR : bool
 %     Flag to activate DR features in the definition of the measurement
@@ -86,12 +86,12 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 % Qx = 1; % 4
 % Qy = 1; % 4
 % Qc = 1;
-% nReweights = 1;
+% n_reweights = 1;
 % algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
-% flag_generateVisibilities = 0;
-% flag_computeOperatorNorm = 0;
-% flag_solveMinimization = 1;
+% flag_generate_visibilities = 0;
+% flag_compute_operator_norm = 0;
+% flag_solve_minimization = 1;
 % ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
 % ind = 1; % index of the spectral facet to be reconstructed
 % gam = 1;
@@ -104,10 +104,10 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 % flagDR = 0;
 % isnr = 50;
 %
-% nChannels = 20;
+% n_channels = 20;
 % flag_generateCube = 1;
 % cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
-% cube_path = cubepath(nChannels);
+% cube_path = cubepath(n_channels);
 % flag_generateCoverage = 0;
 % flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
 % superresolution_factor = 2;
@@ -119,12 +119,12 @@ format compact;
 disp('MNRAS configuration');
 disp(['Algorithm version: ', algo_version]);
 disp(['Reference image: ', image_name]);
-disp(['nchannels: ', num2str(nChannels)]);
+disp(['nchannels: ', num2str(n_channels)]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
 disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), ', ')]);
 disp(['Input SNR: ', num2str(isnr)]);
-disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
+disp(['Generating visibilities: ', num2str(flag_generate_visibilities)]);
 
 addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
@@ -201,7 +201,7 @@ else
               [1 spatial_downsampling colend], ...
               [1 spectral_downsampling sliceend]});
 end
-nChannels = floor(sliceend / spectral_downsampling);
+n_channels = floor(sliceend / spectral_downsampling);
 
 [Ny, Nx, nchans] = size(x0);
 N = Nx * Ny;
@@ -213,7 +213,7 @@ nu0 = 2.052e9; % starting freq
 dnu = 16e6;    % freq step
 L = 100;       % number of channels
 nu_vect = [nu0 (dnu * (1:L - 1) + nu0)];
-frequencies = nu_vect(1:floor(L / nChannels):end); % nu_vect(1:spectral_downsampling:end);
+frequencies = nu_vect(1:floor(L / n_channels):end); % nu_vect(1:spectral_downsampling:end);
 
 clear reference_cube_path info rowend colend sliceend;
 clear spatial_downsampling spectral_downsampling;
@@ -237,7 +237,7 @@ end
 % selected algorithm
 if strcmp(algo_version, 'sara')
     window_type = 'none';
-    Qc = nChannels;
+    Qc = n_channels;
     Qx = 1;
     Qy = 1;
 elseif strcmp(algo_version, 'hs')
@@ -252,7 +252,7 @@ overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
 disp(['Number of pixels in overlap: ', strjoin(strsplit(num2str(overlap_size)), ' x ')]);
 
 % index of the spectral channels involved in the subcube
-interleaved_channels = split_range_interleaved(Qc, nChannels);
+interleaved_channels = split_range_interleaved(Qc, n_channels);
 subcube_channels = interleaved_channels{ind};
 
 % index of channels from the subcube to be handled on each data worker
@@ -298,8 +298,8 @@ temp_results_name = @(nchannels) strcat(exp_type, '_', image_name, '_', ...
 
 warm_start = @(nchannels) strcat(temp_results_name(nchannels), '_rw=', num2str(rw), '.mat');
 
-data_name = data_name_function(nChannels);
-results_name = results_name_function(nChannels);
+data_name = data_name_function(n_channels);
+results_name = results_name_function(n_channels);
 
 %% Define problem configuration (rng, nufft, preconditioning, blocking,
 % NNLS (epsilon estimation), SARA dictionary)
@@ -430,7 +430,7 @@ clear param_blocking param_precond;
 
 %% Generate/load visibilities (generate only full spectral dataset)
 % only generatr data in 'hs' or 'fhs' configuration (otherwise, load the data)
-if flag_generateVisibilities
+if flag_generate_visibilities
 
     param_l2_ball.type = 'sigma';
     param_l2_ball.sigma_ball = 2;
@@ -500,13 +500,13 @@ end
 
 %% Compute operator norm
 if strcmp(algo_version, 'sara')
-    if flag_computeOperatorNorm
+    if flag_compute_operator_norm
         [Anorm, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
 
         save(fullfile(results_path, ...
             strcat('Anorm_', algo_version, ...
             '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), ...
-            '_L=', num2str(nChannels), ...
+            '_L=', num2str(n_channels), ...
             '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
             '_ch=', num2str(ind), '.mat')), ...
             '-v7.3', 'Anorm', 'squared_operator_norm', 'rel_var', ...
@@ -516,13 +516,13 @@ if strcmp(algo_version, 'sara')
         load(fullfile(results_path, ...
             strcat('Anorm_', algo_version, ...
             '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), ...
-            '_L=', num2str(nChannels), ...
+            '_L=', num2str(n_channels), ...
             '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
             '_ch=', num2str(ind), '.mat')), ...
             'Anorm', 'squared_operator_norm_precond', 'squared_operator_norm');
     end
 else
-    if flag_computeOperatorNorm
+    if flag_compute_operator_norm
         spmd
             if labindex > Qx * Qy * strcmp(algo_version, 'fhs')
                 [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
@@ -533,7 +533,7 @@ else
         % file
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
             '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), ...
-            '_L=', num2str(nChannels), '.mat')), 'Writable', true);
+            '_L=', num2str(n_channels), '.mat')), 'Writable', true);
 
         opnormfile.squared_operator_norm = zeros(nchans, 1);
         opnormfile.rel_var = zeros(nchans, 1);
@@ -555,7 +555,7 @@ else
     else
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
             '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), ...
-            '_L=', num2str(nChannels), '.mat')));
+            '_L=', num2str(n_channels), '.mat')));
 
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(subcube_channels, 1);
         rel_var_precond = opnormfile.rel_var_precond(subcube_channels, 1);
@@ -639,15 +639,15 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_version, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
 end
 
-%% Define parameters for the solver (nReweights needed here)
+%_r Define parameters for the solver (nReweights needed here)
 parameters_solver;
 
 %%
 % TODO: update solver interface
-name_checkpoint = fullfile(auxiliary_path, temp_results_name(nChannels));
-name_warmstart = fullfile(auxiliary_path, warm_start(nChannels));
+name_checkpoint = fullfile(auxiliary_path, temp_results_name(n_channels));
+name_warmstart = fullfile(auxiliary_path, warm_start(n_channels));
 
-if flag_solveMinimization
+if flag_solve_minimization
     %%
     if strcmp(algo_version, 'sara')
         disp('SARA');
