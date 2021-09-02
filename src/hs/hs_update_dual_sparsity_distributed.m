@@ -18,9 +18,9 @@ function [v1, g1] = hs_update_dual_sparsity_distributed(v1, Psit, Psi, ...
 %     Weights associated with the reweigthing step pixels due to the 
 %     overlap between facets [M, N].
 % beta1 : double
-%     Update step (mu / gamma1) [1]
+%     Update step (mu / gamma1) [1].
 % sigma1 : double
-%     Convergence parameter [1]
+%     Convergence parameter [1].
 %
 % Returns
 % -------
