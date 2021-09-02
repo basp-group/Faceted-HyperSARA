@@ -1,6 +1,6 @@
-clc; 
-format compact
-addpath ../lib/utils
+clc;
+format compact;
+addpath ../lib/utils;
 
 % filename_pattern = @(ind) fullfile('../data', ...
 %     ['fhs_cw_rd_triangular_Nx=2560_Ny=1536_L=30_Qx=5_Qy=3_Qc=1_overlap=512_ind=',...
@@ -9,8 +9,8 @@ addpath ../lib/utils
 %% Faceted HyperSARA
 res_path = '/lustre/home/shared/sc004/mnras_faceted_corrected/final_real_data/res_FacetedHyperSARA_4-8GHz_NEW.fits';
 filename_pattern = @(ind) fullfile('/lustre/home/shared/sc004/mnras_faceted_corrected/final_real_data', ...
-    ['fhs_cw_rd_triangular_Nx=2560_Ny=1536_L=30_Qx=5_Qy=3_Qc=1_overlap=512_ind=',...
-     num2str(ind),'_gam0=0.01_gam=5e-06_rw=20.mat']);
+    ['fhs_cw_rd_triangular_Nx=2560_Ny=1536_L=30_Qx=5_Qy=3_Qc=1_overlap=512_ind=', ...
+     num2str(ind), '_gam0=0.01_gam=5e-06_rw=20.mat']);
 
 nfacets = 15; % Qy = 3, Qx = 5, ncores_data = 15
 ncores_data = 15;
@@ -24,14 +24,14 @@ for id = 1:Qc % 1:nfile
     results_filename(id) = filename_pattern(files(id));
 end
 
-[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, nfacets,ncores_data);
+[aruntime, vruntime, acpu_time, vcpu_time, total_runtime, total_cpu_time, iteration_number] = get_timing_facetedHypersara(results_filename, nfacets, ncores_data);
 
 fprintf("HyperSARA: Qc = %i, iteration_number = %i \n", ...
-        Qc, iteration_number/Qc)
+        Qc, iteration_number / Qc);
 fprintf(" aruntime (s) = %.2f, std_runtime (s) = %1.2e, acpu_time (s) = %.2f, std_cpu_time (s) = %1.2e \n", ...
     aruntime, sqrt(vruntime), acpu_time, sqrt(vcpu_time));
 fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
-    total_runtime/3600, total_cpu_time/3600)
+    total_runtime / 3600, total_cpu_time / 3600);
 
 % load full (normalised) residual cube
 res = fitsread(res_path);
@@ -39,35 +39,35 @@ ares = mean(res, 3);
 
 std_ares = std(ares(:));
 
-kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
+kurtosis_res = squeeze(kurtosis(res, 0, [1, 2]));
 akurtosis_res = mean(kurtosis_res);
 skurtosis_res = std(kurtosis_res);
 
-std_res = squeeze(std(res, 0, [1,2]));
+std_res = squeeze(std(res, 0, [1, 2]));
 astd_res = mean(std_res);
 sstd_res = std(std_res);
 
-skew_res = squeeze(skewness(res,0,[1,2]));
+skew_res = squeeze(skewness(res, 0, [1, 2]));
 askew_res = mean(skew_res);
 sskew_res = std(skew_res);
-clear res ares
+clear res ares;
 
 save("metric_fhs.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res', ...
     'std_res', 'astd_res', 'sstd_res', 'std_ares', 'skew_res', 'askew_res', 'sskew_res', ...
     'aruntime', 'vruntime', 'acpu_time', 'std_ares', 'vcpu_time', ...
     'iteration_number', ...
-    'total_runtime', 'total_cpu_time')
+    'total_runtime', 'total_cpu_time');
 
 % Print results
 fprintf("std_res [1st, last] = [%1.2e, %1.2e], astd_res = %1.2e, sstd_res = %1.2e, std_ares = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
-   std_res(1), std_res(end), astd_res, sstd_res, std_ares, akurtosis_res, skurtosis_res, askew_res, sskew_res)
+   std_res(1), std_res(end), astd_res, sstd_res, std_ares, akurtosis_res, skurtosis_res, askew_res, sskew_res);
 
 % This part was only needed when interpolating results (missing cubes)
 % if Qc < 16 % if all sub-cubes not available
 %     % estimate total cpu time based on number of iterations and average
 %     % time per iteration per subcube
 %     tcpu = total_cpu_time + (16-Qc)*(iteration_number/Qc)*acpu_time;
-      
+
 %     fprintf("Qc = %i, iteration_number = %i \n", ...
 %         Qc, iteration_number/Qc)
 %     fprintf(" aruntime (s) = %.2f, std_runtime (s) = %1.2e, acpu_time (s) = %.2f, std_cpu_time (s) = %1.2e \n", ...
@@ -85,22 +85,22 @@ ares = mean(res, 3);
 
 std_ares = std(ares(:));
 
-kurtosis_res = squeeze(kurtosis(res, 0, [1,2]));
+kurtosis_res = squeeze(kurtosis(res, 0, [1, 2]));
 akurtosis_res = mean(kurtosis_res);
 skurtosis_res = std(kurtosis_res);
 
-std_res = squeeze(std(res, 0, [1,2]));
+std_res = squeeze(std(res, 0, [1, 2]));
 astd_res = mean(std_res);
 sstd_res = std(std_res);
 
-skew_res = squeeze(skewness(res,0,[1,2]));
+skew_res = squeeze(skewness(res, 0, [1, 2]));
 askew_res = mean(skew_res);
 sskew_res = std(skew_res);
-clear res ares
+clear res ares;
 
 % Print results
 fprintf("SARA: std_res [1st, last] = [%1.2e, %1.2e], astd_res = %1.2e, sstd_res = %1.2e, std_ares = %1.2e, akurt = %1.2e, skurt = %1.2e, askew = %1.2e, sskew = %1.2e \n", ...
-   std_res(1), std_res(end), astd_res, sstd_res, std_ares, akurtosis_res, skurtosis_res, askew_res, sskew_res)
+   std_res(1), std_res(end), astd_res, sstd_res, std_ares, akurtosis_res, skurtosis_res, askew_res, sskew_res);
 
 %%
 n_available_channels = 1;
@@ -125,18 +125,18 @@ output_filename = 'timing_faceted_sara.mat';
 if n_available_channels < n_channels % if all channels not available
     % estimate total cpu time based on number of iterations and average
     % time per iteration per subcube
-    tcpu = total_cpu_time + (n_channels-n_available_channels)*(iteration_number/n_available_channels)*acpu_time;
-     
+    tcpu = total_cpu_time + (n_channels - n_available_channels) * (iteration_number / n_available_channels) * acpu_time;
+
     fprintf("SARA, iteration_number = %i \n", ...
-        iteration_number)
+        iteration_number);
     fprintf(" aruntime (s) = %.2f, std_runtime (s) = %1.2e, acpu_time (s) = %.2f, std_cpu_time (s) = %1.2e \n", ...
         aruntime, sqrt(vruntime), acpu_time, sqrt(vcpu_time));
     fprintf(" total_runtime (h) = %2.2f, total_cpu_time (h) = %2.2f \n", ...
-        total_runtime/3600, tcpu/3600)
+        total_runtime / 3600, tcpu / 3600);
 end
 
 save("metric_sara.mat", '-v7.3', 'kurtosis_res', 'akurtosis_res', 'skurtosis_res', ...
    'std_res', 'astd_res', 'std_ares', 'sstd_res', 'skew_res', 'askew_res', 'sskew_res', ...
    'aruntime', 'vruntime', 'acpu_time', 'std_ares', 'vcpu_time', ...
     'iteration_number', ...
-    'total_runtime', 'total_cpu_time')
+    'total_runtime', 'total_cpu_time');

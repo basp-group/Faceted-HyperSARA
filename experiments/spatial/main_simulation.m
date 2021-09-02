@@ -5,9 +5,9 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
     flag_computeOperatorNorm, flag_solveMinimization, flagDR, ...
     flag_cirrus, flag_homotopy)
 % Main script to run the faceted HyperSARA approach on synthetic data.
-% 
-% This script generates synthetic data and runs the SARA, HyperSARA or 
-% faceted HyperSARA approach to reconstruct an :math:`N \times L` wideband 
+%
+% This script generates synthetic data and runs the SARA, HyperSARA or
+% faceted HyperSARA approach to reconstruct an :math:`N \times L` wideband
 % image cube.
 %
 % Parameters
@@ -25,15 +25,15 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 % algo_version : string ('sara', 'hs' or 'fhs')
 %     Selected solver.
 % window_type : string ('triangular', 'hamming' or 'pc' (piecewise-constant))
-%     Type of apodization window considered for the faceted nuclear norm 
+%     Type of apodization window considered for the faceted nuclear norm
 %     prior (FHS solver).
 % ncores_data : int
-%     Number of cores handlig the data fidelity terms ("data cores"). 
-%     For Faceted HyperSARA, the total number of cores used is Qx*Qy + 
-%     ncores_data + 1. For SARA and HyperSARA, represents the number of 
+%     Number of cores handlig the data fidelity terms ("data cores").
+%     For Faceted HyperSARA, the total number of cores used is Qx*Qy +
+%     ncores_data + 1. For SARA and HyperSARA, represents the number of
 %     cores used for the parallelization.
 % ind : int
-%     Index of the spectral facet to be reconstructed (set to -1 to 
+%     Index of the spectral facet to be reconstructed (set to -1 to
 %     deactivate spectral faceting).
 % overlap_fraction : array (1d)
 %     Fraction of the total size of a facet overlapping with a neighbour
@@ -57,16 +57,16 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 % isnr : double
 %     Input SNR used to generate the synthetic visibilities (value in dB).
 % flag_generateVisibilities : bool
-%     Flag specifying whether the visibilities need to be generated or 
+%     Flag specifying whether the visibilities need to be generated or
 %     loaded from an existing .mat file.
 % flag_computeOperatorNorm : bool
-%     Flag triggering the computation of the (preconditioned) operator 
+%     Flag triggering the computation of the (preconditioned) operator
 %     norm.
 % flag_solveMinimization : bool
 %     Flag triggering the solver (SARA, HS or FHS).
 % flagDR : bool
-%     Flag to activate DR features in the definition of the measurement 
-%     operator. 
+%     Flag to activate DR features in the definition of the measurement
+%     operator.
 % flag_cirrus : bool
 %     Specify whether the solver runs on cirrus or not (for the creation of
 %     the parpool).
@@ -75,7 +75,7 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 %
 % Note
 % ----
-% DR features still need to be implemented in the main script. 
+% DR features still need to be implemented in the main script.
 %
 
 %% PARAMETERS FOR DEBUGGING
@@ -116,7 +116,7 @@ function main_simulation(image_name, nChannels, Qx, Qy, Qc, ...
 %%
 format compact;
 
-disp('MNRAS configuration')
+disp('MNRAS configuration');
 disp(['Algorithm version: ', algo_version]);
 disp(['Reference image: ', image_name]);
 disp(['nchannels: ', num2str(nChannels)]);
@@ -126,42 +126,41 @@ disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), ', ')])
 disp(['Input SNR: ', num2str(isnr)]);
 disp(['Generating visibilities: ', num2str(flag_generateVisibilities)]);
 
-addpath ../../lib/operators/
-addpath ../../lib/measurement-operator/nufft/
-addpath ../../lib/measurement-operator/lib/operators/
-addpath ../../lib/measurement-operator/lib/utils/
+addpath ../../lib/operators/;
+addpath ../../lib/measurement-operator/nufft/;
+addpath ../../lib/measurement-operator/lib/operators/;
+addpath ../../lib/measurement-operator/lib/utils/;
 % addpath ../../lib/measurement-operator/irt/nufft/
-addpath ../../lib/utils/
-addpath ../../lib/faceted-wavelet-transform/src
-addpath ../../data/
-addpath ../../src/
-addpath ../../src/heuristics/
+addpath ../../lib/utils/;
+addpath ../../lib/faceted-wavelet-transform/src;
+addpath ../../data/;
+addpath ../../src/;
+addpath ../../src/heuristics/;
 if strcmp(algo_version, "sara")
-    addpath ../../src/sara
+    addpath ../../src/sara;
 elseif strcmp(algo_version, "hs")
-    addpath ../../src/hs
+    addpath ../../src/hs;
 else
-    addpath ../../src/fhs
+    addpath ../../src/fhs;
 end
 
 % setting paths to results and reference image cube
 data_path = '../../data/';
 results_path = fullfile('results', strcat(image_name, '_', exp_type));
 auxiliary_path = fullfile(results_path, algo_version);
-mkdir(data_path)
-mkdir(results_path)
-mkdir(auxiliary_path)
-
+mkdir(data_path);
+mkdir(results_path);
+mkdir(auxiliary_path);
 
 %%
-%! see how to load the cube prepared by Arwa
-%! load the appropriate portion of the reference image cube
+% ! see how to load the cube prepared by Arwa
+% ! load the appropriate portion of the reference image cube
 % if spectral faceting, just load the intersting portion of the full image cube
 switch exp_type
     case "spatial"
         image_name = 'cygASband_Cube_1024_2048_20';
         spectral_downsampling = 1;
-        spatial_downsampling = 1;     
+        spatial_downsampling = 1;
     case "spectral"
         image_name = 'cygASband_Cube_256_512_100';
         spectral_downsampling = 1;
@@ -181,7 +180,7 @@ switch exp_type
         spatial_downsampling = 4;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
     otherwise
-        error("Unknown experiment type")
+        error("Unknown experiment type");
 end
 
 reference_cube_path = fullfile(data_path, strcat(image_name, '.fits'));
@@ -190,37 +189,36 @@ rowend      = info.PrimaryData.Size(1);
 colend      = info.PrimaryData.Size(2);
 sliceend    = info.PrimaryData.Size(3);
 if strcmp(algo_version, 'sara')
-    x0 = fitsread(reference_cube_path, 'primary',...
-              'Info', info,...
-              'PixelRegion',{[1 spatial_downsampling rowend], ...
+    x0 = fitsread(reference_cube_path, 'primary', ...
+              'Info', info, ...
+              'PixelRegion', {[1 spatial_downsampling rowend], ...
               [1 spatial_downsampling colend], ...
               ind});
 else
-    x0 = fitsread(reference_cube_path, 'primary',...
-              'Info', info,...
-              'PixelRegion',{[1 spatial_downsampling rowend], ...
+    x0 = fitsread(reference_cube_path, 'primary', ...
+              'Info', info, ...
+              'PixelRegion', {[1 spatial_downsampling rowend], ...
               [1 spatial_downsampling colend], ...
               [1 spectral_downsampling sliceend]});
 end
-nChannels = floor(sliceend/spectral_downsampling);
+nChannels = floor(sliceend / spectral_downsampling);
 
 [Ny, Nx, nchans] = size(x0);
-N = Nx*Ny;
+N = Nx * Ny;
 X0 = reshape(x0, [N, nchans]);
-input_snr = isnr*ones(nchans, 1); % input SNR (in dB)
+input_snr = isnr * ones(nchans, 1); % input SNR (in dB)
 
 % frequency used to generate the reference cubes
 nu0 = 2.052e9; % starting freq
 dnu = 16e6;    % freq step
 L = 100;       % number of channels
-nu_vect = [nu0 (dnu*(1:L-1)+nu0)];
-frequencies = nu_vect(1:floor(L/nChannels):end); % nu_vect(1:spectral_downsampling:end);
+nu_vect = [nu0 (dnu * (1:L - 1) + nu0)];
+frequencies = nu_vect(1:floor(L / nChannels):end); % nu_vect(1:spectral_downsampling:end);
 
-clear reference_cube_path info rowend colend sliceend 
-clear spatial_downsampling spectral_downsampling
+clear reference_cube_path info rowend colend sliceend;
+clear spatial_downsampling spectral_downsampling;
 
-
-%% Auxiliary function needed to select the appropriate workers 
+%% Auxiliary function needed to select the appropriate workers
 % (only needed for 'hs' and 'fhs' algorithms)
 
 switch algo_version
@@ -229,14 +227,13 @@ switch algo_version
     case 'hs'
         data_worker_id = @(k) k;
     case 'fhs'
-        data_worker_id = @(k) k + Qx*Qy;
+        data_worker_id = @(k) k + Qx * Qy;
     otherwise
         error('Undefined algo_version');
 end
 
-
 %% Get faceting parameter (spectral + spatial)
-% fix faceting parameters in case these are not consistent with the 
+% fix faceting parameters in case these are not consistent with the
 % selected algorithm
 if strcmp(algo_version, 'sara')
     window_type = 'none';
@@ -248,7 +245,7 @@ elseif strcmp(algo_version, 'hs')
     Qx = 1;
     Qy = 1;
 end
-Q = Qx*Qy;
+Q = Qx * Qy;
 
 % convert fraction of overlap between consecutive facets into a number of pixels
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
@@ -267,23 +264,22 @@ fmax = frequencies(end);
 
 % extract ground truth subcube
 if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
-    x0 = x0(:,:,subcube_channels);
-    nchans = size(x0,3);
-    X0 = reshape(x0,Nx*Ny,nchans);
+    x0 = x0(:, :, subcube_channels);
+    nchans = size(x0, 3);
+    X0 = reshape(x0, Nx * Ny, nchans);
     input_snr = input_snr(subcube_channels);
 end
 
-
 %% Setup name of results file
 data_name_function = @(nchannels) strcat('y_', ...
-    exp_type,'_',image_name, '_srf=', num2str(superresolution_factor), ...
-    '_Ny=',num2str(Ny),'_Nx=',num2str(Nx),'_L=', num2str(nchannels), ...
+    exp_type, '_', image_name, '_srf=', num2str(superresolution_factor), ...
+    '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), '_L=', num2str(nchannels), ...
     '_snr=', num2str(isnr), ...
     '.mat');
 
-results_name_function = @(nchannels) strcat(exp_type,'_',image_name,'_', ...
-    algo_version,'_',window_type, '_srf=', num2str(superresolution_factor), ...
-    '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nchannels), ...
+results_name_function = @(nchannels) strcat(exp_type, '_', image_name, '_', ...
+    algo_version, '_', window_type, '_srf=', num2str(superresolution_factor), ...
+    '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), '_L=', num2str(nchannels), ...
     '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
     '_ind=', num2str(ind), '_g=', num2str(gam), '_gb=', num2str(gam_bar), ...
     '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
@@ -291,29 +287,27 @@ results_name_function = @(nchannels) strcat(exp_type,'_',image_name,'_', ...
     '_snr=', num2str(isnr), ...
     '.mat');
 
-temp_results_name = @(nchannels) strcat(exp_type,'_',image_name,'_', ...
-    algo_version,'_',window_type, '_srf=', num2str(superresolution_factor), ...
-    '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), '_L=',num2str(nchannels), ...
+temp_results_name = @(nchannels) strcat(exp_type, '_', image_name, '_', ...
+    algo_version, '_', window_type, '_srf=', num2str(superresolution_factor), ...
+    '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), '_L=', num2str(nchannels), ...
     '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
     '_ind=', num2str(ind), '_g=', num2str(gam), '_gb=', num2str(gam_bar), ...
     '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
     '_hom=', num2str(flag_homotopy), ...
     '_snr=', num2str(isnr));
 
-warm_start = @(nchannels) strcat(temp_results_name(nchannels),'_rw=', num2str(rw), '.mat');
+warm_start = @(nchannels) strcat(temp_results_name(nchannels), '_rw=', num2str(rw), '.mat');
 
 data_name = data_name_function(nChannels);
 results_name = results_name_function(nChannels);
 
-
 %% Define problem configuration (rng, nufft, preconditioning, blocking,
 % NNLS (epsilon estimation), SARA dictionary)
-parameters_problem
-
+parameters_problem;
 
 %% Generate/load uv-coverage
 % generating u-v coverage
-%! reminder uv-coverage and weighting
+% ! reminder uv-coverage and weighting
 % https://casa.nrao.edu/Release4.1.0/doc/UserMan/UserMansu259.html
 if flag_generateCoverage
     cov_type = 'vlaa';
@@ -321,56 +315,54 @@ if flag_generateCoverage
     dl = 1.1;
     hrs = 5;
     na = 27; % for vlaa
-    M = na*(na-1)/2;
+    M = na * (na - 1) / 2;
     % Fixing Mt = 0.5 N, take T = 0.5 N / M : na = 27 for vla
-    T = floor(p*(Nx*Ny)/M); % should be > 1
+    T = floor(p * (Nx * Ny) / M); % should be > 1
     [u, v, ~] = generate_uv_coverage(T, hrs, dl, cov_type);
-    u = u(:)*fc(1)/fmax;
-    v = v(:)*fc(1)/fmax;
-    fitswrite([u, v, ones(numel(u), 1)], coverage_path)
+    u = u(:) * fc(1) / fmax;
+    v = v(:) * fc(1) / fmax;
+    fitswrite([u, v, ones(numel(u), 1)], coverage_path);
     disp(coverage_path);
 else
-    coverage_path
-   
+    coverage_path;
+
     % VLA configuration
     % A. 762775 -> 3
     % B. 268448 -> 2
     % C. 202957 -> 1
-    % D. 47750 -> 0 
+    % D. 47750 -> 0
 
     if strcmp(exp_type, "spectral")
         load(coverage_path, 'uvw', 'obsId');
-        size(uvw)
-        u1 = uvw(obsId==2, 1)*fmax/speed_of_light;
-        v1 = uvw(obsId==2, 2)*fmax/speed_of_light;  
-        clear obsId
-    else        
+        size(uvw);
+        u1 = uvw(obsId == 2, 1) * fmax / speed_of_light;
+        v1 = uvw(obsId == 2, 2) * fmax / speed_of_light;
+        clear obsId;
+    else
         % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
         % units of the smallest wavelenght, associated with the highest frequency)
         load(coverage_path, 'uvw');
-        size(uvw)
-        u1 = uvw(:, 1)*fmax/speed_of_light;
-        v1 = uvw(:, 2)*fmax/speed_of_light;  
+        size(uvw);
+        u1 = uvw(:, 1) * fmax / speed_of_light;
+        v1 = uvw(:, 2) * fmax / speed_of_light;
 %         load(coverage_path, 'uvw', 'obsId');
 %         size(uvw)
 %         u1 = uvw(obsId==3, 1)*fmax/speed_of_light;
-%         v1 = uvw(obsId==3, 2)*fmax/speed_of_light;  
+%         v1 = uvw(obsId==3, 2)*fmax/speed_of_light;
 %         clear obsId
     end
     bmax = max(sqrt(u1.^2 + v1.^2));
 
     % cellsize = 3600*180/(superresolution_factor*2*pi*bmax); % in arcsec
-    u = u1*pi/(superresolution_factor*bmax);
-    v = v1*pi/(superresolution_factor*bmax);
-    size(u)
-    disp('Coverage loaded successfully')
-    clear uvw u1 v1
+    u = u1 * pi / (superresolution_factor * bmax);
+    v = v1 * pi / (superresolution_factor * bmax);
+    size(u);
+    disp('Coverage loaded successfully');
+    clear uvw u1 v1;
 end
 
-
 %% setup parpool
-cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx*Qy, flag_cirrus);
-
+cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx * Qy, flag_cirrus);
 
 %% Setup measurement operator
 % TODO: define lambda function measurement operator
@@ -385,7 +377,7 @@ switch algo_version
                 param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy);
             Sigma = [];
         end
-        
+
         % if ~flagDR
         %     apply_G = @(Fx, G) G * Fx;
         %     apply_Gdag = @(y, G, W) (G') * y(W);
@@ -417,7 +409,7 @@ switch algo_version
             spmd
                 % define operator on data workers only
                 if labindex > Q
-                    local_fc = fc(rg_c(labindex-Q, 1):rg_c(labindex-Q, 2));
+                    local_fc = fc(rg_c(labindex - Q, 1):rg_c(labindex - Q, 2));
                     if flagDR
                         % ! define Sigma (weight matrix involved in DR)
                         % ! define G as the holographic matrix
@@ -430,9 +422,8 @@ switch algo_version
                 end
             end
         end
-        clear local_fc
+        clear local_fc;
 end
-
 
 %% Free memory
 clear param_blocking param_precond;
@@ -455,18 +446,18 @@ if flag_generateVisibilities
     % offset_worker = Q*strcmp(algo_version, 'fhs');
 
     spmd
-        if labindex > Q*strcmp(algo_version, 'fhs')
+        if labindex > Q * strcmp(algo_version, 'fhs')
             [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr( ...
-                x0(:,:,rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, ...
+                x0(:, :, rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, ...
                 input_snr(rg_c(labindex, 1):rg_c(labindex, 2)));
                 % rng_stream(labindex-offset_worker)
             [~, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, .../
                 param_l2_ball, sigma_noise);
         end
     end
-    
+
     % save parameters (matfile solution)
-    datafile = matfile(fullfile(results_path,data_name), ...
+    datafile = matfile(fullfile(results_path, data_name), ...
         'Writable', true);
     datafile.y0 = cell(nchans, 1);
     datafile.y = cell(nchans, 1);
@@ -475,16 +466,16 @@ if flag_generateVisibilities
 
     for k = 1:ncores_data
         % convert from local to global channel index (i.e., index into the full spectral dimension using "subcube_channels(rg_c(k, 1))"
-        datafile.y0(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = y0{data_worker_id(k)};
-        datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = y{data_worker_id(k)};
-        datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)),1) = epsilons{data_worker_id(k)};
+        datafile.y0(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = y0{data_worker_id(k)};
+        datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = y{data_worker_id(k)};
+        datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = epsilons{data_worker_id(k)};
         datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = sigma_noise{data_worker_id(k)};
     end
     global_sigma_noise = datafile.sigma_noise;
-    clear param_l2_ball m Ml epsilons datafile
+    clear param_l2_ball m Ml epsilons datafile;
 else
-    datafile = matfile(fullfile(results_path,data_name));
-    
+    datafile = matfile(fullfile(results_path, data_name));
+
     switch algo_version
         case 'sara'
             % ! to be verified
@@ -504,45 +495,44 @@ else
             end
             global_sigma_noise = datafile.sigma_noise;
     end
-    disp('Data loaded successfully')
+    disp('Data loaded successfully');
 end
-
 
 %% Compute operator norm
 if strcmp(algo_version, 'sara')
     if flag_computeOperatorNorm
         [Anorm, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
-        
+
         save(fullfile(results_path, ...
             strcat('Anorm_', algo_version, ...
-            '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), ...
-            '_L=',num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), ...
+            '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), ...
+            '_L=', num2str(nChannels), ...
+            '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
             '_ch=', num2str(ind), '.mat')), ...
             '-v7.3', 'Anorm', 'squared_operator_norm', 'rel_var', ...
             'squared_operator_norm_precond', 'rel_var_precond');
-        clear rel_var
+        clear rel_var;
     else
         load(fullfile(results_path, ...
             strcat('Anorm_', algo_version, ...
-            '_Ny=',num2str(Ny),'_Nx=',num2str(Nx), ...
-            '_L=',num2str(nChannels), ...
-            '_Qc=',num2str(Qc),'_ind=',num2str(ind), ...
+            '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), ...
+            '_L=', num2str(nChannels), ...
+            '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
             '_ch=', num2str(ind), '.mat')), ...
             'Anorm', 'squared_operator_norm_precond', 'squared_operator_norm');
     end
 else
-    if flag_computeOperatorNorm    
+    if flag_computeOperatorNorm
         spmd
-            if labindex > Qx*Qy*strcmp(algo_version, 'fhs')
+            if labindex > Qx * Qy * strcmp(algo_version, 'fhs')
                 [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
             end
         end
 
-        % save operator norm from the different subcubes into a single .mat 
+        % save operator norm from the different subcubes into a single .mat
         % file
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
-            '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), ...
+            '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), ...
             '_L=', num2str(nChannels), '.mat')), 'Writable', true);
 
         opnormfile.squared_operator_norm = zeros(nchans, 1);
@@ -560,16 +550,16 @@ else
 
             Anorm = max(Anorm, An{data_worker_id(k)});
         end
-        clear An rel_var rel_var_precond squared_operator_norm_precond
+        clear An rel_var rel_var_precond squared_operator_norm_precond;
 
     else
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
-            '_Ny=',num2str(Ny), '_Nx=',num2str(Nx), ...
+            '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), ...
             '_L=', num2str(nChannels), '.mat')));
 
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(subcube_channels, 1);
         rel_var_precond = opnormfile.rel_var_precond(subcube_channels, 1);
-        Anorm = max(squared_operator_norm_precond.*(1 + rel_var_precond));
+        Anorm = max(squared_operator_norm_precond .* (1 + rel_var_precond));
         squared_operator_norm = opnormfile.squared_operator_norm(subcube_channels, 1);
 
         % squared_operator_norm = Composite();
@@ -580,7 +570,6 @@ else
 end
 
 fprintf('Convergence parameter (measurement operator): %e \n', Anorm);
-
 
 % TODO: to be added back if needed (new auxiliary functions needed)
 % %% Generate initial epsilons by performing imaging with NNLS on each data block separately
@@ -597,28 +586,27 @@ fprintf('Convergence parameter (measurement operator): %e \n', Anorm);
 %     save('data/eps.mat','-v7.3', 'eps_b');
 % end
 
-
 %% Regularization parameters and solver
 
 % estimate noise level (set regularization parameters to the same value)
-% compute sig and sig_bar (estimate of the "noise level" in "SVD" and 
+% compute sig and sig_bar (estimate of the "noise level" in "SVD" and
 % SARA space) involved in the reweighting scheme
 
 if strcmp(algo_version, 'sara')
 
     % SARA dicionary (created out of the solver for SARA)
-    dwtmode('zpd')
+    dwtmode('zpd');
     [Psi1, Psit1] = op_p_sp_wlt_basis_fhs(wlt_basis, nlevel, Ny, Nx);
     P = numel(Psi1);
     Psi = cell(P, 1);
     Psit = cell(P, 1);
     s = zeros(P, 1); % number of wavelet coefficients for each dictionary
 
-    for k = 1 : P
+    for k = 1:P
         f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
-        f = sprintf('%s%i},Ny,Nx);', f,k);
+        f = sprintf('%s%i},Ny,Nx);', f, k);
         Psi{k} = eval(f);
-        s(k) = size(Psit1{k}(zeros(Ny,Nx,1)),1);
+        s(k) = size(Psit1{k}(zeros(Ny, Nx, 1)), 1);
         ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},s(' num2str(k) '));'];
         Psit{k} = eval(ft);
     end
@@ -627,7 +615,7 @@ if strcmp(algo_version, 'sara')
     sig = compute_noise_level_sara(global_sigma_noise, squared_operator_norm);
 
     % apply multiplicative factor for the regularization parameter (if needed)
-    mu = gam*sig;
+    mu = gam * sig;
     fprintf('Noise level: sig = %e\n', sig);
     fprintf('Additional multiplicative regularisation factor gam = %e\n', gam);
     fprintf('Regularization parameter mu = %e\n', mu);
@@ -642,8 +630,8 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
         algo_version, Qx, Qy, overlap_size, squared_operator_norm);
 
     % apply multiplicative factor for the regularization parameters (if needed)
-    mu_bar = gam_bar*sig_bar;
-    mu = gam*sig;
+    mu_bar = gam_bar * sig_bar;
+    mu = gam * sig;
     fprintf('mu_chi = %.4e, sig_chi = %.4e, sig_sara = %.4e\n', mu_chi, sig_chi, sig_sara);
     fprintf('Noise levels: sig = %.4e, sig_bar = [%.4e, %.4e]\n', sig, min(sig_bar), max(sig_bar));
     fprintf('Additional multiplicative actors gam = %.4e, gam_bar = %.4e\n', gam, gam_bar);
@@ -651,10 +639,8 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_version, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
 end
 
-
 %% Define parameters for the solver (nReweights needed here)
-parameters_solver 
-
+parameters_solver;
 
 %%
 % TODO: update solver interface
@@ -664,18 +650,18 @@ name_warmstart = fullfile(auxiliary_path, warm_start(nChannels));
 if flag_solveMinimization
     %%
     if strcmp(algo_version, 'sara')
-        disp('SARA')
-        disp('-----------------------------------------')
+        disp('SARA');
+        disp('-----------------------------------------');
 
-        % ! in this case, ncores_data corresponds 
+        % ! in this case, ncores_data corresponds
         % ! to the number of workers for the wavelet transform (9 maximum)
         xsol = sara(y, epsilons, A, At, aW, G, W, Psi, Psit, ...
                     param_solver, name_warmstart, name_checkpoint, gam, ...
                     flagDR, Sigma, [], x0);
 
-        mkdir('results/')
+        mkdir('results/');
 
-        fitswrite(xsol,fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
+        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
         '_srf=', num2str(superresolution_factor), ...
         '_', window_type, ...
         '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
@@ -683,7 +669,7 @@ if flag_solveMinimization
         '_gam=', num2str(gam), ...
         '_homotopy=', num2str(flag_homotopy), ...
         '_snr=', num2str(isnr), ...
-        '.fits')))
+        '.fits')));
     else
         %%
 
@@ -693,12 +679,12 @@ if flag_solveMinimization
         for k = 1:ncores_data
             cell_c_chunks{k} = rg_c(k, 1):rg_c(k, 2);
         end
-        
+
         %%
-        switch algo_version 
+        switch algo_version
             case 'hs'
-                disp('HyperSARA')
-                disp('-----------------------------------------')
+                disp('HyperSARA');
+                disp('-----------------------------------------');
                 xsol = hyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, ...
                     ncores_data, wlt_basis, nlevel, cell_c_chunks, ...
@@ -706,8 +692,8 @@ if flag_solveMinimization
                     name_warmstart, name_checkpoint, flagDR, Sigma, ...
                     [], X0);
             case 'fhs'
-                disp('Faceted HyperSARA')
-                disp('-----------------------------------------')
+                disp('Faceted HyperSARA');
+                disp('-----------------------------------------');
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     wlt_basis, filter_length, nlevel, window_type, ...
@@ -716,11 +702,11 @@ if flag_solveMinimization
                     name_warmstart, name_checkpoint, flagDR, Sigma, ...
                     [], X0);
             otherwise
-                error('Unknown solver version.')
+                error('Unknown solver version.');
         end
 
-        mkdir('results/')
-        fitswrite(xsol,fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
+        mkdir('results/');
+        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
             '_', window_type, ...
             '_srf=', num2str(superresolution_factor), ...
             '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
@@ -729,6 +715,6 @@ if flag_solveMinimization
             '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
             '_homotopy=', num2str(flag_homotopy), ...
             '_snr=', num2str(isnr), ...
-            '.fits')))
-    end       
+            '.fits')));
+    end
 end

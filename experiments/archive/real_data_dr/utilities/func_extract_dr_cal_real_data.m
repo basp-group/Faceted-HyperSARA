@@ -1,26 +1,26 @@
 function func_extract_dr_cal_real_data(chInd, subInd, reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma, fouRed_type)
-% Generate and save calibrated DR data from raw data and calibrated G matrices 
-%-------------------------------------------------------------------------%
+% Generate and save calibrated DR data from raw data and calibrated G matrices
+% -------------------------------------------------------------------------%
 % Input:
 % > chInd: vector of channel indices [L]
 % > subInd: vector of interlaced subproblem indices [S]
-% > reduction_version: reduction version, 
+% > reduction_version: reduction version,
 %       1: old one (not used any more)
 %       2: current one
 % > realdatablocks: number of data blocks
-% > enable_klargestpercent: activate strategy of reduction of removing  
+% > enable_klargestpercent: activate strategy of reduction of removing
 % smallest k percent singular values, otherwise strategy of reduction of
 % removing (statitical notion) k-sigma smallest singular values
 % > fouRed_gamma: level of reduction
 % > fouRed_type: type of reduction, supplementary information for
 % fouRed_gamma
-%       1: remove smallest singular values based on "fouRed_gamma" percentage 
-%       2: remove smallest singular values based on "fouRed_gamma"-sigma 
+%       1: remove smallest singular values based on "fouRed_gamma" percentage
+%       2: remove smallest singular values based on "fouRed_gamma"-sigma
 
-addpath ../../lib/utils/
-addpath ../../fouRed/
-addpath ../../lib/operators
-addpath ../../lib/measurement-operator/nufft
+addpath ../../lib/utils/;
+addpath ../../fouRed/;
+addpath ../../lib/operators;
+addpath ../../lib/measurement-operator/nufft;
 
 fprintf('Channel number: %d\n', chInd);
 fprintf('Index number: %d\n', subInd);
@@ -53,7 +53,7 @@ yb = cell(realdatablocks, 1);
 
 %%%%%% Trick to use more RAM on cirrus %%%%%%
 % delete(gcp('nocreate'));
-% numworkers = 2;                 
+% numworkers = 2;
 % cirrus_cluster = parcluster('cirrus R2019a');
 % cirrus_cluster.NumWorkers = numworkers;
 % cirrus_cluster.NumThreads = 1;
@@ -65,7 +65,7 @@ yb = cell(realdatablocks, 1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 for j = 1:length(subInd)
-    fprintf('\nIndex number: %d\n', subInd(j))
+    fprintf('\nIndex number: %d\n', subInd(j));
     if chInd < 17
         kerl = 5;
     else
@@ -73,9 +73,9 @@ for j = 1:length(subInd)
     end
     % Calibrated G matrices
     gmatfile = [gmatdir, 'SubCube', num2str(subInd(j)), '/WB', num2str(kerl), '-', num2str(chInd), '/PreProcStruct.mat'];
-    fprintf('Read G matrix file: %s\n', gmatfile)
+    fprintf('Read G matrix file: %s\n', gmatfile);
     tmp = load(gmatfile);
-    xsol = xsol + tmp.PreProcStruct.SolInit;        
+    xsol = xsol + tmp.PreProcStruct.SolInit;
     for k = 1:realdatablocks
         Gw{k} = [Gw{k}; tmp.PreProcStruct.Gw{k}];
         res{k} = [res{k}; tmp.PreProcStruct.ResiudalModelDataInit{k}];
@@ -87,33 +87,33 @@ for j = 1:length(subInd)
     else
         datafile = [datadir, 'CYG', num2str(j), '.mat'];
     end
-    fprintf('Read data file: %s\n', datafile)
+    fprintf('Read data file: %s\n', datafile);
     tmp = load(datafile);
     for k = 1:realdatablocks
         if chInd == 31
-            yb{k} = [yb{k}; tmp.y_I{1}{k}(tmp.y_I{1}{k}~=0)];
+            yb{k} = [yb{k}; tmp.y_I{1}{k}(tmp.y_I{1}{k} ~= 0)];
         else
-            yb{k} = [yb{k}; tmp.y_I{chInd}{k}(tmp.y_I{chInd}{k}~=0)];
+            yb{k} = [yb{k}; tmp.y_I{chInd}{k}(tmp.y_I{chInd}{k} ~= 0)];
         end
     end
 end
-xsol = xsol/length(subInd);   % average of initial xsol
+xsol = xsol / length(subInd);   % average of initial xsol
 
 if realdatablocks == 2
     nb_a = numel(yb{1});
     nb_c = numel(yb{2});
 end
 nb_t = nb_a + nb_c;
-fprintf('\nNumber of A-config data points: %d, number of C-config data points: %d, number of total data points: %d\n', nb_a, nb_c, nb_t)
+fprintf('\nNumber of A-config data points: %d, number of C-config data points: %d, number of total data points: %d\n', nb_a, nb_c, nb_t);
 
 for k = 1:realdatablocks
-    Wl{k}= Gw{k}' * ones(size(Gw{k}, 1), 1) ~= 0;       % remove zero columns of G matrices
+    Wl{k} = Gw{k}' * ones(size(Gw{k}, 1), 1) ~= 0;       % remove zero columns of G matrices
     Gw{k} = Gw{k}(:, Wl{k});
 end
-fprintf('G matrix memory:\n')
-whos Gw
+fprintf('G matrix memory:\n');
+whos Gw;
 
-clear tmp
+clear tmp;
 
 %% Reduction
 FT2 = @(x) fftshift(fft2(ifftshift(x))) / sqrt(numel(x));
@@ -130,13 +130,13 @@ param_fouRed.gamma = fouRed_gamma;  % reduction parameter
 param_fouRed.diagthresholdepsilon = 0;
 param_fouRed.fastCov = 1;
 
-fprintf('Dimensionality reduction begins ...\n')
+fprintf('Dimensionality reduction begins ...\n');
 fprintf('Enable k-largest percentage: %d\n', param_fouRed.enable_klargestpercent);
 fprintf('Enable automatic threshold: %d\n', param_fouRed.enable_estimatethreshold);
 
 % define operators
 % parpool(6)
-[A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2]);
+[A, At, ~, ~] = op_nufft([0, 0], [Ny Nx], [Ky Kx], [oy * Ny ox * Nx], [Ny / 2 Nx / 2]);
 
 % instantiate variables for DR
 H = cell(1, 1);  % holographic matrices
@@ -161,12 +161,12 @@ Wml = Wm{1};
 aWl = aW{1};
 
 if param_fouRed.enable_estimatethreshold
-    if ~isfield(param_fouRed, 'gamma') 
-        param_fouRed.gamma = 30; 
+    if ~isfield(param_fouRed, 'gamma')
+        param_fouRed.gamma = 30;
     end
     if fouRed_type == 1
         fprintf('Threshold level: remove %d percentile\n', param_fouRed.gamma);
-        prob = 1 - param_fouRed.gamma/100;
+        prob = 1 - param_fouRed.gamma / 100;
     elseif fouRed_type == 2
         fprintf('Threshold level: keep %d sigma\n', param_fouRed.gamma);
         p = normcdf([-param_fouRed.gamma param_fouRed.gamma]);
@@ -179,21 +179,21 @@ precision = 1e-16;
 nb_red = 0;
 
 for j = 1:realdatablocks
-    Hl{j} = (Gw{j}')*Gw{j}; % progressively write to disk? (possibly huge...)
+    Hl{j} = (Gw{j}') * Gw{j}; % progressively write to disk? (possibly huge...)
     peak = max(max(abs(Hl{j})));
     Hl{j} = Hl{j} .* (abs(Hl{j}) > peak * precision);
-    
+
     if reduction_version == 1    % Due to complex modeling and not better performance, reduction version 1 is not used any more!
     %     fast matrix probing (using psf)
         dirac2D = zeros(Ny, Nx);
-        dirac2D(ceil((Ny+1)/2), ceil((Nx+1)/2)) = 1;
-        PSF = operatorIpsf(dirac2D, A, At, Hl{j}, [oy*Ny, ox*Nx]);
+        dirac2D(ceil((Ny + 1) / 2), ceil((Nx + 1) / 2)) = 1;
+        PSF = operatorIpsf(dirac2D, A, At, Hl{j}, [oy * Ny, ox * Nx]);
         covariancemat = FT2(PSF);
-        d_mat = abs((covariancemat(:)));
+        d_mat = abs(covariancemat(:));
     elseif reduction_version == 2
         d_mat = full(abs(diag(Hl{j})));
     end
-    
+
     if param_fouRed.enable_klargestpercent
 %         Mask = (d_mat > param_fouRed.gamma);
 %         th = full(peak * precision);
@@ -209,21 +209,21 @@ for j = 1:realdatablocks
         th = d_mat_sort(find(d_mat_sort_cumsum >= th_energy, 1, 'first'));
         Mask = (d_mat >= th);
     end
-    
+
     ind_nz = d_mat > 0;       % non-zero singular values
     kept = sum(Mask(:));
     total = numel(Mask);
     percentage = kept / total * 100;
     nb_red = nb_red + kept;
     fprintf('\nBlock %d of channel %d: %d non-zero singular values, %d over %d, or %f%% of data are kept, threshold=%e\n', j, chInd, sum(ind_nz), kept, total, percentage, th);
-    
+
     d_mat = d_mat(Mask);
-    Hl{j} = Hl{j}(Mask,:);
+    Hl{j} = Hl{j}(Mask, :);
 
     Tl{j} = d_mat;
-    Tl{j} = 1./sqrt(Tl{j});
+    Tl{j} = 1 ./ sqrt(Tl{j});
     Wml{j} = Mask;
-    
+
     if reduction_version == 1
         aWl{j} = 1;
         yTl{j} = dataReduce(yb{j}, Gw{j}', Wl{j}, At, Tl{j}, Wml{j});
@@ -232,20 +232,20 @@ for j = 1:realdatablocks
     elseif reduction_version == 2
         aWl{j} = 1;
         Gt = Gw{j}';
-        yTl{j} = Tl{j}.*(Gt(Wml{j},:) * yb{j});
-        resRed = Tl{j}.*(Gt(Wml{j},:) * res{j});        % !!! for calibrated data, residuals are known
+        yTl{j} = Tl{j} .* (Gt(Wml{j}, :) * yb{j});
+        resRed = Tl{j} .* (Gt(Wml{j}, :) * res{j});        % !!! for calibrated data, residuals are known
         norm_res{j} = norm(resRed);
-        clear Gt    % save memory
+        clear Gt;    % save memory
     end
     Gw{j} = [];             % save memory
     yb{j} = [];
     res{j} = [];
-    fprintf('Block %d of channel %d, estimated epsilon: %f\n', j, chInd, norm_res{j})
+    fprintf('Block %d of channel %d, estimated epsilon: %f\n', j, chInd, norm_res{j});
 end
 
-fprintf('Reduced data size: %d\n', nb_red)
-fprintf('H matrix memory: \n')
-whos Hl
+fprintf('Reduced data size: %d\n', nb_red);
+fprintf('H matrix memory: \n');
+whos Hl;
 
 H{1} = Hl;
 W{1} = Wl;
@@ -255,12 +255,11 @@ aW{1} = aWl;
 Wm{1} = Wml;
 epsilon{1} = norm_res;
 
-DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind',...
-    num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma),...
+DRfilename = ['/lustre/home/shared/sc004/dr_', num2str(realdatablocks), 'b_result_real_data/CYG_DR_cal_', num2str(realdatablocks), 'b_ind', ...
+    num2str(subInd(1)), '_', num2str(subInd(end)), '_fouRed', num2str(reduction_version), '_', typeStr, num2str(fouRed_gamma), ...
     '=', num2str(chInd), '.mat'];
 if ~isfile(DRfilename)
     save(DRfilename, '-v7.3', 'H', 'W', 'yT', 'T', 'aW', 'Wm', 'epsilon', 'xsol');
 end
 
-fprintf('Dimensionality reduction and epsilon estimation are finished\n')
-
+fprintf('Dimensionality reduction and epsilon estimation are finished\n');

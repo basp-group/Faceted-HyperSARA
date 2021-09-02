@@ -13,7 +13,6 @@ function [Psi, Psit] = op_p_sp_wlt_basis_fhs(basis, nlevel, Ny, Nx)
 % Psi{:}[@]      - function handle for direct operator
 % Psit{:}[@]     - function handle for adjoint operator
 
-
 %% sparsity operator definition
 % dwtmode('zpd');
 % construct a sting to repesent the desired inline function
@@ -30,7 +29,6 @@ for i = 1:length(basis)
     Psit{i} = eval(f);
 end
 
-
 % for Psi it is a bit more complicated, we need to do some extra
 % precomputations
 Psi = make_Psi(basis, nlevel, Ny, Nx);
@@ -39,8 +37,7 @@ end
 
 function Psi = make_Psi(basis, nlevel, Ny, Nx)
     Psi = cell(length(basis), 1);
-    
-    
+
     % estimate the structure of the data used to performe the
     % reconstruction
     S = cell(length(basis), 1);
@@ -55,11 +52,11 @@ function Psi = make_Psi(basis, nlevel, Ny, Nx)
     end
 
     % construct a sting to repesent the desired inline function
-    
+
     for i = 1:length(basis)
         f = '@(x)(';
         if strcmp(basis{i}, 'self')
-            f = sprintf('%s reshape(x(%d:%d), [Ny Nx])', f, 1, Ny*Nx);
+            f = sprintf('%s reshape(x(%d:%d), [Ny Nx])', f, 1, Ny * Nx);
         else
             f = sprintf('%s waverec2(x(%d:%d), S{%d}, ''%s'')', f, 1, ncoef{i}, i, basis{i});
         end

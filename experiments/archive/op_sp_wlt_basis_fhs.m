@@ -12,7 +12,6 @@ function [Psi, Psit] = op_sp_wlt_basis_fhs(basis, nlevel, Ny, Nx)
 % Psi[@]      - function handle for direct operator
 % Psit[@]     - function handle for adjoint operator
 
-
 %% sparsity operator definition
 % dwtmode('zpd');
 % construct a sting to repesent the desired inline function
@@ -53,11 +52,11 @@ function Psi = make_Psi(basis, nlevel, Ny, Nx)
     idx = 1;
     for i = 1:length(basis)
         if strcmp(basis{i}, 'self')
-            f = sprintf('%s reshape(x(%d:%d), [Ny Nx]) + ', f, idx, idx+Ny*Nx-1);
-            idx = idx + idx+Ny*Nx;
+            f = sprintf('%s reshape(x(%d:%d), [Ny Nx]) + ', f, idx, idx + Ny * Nx - 1);
+            idx = idx + idx + Ny * Nx;
         else
-            f = sprintf('%s waverec2(x(%d:%d), S{%d}, ''%s'') + ', f, idx, idx+ncoef{i}-1, i, basis{i});
-            idx = idx+ncoef{i};
+            f = sprintf('%s waverec2(x(%d:%d), S{%d}, ''%s'') + ', f, idx, idx + ncoef{i} - 1, i, basis{i});
+            idx = idx + ncoef{i};
         end
     end
     f = sprintf('%s 0)/sqrt(%d)', f, length(basis));

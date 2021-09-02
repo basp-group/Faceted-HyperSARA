@@ -69,7 +69,7 @@ param_nnls.beta = 1;
 % depth of the wavelet decompositions
 nlevel = 4;
 % wavelet dictionaries
-%! always specify Dirac basis ('self') in last position if ever used
+% ! always specify Dirac basis ('self') in last position if ever used
 wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};
 % length of the filters (0 corresponding to the 'self' basis)
-filter_length = [2*(1:8)'; 0];
+filter_length = [2 * (1:8)'; 0];

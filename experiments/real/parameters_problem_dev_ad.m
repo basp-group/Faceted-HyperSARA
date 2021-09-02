@@ -5,11 +5,11 @@
 % TODO: to be completed
 % seed for the random number generation (used only when generating data)
 % % seed = 1; (AD: not needed!)
-% % rng(seed); 
+% % rng(seed);
 
 %% * NUFFT (gridding parameters)
-param_nufft.ox = 2;% oversampling factor (x)
-param_nufft.oy = 2;% oversampling factor (y)
+param_nufft.ox = 2; % oversampling factor (x)
+param_nufft.oy = 2; % oversampling factor (y)
 param_nufft.Kx = 7; % 8% number of neighbour (x)
 param_nufft.Ky = 7; % 8% number of neighbour (y)
 
@@ -47,11 +47,9 @@ generate_eps_nnls = false;
 % print log or not
 param_nnls.verbose = 2;
 % stopping criterion
-param_nnls.rel_obj = 5e-4; %1e-5 is too low !!
+param_nnls.rel_obj = 5e-4; % 1e-5 is too low !!
 % max number of iterations
 param_nnls.max_iter = 1000;
 % saves images at the given iterations
 param_nnls.sol_steps = [inf];
 param_nnls.beta = 1;
-
-

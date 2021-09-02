@@ -16,30 +16,30 @@ n = A.dim(2);
 [p, q] = size(B);
 % [i, j, a] =  find(A); %[A.i, A.j, A.a];
 
-i = A.i ;
-j = A.j ;
-a = A.a ;
+i = A.i;
+j = A.j;
+a = A.a;
 clear A;
 [k, l, b] = find(B);
 
 [I, K] = ndgrid(i, k);
 [J, L] = ndgrid(j, l);
-C = a(:)*b(:).';
+C = a(:) * b(:).';
 
 switch lower(shape)
     case 'full'
-        C = sparse(I(:)+K(:)-1,J(:)+L(:)-1, C(:), m+p-1, n+q-1);
+        C = sparse(I(:) + K(:) - 1, J(:) + L(:) - 1, C(:), m + p - 1, n + q - 1);
     case 'valid'
-        mnc = max([m-max(0,p-1),n-max(0,q-1)],0);
-        i = I(:)+K(:)-p;
-        j = J(:)+L(:)-q;
+        mnc = max([m - max(0, p - 1), n - max(0, q - 1)], 0);
+        i = I(:) + K(:) - p;
+        j = J(:) + L(:) - q;
         b = i > 0 & i <= mnc(1) &   j > 0 & j <= mnc(2);
         C = sparse(i(b), j(b), C(b), mnc(1), mnc(2));
     case 'same'
-        i = I(:)+K(:)-ceil((p+1)/2);
-        j = J(:)+L(:)-ceil((q+1)/2);
+        i = I(:) + K(:) - ceil((p + 1) / 2);
+        j = J(:) + L(:) - ceil((q + 1) / 2);
         b = i > 0 & i <= m &  j > 0 & j <= n;
         C = sparse(i(b), j(b), C(b), m, n);
 end
 
-end 
+end
