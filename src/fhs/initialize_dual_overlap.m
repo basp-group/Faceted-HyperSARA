@@ -10,7 +10,7 @@ function [v0, v1, weights0, weights1] = initialize_dual_overlap(Ncoefs, ...
 % Ncoefs : array (2d)
 %     Number of wavelet coefficients at each scale.
 % dims_o : array (1d)
-%     dimension of a facet (with overlap) [1, 2].
+%     Dimension of a facet (with overlap) [1, 2].
 % c : int
 %     Number of spectral channels.
 % nlevel : int

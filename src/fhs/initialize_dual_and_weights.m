@@ -1,47 +1,50 @@
-function [v0, v1, weights0, weights1] = initialize_dual_and_weights(x_overlap, ...
-    I, offset, status, nlevel, wavelet, Ncoefs, dims_o, c, dims_overlap_ref, ...
-    offsetL, offsetR, reweight_alpha, crop_l21, crop_nuclear, w, sig, sig_bar)
+function [v0, v1, weights0, weights1] = ...
+    initialize_dual_and_weights(x_overlap, I, offset, status, nlevel, ...
+    wavelet, Ncoefs, dims_o, c, dims_overlap_ref, offsetL, offsetR, ...
+    reweight_alpha, crop_l21, crop_nuclear, w, sig, sig_bar)
 % Initialize dual variables and weights associated with the faceted 
 % low-rankness and average joint-sparsity prior.
 %
 % Parameters
 % ----------
-% x_overlap : array (double), 3d
-%     Input 3d image facet.
-% I : array (double)
-%     Index of the first / last pixel underlying the current facet [1, 2].
-% offset : array (double)
-%     [description]
-% status : array (double)
-%     [description]
+% x_overlap : array, double
+%     Overlapping image facet [M, N, L].
+% I : array, int
+%     Starting index of the non-overlapping facet [1, 2].
+% offset : array, double
+%     Offset to be used from one dictionary to another (different overlap 
+%     needed for each dictionary -> cropping) {nDictionaries}.
+% status : array, int
+%     Status of the current facet (last or first facet along vert. / hrz.
+%     direction) [1, 2].
 % nlevel : int
 %     Depth of the wavelet decompositions.
-% wavelet : cell (string)
+% wavelet : cell, string
 %     Name of the wavelet transforms involved in the faceted average 
 %     joint-sparsity prior.
-% Ncoefs : array (double)
-%     Number of wavelet coefficients at each scale of the decomposition.
-% dims_o : array (double)
-%     ...
+% Ncoefs : array, double
+%     Size of the wavelet decompositions at each scale.
+% dims_o : array, double
+%     Dimension of a facet (with overlap) [1, 2].
 % c : int
 %     Number of spectral channels.
-% dims_overlap_ref : array (double)
-%     [description]
-% offsetL : array (double)
-%     [description]
-% offsetR : array (double)
-%     [description]
+% dims_overlap_ref : array, int
+%     Dimension of the facet [1, 2].
+% offsetL : array, int
+%     Amount of zero-pading from the "left" [1, 2].
+% offsetR : array, int
+%     Amount of zero-padding from the "right" [1, 2].
 % reweight_alpha : double
-%     Value of the rewighting parameter.
-% crop_l21 : array (double)
+%     Reweighting parameter.
+% crop_l21 : array, int
 %     Amount of pixels to be cropped from the facet along each dimension to
 %     retrieve the pixels over which the current facet's sparstiy prior is
 %     acting [1, 2].
-% crop_nuclear : array (double)
+% crop_nuclear : array, int
 %     Amount of pixels to be cropped from the facet along each dimension to
 %     retrieve the pixels over which the current facet's sparstiy prior is
 %     acting [1, 2].
-% w : array (double)
+% w : array, double
 %     Apodization window used in the faceted low-rankness prior.
 % sig : double
 %     Noise level for the weights (joint-sparsity prior).
@@ -50,17 +53,15 @@ function [v0, v1, weights0, weights1] = initialize_dual_and_weights(x_overlap, .
 %
 % Returns
 % -------
-% v0 : array (double)
+% v0 : array, double
 %     Dual variable associated with the low-rankness prior.
-% v1 : array (double)
+% v1 : array, double
 %     Dual variable associated with the low-rankness prior.
-% weights0 : array (double)
+% weights0 : array, double
 %     Weigths associated with the low-rankness prior.
-% weights1 : array (double)
+% weights1 : array, double
 %     Weigths associated with the average joint-sparsity prior.
 %
-
-% ![DOCUMENTATION TO BE UPDATED]
 
 %-------------------------------------------------------------------------%
 %%

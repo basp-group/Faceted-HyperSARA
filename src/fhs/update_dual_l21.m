@@ -45,7 +45,7 @@ function [v1, g] = update_dual_l21(v1, x_overlap, weights, beta1, Iq, ...
 % offsetLq : array (1d)
 %     Amount of zero-pading from the "left" [1, 2].
 % offsetRq : array (1d)
-%     Amount of zero-pading from the "left" [1, 2].
+%     Amount of zero-pading from the "right" [1, 2].
 % dims_overlap_ref_q : array (1d)
 %     Dimension of the facet [1, 2].
 %
