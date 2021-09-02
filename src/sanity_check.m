@@ -19,12 +19,12 @@ function [global_norm_res, norm_epsilon] = sanity_check(epsilon, norm_res)
 %     Square global norm of epsilon.
 %
 
-%%                         
+%%
 nChannels = numel(norm_res);
 norm_epsilon = 0;
 global_norm_res = 0;
-for i = 1 : nChannels
-    for j = 1 : numel(norm_res{i})
+for i = 1:nChannels
+    for j = 1:numel(norm_res{i})
         global_norm_res = global_norm_res + norm_res{i}{j}^2;
         norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
     end

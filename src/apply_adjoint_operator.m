@@ -1,6 +1,6 @@
 function Fx = apply_adjoint_operator(y, G, Sigma)
-% Apply part of the adjoint measurment operator (before the scaled 
-% inverse discrete Fourier transform involved in the non-uniform FFT 
+% Apply part of the adjoint measurment operator (before the scaled
+% inverse discrete Fourier transform involved in the non-uniform FFT
 % :cite:p:`Fessler2003`).
 %
 % Parameters
@@ -17,7 +17,7 @@ function Fx = apply_adjoint_operator(y, G, Sigma)
 % Fx : array (complex)
 %     Gridded visibilities.
 %
-    
+
 Fx = G' * (Sigma .* y);
 
 end

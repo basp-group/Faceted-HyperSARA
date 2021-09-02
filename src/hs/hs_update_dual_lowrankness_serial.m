@@ -24,17 +24,17 @@ function [v0, g0] = hs_update_dual_lowrankness_serial(v0, xhat, ...
 %     Auxiliary variable for the update of the primal variable [M, N, L].
 %
 
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 
 [M, N, L] = size(xhat);
-xhatm = reshape(xhat, M*N, L);
-[U0, S0, V0] = svd(v0 + xhatm,'econ');
-v0 = v0 + xhatm - (U0*diag(max(diag(S0) - beta0 * weights0, 0))*V0');
-g0 = sigma0*reshape(v0, M, N, L);
+xhatm = reshape(xhat, M * N, L);
+[U0, S0, V0] = svd(v0 + xhatm, 'econ');
+v0 = v0 + xhatm - (U0 * diag(max(diag(S0) - beta0 * weights0, 0)) * V0');
+g0 = sigma0 * reshape(v0, M, N, L);
 
 end

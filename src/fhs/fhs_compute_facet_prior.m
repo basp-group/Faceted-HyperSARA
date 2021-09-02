@@ -1,12 +1,12 @@
 function [l21_norm, nuclear_norm] = ...
     fhs_compute_facet_prior(x_overlap, Iq, offset, status_q, ...
     nlevel, wavelet, Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
-    crop_l21, crop_nuclear, spatial_weights, size_v1)    
-% Compute the value of the faceted prior (:math:`\ell_{2,1}` + nuclear 
+    crop_l21, crop_nuclear, spatial_weights, size_v1)
+% Compute the value of the faceted prior (:math:`\ell_{2,1}` + nuclear
 % norm).
 %
-% Compute the value of the faceted prior (:math:`\ell_{2,1}` and  nuclear 
-% norm) for a single facet. This version includes a spatial correction of 
+% Compute the value of the faceted prior (:math:`\ell_{2,1}` and  nuclear
+% norm) for a single facet. This version includes a spatial correction of
 % the faceted nuclear norm (tapering window).
 %
 % Parameters
@@ -34,15 +34,15 @@ function [l21_norm, nuclear_norm] = ...
 % offsetRq : array (1d)
 %     Amount of zero-padding from the "right" [1, 2].
 % crop_l21 : array (1d)
-%     Relative cropping necessary for the facet :math:`\ell_{2,1}` norm 
+%     Relative cropping necessary for the facet :math:`\ell_{2,1}` norm
 %     [1, 2].
 % crop_nuclear : array (1d)
 %     Relative cropping necessary for the facet nuclear norm [1, 2].
 % spatial_weights : array (2d)
-%     Spatial weights (apodization window) applied to the facet nuclear 
+%     Spatial weights (apodization window) applied to the facet nuclear
 %     norm.
 % size_v1 : array (1d)
-%     Size of the dual variable associated with the facet 
+%     Size of the dual variable associated with the facet
 %     :math:`\ell_{2,1}` norm [1, 2].
 %
 % Returns
@@ -54,33 +54,33 @@ function [l21_norm, nuclear_norm] = ...
 %
 % ..note::
 %
-%   The l21 and nuclear norms do not act on the same facet, hence the 
+%   The l21 and nuclear norms do not act on the same facet, hence the
 %   cropping step.
 %
 
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %% compute facet nuclear norm
 c = size(x_overlap, 3);
-xhatm = spatial_weights.*x_overlap(crop_nuclear(1)+1:end, crop_nuclear(2)+1:end, :);
-xhatm = reshape(xhatm,numel(xhatm)/c,c);
-[~,S0,~] = svd(xhatm,'econ');
-nuclear_norm = norm(diag(S0),1);
+xhatm = spatial_weights .* x_overlap(crop_nuclear(1) + 1:end, crop_nuclear(2) + 1:end, :);
+xhatm = reshape(xhatm, numel(xhatm) / c, c);
+[~, S0, ~] = svd(xhatm, 'econ');
+nuclear_norm = norm(diag(S0), 1);
 
 %% compute facet l21-norm
 % zero-padding
 zerosNum = dims_overlap_ref_q + offsetLq + offsetRq;
 x_ = zeros([zerosNum, size(x_overlap, 3)]);
-x_(offsetLq(1)+1:end-offsetRq(1), offsetLq(2)+1:end-offsetRq(2), :) = x_overlap(crop_l21(1)+1:end, crop_l21(2)+1:end, :);
+x_(offsetLq(1) + 1:end - offsetRq(1), offsetLq(2) + 1:end - offsetRq(2), :) = x_overlap(crop_l21(1) + 1:end, crop_l21(2) + 1:end, :);
 
 % faceted SARA
 z = zeros(size_v1);
-for l = 1 : c
-    z(:,l) = sdwt2_sara_faceting(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
+for l = 1:c
+    z(:, l) = sdwt2_sara_faceting(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
 end
-l21_norm = sum(sqrt(sum(abs(z).^2,2)), 1);
+l21_norm = sum(sqrt(sum(abs(z).^2, 2)), 1);
 
 end

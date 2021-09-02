@@ -17,6 +17,6 @@ function sig = compute_noise_level_sara(std_noise, squared_operator_norm)
 %     Estimate of the noise level.
 %
 
-sig = sqrt((std_noise^2)/squared_operator_norm);
+sig = sqrt((std_noise^2) / squared_operator_norm);
 
 end

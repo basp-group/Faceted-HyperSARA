@@ -16,18 +16,18 @@ function weights = hs_update_weights_lowrankness_serial(x, ...
 % weights : array (2d)
 %     Weights associated with the reweigthing step [s, L].
 %
-             
-%-------------------------------------------------------------------------%
+
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 
 [M,  N, c] = size(x);
-[~, D, ~] = svd(reshape(x, [M*N, c]),'econ');
+[~, D, ~] = svd(reshape(x, [M * N, c]), 'econ');
 d = abs(diag(D));
-upsilon_bar = sig_bar*reweight_alpha;
+upsilon_bar = sig_bar * reweight_alpha;
 weights = upsilon_bar ./ (upsilon_bar + d);
 
 end

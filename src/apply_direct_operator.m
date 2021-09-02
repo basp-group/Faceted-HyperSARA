@@ -1,5 +1,5 @@
 function y = apply_direct_operator(Fx, G, Sigma)
-% Apply part of the direct measurement operator (after the scaled discrete 
+% Apply part of the direct measurement operator (after the scaled discrete
 % Fourier transform involved in the non-uniform FFT :cite:p:`Fessler2003`).
 %
 % Parameters

@@ -2,7 +2,7 @@ function [v0, v1, weights0, weights1] = fhs_initialize_facet_dual(Ncoefs, ...
     dims_o, c, nlevel)
 % Initialize dual variables (constant overlap).
 %
-% Initialize all the dual variables for a given facet (nuclear and l21 
+% Initialize all the dual variables for a given facet (nuclear and l21
 % norms).
 %
 % Parameters
@@ -28,11 +28,11 @@ function [v0, v1, weights0, weights1] = fhs_initialize_facet_dual(Ncoefs, ...
 %     Weigths ssociated with the :math:`\ell_{2,1}` norm.
 %
 
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 
 % compute size of the dual variables and the weigths
@@ -44,7 +44,7 @@ p = prod(Ncoefs, 2);
 % end
 
 % number of SARA coeffs with the Dirac basis
-sz = 3*sum(p(1:end)) - 2*sum(p(nlevel+1:nlevel+1:end)) - 2*p(end);
+sz = 3 * sum(p(1:end)) - 2 * sum(p(nlevel + 1:nlevel + 1:end)) - 2 * p(end);
 
 v0 = zeros(prod(dims_o), c);
 weights0 = ones(min(prod(dims_o), c), 1);

@@ -14,7 +14,7 @@ function [v2, norm_res, t_block, proj] = fhs_initialize_data_worker(y)
 % norm_res : cell
 %     Norm of the residual. Same structure as ``y``.
 % t_block : cell
-%     Last iteration at which each block has been updated {L}{nblocks}. 
+%     Last iteration at which each block has been updated {L}{nblocks}.
 %     Same structure as
 %     ``y``.
 % proj : cell
@@ -30,15 +30,15 @@ proj = cell(nChannels, 1);
 
 % loop over channels
 for l = 1:nChannels
-    norm_res{l} = cell(numel(y{l}),1);
-    v2{l} = cell(numel(y{l}),1);
-    t_block{l} = cell(numel(y{l}),1);
-    proj{l} = cell(numel(y{l}),1);
+    norm_res{l} = cell(numel(y{l}), 1);
+    v2{l} = cell(numel(y{l}), 1);
+    t_block{l} = cell(numel(y{l}), 1);
+    proj{l} = cell(numel(y{l}), 1);
 
     % loop over data blocks
-    for b = 1 : numel(y{l})
+    for b = 1:numel(y{l})
         norm_res{l}{b} = norm(y{l}{b});
-        v2{l}{b} = zeros(numel(y{l}{b}) ,1);
+        v2{l}{b} = zeros(numel(y{l}{b}), 1);
         t_block{l}{b} = 0;
         proj{l}{b} = zeros(numel(y{l}{b}), 1);
     end

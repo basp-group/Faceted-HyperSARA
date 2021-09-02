@@ -1,7 +1,7 @@
 function f = nuclear_norm(x)
 % Compute the nuclear norm of a wideband image.
 %
-% Compute :math:`\Vert \mathbf{X} \Vert_*` for :math:`\mathbf{X} \in 
+% Compute :math:`\Vert \mathbf{X} \Vert_*` for :math:`\mathbf{X} \in
 % \mathbb{R}^{N \times L}`.
 %
 % Parameters
@@ -15,14 +15,14 @@ function f = nuclear_norm(x)
 %     Nuclear norm of the wideband image.
 %
 
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 
-[~,D,~] = svd(reshape(x, [numel(x)/size(x, 3), size(x, 3)]),'econ');
+[~, D, ~] = svd(reshape(x, [numel(x) / size(x, 3), size(x, 3)]), 'econ');
 f = sum(abs(diag(D)));
 
 end
