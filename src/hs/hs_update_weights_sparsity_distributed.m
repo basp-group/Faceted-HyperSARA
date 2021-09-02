@@ -1,5 +1,5 @@
-function weights = update_weights_l21_distributed(x, Psit, weights, ...
-    reweight_alpha, sig)
+function weights = hs_update_weights_sparsity_distributed(x, Psit, ...
+    weights, reweight_alpha, sig)
 % Update the weigths for the reweighting of the
 % l21-norm prior.
 %

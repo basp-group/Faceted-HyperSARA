@@ -261,9 +261,9 @@ if init_flag
     end
     fprintf('v0, v1, weigths0, weights1 uploaded \n\n')
 else
-    [v0_, weights0_] = initialize_nuclear_serial(xsol, reweighting_alpha, sig_bar_);
+    [v0_, weights0_] = hs_initialize_dual_lowrankness_serial(xsol, reweighting_alpha, sig_bar_);
     spmd
-        [v1_, weights1_, s_] = initialize_l21_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, 'zpd', nlevel, reweighting_alphap, sig_);
+        [v1_, weights1_, s_] = hs_initialize_dual_sparsity_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, 'zpd', nlevel, reweighting_alphap, sig_);
     end
     fprintf('v0, v1, weigths0, weights1 initialized \n\n')
 end
@@ -301,7 +301,7 @@ if init_flag
 else
     %! this assumes the primal variable has been initialized to 0
     spmd
-        [v2_, norm_res, t_block, proj_] = initialize_data_worker(y);
+        [v2_, norm_res, t_block, proj_] = hs_initialize_data_worker(y);
     end
     fprintf('v2, proj, t_block, norm_res initialized \n\n')
 end
@@ -417,7 +417,7 @@ for t = t_start : max_iter
     
     % nuclear prior node
     tw = tic;
-    [v0_, g] = update_dual_nuclear_serial(v0_, xhat, weights0_, beta0, sigma00);
+    [v0_, g] = hs_update_dual_lowrankness_serial(v0_, xhat, weights0_, beta0, sigma00);
     t_nuclear(t) = toc(tw);
 
     % update dual variables
@@ -425,7 +425,7 @@ for t = t_start : max_iter
         % l21 prior node (full SARA prior)
         tw = tic;
         [v1_, g1_] = ...
-            update_dual_l21_distributed(v1_, Psit_, Psi_, ...
+            hs_update_dual_sparsity_distributed(v1_, Psit_, Psi_, ...
             xhat(:,:,spectral_chunk{labindex}), weights1_, ...
             beta1.Value, sigma11.Value);
         t_l21_ = toc(tw); 
@@ -553,11 +553,11 @@ for t = t_start : max_iter
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count+1, rel_x_reweighting, reweighting_alpha);
 
         % update weights nuclear norm
-        weights0_ = update_weights_nuclear_serial(xsol, reweighting_alpha, sig_bar_);
+        weights0_ = hs_update_weights_lowrankness_serial(xsol, reweighting_alpha, sig_bar_);
 
         spmd
             % update weights l21-norm
-            weights1_ = update_weights_l21_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, weights1_, reweighting_alpha, sig_);
+            weights1_ = hs_update_weights_sparsity_distributed(xsol(:,:,spectral_chunk{labindex}), Psit_, weights1_, reweighting_alpha, sig_);
 
             % compute residual image
             res_ = compute_residual_images(xsol(:,:,spectral_chunk{labindex}), y, A, At, G, W, flagDR, Sigma);

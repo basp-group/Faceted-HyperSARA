@@ -1,4 +1,5 @@
-function [v1, weights1, s] = initialize_l21_distributed(x, Psit, extension_mode, nlevel, reweighting_alpha, sig)
+function [v1, weights1, s] = hs_initialize_dual_sparsity_distributed(x, ...
+    Psit, extension_mode, nlevel, reweighting_alpha, sig)
 % Initalize the dual variables related to the 
 % l21-norm prior.
 % 

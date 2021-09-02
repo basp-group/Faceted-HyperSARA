@@ -1,4 +1,5 @@
-function [v0, weights0] = initialize_nuclear_serial(x, reweighting_alpha, sig_bar)
+function [v0, weights0] = ...
+    hs_initialize_dual_lowrankness_serial(x, reweighting_alpha, sig_bar)
 % Initalize the dual variables related to the l21-norm prior.
 % 
 % Parameters

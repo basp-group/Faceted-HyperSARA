@@ -1,4 +1,5 @@
-function [v1, g1] = update_dual_l21_distributed(v1, Psit, Psi, xhat, weights1, beta1, sigma1)
+function [v1, g1] = hs_update_dual_sparsity_distributed(v1, Psit, Psi, ...
+    xhat, weights1, beta1, sigma1)
 % Update the dual variable related to the facet :math:`\ell_{2,1}` norm 
 % prior.
 %

@@ -1,4 +1,5 @@
-function weights = update_weights_nuclear_serial(x, reweight_alpha, sig_bar)
+function weights = hs_update_weights_lowrankness_serial(x, ...
+    reweight_alpha, sig_bar)
 % Update the weigths for the reweighting of the nuclear norm prior.
 %
 % Parameters

@@ -1,4 +1,5 @@
-function [v0, g0] = update_dual_nuclear_serial(v0, xhat, weights0, beta0, sigma0)
+function [v0, g0] = hs_update_dual_lowrankness_serial(v0, xhat, ...
+    weights0,  beta0, sigma0)
 % Update the dual variables related to the nuclear
 % norm prior.
 %
