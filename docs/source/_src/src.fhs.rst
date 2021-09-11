@@ -1,5 +1,5 @@
-Module fhs
-==========
+Module src.fhs
+==============
 
 .. mat:automodule:: src.fhs
     :members:
