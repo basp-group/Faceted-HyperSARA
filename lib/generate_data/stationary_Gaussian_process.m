@@ -34,7 +34,7 @@ function [field1, field2, tx, ty] = stationary_Gaussian_process(m, n, rho)
     % create the first row of the block circulant matrix with circular blocks
     % and store it as a matrix suitable for fft2;
     BlkCirc_row = [Rows, Cols(:, end:-1:2)
-                 Cols(end:-1:2, :), Rows(end:-1:2, end:-1:2)];
+                   Cols(end:-1:2, :), Rows(end:-1:2, end:-1:2)];
     % compute eigen-values
     lam = real(fft2(BlkCirc_row)) / (2 * m - 1) / (2 * n - 1);
     if abs(min(lam(lam(:) < 0))) > 10^-15

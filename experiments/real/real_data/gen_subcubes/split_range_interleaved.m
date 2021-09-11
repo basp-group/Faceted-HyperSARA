@@ -6,15 +6,15 @@ function rg = split_range_interleaved(nchunks, N)
 %
 % Args:
 %     nchunks (int): number of segments.
-%     N (int): total number of indices. 
+%     N (int): total number of indices.
 %
 % Returns:
 %     rg (array): first/last index of each segment {nchunks, 1}.
 
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 if nchunks > N
     error('split_range_interleaved:ValueError', ...
@@ -27,4 +27,3 @@ for q = 1:nchunks
 end
 
 end
-    

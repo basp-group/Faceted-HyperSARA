@@ -38,7 +38,7 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 % overlap_fraction : array (1d)
 %     Fraction of the total size of a facet overlapping with a neighbour
 %     facet.
-%_rnReweights : int
+% _rnReweights : int
 %     Maximum number of reweighting steps.
 % coverage_path : string
 %     Path and name of the uv-coverage .fits file (w/o file extension).
@@ -86,7 +86,7 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 % Qx = 1; % 4
 % Qy = 1; % 4
 % Qc = 1;
-%_rnReweights = 1;
+% _rnReweights = 1;
 % algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generate_visibilities = 0;
@@ -639,7 +639,7 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_version, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
 end
 
-%_r Define parameters for the solver (nReweights needed here)
+% _r Define parameters for the solver (nReweights needed here)
 parameters_solver;
 
 %%

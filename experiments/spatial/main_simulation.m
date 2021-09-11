@@ -639,7 +639,7 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_version, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
 end
 
-%_r Define parameters for the solver (nReweights needed here)
+% _r Define parameters for the solver (nReweights needed here)
 parameters_solver;
 
 %%
