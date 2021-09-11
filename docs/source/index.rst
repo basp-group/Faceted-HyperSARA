@@ -3,24 +3,18 @@ Faceted-Hyper-SARA
 
 .. toctree::
    :maxdepth: 2
-   :caption: Installation
+   :caption: Installation & references
 
    setup
+   biblio
 
 .. toctree::
    :maxdepth: 2
    :caption: API
 
-   src
-   lib
+   _src/src
+   _lib/lib
    figures
-
-.. toctree::
-   :maxdepth: 2
-   :caption: References
-
-   biblio
-
 
 .. note::
 

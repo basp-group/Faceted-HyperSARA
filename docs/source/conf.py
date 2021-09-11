@@ -33,14 +33,17 @@ author = 'pthouvenin'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinxcontrib.matlab',
+    'sphinxcontrib.matlab',  # support for Matlab
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx_rtd_theme',
-    "sphinxcontrib.bibtex",
+    'sphinxcontrib.bibtex',
+    'sphinx.ext.mathjax',  # LaTeX support
 ]
+
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -54,7 +57,9 @@ source_suffix = ".rst"
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store",
+                    'lib/faceted-wavelet-transform',
+                    'lib/measurement-operator']
 
 # Bibliography
 # .. https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html
@@ -106,3 +111,5 @@ napoleon_use_rtype = True
 napoleon_preprocess_types = False
 napoleon_type_aliases = None
 napoleon_attr_annotations = True
+
+primary_domain = "mat"

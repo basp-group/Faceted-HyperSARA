@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>src.simplified_sampler_psgla_simple_model_ew_ls_mh_2 &mdash; faceted-hypersara  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="src.simplified_sampler_psgla_simple_model_local" href="src.simplified_sampler_psgla_simple_model_local.html" />
+    <link rel="prev" title="src.simplified_sampler_psgla_simple_model_ew_ls_mh_1pix" href="src.simplified_sampler_psgla_simple_model_ew_ls_mh_1pix.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> faceted-hypersara
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="src.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="src.sampler_myula.html">src.sampler_myula</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.sampler_psgla0.html">src.sampler_psgla0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.sampler_psgla1.html">src.sampler_psgla1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.sampler_psgla2.html">src.sampler_psgla2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.sampler_psgla_mix_models.html">src.sampler_psgla_mix_models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.simplified_sampler_psgla.html">src.simplified_sampler_psgla</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.simplified_sampler_psgla_line_search.html">src.simplified_sampler_psgla_line_search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.simplified_sampler_psgla_simple_model.html">src.simplified_sampler_psgla_simple_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.simplified_sampler_psgla_simple_model_ew_ls.html">src.simplified_sampler_psgla_simple_model_ew_ls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.simplified_sampler_psgla_simple_model_ew_ls_mh.html">src.simplified_sampler_psgla_simple_model_ew_ls_mh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.simplified_sampler_psgla_simple_model_ew_ls_mh_1pix.html">src.simplified_sampler_psgla_simple_model_ew_ls_mh_1pix</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">src.simplified_sampler_psgla_simple_model_ew_ls_mh_2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.simplified_sampler_psgla_simple_model_local.html">src.simplified_sampler_psgla_simple_model_local</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.simplified_sampler_psgla_simple_model_mul.html">src.simplified_sampler_psgla_simple_model_mul</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">References</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">faceted-hypersara</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="src.html">src</a> &raquo;</li>
+        
+      <li>src.simplified_sampler_psgla_simple_model_ew_ls_mh_2</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_autosummary/src.simplified_sampler_psgla_simple_model_ew_ls_mh_2.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="module-src.simplified_sampler_psgla_simple_model_ew_ls_mh_2">
+<span id="src-simplified-sampler-psgla-simple-model-ew-ls-mh-2"></span><h1>src.simplified_sampler_psgla_simple_model_ew_ls_mh_2<a class="headerlink" href="#module-src.simplified_sampler_psgla_simple_model_ew_ls_mh_2" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lipschitz_kappa</span></code>(M_theta, sigma, s, …)</p></td>
+<td><p>Compute the update step for <span class="math notranslate nohighlight">\(\kappa\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_lipschitz_theta</span></code>(kappa, y, model, …)</p></td>
+<td><p>Compute the update step for the physical parameters <span class="math notranslate nohighlight">\(\theta_d\)</span>, <span class="math notranslate nohighlight">\(d \in [1, D]\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_objective</span></code>(y, theta, kappa, eta, …)</p></td>
+<td><p>compute value of objective function</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_objective_kappa</span></code>(kappa, theta, …)</p></td>
+<td><p>compute value of objective function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate_objective_theta</span></code>(theta, kappa, y, …)</p></td>
+<td><p>compute value of objective function.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linesearch_step_one_elt_kappa</span></code>(kappa, …)</p></td>
+<td><p>Computes a stepsize for one element kappa_n</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_linesearch_step_one_elt_theta</span></code>(theta, …)</p></td>
+<td><p>Computes a stepsize for one element theta_{d,n}</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gibbs_sampler</span></code>(theta0, kappa0, y, model, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">grad_kappa</span></code>(kappa, theta, M_theta, y, eta, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">grad_theta</span></code>(theta, kappa, y, eta, tau, eps, …)</p></td>
+<td><p>Evaluates the gradient of f wrt theta</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">grad_theta_dn</span></code>(theta, kappa, y, eta, tau, …)</p></td>
+<td><p>Evaluates the gradient of f wrt theta</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_gauss</span></code>(y, kappaM_theta, sigma)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_prior_kappa</span></code>(x, eta, eps)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_prior_kappa_lognorm</span></code>(kappa, s)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_prior_theta</span></code>(x, tau, eps)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">logpdf_lognorm</span></code>(kappa, s)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_psgla_kappa</span></code>(kappa, eps, tau)</p></td>
+<td><p>Gradient of the smooth TV regularization.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_psgla_kappa2</span></code>(kappaM_theta, M_theta, y, …)</p></td>
+<td><p>Gradient of the quadratic term.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_psgla_kappa3</span></code>(kappa, s)</p></td>
+<td><p>Gradient of the log normal prior term.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_psgla_theta</span></code>(theta, eps, tau)</p></td>
+<td><p>Gradient of the smooth TV regularization term w.r.t.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_psgla_theta2</span></code>(kappa_gradM, kappaM_theta, …)</p></td>
+<td><p>Gradient of the quadratic contribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prox_kappa</span></code>(x, a, b)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prox_theta</span></code>(x, a, b)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="src.simplified_sampler_psgla_simple_model_local.html" class="btn btn-neutral float-right" title="src.simplified_sampler_psgla_simple_model_local" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="src.simplified_sampler_psgla_simple_model_ew_ls_mh_1pix.html" class="btn btn-neutral float-left" title="src.simplified_sampler_psgla_simple_model_ew_ls_mh_1pix" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, pthouvenin
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
