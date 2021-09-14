@@ -58,7 +58,7 @@ function [weights1, weights0] = fhs_update_weights(x_facet, size_v1, ...
 %     Weights for the reweighting of the nuclear norm [min(M*N, L), 1].
 %
 
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Motivation: for loops are slow in spmd if not encapsulated in a function.
 % Note: the l21 and nuclear norms do not act on the same facet, hence the
@@ -66,7 +66,7 @@ function [weights1, weights0] = fhs_update_weights(x_facet, size_v1, ...
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [18/09/2020]
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 
 % nuclear norm

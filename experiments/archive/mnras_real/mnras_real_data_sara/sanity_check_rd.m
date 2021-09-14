@@ -13,7 +13,7 @@ function [global_norm_res_c, norm_epsilon_c, global_norm_res_a, norm_epsilon_a] 
 %     global_norm_res (double): square global norm of the residual.
 %     norm_epsilon (double): square global norm of epsilon.
 
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Reference:
 %
@@ -21,11 +21,11 @@ function [global_norm_res_c, norm_epsilon_c, global_norm_res_a, norm_epsilon_a] 
 % Smirnov, O. M. and Wiaux, Y.Cygnus A Super-Resolved via Convex
 % Optimization from VLA Data, Mon. Not. R. Astron. Soc., 476(3),
 % pp. 2853-2866
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [...]
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 
 nChannels = numel(norm_res);

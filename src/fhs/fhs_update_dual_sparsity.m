@@ -57,11 +57,11 @@ function [v1, g] = fhs_update_dual_sparsity(v1, x_facet, ...
 %     Auxiliary variable for the update of the primal variable [M, N, L].
 %
 
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revision: [30/11/2020]
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 
 spatial_size = dims_overlap_ref_q + offsetLq + offsetRq; % offset for the zero-padding

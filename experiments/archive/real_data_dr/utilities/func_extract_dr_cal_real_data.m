@@ -1,6 +1,6 @@
 function func_extract_dr_cal_real_data(chInd, subInd, reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma, fouRed_type)
 % Generate and save calibrated DR data from raw data and calibrated G matrices
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 % Input:
 % > chInd: vector of channel indices [L]
 % > subInd: vector of interlaced subproblem indices [S]

@@ -1,6 +1,6 @@
 function func_nnls_dr_real_data(chInd, reduction_version, realdatablocks, enable_klargestpercent, fouRed_gamma)
 % Generate and save non-calibrated DR data from raw data
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 % Input:
 % > chInd: vector of channel indices [L]
 % > reduction_version: reduction version,

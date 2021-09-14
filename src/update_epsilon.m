@@ -39,12 +39,12 @@ function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
 %     Last iteration at which each block has been updated {L}{nblocks}.
 %
 
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
 % TODO: update name of variable
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 
 %%
 n_channels = length(epsilon);

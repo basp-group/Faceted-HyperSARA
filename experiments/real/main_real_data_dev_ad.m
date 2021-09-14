@@ -133,8 +133,8 @@ if ~isfield(param_global, 'l2bounds_filename'); param_global.l2bounds_filename =
 if ~isfield(param_global, 'G_filename'); param_global.G_filename = []; end
 if ~isfield(param_global, 'model_filename'); param_global.model_filename = []; end
 
-%% -------------------------------------------------------------------------%
-%% -------------------------------------------------------------------------%
+%%-------------------------------------------------------------------------%
+%%-------------------------------------------------------------------------%
 %% get imaging setting
 
 % image dimensions & resolution
@@ -184,7 +184,7 @@ param_preproc.l2bounds_filename = param_global.l2bounds_filename;
 param_preproc.model_filename = param_global.model_filename;
 param_preproc.subcube = subcube_ind;
 param_preproc.done = ~isempty(param_preproc.l2bounds_filename) * ~isempty(param_preproc.model_filename) * ~isempty(param_preproc.G_filename);
-%% -------------------------------------------------------------------------%
+%%-------------------------------------------------------------------------%
 %% info + paths
 format compact;
 project_dir = param_global.main_dir;

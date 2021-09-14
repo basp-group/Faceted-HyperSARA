@@ -15,7 +15,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % nuclear norm (triangular, hamming, piecewise_constant, no weights by
 % default).
 %
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Input:
 %
@@ -108,16 +108,16 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % < norm_res_out    norm of the reidual image
 % < res             residual image [M, N]
 % < end_iter        last iteration
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin, A. Abdulaziz, M. Jiang
 % [../../2019]
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Note:
 % Code based on the HyperSARA code developed by A. Abdulaziz, available at
 % https://basp-group.github.io/Hyper-SARA/
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a  le place. Constant overlap for the nuclear norm assuming overlap_size smaller than the smallest overlap for the sdwt2 (the other option

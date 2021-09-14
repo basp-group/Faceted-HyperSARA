@@ -6,11 +6,11 @@ function [x, residual, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, t
 % ``A Faceted Prior for Scalable Wideband Imaging: Application to Radio
 % Astronomy''
 %
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Author: P.-A. Thouvenin.
 % Last modified: [../../2020]
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % NOTES:
 %
@@ -18,7 +18,7 @@ function [x, residual, asnr, ssnr, asnr_log, ssnr_log, acpu, scpu, arun, srun, t
 % TODO: load operator norm, compute snr (print in a .txt file), compute
 % timing, relate to number of CPUs
 %
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 N = [size(x0, 1), size(x0, 2)];
 n_channels = size(x0, 3);

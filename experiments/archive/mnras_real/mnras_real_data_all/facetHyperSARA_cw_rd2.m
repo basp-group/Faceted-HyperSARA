@@ -10,7 +10,7 @@ function [xsol, param, epsilon, t, rel_val, nuclear, l21, norm_res_out, end_iter
 % nuclear norm (triangular, hamming, piecewise_constant, no weights by
 % default).
 %
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Input:
 %
@@ -96,16 +96,16 @@ function [xsol, param, epsilon, t, rel_val, nuclear, l21, norm_res_out, end_iter
 % < norm_res_out    norm of the reidual image
 % < res             residual image [M, N]
 % < end_iter        last iteration
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin, A. Abdulaziz, M. Jiang
 % [../../2019]
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % Note:
 % Code based on the HyperSARA code developed by A. Abdulaziz, available at
 % https://basp-group.github.io/Hyper-SARA/
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 %%
 % SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place. Constant overlap for the nuclear norm assuming d

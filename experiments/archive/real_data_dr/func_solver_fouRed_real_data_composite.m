@@ -1,7 +1,7 @@
 function func_solver_fouRed_real_data_composite(datadir, name, Qx, Qy, Qc2, gamma0, gamma1, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag, jobpath)
 % Global imaging solver for DR real data
 %   version "composite", parcluster initialised outside the main solver
-% -------------------------------------------------------------------------%
+%-------------------------------------------------------------------------%
 % Input:
 % > datadir: directory of data, string
 % > name: filename for savings, string
