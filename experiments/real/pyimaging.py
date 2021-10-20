@@ -4,6 +4,9 @@ import os
 import subprocess
 import sys
 
+# TODO: create a proper submission menu, intead of reading from a .csv file?
+# Would allow displaying informations on the menu itself
+
 # global vars
 project_path_run = os.path.dirname(os.path.realpath(__file__))
 # project_path_run="%s/experiments/real/"%project_path
@@ -57,7 +60,7 @@ def main():
             # launch job
             exit_status = subprocess.call(sbatch_command, shell=True)
 
-            if exit_status is 1:  # Check to make sure the job submitted
+            if exit_status == 1:  # Check to make sure the job submitted
                 print("Job failed to submit".format(*job))
 
 

@@ -3,9 +3,6 @@
 
 %% * Problem size
 % TODO: to be completed
-% seed for the random number generation (used only when generating data)
-% % seed = 1; (AD: not needed!)
-% % rng(seed);
 
 %% * NUFFT (gridding parameters)
 param_nufft.ox = 2; % oversampling factor (x)
