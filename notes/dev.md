@@ -57,7 +57,7 @@ mh_style folder/
 mh_style --fix .
 ```
 
-## New interface (generic measurement  operator, lambda function)
+## New interface (generic measurement operator, lambda function)
 
 Functions to be modified:
 

@@ -13,7 +13,7 @@ Qy = 1
 overlapx = 0
 overlapy = 0
 
-# to be activated only for the first run (generating the data), and can 
+# to be activated only for the first run (generating the data), and can
 # systematically deactivated afertwards)
 genvis = 0
 computenorm = 1
