@@ -596,7 +596,7 @@ if strcmp(algo_version, 'sara')
 
     % SARA dicionary (created out of the solver for SARA)
     dwtmode('zpd');
-    [Psi1, Psit1] = op_p_sp_wlt_basis_fhs(wlt_basis, nlevel, Ny, Nx);
+    [Psi1, Psit1] = op_p_sp_wlt_basis(wlt_basis, nlevel, Ny, Nx);
     P = numel(Psi1);
     Psi = cell(P, 1);
     Psit = cell(P, 1);
