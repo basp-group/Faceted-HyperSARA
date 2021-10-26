@@ -32,3 +32,5 @@ docs/_*
 *local_cluster_jobs*
 *pref_*
 docs/build
+lib/faceted-wavelet-transform/*
+lib/measruement-operator/*
