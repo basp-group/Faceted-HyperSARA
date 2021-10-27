@@ -1,4 +1,4 @@
-function [y0, y, Ml, Nm, sigma_noise, norm_noise] = util_gen_measurements_snr(x, G, W, A, input_snr) % rng_stream
+function [y0, y, Ml, Nm, sigma_noise, norm_noise] = util_gen_measurements_snr(x, G, W, A, input_snr, rng_stream)
 
     % generates the input data
     % rng(seed);
@@ -29,7 +29,7 @@ function [y0, y, Ml, Nm, sigma_noise, norm_noise] = util_gen_measurements_snr(x,
         for j = 1:numel(y0{i})
             Nmq = numel(y0{i}{j});
             noise = (randn(Nmq, 1) + ...
-                     1i * randn(Nmq, 1)) * sigma_noise(i) / sqrt(2); % randn(rng_stream, Nmq, 1)
+                     1i * randn(rng_stream, Nmq, 1)) * sigma_noise(i) / sqrt(2);
             norm_noise = norm_noise + norm(noise(:), 2)^2;
             y{i}{j} = y0{i}{j} + noise;
         end

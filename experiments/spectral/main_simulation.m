@@ -38,7 +38,7 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 % overlap_fraction : array (1d)
 %     Fraction of the total size of a facet overlapping with a neighbour
 %     facet.
-% _rnReweights : int
+% n_reweights : int
 %     Maximum number of reweighting steps.
 % coverage_path : string
 %     Path and name of the uv-coverage .fits file (w/o file extension).
@@ -86,7 +86,7 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 % Qx = 1; % 4
 % Qy = 1; % 4
 % Qc = 1;
-% _rnReweights = 1;
+% n_reweights = 1;
 % algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
 % flag_generate_visibilities = 0;
@@ -441,16 +441,15 @@ if flag_generate_visibilities
     % may not be strictly equivalent to the data initially obtained for the
     % mnras paper
 
-    % rng_stream = RandStream.create('threefry4x64_20', ...
-    %     'Seed', seed, 'NumStreams', ncores_data);
-    % offset_worker = Q*strcmp(algo_version, 'fhs');
+    [rng_stream{1:ncores_data}] = RandStream.create('threefry4x64_20', ...
+        'Seed', 0, 'NumStreams', ncores_data);
+    offset_worker = Q*strcmp(algo_version, 'fhs');
 
     spmd
         if labindex > Q * strcmp(algo_version, 'fhs')
             [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr( ...
                 x0(:, :, rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, ...
-                input_snr(rg_c(labindex, 1):rg_c(labindex, 2)));
-                % rng_stream(labindex-offset_worker)
+                input_snr(rg_c(labindex, 1):rg_c(labindex, 2)), rng_stream{labindex-offset_worker});
             [~, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, .../
                 param_l2_ball, sigma_noise);
         end

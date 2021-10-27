@@ -8,3 +8,12 @@ raw = fread(fid,inf); % Reading the contents
 str = char(raw'); % Transformation
 fclose(fid); % Closing the file
 data = jsondecode(str); % Using the jsondecode function to parse JSON from string
+
+% testing parallel random generation
+seed = 1;
+n = 10;
+[stream{1:n}] = RandStream.create('threefry4x64_20','NumStreams',n,'Seed',seed);
+parfor k = 1:n
+    r = randn(stream{k},[1 3]);
+    disp(r);
+end
