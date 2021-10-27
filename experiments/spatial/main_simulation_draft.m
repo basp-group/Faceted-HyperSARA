@@ -134,7 +134,6 @@ addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
 addpath ../../lib/measurement-operator/lib/operators/;
 addpath ../../lib/measurement-operator/lib/utils/;
-addpath ../../lib/generate_data;
 addpath ../../lib/utils/;
 addpath ../../lib/faceted-wavelet-transform/src;
 addpath ../../data/;
