@@ -134,6 +134,7 @@ addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
 addpath ../../lib/measurement-operator/lib/operators/;
 addpath ../../lib/measurement-operator/lib/utils/;
+addpath ../../lib/generate_data;
 addpath ../../lib/utils/;
 addpath ../../lib/faceted-wavelet-transform/src;
 addpath ../../data/;
@@ -305,7 +306,6 @@ results_name = results_name_function(n_channels);
 parameters_problem;
 
 %% Generate/load uv-coverage
-% TODO: see how to load and setup the 
 % generating u-v coverage
 % ! reminder uv-coverage and weighting
 % https://casa.nrao.edu/Release4.1.0/doc/UserMan/UserMansu259.html
@@ -503,6 +503,8 @@ else
 
             Anorm = max(Anorm, An{data_worker_id(k)});
         end
+        squared_operator_norm = opnormfile.squared_operator_norm;
+        squared_operator_norm_precond = opnormfile.squared_operator_norm_precond;
         clear An rel_var rel_var_precond squared_operator_norm_precond;
 
     else

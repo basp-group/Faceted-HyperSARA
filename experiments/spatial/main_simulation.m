@@ -172,7 +172,7 @@ switch exp_type
         spatial_downsampling = 1;
     case "local_test"
         image_name = 'cygASband_Cube_256_512_100';
-        spectral_downsampling = 25; % 5
+        spectral_downsampling = 25;
         spatial_downsampling = 1;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
     case "old_local_test"
@@ -210,9 +210,9 @@ X0 = reshape(x0, [N, nchans]);
 input_snr = isnr * ones(nchans, 1); % input SNR (in dB)
 
 % frequency used to generate the reference cubes
-nu0 = 2.052e9; % starting freq
-dnu = 16e6;    % freq step
-L = 100;       % number of channels
+nu0 = 2.052e9;  % starting freq
+dnu = 16e6;  % freq step
+L = 100;  % number of channels
 nu_vect = [nu0 (dnu * (1:L - 1) + nu0)];
 frequencies = nu_vect(1:floor(L / n_channels):end); % nu_vect(1:spectral_downsampling:end);
 
@@ -221,7 +221,6 @@ clear spatial_downsampling spectral_downsampling;
 
 %% Auxiliary function needed to select the appropriate workers
 % (only needed for 'hs' and 'fhs' algorithms)
-
 switch algo_version
     case 'sara'
         data_worker_id = @(k) k;
@@ -525,7 +524,7 @@ else
     if flag_compute_operator_norm
         spmd
             if labindex > Qx * Qy * strcmp(algo_version, 'fhs')
-                [An, squared_operator_norm_, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
+                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
             end
         end
 
