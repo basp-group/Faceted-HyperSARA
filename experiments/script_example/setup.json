@@ -1,11 +1,32 @@
 [
-    {
-        "path_dataset": "/pth/to/ImageNet/val/",
-        "path_dataset_pnp": "/pth/to/BSDS300/images/test/",
-        "pattern_red": "*.jpg",
-        "root_folder": "/pth/to/project/"
+    {   "__comment": "Paths configuration",
+        "path_dataset": "/pth/to/data",
+        "project_path": "pth/to/project/files",
+        "slurm_file": "imaging.slurm"
     },
     {
-        "test_boolean": true
+        "__comment": "Mandatory solver specification",
+        "solver": "fhs",
+        "image_name": "img",
+        "job_name": "job",
+        "job_id": "0",
+        "gamma": 1,
+        "gamma_bar": 1,
+        "warmstart_iteration": 0,
+        "nmax_reweighting": 10
+    },
+    {
+        "__comment": "Mandatory problem parameters",
+            "pixelSize": 0.06,
+            "image_size_x": 2560,
+            "image_size_y": 1536,
+            "nchannels": 20,
+            "nfacets_x": 15,
+            "nfacets_y": 6,
+            "ncubes": 1,
+            "ncores_data": 20,
+            "window_type": "triangular",
+            "overlap_fraction_y": 0.25,
+            "overlap_fraction_x": 0.25
     }
 ]

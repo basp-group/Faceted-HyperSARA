@@ -2,7 +2,7 @@ clear all; close all; format compact
 %%
 % https://fr.mathworks.com/matlabcentral/answers/474980-extract-info-from-json-file-by-matlab
 
-fileName = 'setup.json'; % filename in JSON extension
+fileName = 'setup_test.json'; % filename in JSON extension
 fid = fopen(fileName); % Opening the file
 raw = fread(fid,inf); % Reading the contents
 str = char(raw'); % Transformation
