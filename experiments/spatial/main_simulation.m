@@ -1,9 +1,9 @@
-function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
-    algo_version, window_type, ncores_data, ind, overlap_fraction, ...
-    n_reweights, coverage_path, gam, gam_bar, rw, exp_type, ...
-    superresolution_factor, isnr, flag_generate_visibilities, ...
-    flag_compute_operator_norm, flag_solve_minimization, flagDR, ...
-    flag_cirrus, flag_homotopy)
+% function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
+%     algo_version, window_type, ncores_data, ind, overlap_fraction, ...
+%     n_reweights, coverage_path, gam, gam_bar, rw, exp_type, ...
+%     superresolution_factor, isnr, flag_generate_visibilities, ...
+%     flag_compute_operator_norm, flag_solve_minimization, flagDR, ...
+%     flag_cirrus, flag_homotopy)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 %
 % This script generates synthetic data and runs the SARA, HyperSARA or
@@ -80,39 +80,39 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 
 %% PARAMETERS FOR DEBUGGING
 %
-% image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
-% exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-%
-% Qx = 1; % 4
-% Qy = 1; % 4
-% Qc = 1;
-% n_reweights = 1;
-% algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
-% window_type = 'triangular'; % 'hamming', 'pc'
-% flag_generate_visibilities = 0;
-% flag_compute_operator_norm = 0;
-% flag_solve_minimization = 1;
-% ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
-% ind = 1; % index of the spectral facet to be reconstructed
-% gam = 1;
-% gam_bar = 1;
-% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
-%
-% rw = -1;
-% flag_homotopy = 0;
-% overlap_fraction = 0;
-% flagDR = 0;
-% isnr = 50;
-%
-% n_channels = 20;
-% flag_generateCube = 1;
-% cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
-% cube_path = cubepath(n_channels);
-% flag_generateCoverage = 0;
-% flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-% superresolution_factor = 2;
-% flag_cirrus = false;
-% kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
+image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
+exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
+
+Qx = 1; % 4
+Qy = 1; % 4
+Qc = 1;
+n_reweights = 1;
+algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
+window_type = 'triangular'; % 'hamming', 'pc'
+flag_generate_visibilities = 0;
+flag_compute_operator_norm = 0;
+flag_solve_minimization = 1;
+ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
+ind = 1; % index of the spectral facet to be reconstructed
+gam = 1;
+gam_bar = 1;
+coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
+
+rw = -1;
+flag_homotopy = 0;
+overlap_fraction = 0;
+flagDR = 0;
+isnr = 50;
+
+n_channels = 20;
+flag_generateCube = 1;
+cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
+cube_path = cubepath(n_channels);
+flag_generateCoverage = 0;
+flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
+superresolution_factor = 2;
+flag_cirrus = false;
+kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
 %%
 format compact;
 
