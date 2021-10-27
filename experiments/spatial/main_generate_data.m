@@ -14,6 +14,7 @@ disp(['Generating visibilities: ', num2str(flag_generate_visibilities)]);
 addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
 addpath ../../lib/measurement-operator/lib/operators/;
+addpath ../../lib/measurement-operator/lib/generate_data;
 addpath ../../lib/measurement-operator/lib/utils/;
 addpath ../../lib/utils/;
 addpath ../../data/;

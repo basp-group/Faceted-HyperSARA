@@ -89,7 +89,7 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 % n_reweights = 1;
 % algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
 % window_type = 'triangular'; % 'hamming', 'pc'
-% flag_generate_visibilities = 0;
+% flag_generate_visibilities = 1; % error epsilons
 % flag_compute_operator_norm = 0;
 % flag_solve_minimization = 1;
 % ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
@@ -100,7 +100,7 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 %
 % rw = -1;
 % flag_homotopy = 0;
-% overlap_fraction = 0;
+% overlap_fraction = 0.25;
 % flagDR = 0;
 % isnr = 50;
 %
@@ -130,6 +130,7 @@ addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
 addpath ../../lib/measurement-operator/lib/operators/;
 addpath ../../lib/measurement-operator/lib/utils/;
+addpath ../../lib/generate_data;
 % addpath ../../lib/measurement-operator/irt/nufft/
 addpath ../../lib/utils/;
 addpath ../../lib/faceted-wavelet-transform/src;
@@ -448,8 +449,8 @@ if flag_generate_visibilities
     spmd
         if labindex > Q * strcmp(algo_version, 'fhs')
             [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr( ...
-                x0(:, :, rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, ...
-                input_snr(rg_c(labindex, 1):rg_c(labindex, 2)), rng_stream{labindex-offset_worker});
+                x0(:, :, rg_c(labindex-offset_worker, 1):rg_c(labindex-offset_worker, 2)), G, W, A, ...
+                input_snr(rg_c(labindex-offset_worker, 1):rg_c(labindex-offset_worker, 2)), rng_stream{labindex-offset_worker});
             [~, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, .../
                 param_l2_ball, sigma_noise);
         end
@@ -471,7 +472,7 @@ if flag_generate_visibilities
         datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = sigma_noise{data_worker_id(k)};
     end
     global_sigma_noise = datafile.sigma_noise;
-    clear param_l2_ball m Ml epsilons datafile;
+    clear param_l2_ball m Ml datafile;
 else
     datafile = matfile(fullfile(results_path, data_name));
 
@@ -524,7 +525,7 @@ else
     if flag_compute_operator_norm
         spmd
             if labindex > Qx * Qy * strcmp(algo_version, 'fhs')
-                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
+                [An, squared_operator_norm_, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
             end
         end
 
@@ -541,7 +542,7 @@ else
 
         Anorm = 0;
         for k = 1:ncores_data
-            opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm{data_worker_id(k)};
+            opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm_{data_worker_id(k)};
             opnormfile.rel_var(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = rel_var{data_worker_id(k)};
 
             opnormfile.squared_operator_norm_precond(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm_precond{data_worker_id(k)};
@@ -549,6 +550,8 @@ else
 
             Anorm = max(Anorm, An{data_worker_id(k)});
         end
+        squared_operator_norm = opnormfile.squared_operator_norm;
+        squared_operator_norm_precond = opnormfile.squared_operator_norm_precond;
         clear An rel_var rel_var_precond squared_operator_norm_precond;
 
     else

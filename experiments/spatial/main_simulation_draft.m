@@ -1,7 +1,6 @@
 function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
     algo_version, window_type, ncores_data, ind, overlap_fraction, ...
     n_reweights, gam, gam_bar, rw, ...
-    flag_generate_visibilities, ...
     flag_compute_operator_norm, flag_solve_minimization, flagDR, ...
     flag_cirrus)
 
@@ -118,6 +117,7 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 % flag_cirrus = false;
 % kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
 %%
+% TODO: update util_gen_measurement_operator to enable kaiser kernels
 format compact;
 
 disp('MNRAS configuration');
@@ -134,7 +134,6 @@ addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
 addpath ../../lib/measurement-operator/lib/operators/;
 addpath ../../lib/measurement-operator/lib/utils/;
-% addpath ../../lib/measurement-operator/irt/nufft/
 addpath ../../lib/utils/;
 addpath ../../lib/faceted-wavelet-transform/src;
 addpath ../../data/;
@@ -175,7 +174,7 @@ switch exp_type
         spatial_downsampling = 1;
     case "local_test"
         image_name = 'cygASband_Cube_256_512_100';
-        spectral_downsampling = 25; % 5
+        spectral_downsampling = 25;
         spatial_downsampling = 1;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
     case "old_local_test"
@@ -213,18 +212,17 @@ X0 = reshape(x0, [N, nchans]);
 input_snr = isnr * ones(nchans, 1); % input SNR (in dB)
 
 % frequency used to generate the reference cubes
-nu0 = 2.052e9; % starting freq
-dnu = 16e6;    % freq step
-L = 100;       % number of channels
+nu0 = 2.052e9;  % starting freq
+dnu = 16e6;  % freq step
+L = 100;  % number of channels
 nu_vect = [nu0 (dnu * (1:L - 1) + nu0)];
-frequencies = nu_vect(1:floor(L / n_channels):end); % nu_vect(1:spectral_downsampling:end);
+frequencies = nu_vect(1:floor(L / n_channels):end);
 
 clear reference_cube_path info rowend colend sliceend;
 clear spatial_downsampling spectral_downsampling;
 
 %% Auxiliary function needed to select the appropriate workers
 % (only needed for 'hs' and 'fhs' algorithms)
-
 switch algo_version
     case 'sara'
         data_worker_id = @(k) k;
@@ -271,7 +269,6 @@ if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
     x0 = x0(:, :, subcube_channels);
     nchans = size(x0, 3);
     X0 = reshape(x0, Nx * Ny, nchans);
-    input_snr = input_snr(subcube_channels);
 end
 
 %% Setup name of results file
@@ -308,6 +305,7 @@ results_name = results_name_function(n_channels);
 parameters_problem;
 
 %% Generate/load uv-coverage
+% TODO: see how to load and setup the 
 % generating u-v coverage
 % ! reminder uv-coverage and weighting
 % https://casa.nrao.edu/Release4.1.0/doc/UserMan/UserMansu259.html
@@ -367,7 +365,6 @@ end
 cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx * Qy, flag_cirrus);
 
 %% Setup measurement operator
-% TODO: define lambda function measurement operator
 switch algo_version
     case 'sara'
         if flagDR
@@ -396,7 +393,6 @@ switch algo_version
         if strcmp(algo_version, 'hs')
             spmd
                 local_fc = fc(rg_c(labindex, 1):rg_c(labindex, 2));
-                % TODO: update util_gen_measurement_operator to enable kaiser kernels
                 if flagDR
                     % ! define Sigma (weight matrix involved in DR)
                     % ! define G as the holographic matrix
@@ -432,73 +428,28 @@ clear param_blocking param_precond;
 
 %% Generate/load visibilities (generate only full spectral dataset)
 % only generatr data in 'hs' or 'fhs' configuration (otherwise, load the data)
-if flag_generate_visibilities
+datafile = matfile(fullfile(results_path, data_name));
 
-    param_l2_ball.type = 'sigma';
-    param_l2_ball.sigma_ball = 2;
+switch algo_version
+    case 'sara'
+        % ! to be verified
+        % all the variables are stored on the main process for sara
+        y = datafile.y(subcube_channels, 1); % subcube_channels contains a single index for SARA
+        epsilons = datafile.epsilons(subcube_channels, 1);
+        global_sigma_noise = datafile.sigma_noise(subcube_channels, 1);
+    otherwise
+        y = Composite();
+        epsilons = Composite();
+        sigma_noise = Composite();
 
-    % TODO: modify data generation to allow reproducible parallel rng streams
-    % ! not implemented/activated yet
-    % https://fr.mathworks.com/help/matlab/math/creating-and-controlling-a-random-number-stream.html?searchHighlight=random%20number%20streams&s_tid=srchtitle#brvku_2
-    % may not be strictly equivalent to the data initially obtained for the
-    % mnras paper
-
-    % rng_stream = RandStream.create('threefry4x64_20', ...
-    %     'Seed', seed, 'NumStreams', ncores_data);
-    % offset_worker = Q*strcmp(algo_version, 'fhs');
-
-    spmd
-        if labindex > Q * strcmp(algo_version, 'fhs')
-            [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr( ...
-                x0(:, :, rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, ...
-                input_snr(rg_c(labindex, 1):rg_c(labindex, 2)));
-                % rng_stream(labindex-offset_worker)
-            [~, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, .../
-                param_l2_ball, sigma_noise);
+        for k = 1:ncores_data
+            y{data_worker_id(k)} = datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
+            epsilons{data_worker_id(k)} = datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
+            sigma_noise{data_worker_id(k)} = datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
         end
-    end
-
-    % save parameters (matfile solution)
-    datafile = matfile(fullfile(results_path, data_name), ...
-        'Writable', true);
-    datafile.y0 = cell(nchans, 1);
-    datafile.y = cell(nchans, 1);
-    datafile.epsilons = cell(nchans, 1);
-    datafile.sigma_noise = zeros(nchans, 1);
-
-    for k = 1:ncores_data
-        % convert from local to global channel index (i.e., index into the full spectral dimension using "subcube_channels(rg_c(k, 1))"
-        datafile.y0(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = y0{data_worker_id(k)};
-        datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = y{data_worker_id(k)};
-        datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = epsilons{data_worker_id(k)};
-        datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = sigma_noise{data_worker_id(k)};
-    end
-    global_sigma_noise = datafile.sigma_noise;
-    clear param_l2_ball m Ml epsilons datafile;
-else
-    datafile = matfile(fullfile(results_path, data_name));
-
-    switch algo_version
-        case 'sara'
-            % ! to be verified
-            % all the variables are stored on the main process for sara
-            y = datafile.y(subcube_channels, 1); % subcube_channels contains a single index for SARA
-            epsilons = datafile.epsilons(subcube_channels, 1);
-            global_sigma_noise = datafile.sigma_noise(subcube_channels, 1);
-        otherwise
-            y = Composite();
-            epsilons = Composite();
-            sigma_noise = Composite();
-
-            for k = 1:ncores_data
-                y{data_worker_id(k)} = datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
-                epsilons{data_worker_id(k)} = datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
-                sigma_noise{data_worker_id(k)} = datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1);
-            end
-            global_sigma_noise = datafile.sigma_noise;
-    end
-    disp('Data loaded successfully');
+        global_sigma_noise = datafile.sigma_noise;
 end
+disp('Data loaded successfully');
 
 %% Compute operator norm
 if strcmp(algo_version, 'sara')
@@ -573,21 +524,6 @@ end
 
 fprintf('Convergence parameter (measurement operator): %e \n', Anorm);
 
-% TODO: to be added back if needed (new auxiliary functions needed)
-% %% Generate initial epsilons by performing imaging with NNLS on each data block separately
-% if generate_eps_nnls
-%     % solve nnls per data block
-%     for i = 1:nchans
-%         eps_b{i} = cell(length(G{i}),1);
-%         for j = 1 : length(G{i})
-%             % printf('solving for band %i\n\n',i)
-%             [~,eps_b{i}{j}] = fb_nnls_blocks(y{i}{j}, A, At, G{i}{j}, W{i}{j}, param_nnls);
-%         end
-%     end
-%     mkdir('data/')
-%     save('data/eps.mat','-v7.3', 'eps_b');
-% end
-
 %% Regularization parameters and solver
 
 % estimate noise level (set regularization parameters to the same value)
@@ -641,7 +577,7 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_version, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
 end
 
-% _r Define parameters for the solver (nReweights needed here)
+% Define parameters for the solver (nReweights needed here)
 parameters_solver;
 
 %%

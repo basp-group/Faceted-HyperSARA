@@ -1,9 +1,9 @@
-% function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
-%     algo_version, window_type, ncores_data, ind, overlap_fraction, ...
-%     n_reweights, coverage_path, gam, gam_bar, rw, exp_type, ...
-%     superresolution_factor, isnr, flag_generate_visibilities, ...
-%     flag_compute_operator_norm, flag_solve_minimization, flagDR, ...
-%     flag_cirrus, flag_homotopy)
+function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
+    algo_version, window_type, ncores_data, ind, overlap_fraction, ...
+    n_reweights, coverage_path, gam, gam_bar, rw, exp_type, ...
+    superresolution_factor, isnr, flag_generate_visibilities, ...
+    flag_compute_operator_norm, flag_solve_minimization, flagDR, ...
+    flag_cirrus, flag_homotopy)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 %
 % This script generates synthetic data and runs the SARA, HyperSARA or
@@ -80,39 +80,39 @@
 
 %% PARAMETERS FOR DEBUGGING
 %
-image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
-exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-
-Qx = 1; % 4
-Qy = 1; % 4
-Qc = 1;
-n_reweights = 1;
-algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
-window_type = 'triangular'; % 'hamming', 'pc'
-flag_generate_visibilities = 0;
-flag_compute_operator_norm = 0;
-flag_solve_minimization = 1;
-ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
-ind = 1; % index of the spectral facet to be reconstructed
-gam = 1;
-gam_bar = 1;
-coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
-
-rw = -1;
-flag_homotopy = 0;
-overlap_fraction = 0;
-flagDR = 0;
-isnr = 50;
-
-n_channels = 20;
-flag_generateCube = 1;
-cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
-cube_path = cubepath(n_channels);
-flag_generateCoverage = 0;
-flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-superresolution_factor = 2;
-flag_cirrus = false;
-kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
+% image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
+% exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
+%
+% Qx = 1; % 4
+% Qy = 1; % 4
+% Qc = 1;
+% n_reweights = 1;
+% algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
+% window_type = 'triangular'; % 'hamming', 'pc'
+% flag_generate_visibilities = 1; % error epsilons
+% flag_compute_operator_norm = 0;
+% flag_solve_minimization = 1;
+% ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
+% ind = 1; % index of the spectral facet to be reconstructed
+% gam = 1;
+% gam_bar = 1;
+% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
+%
+% rw = -1;
+% flag_homotopy = 0;
+% overlap_fraction = 0.25;
+% flagDR = 0;
+% isnr = 50;
+%
+% n_channels = 20;
+% flag_generateCube = 1;
+% cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
+% cube_path = cubepath(n_channels);
+% flag_generateCoverage = 0;
+% flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
+% superresolution_factor = 2;
+% flag_cirrus = false;
+% kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
 %%
 format compact;
 
@@ -130,6 +130,7 @@ addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
 addpath ../../lib/measurement-operator/lib/operators/;
 addpath ../../lib/measurement-operator/lib/utils/;
+addpath ../../lib/generate_data;
 % addpath ../../lib/measurement-operator/irt/nufft/
 addpath ../../lib/utils/;
 addpath ../../lib/faceted-wavelet-transform/src;
@@ -448,8 +449,8 @@ if flag_generate_visibilities
     spmd
         if labindex > Q * strcmp(algo_version, 'fhs')
             [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr( ...
-                x0(:, :, rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, ...
-                input_snr(rg_c(labindex, 1):rg_c(labindex, 2)), rng_stream{labindex-offset_worker});
+                x0(:, :, rg_c(labindex-offset_worker, 1):rg_c(labindex-offset_worker, 2)), G, W, A, ...
+                input_snr(rg_c(labindex-offset_worker, 1):rg_c(labindex-offset_worker, 2)), rng_stream{labindex-offset_worker});
             [~, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, .../
                 param_l2_ball, sigma_noise);
         end
@@ -471,7 +472,7 @@ if flag_generate_visibilities
         datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = sigma_noise{data_worker_id(k)};
     end
     global_sigma_noise = datafile.sigma_noise;
-    clear param_l2_ball m Ml epsilons datafile;
+    clear param_l2_ball m Ml datafile;
 else
     datafile = matfile(fullfile(results_path, data_name));
 
@@ -524,7 +525,7 @@ else
     if flag_compute_operator_norm
         spmd
             if labindex > Qx * Qy * strcmp(algo_version, 'fhs')
-                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
+                [An, squared_operator_norm_, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
             end
         end
 
@@ -541,7 +542,7 @@ else
 
         Anorm = 0;
         for k = 1:ncores_data
-            opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm{data_worker_id(k)};
+            opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm_{data_worker_id(k)};
             opnormfile.rel_var(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = rel_var{data_worker_id(k)};
 
             opnormfile.squared_operator_norm_precond(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm_precond{data_worker_id(k)};
@@ -549,6 +550,8 @@ else
 
             Anorm = max(Anorm, An{data_worker_id(k)});
         end
+        squared_operator_norm = opnormfile.squared_operator_norm;
+        squared_operator_norm_precond = opnormfile.squared_operator_norm_precond;
         clear An rel_var rel_var_precond squared_operator_norm_precond;
 
     else
