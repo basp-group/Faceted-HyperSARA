@@ -1,6 +1,20 @@
-function main_generate_data(image_name, Qc, ncores_data, coverage_path, ...
-    exp_type, superresolution_factor, isnr, flag_cirrus)
+function main_generate_data(image_name, ncores_data, coverage_path, ...
+    exp_type, superresolution_factor, isnr, flagDR, flag_cirrus, flag_generateCoverage)
+% %% Debug parameters
+% image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
+% exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
+% flag_generateCoverage = 0;
+% flagDR = 0;
+% 
+% ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
+% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
+% isnr = 50;
+% 
+% superresolution_factor = 2;
+% flag_cirrus = false;
+% kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
 
+%%
 % TODO: update util_gen_measurement_operator to enable kaiser kernels
 format compact;
 
@@ -11,8 +25,9 @@ disp(['Input SNR: ', num2str(isnr)]);
 addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
 addpath ../../lib/measurement-operator/lib/operators/;
-addpath ../../lib/measurement-operator/lib/generate_data;
+addpath ../../lib/generate_data;
 addpath ../../lib/measurement-operator/lib/utils/;
+addpath ../../lib/faceted-wavelet-transform/src;
 addpath ../../lib/utils/;
 addpath ../../data/;
 addpath ../../src/;
@@ -20,10 +35,8 @@ addpath ../../src/;
 % setting paths to results and reference image cube
 data_path = '../../data/';
 results_path = fullfile('results', strcat(image_name, '_', exp_type));
-auxiliary_path = fullfile(results_path, algo_version);
 mkdir(data_path);
 mkdir(results_path);
-mkdir(auxiliary_path);
 
 %%
 % ! load the appropriate portion of the reference image cube
@@ -61,24 +74,17 @@ info        = fitsinfo(reference_cube_path);
 rowend      = info.PrimaryData.Size(1);
 colend      = info.PrimaryData.Size(2);
 sliceend    = info.PrimaryData.Size(3);
-if strcmp(algo_version, 'sara')
-    x0 = fitsread(reference_cube_path, 'primary', ...
-                'Info', info, ...
-                'PixelRegion', {[1 spatial_downsampling rowend], ...
-                [1 spatial_downsampling colend], ...
-                ind});
-else
-    x0 = fitsread(reference_cube_path, 'primary', ...
-                'Info', info, ...
-                'PixelRegion', {[1 spatial_downsampling rowend], ...
-                [1 spatial_downsampling colend], ...
-                [1 spectral_downsampling sliceend]});
-end
+
+x0 = fitsread(reference_cube_path, 'primary', ...
+            'Info', info, ...
+            'PixelRegion', {[1 spatial_downsampling rowend], ...
+            [1 spatial_downsampling colend], ...
+            [1 spectral_downsampling sliceend]});
+
 n_channels = floor(sliceend / spectral_downsampling);
 
 [Ny, Nx, nchans] = size(x0);
 N = Nx * Ny;
-X0 = reshape(x0, [N, nchans]);
 input_snr = isnr * ones(nchans, 1);  % input SNR (in dB)
 
 disp(['Number of channels considered: ', num2str(nchans)]);
@@ -94,40 +100,19 @@ clear reference_cube_path info rowend colend sliceend;
 clear spatial_downsampling spectral_downsampling;
 
 %% Auxiliary function needed to select the appropriate workers
-% (only needed for 'hs' and 'fhs' algorithms)
-data_worker_id = @(k) k;
-
-% convert fraction of overlap between consecutive facets into a number of pixels
-overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
-disp(['Number of pixels in overlap: ', strjoin(strsplit(num2str(overlap_size)), ' x ')]);
-
-% index of the spectral channels involved in the subcube
-interleaved_channels = split_range_interleaved(Qc, n_channels);
-subcube_channels = interleaved_channels{ind};
-
 % index of channels from the subcube to be handled on each data worker
 rg_c = split_range(ncores_data, nchans);
 
 % frequencies associated with the current subcube
-fc = frequencies(subcube_channels);
 fmax = frequencies(end);
 
-% extract ground truth subcube
-if Qc > 1 && ind > 0 && ~strcmp(algo_version, 'sara')
-    x0 = x0(:, :, subcube_channels);
-    nchans = size(x0, 3);
-    X0 = reshape(x0, Nx * Ny, nchans);
-    input_snr = input_snr(subcube_channels);
-end
-
-%% Setup name of results file
+%% Setup name of data file
 data_name_function = @(nchannels) strcat('y_', ...
     exp_type, '_', image_name, '_srf=', num2str(superresolution_factor), ...
     '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), '_L=', num2str(nchannels), ...
     '_snr=', num2str(isnr), '.mat');
 
 data_name = data_name_function(n_channels);
-results_name = results_name_function(n_channels);
 
 %% Define problem configuration (rng, nufft, preconditioning, blocking,
 % NNLS (epsilon estimation), SARA dictionary)
@@ -147,13 +132,13 @@ if flag_generateCoverage
     % Fixing Mt = 0.5 N, take T = 0.5 N / M : na = 27 for vla
     T = floor(p * (Nx * Ny) / M); % should be > 1
     [u, v, ~] = generate_uv_coverage(T, hrs, dl, cov_type);
-    u = u(:) * fc(1) / fmax;
-    v = v(:) * fc(1) / fmax;
+    u = u(:) * frequencies(1) / fmax;
+    v = v(:) * frequencies(1) / fmax;
     fitswrite([u, v, ones(numel(u), 1)], coverage_path);
     disp(coverage_path);
 else
-    coverage_path;
-
+    disp(strcat("Loading coverage: ", coverage_path));
+    
     % VLA configuration
     % A. 762775 -> 3
     % B. 268448 -> 2
@@ -190,13 +175,13 @@ else
 end
 
 %% Setup parpool
-cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx * Qy, flag_cirrus);
+cirrus_cluster = util_set_parpool('hs', ncores_data, 1, flag_cirrus);
 
 %% Setup measurement operator
 % create the measurement operator operator in parallel (depending on
 % the algorithm used)
 spmd
-    local_fc = fc(rg_c(labindex, 1):rg_c(labindex, 2));
+    local_fc = frequencies(rg_c(labindex, 1):rg_c(labindex, 2));
     if flagDR
         % ! define Sigma (weight matrix involved in DR)
         % ! define G as the holographic matrix
@@ -243,9 +228,8 @@ datafile.sigma_noise = zeros(nchans, 1);
 % ! into the full spectral dimension by using 
 % ! subcube_channels(rg_c(k, 1))
 for k = 1:ncores_data
-    datafile.y0(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = y0{data_worker_id(k)};
-    datafile.y(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = y{data_worker_id(k)};
-    datafile.epsilons(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = epsilons{data_worker_id(k)};
-    datafile.sigma_noise(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = sigma_noise{data_worker_id(k)};
+    datafile.y0(rg_c(k, 1):rg_c(k, 2), 1) = y0{k};
+    datafile.y(rg_c(k, 1):rg_c(k, 2), 1) = y{k};
+    datafile.epsilons(rg_c(k, 1):rg_c(k, 2), 1) = epsilons{k};
+    datafile.sigma_noise(rg_c(k, 1):rg_c(k, 2), 1) = sigma_noise{k};
 end
-global_sigma_noise = datafile.sigma_noise;
