@@ -1,13 +1,12 @@
-function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
+function main_simulation_draft(image_name, n_channels, Qx, Qy, Qc, ...
     algo_version, window_type, ncores_data, ind, overlap_fraction, ...
-    n_reweights, gam, gam_bar, rw, ...
+    n_reweights, gam, gam_bar, rw, superresolution_factor, ...
     flag_compute_operator_norm, flag_solve_minimization, flagDR, ...
     flag_cirrus)
 
-    coverage_path,
-    exp_type,
-    superresolution_factor,
-    isnr,
+%     coverage_path,
+%     exp_type,
+%     superresolution_factor,
 
 % Main script to run the faceted HyperSARA approach on synthetic data.
 %
@@ -59,11 +58,6 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 %     Type of the experiment to be reproduced.
 % superresolution_factor : double
 %     Coverage superresolution factor.
-% isnr : double
-%     Input SNR used to generate the synthetic visibilities (value in dB).
-% flag_generate_visibilities : bool
-%     Flag specifying whether the visibilities need to be generated or
-%     loaded from an existing .mat file.
 % flag_compute_operator_norm : bool
 %     Flag triggering the computation of the (preconditioned) operator
 %     norm.
@@ -83,39 +77,35 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 
 %% PARAMETERS FOR DEBUGGING
 %
-% image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
-% exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-%
-% Qx = 1; % 4
-% Qy = 1; % 4
-% Qc = 1;
-% n_reweights = 1;
-% algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
-% window_type = 'triangular'; % 'hamming', 'pc'
-% flag_generate_visibilities = 0;
-% flag_compute_operator_norm = 0;
-% flag_solve_minimization = 1;
-% ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
-% ind = 1; % index of the spectral facet to be reconstructed
-% gam = 1;
-% gam_bar = 1;
-% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
-%
-% rw = -1;
-% flag_homotopy = 0;
-% overlap_fraction = 0;
-% flagDR = 0;
-% isnr = 50;
-%
-% n_channels = 20;
-% flag_generateCube = 1;
-% cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
-% cube_path = cubepath(n_channels);
-% flag_generateCoverage = 0;
-% flag_generateUndersampledCube = 0; % Default 15 channels cube with line emissions
-% superresolution_factor = 2;
-% flag_cirrus = false;
-% kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
+image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
+exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
+
+Qx = 1; % 4
+Qy = 1; % 4
+Qc = 1;
+n_reweights = 1;
+algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
+window_type = 'triangular'; % 'hamming', 'pc'
+flag_compute_operator_norm = 0;
+flag_solve_minimization = 1;
+flag_generateCoverage = 0;
+ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
+ind = 1; % index of the spectral facet to be reconstructed
+gam = 1;
+gam_bar = 1;
+coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
+
+rw = -1;
+overlap_fraction = 0.25;
+flagDR = 0;
+
+n_channels = 20;
+flag_generateCube = 1;
+cubepath = @(nchannels) strcat(image_name, '_L', num2str(nchannels));
+cube_path = cubepath(n_channels);
+superresolution_factor = 2; % to be loaded from the data
+flag_cirrus = false;
+kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
 %%
 % TODO: update util_gen_measurement_operator to enable kaiser kernels
 format compact;
@@ -127,8 +117,6 @@ disp(['nchannels: ', num2str(n_channels)]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
 disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), ', ')]);
-disp(['Input SNR: ', num2str(isnr)]);
-disp(['Generating visibilities: ', num2str(flag_generate_visibilities)]);
 
 addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
@@ -209,7 +197,6 @@ n_channels = floor(sliceend / spectral_downsampling);
 [Ny, Nx, nchans] = size(x0);
 N = Nx * Ny;
 X0 = reshape(x0, [N, nchans]);
-input_snr = isnr * ones(nchans, 1); % input SNR (in dB)
 
 % frequency used to generate the reference cubes
 nu0 = 2.052e9;  % starting freq
@@ -275,7 +262,6 @@ end
 data_name_function = @(nchannels) strcat('y_', ...
     exp_type, '_', image_name, '_srf=', num2str(superresolution_factor), ...
     '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), '_L=', num2str(nchannels), ...
-    '_snr=', num2str(isnr), ...
     '.mat');
 
 results_name_function = @(nchannels) strcat(exp_type, '_', image_name, '_', ...
@@ -284,7 +270,6 @@ results_name_function = @(nchannels) strcat(exp_type, '_', image_name, '_', ...
     '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
     '_ind=', num2str(ind), '_g=', num2str(gam), '_gb=', num2str(gam_bar), ...
     '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
-    '_snr=', num2str(isnr), ...
     '.mat');
 
 temp_results_name = @(nchannels) strcat(exp_type, '_', image_name, '_', ...
@@ -292,13 +277,11 @@ temp_results_name = @(nchannels) strcat(exp_type, '_', image_name, '_', ...
     '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), '_L=', num2str(nchannels), ...
     '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
     '_ind=', num2str(ind), '_g=', num2str(gam), '_gb=', num2str(gam_bar), ...
-    '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
-    '_snr=', num2str(isnr));
+    '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'));
 
 warm_start = @(nchannels) strcat(temp_results_name(nchannels), '_rw=', num2str(rw), '.mat');
 
 data_name = data_name_function(n_channels);
-results_name = results_name_function(n_channels);
 
 %% Define problem configuration (rng, nufft, preconditioning, blocking,
 % NNLS (epsilon estimation), SARA dictionary)
@@ -323,7 +306,7 @@ if flag_generateCoverage
     fitswrite([u, v, ones(numel(u), 1)], coverage_path);
     disp(coverage_path);
 else
-    coverage_path;
+    disp(strcat("Loading coverage: ", coverage_path));
 
     % VLA configuration
     % A. 762775 -> 3
@@ -360,7 +343,7 @@ else
     clear uvw u1 v1;
 end
 
-%% setup parpool
+%% Setup parpool
 cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx * Qy, flag_cirrus);
 
 %% Setup measurement operator
@@ -606,7 +589,6 @@ if flag_solve_minimization
         '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
         '_ind=', num2str(ind), ...
         '_gam=', num2str(gam), ...
-        '_snr=', num2str(isnr), ...
         '.fits')));
     else
         %%
@@ -651,7 +633,6 @@ if flag_solve_minimization
             '_ind=', num2str(ind), ...
             '_gam=', num2str(gam), '_gambar=', num2str(gam_bar), ...
             '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
-            '_snr=', num2str(isnr), ...
             '.fits')));
     end
 end

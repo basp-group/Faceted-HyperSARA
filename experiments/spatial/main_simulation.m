@@ -323,7 +323,7 @@ if flag_generateCoverage
     fitswrite([u, v, ones(numel(u), 1)], coverage_path);
     disp(coverage_path);
 else
-    coverage_path;
+    disp(strcat("Loading coverage: ", coverage_path));
 
     % VLA configuration
     % A. 762775 -> 3
@@ -339,7 +339,7 @@ else
         clear obsId;
     else
         % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
-        % units of the smallest wavelenght, associated with the highest frequency)
+        % units of the smallest wavelength, associated with the highest frequency)
         load(coverage_path, 'uvw');
         size(uvw);
         u1 = uvw(:, 1) * fmax / speed_of_light;
@@ -639,7 +639,7 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_version, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
 end
 
-% _r Define parameters for the solver (nReweights needed here)
+% Define parameters for the solver (nReweights needed here)
 parameters_solver;
 
 %%

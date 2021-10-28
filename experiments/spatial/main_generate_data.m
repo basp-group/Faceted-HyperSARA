@@ -84,7 +84,6 @@ x0 = fitsread(reference_cube_path, 'primary', ...
 n_channels = floor(sliceend / spectral_downsampling);
 
 [Ny, Nx, nchans] = size(x0);
-N = Nx * Ny;
 input_snr = isnr * ones(nchans, 1);  % input SNR (in dB)
 
 disp(['Number of channels considered: ', num2str(nchans)]);

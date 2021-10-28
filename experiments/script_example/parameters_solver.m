@@ -65,3 +65,20 @@ param_solver.elipse_proj_max_iter = 20;
 param_solver.elipse_proj_min_iter = 1;
 % precision of the projection onto the ellipsoid
 param_solver.elipse_proj_eps = 1e-8;
+
+% TODO: to be removed (from the main sovler as well)
+% * epsilon update scheme
+% flag to activate adaptive epsilon (no need for simulated data)
+param_solver.use_adapt_eps = 0;
+% minimum num of iter before stating adjustment
+param_solver.adapt_eps_start = 200;
+% tolerance inside the l2 ball
+param_solver.adapt_eps_tol_in = 0.99;
+% tolerance outside the l2 ball
+param_solver.adapt_eps_tol_out = 1.01;
+% min num of iter between consecutive updates
+param_solver.adapt_eps_steps = 100;
+% bound on the relative change of the solution
+param_solver.adapt_eps_rel_var = 5e-5;
+% the weight of the update w.r.t the l2 norm of the residual data
+param_solver.adapt_eps_change_percentage = (sqrt(5) - 1) / 2;
