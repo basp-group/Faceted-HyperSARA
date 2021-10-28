@@ -1,35 +1,41 @@
-clear ; clc; close all; delete(gcp('nocreate'))
-%% change path 
-% cirrus = 1;
-% calib_dir = '/lustre/home/shared/sc004/FACETED_HYPERSARA_EXPERIMENTS/calib/SPWIN/'
-% cube_filename = '/lustre/home/shared/sc004/FACETED_HYPERSARA_EXPERIMENTS/data/CYG-win-'
+clear ; clc; close all; delete(gcp('nocreate'));
+%% change path
+cirrus =0
 
-cirrus =1 ;
-main_dir='//lustre/home/shared/sc004/FACETED_HYPERSARA_EXPERIMENTS/';
-calib_dir=[main_dir,'calib/SPWIN'];
-cube_filename=[main_dir, 'data/cyga_data_spwin_'];
-project_dir = [main_dir,'Faceted-Hyper-SARA-EXP2/experiments/real'];
-
+if cirrus
+    main_dir='/lustre/home/shared/sc004/FACETED_HYPERSARA_EXPERIMENTS/';
+    calib_dir=[main_dir,'calib/SPWIN'];
+    cube_filename=[main_dir, 'data/cyga_data_spwin_'];
+    project_dir = [main_dir,'Faceted-Hyper-SARA-EXP2/experiments/real'];
+    
+else % local machine
+    main_dir='/Users/ad33/CodesScience/FHS_EXP12/Faceted-Hyper-SARA/';
+    calib_dir=[main_dir,'calib/SPWIN'];
+    cube_filename=[main_dir, 'data/CYG/cyga_data_spwin_'];
+    project_dir = [main_dir,'experiments/real'];
+    
+end
+%
 %% general params
 % image details, dims &  cellsize
 param_global.Nx = 2560;%floor(2560*sqrt(2)) + mod(floor(2560*sqrt(2)),2);
 param_global.Ny = 1536;%floor(1536*sqrt(2)) + mod(floor(1536*sqrt(2)),2);
 param_global.pixelSize =0.06; 0.0424;%asec
 %faceting params
-param_global.Qx =5;4*2;
-param_global.Qy =3;2*2;
+param_global.Qx =1;
+param_global.Qy =1;
 param_global.Qc =1;
 param_global.window_type='triangular';
 param_global.overlap_fraction =[0.5,0.5];
 %
 param_global.exp_type = 'realexp';
-param_global.main_dir =[main_dir,'/Faceted-Hyper-SARA-EXP2/'];
+param_global.main_dir =['/Users/ad33/CodesScience/Faceted-Hyper-SARA/'];
 param_global.die_filename = @(spwin) strcat(calib_dir,'/dies/spwin',num2str(spwin),'_dies.mat');
 param_global.l2bounds_filename = @(spwin) strcat(calib_dir,'/l2bounds/spwin',num2str(spwin),'_l2bounds.mat');
 param_global.model_filename = @(spwin) strcat(calib_dir,'/model_image/spwin',num2str(spwin),'_model_image.fits');
 
 
-%% flags 
+%% flags
 input_flags.computeOperatorNorm = 1  ;
 input_flags.solveMinimization = 1  ;
 input_flags.homotopy = 0  ;
@@ -45,11 +51,11 @@ spwins2image = 1;%[1 2 3 4 5 6];% [1:17 19 21:32]; %ids of the channels to be im
 
 ncoredata =  numel(spwins2image); %30 for cyga
 
-    algoversion='sara';
-    subcube_ind=1;
-    param_reg.gam=1;
-    param_reg.gam_bar=1;
-    param_reg.rw=1;
-    param_reg.nReweights=5;
-    main_real_data_dev_exp2(imagename,cube_filename,subcube_ind,spwins2image,...
-        algoversion,ncoredata,param_global,param_reg,input_flags,cirrus) ;    
+algoversion='fhs';
+subcube_ind=1;
+param_reg.gam=1;
+param_reg.gam_bar=1;
+param_reg.rw=1;
+param_reg.nReweights=5;
+main_real_data_dev_exp2(imagename,cube_filename,subcube_ind,spwins2image,...
+    algoversion,ncoredata,param_global,param_reg,input_flags,cirrus) ;
