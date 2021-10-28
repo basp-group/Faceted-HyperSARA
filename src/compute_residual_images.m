@@ -39,13 +39,14 @@ function residual_image = compute_residual_images(x, y, A, At, ...
 n_channels = size(x, 3);
 residual_image = zeros(size(x));
 
-if flagDR
+if flagDR % H  =G' +G; and H' = H ; G is  a lower tril matrix
     for i = 1:n_channels
         Fx = A(x(:, :, i));
         r = zeros(numel(Fx), 1);
         for j = 1:length(G{i})
-            res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
-            u2 = G{i}{j}' * (Sigma{i}{j} .* res_f);
+            res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})  + G{i}{j}' * Fx(W{i}{j}));
+            dummy = (Sigma{i}{j} .* res_f);
+            u2 = G{i}{j}' * dummy +G{i}{j} * dummy  ;
             r(W{i}{j}) = r(W{i}{j}) + u2;
         end
         residual_image(:, :, i) = real(At(r));
