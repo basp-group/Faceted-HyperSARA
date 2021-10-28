@@ -339,7 +339,7 @@ else
         clear obsId;
     else
         % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
-        % units of the smallest wavelenght, associated with the highest frequency)
+        % units of the smallest wavelength, associated with the highest frequency)
         load(coverage_path, 'uvw');
         size(uvw);
         u1 = uvw(:, 1) * fmax / speed_of_light;

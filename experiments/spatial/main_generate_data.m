@@ -1,15 +1,12 @@
-function main_generate_data(image_name, Qc, ncores_data, 
-    coverage_path, exp_type, superresolution_factor, isnr, 
-    flag_generate_visibilities, flag_cirrus)
+function main_generate_data(image_name, Qc, ncores_data, coverage_path, ...
+    exp_type, superresolution_factor, isnr, flag_cirrus)
 
 % TODO: update util_gen_measurement_operator to enable kaiser kernels
 format compact;
 
 disp('Synthetic data generation');
 disp(['Reference image: ', image_name]);
-disp(['nchannels: ', num2str(n_channels)]);
 disp(['Input SNR: ', num2str(isnr)]);
-disp(['Generating visibilities: ', num2str(flag_generate_visibilities)]);
 
 addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
@@ -82,7 +79,7 @@ n_channels = floor(sliceend / spectral_downsampling);
 [Ny, Nx, nchans] = size(x0);
 N = Nx * Ny;
 X0 = reshape(x0, [N, nchans]);
-input_snr = isnr * ones(nchans, 1); % input SNR (in dB)
+input_snr = isnr * ones(nchans, 1);  % input SNR (in dB)
 
 disp(['Number of channels considered: ', num2str(nchans)]);
 
@@ -210,7 +207,6 @@ spmd
         Sigma = [];
     end
 end
-
 clear local_fc;
 
 %% Free memory
@@ -225,7 +221,7 @@ param_l2_ball.sigma_ball = 2;
 % may not be strictly equivalent to the data initially obtained for the
 % mnras paper
 [rng_stream{1:ncores_data}] = RandStream.create('threefry4x64_20', ...
-    'Seed', seed, 'NumStreams', ncores_data);
+    'Seed', 0, 'NumStreams', ncores_data);
 
 spmd
     [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr( ...

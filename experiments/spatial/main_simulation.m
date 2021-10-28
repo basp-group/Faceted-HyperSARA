@@ -361,7 +361,7 @@ else
     clear uvw u1 v1;
 end
 
-%% setup parpool
+%% Setup parpool
 cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx * Qy, flag_cirrus);
 
 %% Setup measurement operator
