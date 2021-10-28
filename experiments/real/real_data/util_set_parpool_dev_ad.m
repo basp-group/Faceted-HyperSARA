@@ -16,8 +16,7 @@ delete(gcp('nocreate'));
 if flag_cirrus
        cirrus_cluster = parcluster('mySlurmProfileSingleThread');  % parcluster('local');
        cirrus_cluster.ResourceTemplate = '--export=ALL --ntasks=^N^ --cpus-per-task=^T^ --tasks-per-node=36 --account=ec110-guest --time=96:00:00 --partition=standard --qos=standard';
-else
-       cirrus_cluster = parcluster('local');
+else,  cirrus_cluster = parcluster('local');
 end
 
 cirrus_cluster.NumWorkers = numworkers;
@@ -27,13 +26,13 @@ if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
     exit(1);
 end
 % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-% if flag_cirrus
-    path = [strcat('/lustre/home/sc004/', getenv('USER'), '/matlab_jobs_tmp/')];
+if flag_cirrus
+    path = [strcat('/lustre/home/sc004/', getenv('USER'), '/matlab_fhs_jobs/')];
     mkdir(path);
     path_dummy = [path, getenv('SLURM_JOB_ID')];
     mkdir(path_dummy);
     cirrus_cluster.JobStorageLocation = path_dummy; % strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
-% end
+end
 
 % maxNumCompThreads(param.num_workers);
 

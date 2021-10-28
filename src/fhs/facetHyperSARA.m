@@ -249,7 +249,6 @@ end
 g_q = Composite();
 xsol_q = Composite();
 if init_flag
-   size(xsol);
     for q = 1:Q
         xsol_q{q} = xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :);
         g_q{q} = init_m.g(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :);
@@ -825,8 +824,8 @@ for t = t_start:max_iter
             m.t_facet = t_facet;
             m.t_data = t_data;
             m.rel_val = rel_val;
-            fitswrite(m.xsol, [checkpoint_name, '_xsol', '.fits']);
-            fitswrite(m.res, [checkpoint_name, '_res', '.fits']);
+            fitswrite(m.xsol, [checkpoint_name '_xsol.fits']);
+            fitswrite(m.res, [checkpoint_name '_res.fits']);
             if flag_synth_data
                 m.SNR = SNR;
                 m.SNR_average = SNR_average;

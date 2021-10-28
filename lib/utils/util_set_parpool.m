@@ -27,9 +27,9 @@ function cirrus_cluster = util_set_parpool(algo_version, ncores_data, Q, flag_ci
     % % start the matlabpool with maximum available workers
     % % control how many workers by setting ntasks in your sbatch script
     % parpool(cirrus_cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
-    dwtmode('zpd');
+    dwtmode('zpd','nodisp');
     spmd
-        dwtmode('zpd');
+        dwtmode('zpd','nodisp');
     end
 
 end
