@@ -1,12 +1,14 @@
-function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, tol, max_iter)
-
+function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, tol, max_iter,flag_dr)
+if nargin<10
+    flag_dr=0;
+end
     nchans = numel(G);
     squared_precond_operator_norm = zeros(nchans, 1);
     rel_var_precond = zeros(nchans, 1);
 
     for l = 1:nchans
-        F = afclean(@(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l)));
-        Ft = afclean(@(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx));
+        F = afclean(@(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l),flag_dr));
+        Ft = afclean(@(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx,flag_dr));
         [squared_precond_operator_norm(l), rel_var_precond(l)] = op_norm(F, Ft, [Ny, Nx], tol, max_iter, 0);
     end
 
@@ -19,8 +21,8 @@ function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, 
     squared_operator_norm = zeros(nchans, 1);
     rel_var = zeros(nchans, 1);
     for l = 1:nchans
-        F = afclean(@(x) HS_forward_operator_G(x, G(l), W(l), A));
-        Ft = afclean(@(y) HS_adjoint_operator_G(y, G(l), W(l), At, Ny, Nx));
+        F = afclean(@(x) HS_forward_operator_G(x, G(l), W(l), A,flag_dr));
+        Ft = afclean(@(y) HS_adjoint_operator_G(y, G(l), W(l), At, Ny, Nx,flag_dr));
         [squared_operator_norm(l), ~] = op_norm(F, Ft, [Ny, Nx], tol, max_iter, 0);
     end
 
