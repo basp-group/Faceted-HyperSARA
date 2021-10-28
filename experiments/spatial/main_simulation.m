@@ -299,7 +299,6 @@ temp_results_name = @(nchannels) strcat(exp_type, '_', image_name, '_', ...
 warm_start = @(nchannels) strcat(temp_results_name(nchannels), '_rw=', num2str(rw), '.mat');
 
 data_name = data_name_function(n_channels);
-results_name = results_name_function(n_channels);
 
 %% Define problem configuration (rng, nufft, preconditioning, blocking,
 % NNLS (epsilon estimation), SARA dictionary)
@@ -541,7 +540,7 @@ else
 
         Anorm = 0;
         for k = 1:ncores_data
-            opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm_{data_worker_id(k)};
+            opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm{data_worker_id(k)};
             opnormfile.rel_var(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = rel_var{data_worker_id(k)};
 
             opnormfile.squared_operator_norm_precond(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm_precond{data_worker_id(k)};
