@@ -1,15 +1,19 @@
 [
-    {   "__comment": "Paths configuration",
-        "path_dataset": "/pth/to/data",
-        "path_uv_coverage": "/pth/to/uv_coverage.mat",
-        "image_name": "img",
-        "job_name": "job",
-        "job_id": "0",
-        "project_path": "pth/to/project/files",
-        "slurm_file": "imaging.slurm"
-    },
     {
         "__comment": "Mandatory parameters to be adapted to the experiment",
+        "general": {
+            "__comment": "Paths configuration",
+            "path_dataset": "/pth/to/data",
+            "path_uv_coverage": "/pth/to/uv_coverage.mat",
+            "image_name": "img",
+            "job_name": "job",
+            "job_id": "0",
+            "project_path": "pth/to/project/files",
+            "slurm_file": "imaging.slurm",
+            "flag_cirrus": false
+        },
+        "mandatory":{
+            "__comment": "Mandatory parameters to be adapted to the experiment",
             "Nx": 2560,
             "Ny": 1536,
             "pixelSize": 0.06,
@@ -23,7 +27,16 @@
             "overlap_fraction_x": 0.25,
             "gamma": 1,
             "gamma_bar": 1,
-            "warmstart_iteration": 0
+            "warmstart_iteration": 0,
+            "flag_DR": false
+        },
+        "synth": {
+            "__comment": "Synth data parameters: some model settings will be overriden to fit the experiment scenario considered",
+            "exp_type": "local_test",
+            "superresolution_factor": 2,
+            "isnr": 50,
+            "flag_generateCoverage": false
+        }
     },
     {   "__comment": "Solver parameters",
         "reweighting": {
