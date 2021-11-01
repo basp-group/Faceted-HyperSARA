@@ -116,6 +116,9 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 %%
 format compact;
 
+% seed for the random number generation (used only when generating data)
+seed = 1;
+
 disp('MNRAS configuration');
 disp(['Algorithm version: ', algo_version]);
 disp(['Reference image: ', image_name]);
@@ -339,7 +342,7 @@ else
         clear obsId;
     else
         % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
-        % units of the smallest wavelenght, associated with the highest frequency)
+        % units of the smallest wavelength, associated with the highest frequency)
         load(coverage_path, 'uvw');
         size(uvw);
         u1 = uvw(:, 1) * fmax / speed_of_light;
@@ -441,7 +444,7 @@ if flag_generate_visibilities
     % mnras paper
 
     [rng_stream{1:ncores_data}] = RandStream.create('threefry4x64_20', ...
-        'Seed', 0, 'NumStreams', ncores_data);
+        'Seed', seed, 'NumStreams', ncores_data);
     offset_worker = Q*strcmp(algo_version, 'fhs');
 
     spmd

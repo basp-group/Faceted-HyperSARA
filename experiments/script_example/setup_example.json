@@ -1,6 +1,7 @@
 [
     {   "__comment": "Paths configuration",
-        "path_dataset": "/pth/to/data"
+        "path_dataset": "/pth/to/data",
+        "path_uv_coverage": "/pth/to/uv_coverage.mat"
     },
     {
         "__comment": "Mandatory parameters to be adapted to the experiment",
@@ -10,6 +11,7 @@
             "Qx": 15,
             "Qy": 6,
             "Qc": 1,
+            "algo_version": "fhs",
             "window_type": "triangular",
             "overlap_fraction_y": 0.25,
             "overlap_fraction_x": 0.25
@@ -17,11 +19,20 @@
     {   "__comment": "Solver parameters",
         "reweighting": {
             "__comment": "Reweighting parameters",
-
+            "min_iter": 1,
+            "max_iter": 10,
+            "rel_var": 1e-4
         },
         "pdfb": {
             "__comment": "PDFB parameters",
-
+            "min_iter": 10,
+            "max_iter": 2000,
+            "rel_var": 1e-5,
+            "fidelity_tolerance": 1.01,
+            "rel_var_low": 5e-6,
+            "proj_min_iter": 1,
+            "proj_max_iter": 20,
+            "proj_eps": 1e-8
         }
     },
     {   "__comment": "Model parameters",

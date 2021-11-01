@@ -4,8 +4,6 @@
 %% * Problem size
 % TODO: to be completed for real data, revise blocking for real data
 speed_of_light = 299792458;
-% seed for the random number generation (used only when generating data)
-seed = 1;
 
 %% * NUFFT (gridding parameters)
 % oversampling factor (x)
@@ -49,5 +47,5 @@ nlevel = 4;
 % wavelet dictionaries
 % ! always specify Dirac basis ('self') in last position if ever used
 wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};
-% length of the filters (0 corresponding to the 'self' basis)
+% length of the filters (by convention, 0 corresponds to the Dirac basis)
 filter_length = [2 * (1:8)'; 0];

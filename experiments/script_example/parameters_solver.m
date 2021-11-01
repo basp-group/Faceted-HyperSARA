@@ -22,7 +22,7 @@ end
 % regularization parameter l21-norm (soft th parameter)
 % ! for SARA, take the value given as an input to the solver
 param_solver.gamma = mu;
-% id of the cube to be reconstructed (if spectral faceting active)
+% id of the cube to be reconstructed (if spectral faceting is active)
 param_solver.cube_id = ind;
 param_solver.backup_frequency = 1;
 % print log or not
