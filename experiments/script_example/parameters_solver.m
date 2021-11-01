@@ -1,6 +1,9 @@
 % List of default solver-specific parameters (reweighting, pdfb, ellispsoid
 % prjection, epsilon update scheme).
 
+% TODO: extract onlt the necessary parts, to hard-coded into the main 
+% script
+
 %% * Solver
 % * general
 % estimate of the noise level in SARA space

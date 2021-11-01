@@ -1,7 +1,12 @@
 [
     {   "__comment": "Paths configuration",
         "path_dataset": "/pth/to/data",
-        "path_uv_coverage": "/pth/to/uv_coverage.mat"
+        "path_uv_coverage": "/pth/to/uv_coverage.mat",
+        "image_name": "img",
+        "job_name": "job",
+        "job_id": "0",
+        "project_path": "pth/to/project/files",
+        "slurm_file": "imaging.slurm"
     },
     {
         "__comment": "Mandatory parameters to be adapted to the experiment",
@@ -11,10 +16,14 @@
             "Qx": 15,
             "Qy": 6,
             "Qc": 1,
+            "ncores_data": 20,
             "algo_version": "fhs",
             "window_type": "triangular",
             "overlap_fraction_y": 0.25,
-            "overlap_fraction_x": 0.25
+            "overlap_fraction_x": 0.25,
+            "gamma": 1,
+            "gamma_bar": 1,
+            "warmstart_iteration": 0
     },
     {   "__comment": "Solver parameters",
         "reweighting": {
@@ -23,7 +32,9 @@
             "max_iter": 10,
             "rel_var": 1e-4,
             "alpha": 1,
-            "alpha_ff": 1 
+            "alpha_ff": 1,
+            "backup_frequency": 1,
+            "verbose": 2
         },
         "pdfb": {
             "__comment": "PDFB parameters",
@@ -31,10 +42,13 @@
             "max_iter": 2000,
             "rel_var": 1e-5,
             "fidelity_tolerance": 1.01,
-            "rel_var_low": 5e-6,
-            "proj_min_iter": 1,
-            "proj_max_iter": 20,
-            "proj_eps": 1e-8
+            "rel_var_low": 5e-6
+        },
+        "proj" : {
+            "__comment": "Ellipsoid projection parameters",
+            "min_iter": 1,
+            "max_iter": 20,
+            "eps": 1e-8
         }
     },
     {   "__comment": "Model parameters",

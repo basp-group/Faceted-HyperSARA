@@ -1,4 +1,6 @@
-function [param_paths, param_model, speed_of_light, param_solver, param_nufft, param_blocking, param_precond, param_nnls] = read_json_configuration(json_filename)
+function [speed_of_light, param_paths, param_model, param_solver, ...
+    param_nufft, param_blocking, param_precond, param_nnls] = ...
+    read_json_configuration(json_filename, ind)
 
 % TODO: modify the name of the model parameters (use a structure to define 
 % these)
@@ -17,14 +19,18 @@ param_paths = config{1, 1};
 
 %% Solver structures
 % * Reweighting
+% https://fr.mathworks.com/matlabcentral/answers/273955-how-do-i-rename-fields-of-a-structure-array
 param_reweighting = cell2struct(struct2cell(config{3, 1}.reweighting), strcat(fieldnames(config{3, 1}.reweighting), 'reweighting_'));
 
 % * PDFB
-% https://fr.mathworks.com/matlabcentral/answers/273955-how-do-i-rename-fields-of-a-structure-array
 param_pdfb = cell2struct(struct2cell(config{3, 1}.pdfb), strcat(fieldnames(config{3, 1}.pdfb), 'pdfb_'));
 
+% * Projection onto the ellipsoid
+param_proj = cell2struct(struct2cell(config{3, 1}.proj), strcat(fieldnames(config{3, 1}.proj), 'elipse_proj_'));
+
 % combining the 2 structures (reweighting and pdfb)
-param_solver = [param_pdfb, param_reweighting];
+param_solver = [param_reweighting, param_pdfb, param_proj];
+param_solver.cube_id = ind;
 
 %% Model structures
 % * Model
