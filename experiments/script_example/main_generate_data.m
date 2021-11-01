@@ -195,7 +195,7 @@ cirrus_cluster = util_set_parpool('hs', param_model.ncores_data, 1, param_genera
 % the algorithm used)
 spmd
     local_fc = frequencies(rg_c(labindex, 1):rg_c(labindex, 2));
-    if param_model.flag_DR
+    if param_model.flagDR
         % ! define Sigma (weight matrix involved in DR)
         % ! define G as the holographic matrix
     else

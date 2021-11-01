@@ -10,7 +10,10 @@
             "job_id": "0",
             "project_path": "pth/to/project/files",
             "slurm_file": "imaging.slurm",
-            "flag_cirrus": false
+            "flag_cirrus": false,
+            "flag_compute_operator_norm": false,
+            "flag_solve_minimization": true
+
         },
         "mandatory":{
             "__comment": "Mandatory parameters to be adapted to the experiment",
@@ -23,12 +26,11 @@
             "ncores_data": 2,
             "algo_version": "fhs",
             "window_type": "triangular",
-            "overlap_fraction_y": 0.25,
-            "overlap_fraction_x": 0.25,
+            "overlap_fraction": 0.25,
             "gamma": 1,
             "gamma_bar": 1,
             "warmstart_iteration": 0,
-            "flag_DR": false
+            "flagDR": false
         },
         "synth": {
             "__comment": "Synth data parameters: some model settings will be overriden to fit the experiment scenario considered",
