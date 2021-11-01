@@ -41,7 +41,7 @@ param_blocking.use_manual_frequency_partitioning = 0;
 % partition (symetrically) of the data to nodes (frequency ranges)
 param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, icdf('norm', 0.75, 0, pi / 4), pi];
 
-%% * Prior
+%% * Prior (hard-coded)
 % depth of the wavelet decompositions
 nlevel = 4;
 % wavelet dictionaries

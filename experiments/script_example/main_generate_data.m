@@ -1,4 +1,4 @@
-function main_generate_data(image_name, ncores_data, coverage_path, ...
+function main_generate_data(json_name, image_name, ncores_data, coverage_path, ...
     exp_type, superresolution_factor, isnr, flagDR, flag_cirrus, flag_generateCoverage)
 % %% Debug parameters
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
@@ -40,6 +40,9 @@ data_path = '../../data/';
 results_path = fullfile('results', strcat(image_name, '_', exp_type));
 mkdir(data_path);
 mkdir(results_path);
+
+% read options from .json file
+
 
 %%
 % ! load the appropriate portion of the reference image cube
