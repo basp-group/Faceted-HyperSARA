@@ -4,8 +4,8 @@
         "general": {
             "__comment": "Paths configuration",
             "path_dataset": "/pth/to/data",
-            "path_uv_coverage": "/pth/to/uv_coverage.mat",
-            "image_name": "img",
+            "path_uv_coverage": "data/vla_7.95h_dt10s.uvw256.mat",
+            "image_name": "W28_512",
             "job_name": "job",
             "job_id": "0",
             "project_path": "pth/to/project/files",
@@ -20,7 +20,7 @@
             "Qx": 15,
             "Qy": 6,
             "Qc": 1,
-            "ncores_data": 20,
+            "ncores_data": 2,
             "algo_version": "fhs",
             "window_type": "triangular",
             "overlap_fraction_y": 0.25,
@@ -70,7 +70,8 @@
             "ox": 2,
             "oy": 2,
             "Kx": 7,
-            "Ky": 7
+            "Ky": 7,
+            "kernel": "minmax:tuned"
         },
         "preconditioning": {
             "__comment": "Preconditioning parameters",
