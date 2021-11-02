@@ -1,0 +1,104 @@
+[
+    {
+        "__comment": "Mandatory parameters to be adapted to the experiment",
+        "general": {
+            "__comment": "Paths configuration",
+            "path_dataset": "/pth/to/data",
+            "path_uv_coverage": "data/vla_7.95h_dt10s.uvw256.mat",
+            "image_name": "W28_512",
+            "job_name": "job",
+            "job_id": "0",
+            "project_path": "pth/to/project/files",
+            "slurm_file": "run_simulation.slurm",
+            "flag_cirrus": false,
+            "flag_compute_operator_norm": false,
+            "flag_solve_minimization": true
+        },
+        "mandatory":{
+            "__comment": "Mandatory parameters to be adapted to the experiment",
+            "Nx": 2560,
+            "Ny": 1536,
+            "pixelSize": 0.0,
+            "Qx": 1,
+            "Qy": 1,
+            "Qc": 1,
+            "ncores_data": 2,
+            "algo_version": "sara",
+            "window_type": "triangular",
+            "overlap_fraction": 0.25,
+            "gamma": 1,
+            "gamma_bar": 1,
+            "warmstart_iteration": -1,
+            "flagDR": false
+        },
+        "synth": {
+            "__comment": "Synth data parameters: some model settings will be overriden to fit the experiment scenario considered",
+            "exp_type": "spectral",
+            "superresolution_factor": 2,
+            "isnr": 50,
+            "flag_generateCoverage": false
+        }
+    },
+    {   "__comment": "Solver parameters",
+        "reweighting": {
+            "__comment": "Reweighting parameters",
+            "min_iter": 1,
+            "max_iter": 10,
+            "rel_var": 1e-4,
+            "alpha": 1,
+            "alpha_ff": 1,
+            "backup_frequency": 1,
+            "verbose": 2
+        },
+        "pdfb": {
+            "__comment": "PDFB parameters",
+            "min_iter": 10,
+            "max_iter": 2000,
+            "rel_var": 1e-5,
+            "fidelity_tolerance": 1.01,
+            "rel_var_low": 5e-6
+        },
+        "proj" : {
+            "__comment": "Ellipsoid projection parameters",
+            "min_iter": 1,
+            "max_iter": 20,
+            "eps": 1e-8
+        },
+        "verbose" : 1
+    },
+    {   "__comment": "Model parameters",
+        "nufft": {
+            "__comment": "NUFFT parameters",
+            "ox": 2,
+            "oy": 2,
+            "Kx": 7,
+            "Ky": 7,
+            "kernel": "minmax:tuned"
+        },
+        "preconditioning": {
+            "__comment": "Preconditioning parameters",
+            "gen_uniform_weight_matrix": true,
+            "uniform_weight_sub_pixels": true
+        },
+        "blocking": {
+            "__comment": "Blocking parameters",
+            "use_density_partitioning": 0,
+            "density_partitioning_no": 1,
+            "use_uniform_partitioning": 0,
+            "uniform_partitioning_no": 4,
+            "use_equal_partitioning": 1,
+            "equal_partitioning_no": 1,
+            "use_manual_partitioning": 0,
+            "use_manual_frequency_partitioning": 0
+        },
+        "nnls": {
+            "__comment": "NNLS (estimation of the l2 contraint)",
+            "generate_eps_nnls": false,
+            "verbose": 2,
+            "rel_obj": 5e-4,
+            "max_iter": 1000,
+            "sol_steps": null,
+            "beta": 1
+        }
+    }
+]

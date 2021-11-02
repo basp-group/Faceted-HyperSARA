@@ -23,7 +23,7 @@ mkdir -p /lustre/home/sc004/$USER/$SLURM_JOB_ID
 # module purge             # remove all previously loaded modules
 module load matlab/R2020b  # version to be checked on cirrus
 
-echo "fprintf('Job id: %s \n', num2str("$SLURM_JOB_ID")); main_simulation('"$jsonfilename"', "$ind")" > temporary_file_${SLURM_JOB_ID}.m
+echo "fprintf('Job id: %s \n', num2str("$SLURM_JOB_ID")); main_simulation('"$jsonfilename"', "$Qx" "$Qy", "$Qc", "$overlap", "$ind")" > temporary_file_${SLURM_JOB_ID}.m
 
 matlab -nosplash -nodesktop -nodisplay < temporary_file_${SLURM_JOB_ID}.m > ${logfile}
 

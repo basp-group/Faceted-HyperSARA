@@ -9,11 +9,10 @@
             "job_name": "job",
             "job_id": "0",
             "project_path": "pth/to/project/files",
-            "slurm_file": "imaging.slurm",
+            "slurm_file": "run_simulation.slurm",
             "flag_cirrus": false,
             "flag_compute_operator_norm": false,
             "flag_solve_minimization": true
-
         },
         "mandatory":{
             "__comment": "Mandatory parameters to be adapted to the experiment",
@@ -24,7 +23,7 @@
             "Qy": 6,
             "Qc": 1,
             "ncores_data": 2,
-            "algo_version": "sara",
+            "algo_version": "fhs",
             "window_type": "triangular",
             "overlap_fraction": 0.25,
             "gamma": 1,

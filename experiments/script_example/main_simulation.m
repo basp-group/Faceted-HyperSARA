@@ -1,4 +1,4 @@
-function main_simulation_draft(json_filename, ind)
+% function main_simulation(json_filename, Qx, Qy, Qc, overlap_fraction, ind)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 %
 % This script generates synthetic data and runs the SARA, HyperSARA or
@@ -11,11 +11,11 @@ function main_simulation_draft(json_filename, ind)
 %     Name of the reference synthetic image (from the data/ folder).
 % n_channels : int
 %     Number of spectral channels considered.
-% param_model.Qx : int
+% Qx : int
 %     Number of spatial facets along axis 2 (x).
-% param_model.Qy : int
+% Qy : int
 %     Number of spatial facets along axis 1 (y).
-% param_model.Qc : int
+% Qc : int
 %     Number of spectral facets.
 % param_model.algo_version : string ('sara', 'hs' or 'fhs')
 %     Selected solver.
@@ -24,13 +24,13 @@ function main_simulation_draft(json_filename, ind)
 %     prior (FHS solver).
 % param_model.ncores_data : int
 %     Number of cores handlig the data fidelity terms ("data cores").
-%     For Faceted HyperSARA, the total number of cores used is param_model.Qx*param_model.Qy +
+%     For Faceted HyperSARA, the total number of cores used is Qx*Qy +
 %     param_model.ncores_data + 1. For SARA and HyperSARA, represents the number of
 %     cores used for the parallelization.
 % ind : int
 %     Index of the spectral facet to be reconstructed (set to -1 to
 %     deactivate spectral faceting).
-% param_model.overlap_fraction : array (1d)
+% overlap_fraction : array (1d)
 %     Fraction of the total size of a facet overlapping with a neighbour
 %     facet.
 % param_reweighting.max_iter : int
@@ -68,40 +68,15 @@ function main_simulation_draft(json_filename, ind)
 
 %% PARAMETERS FOR DEBUGGING
 %
-% param_general.image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
-% param_synth.exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
-
-% param_model.Qx = 1; % 4
-% param_model.Qy = 1; % 4
-% param_model.Qc = 1;
-% param_reweighting.max_iter = 1;
-% param_model.algo_version = 'fhs'; % 'fhs', 'hs', 'sara';
-% param_model.window_type = 'triangular'; % 'hamming', 'pc'
-% param_general.flag_compute_operator_norm = 0;
-% param_general.flag_solve_minimization = 1;
-% param_synth.flag_generateCoverage = 0;
-% param_model.ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
-% ind = 1; % index of the spectral facet to be reconstructed
-% param_model.gamma = 1;
-% param_model.gamma_bar = 1;
-% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
-
-% param_model.warmstart_iteration = -1;
-% param_model.overlap_fraction = 0.25;
-% param_model.flagDR = 0;
-
-% n_channels = 20;
-% flag_generateCube = 1;
-% cubepath = @(nchannels) strcat(param_general.image_name, '_L', num2str(nchannels));
-% cube_path = cubepath(n_channels);
-% param_synth.superresolution_factor = 2; % to be loaded from the data
-% param_general.flag_cirrus = false;
-% param_nufft.kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
-
+json_filename = "setup_spatial.json";
+ind = 1;
+Qx = 1;
+Qy = 1;
+Qc = 1;
+overlap_fraction = 0.25;
+%
 %%
 % TODO: update util_gen_measurement_operator to enable kaiser kernels
-% json_filename = "setup_matlab.json";
-% ind = 1;
 format compact;
 
 % Read .json configuration file
@@ -160,8 +135,8 @@ switch param_synth.exp_type
         spatial_downsampling = 1;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
         param_model.ncores_data = 2;
-        param_model.Qx = 1;
-        param_model.Qy = 1;
+        Qx = 1;
+        Qy = 1;
         param_general.flag_cirrus
     case "old_local_test"
         param_general.image_name = 'cubeW28';
@@ -169,8 +144,8 @@ switch param_synth.exp_type
         spatial_downsampling = 4;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
         param_model.ncores_data = 2;
-        param_model.Qx = 1;
-        param_model.Qy = 1;
+        Qx = 1;
+        Qy = 1;
         param_general.flag_cirrus
     otherwise
         error("Unknown experiment type");
@@ -214,9 +189,9 @@ disp('MNRAS configuration');
 disp(['Algorithm version: ', param_model.algo_version]);
 disp(['Reference image: ', param_general.image_name]);
 % disp(['nchannels: ', num2str(n_channels)]);
-disp(['Number of facets param_model.Qy x param_model.Qx : ', num2str(param_model.Qy), ' x ', num2str(param_model.Qx)]);
-disp(['Number of spectral facets param_model.Qc : ', num2str(param_model.Qc)]);
-disp(['Overlap fraction: ', strjoin(strsplit(num2str(param_model.overlap_fraction)), ', ')]);
+disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
+disp(['Number of spectral facets Qc : ', num2str(Qc)]);
+disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), ', ')]);
 
 %% Auxiliary function needed to select the appropriate workers
 % (only needed for 'hs' and 'fhs' algorithms)
@@ -226,7 +201,7 @@ switch param_model.algo_version
     case 'hs'
         data_worker_id = @(k) k;
     case 'fhs'
-        data_worker_id = @(k) k + param_model.Qx * param_model.Qy;
+        data_worker_id = @(k) k + Qx * Qy;
     otherwise
         error('Undefined param_model.algo_version');
 end
@@ -236,22 +211,22 @@ end
 % selected algorithm
 if strcmp(param_model.algo_version, 'sara')
     param_model.window_type = 'none';
-    param_model.Qc = n_channels;
-    param_model.Qx = 1;
-    param_model.Qy = 1;
+    Qc = n_channels;
+    Qx = 1;
+    Qy = 1;
 elseif strcmp(param_model.algo_version, 'hs')
     param_model.window_type = 'none';
-    param_model.Qx = 1;
-    param_model.Qy = 1;
+    Qx = 1;
+    Qy = 1;
 end
-Q = param_model.Qx * param_model.Qy;
+Q = Qx * Qy;
 
 % convert fraction of overlap between consecutive facets into a number of pixels
-overlap_size = get_overlap_size([Ny, Nx], [param_model.Qy, param_model.Qx], param_model.overlap_fraction);
+overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
 disp(['Number of pixels in overlap: ', strjoin(strsplit(num2str(overlap_size)), ' x ')]);
 
 % index of the spectral channels involved in the subcube
-interleaved_channels = split_range_interleaved(param_model.Qc, n_channels);
+interleaved_channels = split_range_interleaved(Qc, n_channels);
 subcube_channels = interleaved_channels{ind};
 
 % index of channels from the subcube to be handled on each data worker
@@ -262,7 +237,7 @@ fc = frequencies(subcube_channels);
 fmax = frequencies(end);
 
 % extract ground truth subcube
-if param_model.Qc > 1 && ind > 0 && ~strcmp(param_model.algo_version, 'sara')
+if Qc > 1 && ind > 0 && ~strcmp(param_model.algo_version, 'sara')
     x0 = x0(:, :, subcube_channels);
     nchans = size(x0, 3);
     X0 = reshape(x0, Nx * Ny, nchans);
@@ -277,9 +252,9 @@ data_name_function = @(nchannels) strcat('y_', ...
 temp_results_name = @(nchannels) strcat(param_synth.exp_type, '_', param_general.image_name, '_', ...
     param_model.algo_version, '_', param_model.window_type, '_srf=', num2str(param_synth.superresolution_factor), ...
     '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), '_L=', num2str(nchannels), ...
-    '_Qy=', num2str(param_model.Qy), '_Qx=', num2str(param_model.Qx), '_Qc=', num2str(param_model.Qc), ...
+    '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
     '_ind=', num2str(ind), '_g=', num2str(param_model.gamma), '_gb=', num2str(param_model.gamma_bar), ...
-    '_overlap=', strjoin(strsplit(num2str(param_model.overlap_fraction)), '_'));
+    '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'));
 
 warm_start = @(nchannels) strcat(temp_results_name(nchannels), '_rw=', num2str(param_model.warmstart_iteration), '.mat');
 
@@ -346,7 +321,7 @@ else
 end
 
 %% Setup parpool
-cirrus_cluster = util_set_parpool(param_model.algo_version, param_model.ncores_data, param_model.Qx * param_model.Qy, param_general.flag_cirrus);
+cirrus_cluster = util_set_parpool(param_model.algo_version, param_model.ncores_data, Qx * Qy, param_general.flag_cirrus);
 
 %% Setup measurement operator
 switch param_model.algo_version
@@ -444,7 +419,7 @@ if strcmp(param_model.algo_version, 'sara')
             strcat('Anorm_', param_model.algo_version, ...
             '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), ...
             '_L=', num2str(n_channels), ...
-            '_Qc=', num2str(param_model.Qc), '_ind=', num2str(ind), ...
+            '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
             '_ch=', num2str(ind), '.mat')), ...
             '-v7.3', 'Anorm', 'squared_operator_norm', 'rel_var', ...
             'squared_operator_norm_precond', 'rel_var_precond');
@@ -454,14 +429,14 @@ if strcmp(param_model.algo_version, 'sara')
             strcat('Anorm_', param_model.algo_version, ...
             '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), ...
             '_L=', num2str(n_channels), ...
-            '_Qc=', num2str(param_model.Qc), '_ind=', num2str(ind), ...
+            '_Qc=', num2str(Qc), '_ind=', num2str(ind), ...
             '_ch=', num2str(ind), '.mat')), ...
             'Anorm', 'squared_operator_norm_precond', 'squared_operator_norm');
     end
 else
     if param_general.flag_compute_operator_norm
         spmd
-            if labindex > param_model.Qx * param_model.Qy * strcmp(param_model.algo_version, 'fhs')
+            if labindex > Qx * Qy * strcmp(param_model.algo_version, 'fhs')
                 [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
             end
         end
@@ -551,7 +526,7 @@ if strcmp(param_model.algo_version, 'hs') || strcmp(param_model.algo_version, 'f
     % noise level / regularization parameter
     [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
         compute_noise_level(Ny, Nx, nchans, global_sigma_noise, ...
-        param_model.algo_version, param_model.Qx, param_model.Qy, overlap_size, squared_operator_norm);
+        param_model.algo_version, Qx, Qy, overlap_size, squared_operator_norm);
 
     % apply multiplicative factor for the regularization parameters (if needed)
     mu_bar = param_model.gamma_bar * sig_bar;
@@ -609,7 +584,7 @@ if param_general.flag_solve_minimization
         fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', param_general.image_name, '_', param_model.algo_version, ...
         '_srf=', num2str(param_synth.superresolution_factor), ...
         '_', param_model.window_type, ...
-        '_Qy=', num2str(param_model.Qy), '_Qx=', num2str(param_model.Qx), '_Qc=', num2str(param_model.Qc), ...
+        '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
         '_ind=', num2str(ind), ...
         '_gam=', num2str(param_model.gamma), ...
         '.fits')));
@@ -647,7 +622,7 @@ if param_general.flag_solve_minimization
                 disp('Faceted HyperSARA');
                 disp('-----------------------------------------');
                 xsol = facetHyperSARA(y, epsilons, ...
-                    A, At, aW, G, W, param_solver, param_model.Qx, param_model.Qy, param_model.ncores_data, ...
+                    A, At, aW, G, W, param_solver, Qx, Qy, param_model.ncores_data, ...
                     wlt_basis, filter_length, nlevel, param_model.window_type, ...
                     cell_c_chunks, nchans, overlap_size, param_model.gamma, param_model.gamma_bar, ...
                     Ny, Nx, param_nufft.oy, param_nufft.ox, ...
@@ -661,10 +636,10 @@ if param_general.flag_solve_minimization
         fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', param_general.image_name, '_', param_model.algo_version, ...
             '_', param_model.window_type, ...
             '_srf=', num2str(param_synth.superresolution_factor), ...
-            '_Qy=', num2str(param_model.Qy), '_Qx=', num2str(param_model.Qx), '_Qc=', num2str(param_model.Qc), ...
+            '_Qy=', num2str(Qy), '_Qx=', num2str(Qx), '_Qc=', num2str(Qc), ...
             '_ind=', num2str(ind), ...
             '_gam=', num2str(param_model.gamma), '_gambar=', num2str(param_model.gamma_bar), ...
-            '_overlap=', strjoin(strsplit(num2str(param_model.overlap_fraction)), '_'), ...
+            '_overlap=', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
             '.fits')));
     end
 end
