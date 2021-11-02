@@ -24,7 +24,7 @@
             "Qy": 6,
             "Qc": 1,
             "ncores_data": 2,
-            "algo_version": "fhs",
+            "algo_version": "sara",
             "window_type": "triangular",
             "overlap_fraction": 0.25,
             "gamma": 1,
@@ -64,7 +64,8 @@
             "min_iter": 1,
             "max_iter": 20,
             "eps": 1e-8
-        }
+        },
+        "verbose" : 1
     },
     {   "__comment": "Model parameters",
         "nufft": {

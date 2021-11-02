@@ -553,7 +553,7 @@ else
         end
         squared_operator_norm = opnormfile.squared_operator_norm;
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond;
-        clear An rel_var rel_var_precond squared_operator_norm_precond;
+        clear An rel_var rel_var_precond;
 
     else
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...

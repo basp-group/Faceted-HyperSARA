@@ -1,4 +1,4 @@
-% function main_simulation_draft(json_filename, ind)
+function main_simulation_draft(json_filename, ind)
 % Main script to run the faceted HyperSARA approach on synthetic data.
 %
 % This script generates synthetic data and runs the SARA, HyperSARA or
@@ -100,12 +100,9 @@
 
 %%
 % TODO: update util_gen_measurement_operator to enable kaiser kernels
-json_filename = "setup_matlab.json";
-ind = 1;
+% json_filename = "setup_matlab.json";
+% ind = 1;
 format compact;
-
-% seed for the random number generation (used only when generating data)
-seed = 0;
 
 % Read .json configuration file
 [speed_of_light, param_general, param_model, param_solver, param_nufft, ...
@@ -114,13 +111,6 @@ seed = 0;
 
 %%
 % TODO: update util_gen_measurement_operator to enable kaiser kernels
-disp('MNRAS configuration');
-disp(['Algorithm version: ', param_model.algo_version]);
-disp(['Reference image: ', param_general.image_name]);
-% disp(['nchannels: ', num2str(n_channels)]);
-disp(['Number of facets param_model.Qy x param_model.Qx : ', num2str(param_model.Qy), ' x ', num2str(param_model.Qx)]);
-disp(['Number of spectral facets param_model.Qc : ', num2str(param_model.Qc)]);
-disp(['Overlap fraction: ', strjoin(strsplit(num2str(param_model.overlap_fraction)), ', ')]);
 
 addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
@@ -219,6 +209,14 @@ frequencies = nu_vect(1:floor(L / n_channels):end);
 
 clear reference_cube_path info rowend colend sliceend;
 clear spatial_downsampling spectral_downsampling;
+
+disp('MNRAS configuration');
+disp(['Algorithm version: ', param_model.algo_version]);
+disp(['Reference image: ', param_general.image_name]);
+% disp(['nchannels: ', num2str(n_channels)]);
+disp(['Number of facets param_model.Qy x param_model.Qx : ', num2str(param_model.Qy), ' x ', num2str(param_model.Qx)]);
+disp(['Number of spectral facets param_model.Qc : ', num2str(param_model.Qc)]);
+disp(['Overlap fraction: ', strjoin(strsplit(num2str(param_model.overlap_fraction)), ', ')]);
 
 %% Auxiliary function needed to select the appropriate workers
 % (only needed for 'hs' and 'fhs' algorithms)
@@ -491,7 +489,7 @@ else
         end
         squared_operator_norm = opnormfile.squared_operator_norm;
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond;
-        clear An rel_var rel_var_precond squared_operator_norm_precond;
+        clear An rel_var rel_var_precond;
 
     else
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...

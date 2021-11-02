@@ -36,6 +36,7 @@ param_proj = cell2struct(struct2cell(config{2, 1}.proj), strcat('elipse_proj_', 
 param_solver = cell2struct([struct2cell(param_reweighting); struct2cell(param_pdfb);struct2cell(param_proj)], ...
     [fieldnames(param_reweighting);fieldnames(param_pdfb);fieldnames(param_proj)]);
 param_solver.cube_id = ind;
+param_solver.verbose = config{2, 1}.verbose;
 
 % * Adaptive epsilon
 % TODO : to be removed form the solver

@@ -28,10 +28,6 @@ seed = 0;
 % param_general.flag_cirrus = false;
 % param_nufft.kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
 
-disp('Synthetic data generation');
-disp(['Reference image: ', param_general.image_name]);
-disp(['Input SNR: ', num2str(param_synth.isnr)]);
-
 addpath ../../lib/operators/;
 addpath ../../lib/measurement-operator/nufft/;
 addpath ../../lib/measurement-operator/lib/operators/;
@@ -111,6 +107,10 @@ frequencies = nu_vect(1:floor(L / n_channels):end);
 
 clear reference_cube_path info rowend colend sliceend;
 clear spatial_downsampling spectral_downsampling;
+
+disp('Synthetic data generation');
+disp(['Reference image: ', param_general.image_name]);
+disp(['Input SNR: ', num2str(param_synth.isnr)]);
 
 %% Auxiliary function needed to select the appropriate workers
 % index of channels from the subcube to be handled on each data worker
