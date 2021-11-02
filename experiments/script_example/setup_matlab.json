@@ -29,7 +29,7 @@
             "overlap_fraction": 0.25,
             "gamma": 1,
             "gamma_bar": 1,
-            "warmstart_iteration": 0,
+            "warmstart_iteration": -1,
             "flagDR": false
         },
         "synth": {

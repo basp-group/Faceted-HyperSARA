@@ -45,24 +45,15 @@ def main():
     )
 
     parser.add_argument(
-        "--solver",
-        help="Sovler used (sara, hs or fhs).",
-        default="fhs",
-        type=str,
+        "--solver", help="Sovler used (sara, hs or fhs).", default="fhs", type=str,
     )
 
     parser.add_argument(
-        "--job_id",
-        help="Integer identifier of the current run.",
-        default=1,
-        type=int,
+        "--job_id", help="Integer identifier of the current run.", default=1, type=int,
     )
 
     parser.add_argument(
-        "--ncubes",
-        help="Number of spectral facets considered.",
-        default=1,
-        type=int,
+        "--ncubes", help="Number of spectral facets considered.", default=1, type=int,
     )
 
     parser.add_argument(
@@ -89,12 +80,17 @@ def main():
     # Job submission
     for cube_id in range(1, args.ncubes + 1):
 
-        job_name = """{0}_{1}_ID{2}_cube-{3}_gam-{4}_gambar-{5}""".format(args.solver, args.image_name, args.job_id, cube_id, args.gamma, args.gammabar)
+        job_name = """{0}_{1}_ID{2}_cube-{3}_gam-{4}_gambar-{5}""".format(
+            args.solver,
+            args.image_name,
+            args.job_id,
+            cube_id,
+            args.gamma,
+            args.gammabar,
+        )
 
         # log file
-        log_file = """{logpath}/{jobname}""".format(
-            jobname=job_name, logpath=log_path
-        )
+        log_file = """{logpath}/{jobname}""".format(jobname=job_name, logpath=log_path)
 
         # command to launch
         sbatch_command = """sbatch --job-name {jobname} --error {log}.err --output {log}.out  --export=LOG={log}.log,PDIR={projectpath},IMAGENAME={0},ALGO={1},GAM={2},GAMBAR={3},SUBCUBE={4},RUNID={5},RW={6},nRW={7},LOG={log}.log  {slurmFile}""".format(
@@ -109,7 +105,7 @@ def main():
             jobname=job_name,
             slurmFile=slurm_file,
             log=log_file,
-            projectpath=project_path_run
+            projectpath=project_path_run,
         )
 
         print(" ")
