@@ -8,11 +8,19 @@ import numpy as np
 
 if __name__ == "__main__":
 
+    # spatial faceting experiment
     jsonfilename = "setup_spatial.json"
-    slurm_filename = "run_simulation.slurm"
     Qc_ = [1]
-    Qx_ = [1]
-    overlap_ = [0.25]
+    Qx_ = [1, 2, 3, 4]
+    overlap_ = [0, 0.1, 0.25, 0.4, 0.5]
+
+    # spectral faceting experiment
+    # jsonfilename = "setup_spectral.json"
+    # Qc_ = [1, 2, 5, 10, 20]
+    # Qx_ = [1]
+    # overlap_ = [0.]
+
+    slurm_filename = "run_simulation.slurm"
 
     # Reading elements from json configuration file
     with open(jsonfilename) as f:
@@ -49,7 +57,11 @@ if __name__ == "__main__":
     pathlib.Path(slurm_log_path).mkdir(parents=True, exist_ok=True)
     pathlib.Path(log_path).mkdir(parents=True, exist_ok=True)
 
-    ncdata = int(json_config[0]["mandatory"]["ncores_data"])
+    if algo_version == "sara":
+        ncdata = 9
+        Qc_ = [int(json_config[0]["mandatory"]["nchannels"])]
+    else:
+        ncdata = int(json_config[0]["mandatory"]["ncores_data"])
 
     for qc in Qc_:
 
