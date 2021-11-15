@@ -4,8 +4,6 @@
 %% * Problem size
 % TODO: to be completed for real data, revise blocking for real data
 speed_of_light = 299792458;
-% seed for the random number generation (used only when generating data)
-seed = 1;
 
 %% * NUFFT (gridding parameters)
 % oversampling factor (x)
@@ -43,11 +41,11 @@ param_blocking.use_manual_frequency_partitioning = 0;
 % partition (symetrically) of the data to nodes (frequency ranges)
 param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, icdf('norm', 0.75, 0, pi / 4), pi];
 
-%% * Prior
+%% * Prior (hard-coded)
 % depth of the wavelet decompositions
 nlevel = 4;
 % wavelet dictionaries
 % ! always specify Dirac basis ('self') in last position if ever used
 wlt_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};
-% length of the filters (0 corresponding to the 'self' basis)
+% length of the filters (by convention, 0 corresponds to the Dirac basis)
 filter_length = [2 * (1:8)'; 0];

@@ -6,6 +6,13 @@
         "root_folder": "/pth/to/project/"
     },
     {
-        "test_boolean": true
+        "test_boolean": true,
+        "nufft": {
+            "__comment": "NUFFT parameters",
+            "ox": 2,
+            "oy": 2,
+            "Kx": 7,
+            "Ky": 7
+        }
     }
 ]

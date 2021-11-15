@@ -8,6 +8,7 @@ raw = fread(fid,inf); % Reading the contents
 str = char(raw'); % Transformation
 fclose(fid); % Closing the file
 data = jsondecode(str); % Using the jsondecode function to parse JSON from string
+param_nufft = data{2, 1}.nufft;
 
 % testing parallel random generation
 seed = 1;

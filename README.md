@@ -83,6 +83,18 @@ Note that real-data parameters, (weighting scheme, ...) if any, still need to be
 
 **DR agnostic algorithm interface**: the DR-agnostic interface is ready. Make sure the `Sigma` variable (DR thershold matrix) is properly defined in the main script.
 
+## Matlab code formatting
+
+Use the [`miss_hit`](https://github.com/florianschanda/miss_hit) package (to be checked first on a few examples before moving to the full project).
+
+```bash
+pip install miss_hit
+mh_style my_file.m # only analyse the file
+mh_style --fix my_file.m # fix the file based on the rules given in miss_hit.cfg
+mh_style folder/
+mh_style --fix .
+```
+
 ## TODO
 
 - [x] Prepare draft Python scripts for real data examples (only keep useful values, see if anything needs to be added)

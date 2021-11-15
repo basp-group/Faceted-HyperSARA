@@ -116,6 +116,9 @@ function main_simulation(image_name, n_channels, Qx, Qy, Qc, ...
 %%
 format compact;
 
+% seed for the random number generation (used only when generating data)
+seed = 1;
+
 disp('MNRAS configuration');
 disp(['Algorithm version: ', algo_version]);
 disp(['Reference image: ', image_name]);
@@ -172,7 +175,7 @@ switch exp_type
         spatial_downsampling = 1;
     case "local_test"
         image_name = 'cygASband_Cube_256_512_100';
-        spectral_downsampling = 25; % 5
+        spectral_downsampling = 25;
         spatial_downsampling = 1;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
     case "old_local_test"
@@ -210,9 +213,9 @@ X0 = reshape(x0, [N, nchans]);
 input_snr = isnr * ones(nchans, 1); % input SNR (in dB)
 
 % frequency used to generate the reference cubes
-nu0 = 2.052e9; % starting freq
-dnu = 16e6;    % freq step
-L = 100;       % number of channels
+nu0 = 2.052e9;  % starting freq
+dnu = 16e6;  % freq step
+L = 100;  % number of channels
 nu_vect = [nu0 (dnu * (1:L - 1) + nu0)];
 frequencies = nu_vect(1:floor(L / n_channels):end); % nu_vect(1:spectral_downsampling:end);
 
@@ -221,7 +224,6 @@ clear spatial_downsampling spectral_downsampling;
 
 %% Auxiliary function needed to select the appropriate workers
 % (only needed for 'hs' and 'fhs' algorithms)
-
 switch algo_version
     case 'sara'
         data_worker_id = @(k) k;
@@ -300,7 +302,6 @@ temp_results_name = @(nchannels) strcat(exp_type, '_', image_name, '_', ...
 warm_start = @(nchannels) strcat(temp_results_name(nchannels), '_rw=', num2str(rw), '.mat');
 
 data_name = data_name_function(n_channels);
-results_name = results_name_function(n_channels);
 
 %% Define problem configuration (rng, nufft, preconditioning, blocking,
 % NNLS (epsilon estimation), SARA dictionary)
@@ -325,7 +326,7 @@ if flag_generateCoverage
     fitswrite([u, v, ones(numel(u), 1)], coverage_path);
     disp(coverage_path);
 else
-    coverage_path;
+    disp(strcat("Loading coverage: ", coverage_path));
 
     % VLA configuration
     % A. 762775 -> 3
@@ -341,7 +342,7 @@ else
         clear obsId;
     else
         % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
-        % units of the smallest wavelenght, associated with the highest frequency)
+        % units of the smallest wavelength, associated with the highest frequency)
         load(coverage_path, 'uvw');
         size(uvw);
         u1 = uvw(:, 1) * fmax / speed_of_light;
@@ -362,7 +363,7 @@ else
     clear uvw u1 v1;
 end
 
-%% setup parpool
+%% Setup parpool
 cirrus_cluster = util_set_parpool(algo_version, ncores_data, Qx * Qy, flag_cirrus);
 
 %% Setup measurement operator
@@ -443,7 +444,7 @@ if flag_generate_visibilities
     % mnras paper
 
     [rng_stream{1:ncores_data}] = RandStream.create('threefry4x64_20', ...
-        'Seed', 0, 'NumStreams', ncores_data);
+        'Seed', seed, 'NumStreams', ncores_data);
     offset_worker = Q*strcmp(algo_version, 'fhs');
 
     spmd
@@ -525,7 +526,7 @@ else
     if flag_compute_operator_norm
         spmd
             if labindex > Qx * Qy * strcmp(algo_version, 'fhs')
-                [An, squared_operator_norm_, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
+                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200);
             end
         end
 
@@ -542,7 +543,7 @@ else
 
         Anorm = 0;
         for k = 1:ncores_data
-            opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm_{data_worker_id(k)};
+            opnormfile.squared_operator_norm(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm{data_worker_id(k)};
             opnormfile.rel_var(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = rel_var{data_worker_id(k)};
 
             opnormfile.squared_operator_norm_precond(subcube_channels(rg_c(k, 1)):subcube_channels(rg_c(k, 2)), 1) = squared_operator_norm_precond{data_worker_id(k)};
@@ -552,7 +553,7 @@ else
         end
         squared_operator_norm = opnormfile.squared_operator_norm;
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond;
-        clear An rel_var rel_var_precond squared_operator_norm_precond;
+        clear An rel_var rel_var_precond;
 
     else
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
@@ -641,7 +642,7 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_version, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
 end
 
-% _r Define parameters for the solver (nReweights needed here)
+% Define parameters for the solver (nReweights needed here)
 parameters_solver;
 
 %%

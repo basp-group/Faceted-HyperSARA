@@ -4,9 +4,6 @@
 %% * Problem size
 % TODO: to be completed
 speed_of_light = 299792458;
-% seed for the random number generation (used only when generating data)
-seed = 1;
-rng(seed);
 
 %% * NUFFT (gridding parameters)
 % oversampling factor (x)

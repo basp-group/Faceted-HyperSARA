@@ -1,4 +1,4 @@
-function main_generate_data(image_name, ncores_data, coverage_path, ...
+function main_generate_data_(json_name, image_name, ncores_data, coverage_path, ...
     exp_type, superresolution_factor, isnr, flagDR, flag_cirrus, flag_generateCoverage)
 % %% Debug parameters
 % image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
@@ -17,6 +17,9 @@ function main_generate_data(image_name, ncores_data, coverage_path, ...
 %%
 % TODO: update util_gen_measurement_operator to enable kaiser kernels
 format compact;
+
+% seed for the random number generation (used only when generating data)
+seed = 0;
 
 disp('Synthetic data generation');
 disp(['Reference image: ', image_name]);
@@ -37,6 +40,9 @@ data_path = '../../data/';
 results_path = fullfile('results', strcat(image_name, '_', exp_type));
 mkdir(data_path);
 mkdir(results_path);
+
+% read options from .json file
+
 
 %%
 % ! load the appropriate portion of the reference image cube
@@ -205,7 +211,7 @@ param_l2_ball.sigma_ball = 2;
 % may not be strictly equivalent to the data initially obtained for the
 % mnras paper
 [rng_stream{1:ncores_data}] = RandStream.create('threefry4x64_20', ...
-    'Seed', 0, 'NumStreams', ncores_data);
+    'Seed', seed, 'NumStreams', ncores_data);
 
 spmd
     [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr( ...
