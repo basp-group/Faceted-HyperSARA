@@ -684,7 +684,7 @@ for t = t_start:max_iter
     % ! --
 
     %% Reweighting (in parallel)
-    if pdfb_converged || t==10
+    if pdfb_converged 
         % Evaluate relative variation for the reweighting scheme
         spmd
             if labindex <= Qp.Value
