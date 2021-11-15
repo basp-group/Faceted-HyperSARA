@@ -67,20 +67,24 @@ function [v1, g] = fhs_update_dual_sparsity(v1, x_facet, ...
 spatial_size = dims_overlap_ref_q + offsetLq + offsetRq; % offset for the zero-padding
 x_ = zeros([spatial_size, size(x_facet, 3)]);
 x_(offsetLq(1) + 1:end - offsetRq(1), offsetLq(2) + 1:end - offsetRq(2), :) = x_facet;
-g = zeros(size(x_facet));
+
+x_facet_size = size(x_facet) ; 
+x_dim_3 = size(x_,3);
 
 tmp = sdwt2_sara_faceting(x_(:, :, 1), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
-w = zeros(numel(tmp), size(x_, 3));
-w(:, 1) = tmp;
-for l = 2:size(x_, 3)
+
+w = zeros(numel(tmp), x_dim_3);
+w(:, 1) = tmp; clear tmp;
+for l = 2:x_dim_3
     w(:, l) = sdwt2_sara_faceting(x_(:, :, l), Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
-end
+end, clear x_;
 w = v1 +  w;
 l2 = sqrt(sum(abs(w).^2, 2));
 l2_soft = max(l2 - beta1 * apodization_window, 0) ./ (l2 + eps);
-v1 = w - l2_soft .* w;
+v1 = w - l2_soft .* w;  clear w;
 
-for l = 1:size(x_, 3)
+g = zeros(x_facet_size);
+for l = 1:x_dim_3
     g(:, :, l) = isdwt2_sara_faceting(v1(:, l), Iq, dims_q, I_overlap_q, dims_overlap_q, Ncoefs_q, nlevel, wavelet, temLIdxs_q, temRIdxs_q);
 end
 

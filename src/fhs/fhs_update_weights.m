@@ -69,26 +69,28 @@ function [weights1, weights0] = fhs_update_weights(x_facet, size_v1, ...
 %-------------------------------------------------------------------------%
 %%
 
-% nuclear norm
+%%  nuclear norm
 sol = apodization_window .* x_facet(crop_low_rank(1) + 1:end, crop_low_rank(2) + 1:end, :);
 sol = reshape(sol, [numel(sol) / size(sol, 3), size(x_facet, 3)]);
-[~, S00, ~] = svd(sol, 'econ');
-d0 = abs(diag(S00));
+[~, z, ~] = svd(sol, 'econ'); clear sol;
+z = abs(diag(z)); 
 upsilon_bar = sig_bar * reweight_alpha;
-weights0 = upsilon_bar ./ (upsilon_bar + d0);
+weights0 = upsilon_bar ./ (upsilon_bar + z);  clear z;
+fprintf('\n nuclear weights done')
 
-% l21 norm
+
+%% l21 norm
 % ! offset for the zero-padding
 spatial_size = dims_overlap_ref + offsetL + offsetR;
-
-x_ = zeros([spatial_size, size(x_facet, 3)]);
-x_(offsetL(1) + 1:end - offsetR(1), offsetL(2) + 1:end - offsetR(2), :) = x_facet(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :);
 z = zeros(size_v1);
-for l = 1:size(x_, 3)
-    z(:, l) = sdwt2_sara_faceting(x_(:, :, l), I, offset, status, nlevel, wavelet, Ncoefs);
-end
-d1 = sqrt(sum(z.^2, 2));
+for l = 1:size(x_facet, 3)
+    x_curr = zeros(spatial_size); % AD: mem reaons
+    x_curr(offsetL(1) + 1:end - offsetR(1), offsetL(2) + 1:end - offsetR(2)) = x_facet(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, l);
+    z(:, l) = sdwt2_sara_faceting(x_curr, I, offset, status, nlevel, wavelet, Ncoefs);
+end, clear x_curr;
+z = sqrt(sum(z.^2, 2)); 
 upsilon = sig * reweight_alpha;
-weights1 = upsilon ./ (upsilon + d1);
+weights1 = upsilon ./ (upsilon + z); clear z;
+fprintf('\n l21  weights done')
 
 end
