@@ -65,7 +65,7 @@ function [weights1, weights0] = fhs_update_weights(x_facet, size_v1, ...
 % cropping step.
 %%
 % Code: P.-A. Thouvenin.
-% Last revised: [18/09/2020]
+% Last revised: [16/11/2021]
 %-------------------------------------------------------------------------%
 %%
 
@@ -76,7 +76,7 @@ sol = reshape(sol, [numel(sol) / size(sol, 3), size(x_facet, 3)]);
 z = abs(diag(z)); 
 upsilon_bar = sig_bar * reweight_alpha;
 weights0 = upsilon_bar ./ (upsilon_bar + z);  clear z;
-fprintf('\n nuclear weights done')
+%fprintf('\n nuclear weights done')
 
 
 %% l21 norm
@@ -91,6 +91,6 @@ end, clear x_curr;
 z = sqrt(sum(z.^2, 2)); 
 upsilon = sig * reweight_alpha;
 weights1 = upsilon ./ (upsilon + z); clear z;
-fprintf('\n l21  weights done')
+%fprintf('\n l21  weights done')
 
 end

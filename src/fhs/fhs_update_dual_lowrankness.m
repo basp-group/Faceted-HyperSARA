@@ -35,10 +35,10 @@ function [v0, g0] = fhs_update_dual_lowrankness(v0, xhat, ...
 %%
 
 [M, N, c] = size(xhat);
-xhatm_plus_v0 = v0 + reshape(xhat .* apodization_window, numel(xhat) / c, c);
-[U0, S0, V0] = svd(xhatm_plus_v0, 'econ');
+xhat_plus_v0 = v0 + reshape(xhat .* apodization_window, numel(xhat) / c, c);
+[U0, S0, V0] = svd(xhat_plus_v0, 'econ');
 S0 = diag(S0);
-v0 = xhatm_plus_v0  - (U0 * diag(max(S0 - beta0 * weights0, 0)) * V0');  clear S0 U0 V0 xhatm_plus_v0;
+v0 = xhat_plus_v0  - (U0 * diag(max(S0 - beta0 * weights0, 0)) * V0');  clear S0 U0 V0 xhat_plus_v0;
 g0 = apodization_window .* reshape(v0, M, N, c);  
 
 end
