@@ -50,7 +50,7 @@ if flagDR % H  =G' +G; and H' = H ; G is  a lower tril matrix
                  u2 = (res_f' *  G{i}{j})'  +  G{i}{j} *  res_f ; res_f =[];
 	    else
 		 % res_f = y{i}{j} - (Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})));	
- 	         u2 = G{i}{j}' * (Sigma{i}{j} .*  y{i}{j} - (Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})))) ;
+ 	         u2 = G{i}{j}' * (Sigma{i}{j} .*  (y{i}{j} - (Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}))))) ;
             end
 	    r(W{i}{j}) = r(W{i}{j}) + u2; u2 =[];
         end
