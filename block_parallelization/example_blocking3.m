@@ -1,7 +1,7 @@
 clc; clear all; close all
 format compact;
 
-addpath lib/faceted-wavelet-transform/src
+addpath ../lib/faceted-wavelet-transform/src
 
 %% Base characteristics (to be provided by the user)
 nfacets = 0;
@@ -51,6 +51,7 @@ for b = 1:nblocks
     blocks_channel_worker_id(b) = find(channels_groups(:, 2) >= blocks_channel_id(b), 1, 'first'); % id of the worker responsible for the channel
     blocks_within_channel_id(b) = b - c0(blocks_channel_id(b));
 end
+blocks_id = (1:nblocks).';
 
 %%
 y = cell(nchannels, 1);
@@ -109,6 +110,33 @@ spmd
         local_distinct_channels_of_blocks = numel(unique(local_blocks_channel_id));
         local_y = zeros(local_distinct_channels_of_blocks, 1);
         
+        % determine which other workers contain blocks associated with the
+        % channels handled locally (if any) (receive)
+        
+        % TODO: to be revised
+        % blocks associated with frequencies handled locally
+        id_blocks_channel_handled_locally = (blocks_channel_id >= local_channels(1)) & (blocks_channel_id <= local_channels(2)); % bool vector indicating blocks whose channel is handled locally
+        id_blocks_channel_not_handled_locally = (blocks_channel_id < local_channels(1)) | (blocks_channel_id > local_channels(2)); % not required
+        % associated worker id (id of workers containing blocks associated with frequencies handled locally)
+        worker_id_blocks_channel_handled_locally = blocks_channel_worker_id(id_blocks_channel_handled_locally);
+        
+        % id of blocks not stored on the current process associated to 
+        % local channels 
+        sel = ((blocks_id < local_blocks(1)) | (blocks_id > local_blocks(2))) & id_blocks_channel_handled_locally;
+        
+        % id of workers containing blocks associated to channels handled
+        % locally, not stored on the current process
+        % problem for receive! (sth is missing here)
+        recv_worker_id = blocks_channel_worker_id(sel);
+        
+        % determine which workers are associated with local blocks whose
+        % channels are not handled locally (if any) (send)
+        send_worker_id = zeros(local_nblocks, 1);
+        send_worker_id(~(local_blocks_channel_worker_id == data_id)) = local_blocks_channel_worker_id(~(local_blocks_channel_worker_id == data_id));
+        % non-zero value on for the blocks which need to be communicated
+        % among the bocks handled on the worker, which are those which need
+        % to be sent: b such that local_blocks_channel_worker_id(b) != data_id
+        
         % check consistency 
         l = 1;
         m = min(local_blocks_channel_id);
@@ -132,10 +160,11 @@ spmd
 %         end
 
         % send appropriate value of the sum
+        % ! send/receive mode active only if blocks from the channels 
+        % handled locally have been stored elsewhere
         
         % receive values (if needed)
-        % ! receive mode only if blocks from the channels handled locally
-        % have been stored elsewhere
+        
     
     end
 end
