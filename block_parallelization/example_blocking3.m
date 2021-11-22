@@ -46,10 +46,18 @@ c0 = [0, c1];
 blocks_channel_id = zeros(nblocks, 1);
 blocks_channel_worker_id = zeros(nblocks, 1);
 blocks_within_channel_id = zeros(nblocks, 1);
+blocks_worker_id = zeros(nblocks, 1);
+q = 1;
 for b = 1:nblocks
     blocks_channel_id(b) = find(c1 >= b, 1, 'first');
     blocks_channel_worker_id(b) = find(channels_groups(:, 2) >= blocks_channel_id(b), 1, 'first'); % id of the worker responsible for the channel
     blocks_within_channel_id(b) = b - c0(blocks_channel_id(b));
+    if b <= block_groups(q, 2)
+        blocks_worker_id(b) = q;
+    else
+        blocks_worker_id(b) = q + 1;
+        q = q + 1;
+    end
 end
 blocks_id = (1:nblocks).';
 
@@ -120,14 +128,10 @@ spmd
         % associated worker id (id of workers containing blocks associated with frequencies handled locally)
         worker_id_blocks_channel_handled_locally = blocks_channel_worker_id(id_blocks_channel_handled_locally);
         
-        % id of blocks not stored on the current process associated to 
+        % id of blocks not stored on the current process but associated to 
         % local channels 
         sel = ((blocks_id < local_blocks(1)) | (blocks_id > local_blocks(2))) & id_blocks_channel_handled_locally;
-        
-        % id of workers containing blocks associated to channels handled
-        % locally, not stored on the current process
-        % problem for receive! (sth is missing here)
-        recv_worker_id = blocks_channel_worker_id(sel);
+        recv_worker_id = blocks_worker_id(sel);
         
         % determine which workers are associated with local blocks whose
         % channels are not handled locally (if any) (send)
@@ -139,9 +143,9 @@ spmd
         
         % check consistency 
         l = 1;
-        m = min(local_blocks_channel_id);
+        lmin = min(local_blocks_channel_id);
         for b = 1:local_nblocks
-            l = local_blocks_channel_id(b) - m + 1;
+            l = local_blocks_channel_id(b) - lmin + 1;
             local_y(l) = local_y(l) + norm(y{local_blocks_channel_id(b)}{local_blocks_within_channel_id(b)})^2;
         end
         
@@ -162,10 +166,24 @@ spmd
         % send appropriate value of the sum
         % ! send/receive mode active only if blocks from the channels 
         % handled locally have been stored elsewhere
-        
-        % receive values (if needed)
-        
-    
+        % ! problem: need to match labSend and labReceive
+%         any_send = any(send_worker_id > 0);
+%         if any_send
+%             for b = 1:local_nblocks
+%                 if send_worker_id > 0
+%                     l = local_blocks_channel_id(b) - lmin + 1;
+%                     labSend(send_worker_id(b), local_y(l));
+%                 end
+%             end
+%         end
+%         
+%         % receive values (if needed)
+%         if numel(recv_worker_id) > 1
+%             rcv_data = cell(numel(recv_worker_id));
+%             for b = 1:numel(recv_worker_id)
+%                 rcv_data(b) = labReceive(recv_worker_id(b));
+%             end
+%         end
     end
 end
 
