@@ -83,15 +83,45 @@ Note that real-data parameters, (weighting scheme, ...) if any, still need to be
 
 **DR agnostic algorithm interface**: the DR-agnostic interface is ready. Make sure the `Sigma` variable (DR thershold matrix) is properly defined in the main script.
 
-## Matlab code formatting
+## Contributions
 
-Use the [`miss_hit`](https://github.com/florianschanda/miss_hit) package (to be checked first on a few examples before moving to the full project).
+### Building the documentation
+
+To build the documentation, make sure the following Python packages have been installed, and issue the appropriate buid command.
 
 ```bash
+# setup conda environment to build the documentation
+conda create -n fhs-doc
+conda activate fhs-doc
+pip install sphinx sphinx_rtd_theme sphinxcontrib-bibtex sphinxcontrib-matlabdomain
+
+# building the documentation in html format
+cd docs
+make html
+```
+
+All the generated ``.html`` files are contained in the ``docs/build`` folder.
+
+If needed, you can delete the `conda` environment as follows
+
+```bash
+conda env remove -n fhs-doc
+```
+
+### Matlab code formatting
+
+Make sure any pull request has been properly formatted with the [`miss_hit`](https://pypi.org/project/miss-hit/) package using the `miss_hit.cfg` file provided
+
+```bash
+# activate measurement-operator-doc environment (see previous paragraph)
+conda activate measurement-operator-doc
+# install miss_hit
 pip install miss_hit
-mh_style my_file.m # only analyse the file
-mh_style --fix my_file.m # fix the file based on the rules given in miss_hit.cfg
-mh_style folder/
+
+# mh_style my_file.m # only analyse the file my_file.m
+# mh_style --fix my_file.m # fix the file based on the rules given in miss_hit.cfg
+
+# run the following command from the root of the package (where the miss_hit.cfg file is)
 mh_style --fix .
 ```
 
@@ -99,7 +129,7 @@ mh_style --fix .
 
 - [x] Prepare draft Python scripts for real data examples (only keep useful values, see if anything needs to be added)
 - [ ] Replace FB by FISTA for the projection onto the ellipsoids
-- [ ] Update function interface + name of variables (if necessary)
-- [ ] Adding H matrices to `measurement-operator`
+- [x] Update function interface + name of variables (if necessary)
+- [x] Adding H matrices to `measurement-operator`
 - [x] Adapt synth data scripts to real data
-- [ ] Documenting all functions (ongoing)
+- [x] Documenting all functions (ongoing)
