@@ -46,10 +46,18 @@ c0 = [0, c1];
 blocks_channel_id = zeros(nblocks, 1);
 blocks_channel_worker_id = zeros(nblocks, 1);
 blocks_within_channel_id = zeros(nblocks, 1);
+blocks_worker_id = zeros(nblocks, 1);
+q = 1;
 for b = 1:nblocks
     blocks_channel_id(b) = find(c1 >= b, 1, 'first');
     blocks_channel_worker_id(b) = find(channels_groups(:, 2) >= blocks_channel_id(b), 1, 'first'); % id of the worker responsible for the channel
     blocks_within_channel_id(b) = b - c0(blocks_channel_id(b));
+    if b <= block_groups(q, 2)
+        blocks_worker_id(b) = q;
+    else
+        blocks_worker_id(b) = q + 1;
+        q = q + 1;
+    end
 end
 blocks_id = (1:nblocks).';
 
@@ -98,7 +106,6 @@ spmd
         
         % identify channel associated to each local block (retrieved from central node...)
         local_blocks_channel_id = blocks_channel_id(local_blocks(1):local_blocks(2));
-        
         local_blocks_within_channel_id = blocks_within_channel_id(local_blocks(1):local_blocks(2));
         
         % for each local block, identify on which worker the frequency it
@@ -120,14 +127,12 @@ spmd
         % associated worker id (id of workers containing blocks associated with frequencies handled locally)
         worker_id_blocks_channel_handled_locally = blocks_channel_worker_id(id_blocks_channel_handled_locally);
         
-        % id of blocks not stored on the current process associated to 
+        % id of blocks not stored on the current process but associated to 
         % local channels 
         sel = ((blocks_id < local_blocks(1)) | (blocks_id > local_blocks(2))) & id_blocks_channel_handled_locally;
-        
-        % id of workers containing blocks associated to channels handled
-        % locally, not stored on the current process
-        % problem for receive! (sth is missing here)
-        recv_worker_id = blocks_channel_worker_id(sel);
+        lmin = min(local_blocks_channel_id);
+        recv_blocks_channel = blocks_channel_id(sel) - lmin + 1;
+        recv_worker_id = blocks_worker_id(sel);
         
         % determine which workers are associated with local blocks whose
         % channels are not handled locally (if any) (send)
@@ -138,11 +143,16 @@ spmd
         % to be sent: b such that local_blocks_channel_worker_id(b) != data_id
         
         % check consistency 
-        l = 1;
-        m = min(local_blocks_channel_id);
+        l = 1;        
         for b = 1:local_nblocks
-            l = local_blocks_channel_id(b) - m + 1;
+            l = local_blocks_channel_id(b) - lmin + 1;
             local_y(l) = local_y(l) + norm(y{local_blocks_channel_id(b)}{local_blocks_within_channel_id(b)})^2;
+        end
+        
+        % norm of data for each block
+        data_block_norm = zeros(local_nblocks, 1);
+        for b = 1:local_nblocks
+            data_block_norm(b) = norm(y{local_blocks_channel_id(b)}{local_blocks_within_channel_id(b)})^2;
         end
         
         % identify values which need to be communicated across workers
@@ -162,10 +172,40 @@ spmd
         % send appropriate value of the sum
         % ! send/receive mode active only if blocks from the channels 
         % handled locally have been stored elsewhere
+        % ! problem: need to match labSend and labReceive
+        any_send = any(send_worker_id > 0);
+        if any_send
+            for b = 1:local_nblocks
+                if send_worker_id(b) > 0
+                    % l = local_blocks_channel_id(b) - lmin + 1;
+                    % labSend(local_y(l), send_worker_id(b));
+                    labSend(data_block_norm(b), send_worker_id(b));
+                end
+            end
+        end
         
         % receive values (if needed)
+        if numel(recv_worker_id) > 1
+            rcv_data = zeros(numel(recv_worker_id), 1);
+            for b = 1:numel(recv_worker_id)
+                rcv_data(b) = labReceive(recv_worker_id(b));
+                
+                % ! to be aggregated with the appropriate channel entry (to be revised)
+                loc_id = find(recv_blocks_channel(b) == local_blocks_channel_id, 1, 'first');
+                data_block_norm(loc_id) = data_block_norm(loc_id) + rcv_data(b);
+            end
+        end
         
-    
+        % summing contribution over frequency
+        data_channel_norm = zeros(local_nchannels, 1);
+        for l = 1:local_nchannels
+            for b = 1:local_nblocks
+                if (local_blocks_channel_id(b) == local_channels(1) + l - 1)
+                    data_channel_norm(l) = data_channel_norm(l) + data_block_norm(b);
+                end
+            end
+        end
+
     end
 end
 
