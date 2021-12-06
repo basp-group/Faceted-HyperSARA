@@ -16,8 +16,10 @@ end
 
 % manual assignment of channels and blocks to workers (to be provided by 
 % Arwa's script)
-% ! need to work exclusevly with these quantities
+% ! need to work exclusively with these quantities
 % ! an incoming message discarded on lab 2 when channel_core = [1, 2, 2];
+% ! rule out such situations? (i.e., specifically require that channels 
+% are assigned in priority to processes with a lower rank) (makes sense)
 channel_core = [1, 1, 2]; % nchannels entries
 block_core = [1, 1, 1, 2, 2, 2]; % sum(nblocks_per_channel) entries
 
@@ -30,8 +32,16 @@ numworkers = ncores_data + nfacets;
 channels_groups = zeros(ncores_data, 2);
 % TODO: improve this part
 for c = 1:min(ncores_data, nchannels)
-    channels_groups(c, 1) = find(channel_core == c, 1, 'first');
-    channels_groups(c, 2) = find(channel_core == c, 1, 'last');
+    a = find(channel_core == c, 1, 'first');
+    if ~isempty(a)
+        channels_groups(c, 1) = a;
+    else
+        channels_groups(c, 1) = 1;
+    end
+    a = find(channel_core == c, 1, 'last');
+    if ~isempty(a)
+        channels_groups(c, 2) = a;
+    end
 end
 if nchannels < ncores_data
     % ! 0 as the stop frequency means that the worker is not responsible for
@@ -48,8 +58,16 @@ end
 % TODO: improve this part
 block_groups = zeros(ncores_data, 2);
 for c = 1:min(ncores_data, nchannels)
-    block_groups(c, 1) = find(block_core == c, 1, 'first');
-    block_groups(c, 2) = find(block_core == c, 1, 'last');
+    a = find(block_core == c, 1, 'first');
+    if ~isempty(a)
+        block_groups(c, 1) = a;
+    else
+        block_groups(c, 1) = 1;
+    end
+    a = find(block_core == c, 1, 'last');
+    if ~isempty(a)
+        block_groups(c, 2) = a;
+    end
 end
 
 % channel id of each block
@@ -112,13 +130,11 @@ spmd
             local_channels = [nchannels, 0];
             local_nchannels = 0;
         else
-            % ! needs to be changed
             local_channels = channels_groups(data_id, :); % local_split_range(ncores_data, nchannels, data_id);
             local_nchannels = local_channels(2) - local_channels(1) + 1;
         end
 
         % list of blocks handled on current worker
-        % ! needs to be changed
         local_blocks = block_groups(data_id, :); % local_split_range(ncores_data, nblocks, data_id);
         local_nblocks = local_blocks(2) - local_blocks(1) + 1;
         
@@ -143,7 +159,7 @@ spmd
         id_blocks_channel_handled_locally = (blocks_channel_id >= local_channels(1)) & (blocks_channel_id <= local_channels(2)); % bool vector indicating blocks whose channel is handled locally
         id_blocks_channel_not_handled_locally = (blocks_channel_id < local_channels(1)) | (blocks_channel_id > local_channels(2)); % not required
         % associated worker id (id of workers containing blocks associated with frequencies handled locally)
-        worker_id_blocks_channel_handled_locally = blocks_channel_worker_id(id_blocks_channel_handled_locally);
+        worker_id_blocks_channel_handled_locally = blocks_channel_worker_id(id_blocks_channel_handled_locally); % possibly a problem here!
         
         % id of blocks not stored on the current process but associated to 
         % local channels 
@@ -167,25 +183,17 @@ spmd
             local_y(l) = local_y(l) + norm(y{local_blocks_channel_id(b)}{local_blocks_within_channel_id(b)})^2;
         end
         
-        % norm of data for each block
-        data_block_norm = zeros(local_nblocks, 1);
+        % norm of data for each local block
+        % ! need to assume there can be local channels for which none of 
+        % the blocks are handled locally
+        offset_n_blocks = numel(setdiff(recv_blocks_channel,local_blocks_channel_id));
+        data_block_norm = zeros(local_nblocks + offset_n_blocks, 1);
         for b = 1:local_nblocks
             data_block_norm(b) = norm(y{local_blocks_channel_id(b)}{local_blocks_within_channel_id(b)})^2;
         end
         
         % identify values which need to be communicated across workers
         % (i.e., whenever blocks_channel_worker_id(b) differs from data_id)
-        
-%         for l = 1:local_nchannels
-%             %local_y{l} = cell(local_nblocks, 1);
-%             for b = 1:local_nblocks
-%                 %local_y{l}{b} = y{local_channels + l - 1}{local_blocks_within_channel_id{b}};
-%                 % blocks from outer channels (i.e., stored on other workers)
-%                 if local_blocks_channel_id(b) == l
-%                     local_y(l) = local_y(l) + norm(y{local_blocks_channel_id(b)}{local_blocks_within_channel_id(b)})^2;
-%                 end
-%             end
-%         end
 
         % send appropriate value of the sum
         % ! send/receive mode active only if blocks from the channels 
@@ -203,23 +211,40 @@ spmd
         end
         
         % receive values (if needed)
+        b1 = 1;
         if numel(recv_worker_id) > 1
             rcv_data = zeros(numel(recv_worker_id), 1);
             for b = 1:numel(recv_worker_id)
                 rcv_data(b) = labReceive(recv_worker_id(b));
                 
                 % ! to be aggregated with the appropriate channel entry (to be revised)
+                % ! need to address situations where incoming blocks are 
+                % ! not associated to the same channel as other blocks 
+                % ! handled locally!)
                 loc_id = find(recv_blocks_channel(b) == local_blocks_channel_id, 1, 'first');
-                data_block_norm(loc_id) = data_block_norm(loc_id) + rcv_data(b);
+                if ~isempty(loc_id) % incoming block corresponding to a channel for which some blocks are handled locally
+                    data_block_norm(loc_id) = data_block_norm(loc_id) + rcv_data(b);
+                else % incoming block corresponding to a channel for which no blocks are handled locally
+                    data_block_norm(b+b1) = data_block_norm(b+b1) + rcv_data(b);
+                    b1 = b1 + 1;
+                end
             end
         end
         
         % summing contribution over frequency
         data_channel_norm = zeros(local_nchannels, 1);
+        % ! rather ad hoc modification... see how this can be simplified
         for l = 1:local_nchannels
-            for b = 1:local_nblocks
-                if (local_blocks_channel_id(b) == local_channels(1) + l - 1)
-                    data_channel_norm(l) = data_channel_norm(l) + data_block_norm(b);
+            for b = 1:numel(data_block_norm) % local_nblocks
+                if b < local_nblocks + 1
+                    % ! issue with this condition!
+                    if (local_blocks_channel_id(b) == local_channels(1) + l - 1)
+                        data_channel_norm(l) = data_channel_norm(l) + data_block_norm(b);
+                    end
+                else % ! issue here!
+                    if (recv_blocks_channel(b-offset_n_blocks) == local_channels(1) + l - 1)
+                        data_channel_norm(l) = data_channel_norm(l) + data_block_norm(b);
+                    end
                 end
             end
         end
