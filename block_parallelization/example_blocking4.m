@@ -4,9 +4,9 @@ format compact;
 addpath ../lib/faceted-wavelet-transform/src
 
 %% Base characteristics (to be provided by the user)
-nfacets = 0;  % total number of facets (simple offset in id of data workers)
-nchannels = 3;  % total number of channels to be handled
-ncores_data = 2; % 4  total number of cores allocated to the data fidelity terms
+nfacets = 0;
+nchannels = 3;
+ncores_data = 2; % 4
 
 % data blocks
 nblocks_per_channel = [2, 3, 1]; % (array of size [nchannels, 1])
@@ -14,28 +14,43 @@ if numel(nblocks_per_channel) < nchannels
     error('nblocks_per_channel needs to contain nchannels elements')
 end
 
+% manual assignment of channels and blocks to workers (to be provided by 
+% Arwa's script)
+% ! need to work exclusevly with these quantities
+% ! an incoming message discarded on lab 2 when channel_core = [1, 2, 2];
+channel_core = [1, 1, 2]; % nchannels entries
+block_core = [1, 1, 1, 2, 2, 2]; % sum(nblocks_per_channel) entries
+
 % total number of cores required
 numworkers = ncores_data + nfacets;
 
 %%
 
 % list of channels handled by each worker
-if ncores_data < nchannels
-    channels_groups = split_range(ncores_data, nchannels);
-else
-    channels_groups = split_range(nchannels, nchannels);
+channels_groups = zeros(ncores_data, 2);
+% TODO: improve this part
+for c = 1:min(ncores_data, nchannels)
+    channels_groups(c, 1) = find(channel_core == c, 1, 'first');
+    channels_groups(c, 2) = find(channel_core == c, 1, 'last');
+end
+if nchannels < ncores_data
     % ! 0 as the stop frequency means that the worker is not responsible for
     % any given frequency
-    channels_groups = [channels_groups; [nchannels*ones(ncores_data - nchannels, 1), zeros(ncores_data - nchannels, 1)]];
+    channels_groups(nchannels+1:end, 1) = nchannels;
 end
 
 % list of blocks (unrolled indices) handled by each worker
 % ! the case ncores_data > nblocks should never occur (does not make amy sense)
-nblocks = sum(nblocks_per_channel );
+nblocks = sum(nblocks_per_channel);
 if ncores_data > nblocks
     error('The number of data cores, ncores_data, should be greater than or equal to the total number of blocks');
 end
-block_groups = split_range(ncores_data, nblocks);
+% TODO: improve this part
+block_groups = zeros(ncores_data, 2);
+for c = 1:min(ncores_data, nchannels)
+    block_groups(c, 1) = find(block_core == c, 1, 'first');
+    block_groups(c, 2) = find(block_core == c, 1, 'last');
+end
 
 % channel id of each block
 % TODO: see if computation can be simplified
@@ -97,12 +112,14 @@ spmd
             local_channels = [nchannels, 0];
             local_nchannels = 0;
         else
-            local_channels = local_split_range(ncores_data, nchannels, data_id);
+            % ! needs to be changed
+            local_channels = channels_groups(data_id, :); % local_split_range(ncores_data, nchannels, data_id);
             local_nchannels = local_channels(2) - local_channels(1) + 1;
         end
 
         % list of blocks handled on current worker
-        local_blocks = local_split_range(ncores_data, nblocks, data_id);
+        % ! needs to be changed
+        local_blocks = block_groups(data_id, :); % local_split_range(ncores_data, nblocks, data_id);
         local_nblocks = local_blocks(2) - local_blocks(1) + 1;
         
         % identify channel associated to each local block (retrieved from central node...)
