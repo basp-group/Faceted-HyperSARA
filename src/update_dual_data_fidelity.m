@@ -7,7 +7,8 @@ update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
 % Update the data fidelity term in the preconditioned primal-dual algorithm.
 %
 % Update the data fidelity terms owned by each worked involved in the group
-% of data nodes (with preconditioning -> projection onto an ellipsoid).
+% of data nodes (with preconditioning :math:`\rightarrow` projection onto 
+% an ellipsoid).
 %
 % Parameters
 % ----------
@@ -52,17 +53,17 @@ update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
 % -------
 % v2 : cell
 %     Data fidelity dual variable {L}{nblocks}[M, 1].
-% Ftx (array):
+% Ftx : array
 %     Auxiliary variable for the update of the primal variable [N(1), N(2)].
 % Fx_old
 %     Scaled Fourier transform of the updated image [N(1), N(2), L].
-% proj (cell)
+% proj : cell
 %     Result of the projection step  {L}{nblocks}[M, 1].
-% norm_res (cell)
+% norm_res : cell
 %     Norm of the residual {L}{nblocks}[1].
-% global_norm_res (double)
+% global_norm_res : double
 %     Square global norm of the residual.
-% norm_epsilon (double)
+% norm_epsilon : double
 %     Square global norm of epsilon.
 %
 

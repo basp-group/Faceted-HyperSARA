@@ -56,12 +56,21 @@ Building the documentation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Make sure any new functionality is properly documented using the ``numpy`` docstring style.
-- As soon as ``sphinx`` is installed (``conda install -c anaconda sphinx``), issue the following commands.
+- To build the documentation, issue the folowing commands.
 
 .. code-block:: bash
 
-   conda install -c anaconda sphinx
-   conda install -c conda-forge sphinxcontrib-bibtex
-   pip install -U sphinxcontrib-matlabdomain
-   cd build docs/build/html
+   # setup conda environment to build the documentation
+   conda create -n fhs-doc
+   conda activate fhs-doc
+   pip install sphinx sphinx_rtd_theme sphinxcontrib-bibtex sphinxcontrib-matlabdomain
+   # building the documentation in html format
+   cd docs
    make html
+
+- All the generated ``.html`` files are contained in the ``docs/build`` folder.
+- If needed, you can delete the ``conda`` environment as follows
+
+.. code-block:: bash
+   
+   conda env remove -n fhs-doc
