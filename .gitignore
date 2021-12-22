@@ -34,3 +34,10 @@ docs/_*
 docs/build
 lib/faceted-wavelet-transform/*
 lib/measruement-operator/*
+*.mat
+*.mat
+*.fits
+*.fits
+data/vla_7.95h_dt10s.uvw.mat
+*.fits
+*.mat

@@ -1,4 +1,4 @@
-function cirrus_cluster = util_set_parpool_dev_ad(algo_version, ncores_data, Q, flag_cirrus)
+function cirrus_cluster = util_set_parpool_dev(algo_version, ncores_data, Q, flag_cirrus)
 
 switch algo_version
     case 'sara'
@@ -14,8 +14,9 @@ end
 delete(gcp('nocreate'));
 
 if flag_cirrus
+       fprintf('\nINFO: will open a cirrus parpool of size %d',numworkers)
        cirrus_cluster = parcluster('mySlurmProfileSingleThread');  % parcluster('local');
-       cirrus_cluster.ResourceTemplate = '--export=ALL --ntasks=^N^ --cpus-per-task=^T^ --tasks-per-node=36 --account=ec110-guest --time=96:00:00 --partition=standard --qos=standard';
+       cirrus_cluster.ResourceTemplate = '--export=ALL --ntasks=^N^ --cpus-per-task=^T^ --tasks-per-node=36 --account=ec110-guest  --time=06:00:00 --partition=standard --qos=standard';
 else,  cirrus_cluster = parcluster('local');
 end
 

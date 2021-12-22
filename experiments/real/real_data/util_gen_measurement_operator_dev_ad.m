@@ -71,29 +71,17 @@ for i = 1:nchans
         %     nWw = ones(length(u{i}), 1);
         [u{i}, v{i}, ~, ~, aW{i}, nW] = util_gen_block_structure(u{i}, v{i}, aWw{i}, nWw{i}, param_blocking);
     else
-    aW{i} = cell(numel(u{i}), 1);
+        aW{i} = cell(numel(u{i}), 1);
         for j = 1:numel(u{i})
             aW{i}{j} = util_gen_preconditioning_matrix(u{i}{j}, v{i}{j}, param_precond);
         end
         nW =  nWw{i};
     end
     % measurement operator initialization
-    % [A, At, G{i}, W{i}] = op_p_nufft_irt([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW, kernel);
-
-    param_nufft.nW = nW; % [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW %(p, N, Nn, No, Ns, ww, param)
+    
+    param_nufft.nW = nW;
     if ~(param_preproc.done)
         [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde([v{i} u{i}], w{i}, param_nufft, param_wproj);
-    else
-    load(param_preproc.G_filename(param_preproc.subcube, param_preproc.ch(i)), 'Gw');
-        G{i} = cell(numel(u{i}), 1);
-    W{i} = cell(numel(u{i}), 1);
-        for j = 1:numel(u{i})
-
-        W{i}{j} = (sum(abs(Gw{j}), 1) > 0).'; % , 1).';
-            G{i}{j} = Gw{j}(:, W{i}{j});
-            Gw{j} = [];
-        end
-    clear Gw nW;
     end
 end
 

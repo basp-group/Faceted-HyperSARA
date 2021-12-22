@@ -126,7 +126,7 @@ else
                 fprintf('\nINFO: W-correction will be performed\n');
                 wproj.do = 1;
 
-            else; fprintf('\nINFO: NO W-correction\n');
+            else %fprintf('\nINFO: NO W-correction\n');
                   wproj.do = 0;
             end
             % perform w-correction

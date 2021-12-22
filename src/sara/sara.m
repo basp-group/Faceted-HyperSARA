@@ -57,7 +57,7 @@ else
         else
             xsol = zeros(M, N, c);
         end
-        
+
         if numel(varargin) > 1
             flag_synth_data = true;
             x0 = varargin{2};
@@ -177,11 +177,11 @@ else
             Fx = A(xsol(:, :, i));
             for j = 1:numel(G{i})
                 if istril(G{i}{j})
-                    FxSlice = Fx(W{i}{j});
-                    r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * FxSlice  + (FxSlice' *G{i}{j})');
-                else, r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
-                end
-                [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+		   FxSlice = Fx(W{i}{j});      
+	           r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * FxSlice  + (FxSlice' *G{i}{j})');
+		else, r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+		end
+		[proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
             end
             Fx_old(:, i) = Fx;
         end
@@ -297,28 +297,28 @@ Ftx = zeros(size(xsol));
 fprintf('START THE LOOP MNRAS ver \n\n');
 
 for t = t_start:max_iter
-    
+
     start_iter = tic;
-    
+
     % update primal variable
     tw = tic;
     prev_xsol = xsol;
     xsol = max(real(xsol - g), 0);
     xhat = 2 * xsol - prev_xsol;
     t_master(t) = toc(tw);
-    
+
     %% Relative change of objective function
     rel_val(t) = norm(xsol(:) - prev_xsol(:)) / norm(xsol(:));
     % Free memory
     prev_xsol = [];
-    
+
     %% Dual variables update
-    
+
     %% L-1,1 function update
     for k = 1:P
         f(k) = parfeval(@run_par_waverec, 4, v1{k}, Psit{k}, Psi{k}, xhat, weights1{k}, beta1);
     end
-    
+
     %% L2 ball projection update
     norm_residual_check = 0;
     norm_epsilon_check = 0;
@@ -330,30 +330,30 @@ for t = t_start:max_iter
             g2 = zeros(No, 1);
             for j = 1:length(G{i})
                 dummy =  (2 * Fx(W{i}{j})   - Fx_old(W{i}{j}, i));
-                if istril(G{i}{j})
-                    r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * dummy  + (dummy' *G{i}{j})');
-                else,r2{i}{j} = Sigma{i}{j} .* (G{i}{j} *dummy);
-                end, dummy=[];
-                [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+		if istril(G{i}{j})
+                   r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * dummy  + (dummy' *G{i}{j})');
+	        else,r2{i}{j} = Sigma{i}{j} .* (G{i}{j} *dummy);
+		end
+		[proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
                 v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
-                
+
                 % projection onto the l2-ball
                 % v2{i}{j} = v2{i}{j} + r2{i}{j} - proj_l2ball(v2{i}{j} + r2{i}{j}, epsilon{i}{j}, y{i}{j});
-                
+
                 if istril(G{i}{j})
-                    u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j}) + G{i}{j} * (Sigma{i}{j} .* v2{i}{j});
-                else,	u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j});
-                end
-                g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j}; u2{i}{j}=[];
+	               u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j}) + G{i}{j} * (Sigma{i}{j} .* v2{i}{j});
+		else,	u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j});
+		end
+		g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
                 % norm of residual
                 if istril(G{i}{j})
-                    norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})  + G{i}{j}' * Fx(W{i}{j}))        -y{i}{j});
-                else,norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}))-y{i}{j});
-                end
-                residual_check(counter) = norm_res{i}{j};
+		     norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})  + G{i}{j}' * Fx(W{i}{j}))        -y{i}{j});
+		else,norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}))-y{i}{j});
+		end
+		residual_check(counter) = norm_res{i}{j};
                 epsilon_check(counter) = epsilon{i}{j};
                 counter = counter + 1;
-                
+
                 norm_residual_check = norm_residual_check + norm_res{i}{j}^2;
                 norm_epsilon_check = norm_epsilon_check + power(epsilon{i}{j}, 2);
             end
@@ -368,19 +368,19 @@ for t = t_start:max_iter
                 r2{i}{j} = G{i}{j} * (2 * Fx(W{i}{j}) - Fx_old(W{i}{j}, i));
                 [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
                 v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
-                
+
                 % projection onto the l2-ball
                 % v2{i}{j} = v2{i}{j} + r2{i}{j} - proj_l2ball(v2{i}{j} + r2{i}{j}, epsilon{i}{j}, y{i}{j});
-                
+
                 u2{i}{j} = G{i}{j}' * v2{i}{j};
-                g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j}; u2{i}{j} =[];
-                
+                g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+
                 % norm of residual
                 norm_res{i}{j} = norm(G{i}{j} * Fx(W{i}{j}) - y{i}{j});
                 residual_check(counter) = norm_res{i}{j};
                 epsilon_check(counter) = epsilon{i}{j};
                 counter = counter + 1;
-                
+
                 norm_residual_check = norm_residual_check + norm_res{i}{j}^2;
                 norm_epsilon_check = norm_epsilon_check + power(epsilon{i}{j}, 2);
             end
@@ -391,10 +391,10 @@ for t = t_start:max_iter
     t_data(t) = toc(tw);
     % Free memory
     g2 = []; Fx = [];
-    
+
     norm_epsilon_check = sqrt(norm_epsilon_check);
     norm_residual_check = sqrt(norm_residual_check);
-    
+
     %% Update primal gradient
     g1 = zeros(size(xsol));
     for k = 1:P
@@ -412,11 +412,11 @@ for t = t_start:max_iter
     % previous_l11 = l11;
     l11 = sum(cell2mat(l11_cell));
     fprintf('Iter = %i, Time = %e, t_l11 = %e, t_data = %e, rel_val = %e, epsilon = %e, residual = %e\n', t, end_iter(t), t_data(t), t_l11(t), rel_val(t), norm_epsilon_check, norm_residual_check);
-    
+
     % Free memory
     Ftx = []; g1 = [];
     % rel_obj = abs(l11 - previous_l11)/previous_l11;
-    
+
     %% Display
     if ~mod(t, 100)
         % Log
@@ -424,56 +424,56 @@ for t = t_start:max_iter
             fprintf('Iter %i\n', t);
             fprintf('l11-norm = %e, rel_val = %e\n', l11, rel_val(t));
             fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-            
+
             if flag_synth_data
                 SNR = 20 * log10(norm(x0(:)) / norm(x0(:) - xsol(:)));
                 fprintf(' SNR = %e\n\n', SNR);
             end
         end
     end
-    
+
     %% Check convergence pdfb (inner solver)
     pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ... % minimum number of pdfb iterations
         (t - reweight_last_step_iter >= param.pdfb_max_iter || ... % maximum number of pdfb iterations reached
-        (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance * norm_epsilon_check) || ... % relative variation and data fidelity within tolerance
-        rel_val(t) <= param.pdfb_rel_var_low ... % relative variation really small and data fidelity criterion not satisfied yet
+            (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance * norm_epsilon_check) || ... % relative variation and data fidelity within tolerance
+            rel_val(t) <= param.pdfb_rel_var_low ... % relative variation really small and data fidelity criterion not satisfied yet
         );
-    % && rel_obj <= param.pdfb_rel_obj
-    
+        % && rel_obj <= param.pdfb_rel_obj
+
     %% Update epsilons
     flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update
-        (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
-        (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
-    
+    (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
+    (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
+
     if flag_epsilonUpdate
         [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
             norm_res, param.adapt_eps_tol_in, param.adapt_eps_tol_out, param.adapt_eps_steps, ...
             param.adapt_eps_change_percentage);
     end
-    
+
     %% Reweighting
     if pdfb_converged
         rel_x_reweighting = norm(xlast_reweight(:) - xsol(:)) / norm(xlast_reweight(:));
         xlast_reweight = xsol;
-        
+
         reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >= param.reweighting_min_iter && ...   % minimum number of reweighting iterations
             (reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached
             rel_x_reweighting <= param.reweighting_rel_var ...         % relative variation
             );
-        
+
         if reweighting_converged
             flag_convergence = 1;
             break
         end
-        
+
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count + 1, rel_x_reweighting, reweighting_alpha);
-        
+
         % update l11 norm
         % for k = 1:P
         %     f(k) = parfeval(@run_par_l11, 1, Psit{k}, xsol, weights1{k});
         % end
-        
+
         % compute residual image
         res = zeros(size(xsol));
         if flag_dimensionality_reduction
@@ -481,14 +481,15 @@ for t = t_start:max_iter
                 Fx = A(xsol(:, :, i));
                 g2 = zeros(No, 1);
                 for j = 1:length(G{i})
-                    if istril(G{i}{j})
-                        FxSlice =  Fx(W{i}{j});
-                        res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice'*G{i}{j})'); FxSlice =[];
-                        u2{i}{j} = G{i}{j} * (Sigma{i}{j} .* res_f) +  ( (Sigma{i}{j} .* res_f)' * G{i}{j})' ; res_f =[];
-                    else
-                        u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* (y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}))));
-                    end
-                    g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j}; u2{i}{j} =[];
+		    if istril(G{i}{j})
+			FxSlice =  Fx(W{i}{j});
+		        res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice'*G{i}{j})');
+                        u2{i}{j} = G{i}{j} * (Sigma{i}{j} .* res_f) +  ( (Sigma{i}{j} .* res_f)' * G{i}{j})' ;
+ 	            else
+                         res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+                         u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* res_f);
+	            end
+		    g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
                 end
                 res(:, :, i) = real(At(g2));
             end
@@ -504,7 +505,7 @@ for t = t_start:max_iter
                 res(:, :, i) = real(At(g2));
             end
         end
-        
+
         % update weights
         for k = 1:P
             d_val = abs(Psit{k}(xsol));
@@ -520,18 +521,18 @@ for t = t_start:max_iter
         param.init_reweight_step_count = reweight_step_count + 1;
         param.init_reweight_last_iter_step = t;
         param.init_t_start = t + 1;
-        
+
         % l11 = 0;
         % for k = 1:P
         %     l11_ = fetchNext(f);
         %     l11 = l11 + l11_;
         % end
-        
+
         if flag_synth_data
             SNR = 20 * log10(norm(x0(:)) / norm(x0(:) - xsol(:)));
             fprintf(' SNR = %e\n\n', SNR);
         end
-        
+
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
             % Save parameters (matfile solution)
             m = matfile([checkpoint_name, '_rw=' num2str(reweight_step_count) '.mat'], ...
@@ -560,7 +561,7 @@ for t = t_start:max_iter
                 m.SNR = SNR;
             end
             clear m;
-            
+
             % Log
             if param.verbose >= 1
                 fprintf('Backup iter: %i\n', t);
@@ -568,7 +569,7 @@ for t = t_start:max_iter
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
             end
         end
-        
+
         reweight_step_count = reweight_step_count + 1;
         reweight_last_step_iter = t;
         if reweight_step_count >= param.reweighting_max_iter
@@ -583,14 +584,14 @@ if flag_dimensionality_reduction
         Fx = A(xsol(:, :, i));
         g2 = zeros(No, 1);
         for j = 1:length(G{i})
-            if istril(G{i}{j})
-                FxSlice = Fx(W{i}{j});
-                res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * FxSlice  +  (FxSlice' * G{i}{j})' );
-                u2{i}{j} = G{i}{j} * (Sigma{i}{j} .* res_f) +  ( (Sigma{i}{j} .* res_f)' * G{i}{j})' ;
+	    if istril(G{i}{j})
+		 FxSlice = Fx(W{i}{j});
+	         res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * FxSlice  +  (FxSlice' * G{i}{j})' );
+     		 u2{i}{j} = G{i}{j} * (Sigma{i}{j} .* res_f) +  ( (Sigma{i}{j} .* res_f)' * G{i}{j})' ;
             else, res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
-                u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* res_f);
-            end, res_f =[];
-            g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j}; u2{i}{j} =[];
+                  u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* res_f);
+            end
+	    g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
         end
         res(:, :, i) = real(At(g2));
     end
