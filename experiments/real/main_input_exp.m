@@ -1,15 +1,14 @@
-clear ; clc; close all; delete(gcp('nocreate'))
-%% change path if needed
-hardware = 0 ; %1 if cirrus and 0 if local machine
+clear ; clc; close all;
+%% change paths if needed
 main_dir='./Faceted-Hyper-SARA';
-cubedata_filename=[main_dir,filesep, 'data',filesep];
-calib_dir=[cubedata_filename,'pre_processing_die/'];
-%% general params
+cubedata_dir=[main_dir,filesep, 'data',filesep];
+calib_dir=[cubedata_dir,'pre_processing_die/'];
+
+%% src name & datasets
 imagecubeName = 'CygA';
 datasetNames={'CYGA-ConfigA','CYGA-ConfigC'}; % allowing for multiple datasets
 
-
-%% channels organisation
+% channels organisation
 %%%% option 1: provide a cell array containing the ids of the  channels to be concatenated for each effective channel.
 % example a: two effective channels, containing two 'physical' channels each
 %> effChans2Image={[1,2],[3,4]};
@@ -26,7 +25,6 @@ datasetNames={'CYGA-ConfigA','CYGA-ConfigC'}; % allowing for multiple datasets
 %>idChannels2Image  = [1:272 289:320 337:512]; 
 %>nChannelsPerImage   = 16; 
 
-
 idChannels2Image  = [1:16]; % ids of the 'physical' channels to be imaged 
 nChannelsPerImage   = 16; % number of consecutive channels to be concatenated into each effective channel
 nEffChans2Image=floor(numel(idChannels2Image)/nChannelsPerImage); % channels re-structured into effective channels
@@ -42,8 +40,8 @@ end
 %Note that data 'y' are not whitened, uvw coordinates are in units of the
 %wavelength (i.e. normalised with the freq) and 'maxProjBaseline' is in
 %units of the wavelength
-%! Note the path for .mat files (dataset nametag)
-dataFilename = @(idSet,ch) strcat(cubedata_filename,filesep,datasetNames{idSet},filesep,'data_ch_',num2str(ch),'.mat');
+%! Note the path for .mat files (dataset nametag used)
+dataFilename = @(idSet,ch) strcat(cubedata_dir,filesep,datasetNames{idSet},filesep,'data_ch_',num2str(ch),'.mat');
 
 %% running one subcube at a time
 subcubeInd=0; %  id of subcube is spectral interleaving is active
@@ -56,7 +54,7 @@ param_global.im_Nx = 2560;
 param_global.im_Ny = 1536;
 param_global.im_pixelSize = 0.06;% pixelsize in asec
 
-%faceting params
+%faceting params: note that if interleaving is active, one subcube is imaged at a time: Qc=1 by default.
 param_global.facet_Qx =1; % dimFacet1
 param_global.facet_Qy =1; % dimFacet2
 param_global.facet_overlap_fraction =[0.1,0.1];
