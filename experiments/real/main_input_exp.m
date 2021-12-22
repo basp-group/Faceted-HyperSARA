@@ -45,7 +45,7 @@ end
 dataFilename = @(idSet,ch) strcat(cubedata_filename,filesep,datasetNames{idSet},filesep,'data_ch_',num2str(ch),'.mat');
 
 %% running one subcube at a time
-subcubeInd=1; % 
+subcubeInd=0; %  id of subcube is spectral interleaving is active
 
 % measurement op. params
 param_global.measop_flag_wproj =0;
@@ -60,15 +60,14 @@ param_global.im_pixelSize = 0.06;% pixelsize in asec
 param_global.facet_Qx =1; % dimFacet1
 param_global.facet_Qy =1; % dimFacet2
 param_global.facet_Qc =1; % nSubCubes
-param_global.facet_window_type='triangular';
+%param_global.facet_window_type='triangular';
 param_global.facet_overlap_fraction =[0.1,0.1];
 %
 % reg params
 param_global.reg_gam=0.33; % l21 reg param
 param_global.reg_gam_bar=0.33; % nuclear norm reg param
 param_global.reg_nReweights=5; % number of re-weights
-param_global.reg_flag_reweighting=1; % flag re-weighitng
-param_global.reg_flag_homotopy = 0  ;
+%param_global.reg_flag_reweighting=1; % flag re-weighitng
 %
 % algo & parallelisation params
 param_global.algo_version='sara';
@@ -76,8 +75,8 @@ param_global.algo_flag_computeOperatorNorm = 1  ;
 param_global.algo_flag_solveMinimization = 1  ;
 %
 % filenames and input
-param_global.exp_type = 'exp_interface';
-param_global.main_dir =[main_dir];
+param_global.exp_type = 'test';
+param_global.main_dir =main_dir;
 param_global.preproc_filename_die = @(firstch,lastch) strcat(calib_dir,'/dies/chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
 param_global.preproc_filename_l2bounds = @(firstch,lastch) strcat(calib_dir,'/l2bounds/chs',num2str(firstch),'-',num2str(lastch),'_l2bounds.mat');
 param_global.preproc_filename_model = @(firstch,lastch) strcat(calib_dir,'/model_images/chs',num2str(firstch),'-',num2str(lastch),'_model_image.fits');

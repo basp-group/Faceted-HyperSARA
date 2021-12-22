@@ -10,15 +10,18 @@ function main_real_data_exp(image_name, dataSetsNames,dataFilenames,subcube_ind,
 % ----------
 % image_name : string
 %     Name of the reference synthetic image (from the data/ folder).
-% data_files: cell of string
+% dataSetsNames: cell of string
+%     Names of the datasets to be imaged
+% dataFilenames: cell of string
 %     Name of the data set files
 % subcube_ind : int
 %     Index of the spectral facet to be reconstructed (set to -1 to
-%     deactivate spectral faceting).                                       AD: is this  still the case ????
-% idChannels2Image : vector of int
-%     ids of the channels to be imaged
-% nChannelsPerImage : int
-%     nchannels to be concatenated together to form the output effective image cube
+%     deactivate spectral faceting).       AD: is this  still the case ????
+% effChans2Image: cell array
+%     Ids of the 'physical' channels to  concatenated for each effective channel.
+%
+%
+% param_global: struct
 % param_global.algo_version : string ('sara', 'hs' or 'fhs')
 %     Selected solver.
 % param_global.ncores_data : int
