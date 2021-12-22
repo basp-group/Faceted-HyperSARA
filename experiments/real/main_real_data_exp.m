@@ -12,15 +12,22 @@ function main_real_data_exp(image_name, dataSetsNames,dataFilenames,subcube_ind,
 %     Name of the reference synthetic image (from the data/ folder).
 % dataSetsNames: cell of string
 %     Names of the datasets to be imaged
+%     example a:  one dataset -name tag is not compulsory: 
+%     > datasetNames={''};
+%     example b: two data sets from two configurations of the VLA
+%     > datasetNames={'CYGA-ConfigA','CYGA-ConfigC'}; 
 % dataFilenames: cell of string
 %     Name of the data set files
 % subcube_ind : int
-%     Index of the spectral facet to be reconstructed (set to -1 to
+%     Index of the spectral facet to be reconstructed (set to -1 or 0 to
 %     deactivate spectral faceting).       AD: is this  still the case ????
 % effChans2Image: cell array
 %     Ids of the 'physical' channels to  concatenated for each effective channel.
-%
-%
+%     example a: two effective channels, containing two 'physical' channels each
+%     > effChans2Image={[1,2],[3,4]};
+%     example b: one channel effective channel with one physical channel
+%     > effChans2Image={[1]}
+
 % param_global: struct
 % param_global.algo_version : string ('sara', 'hs' or 'fhs')
 %     Selected solver.
@@ -36,7 +43,6 @@ function main_real_data_exp(image_name, dataSetsNames,dataFilenames,subcube_ind,
 %     image dim. 1
 % param_global.im_Ny : int
 %     image dim 2
-%
 % param_global.facet_Qx : int
 %     Number of spatial facets along axis 2 (x).
 % param_global.facet_Qy : int
