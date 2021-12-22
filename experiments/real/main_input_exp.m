@@ -9,8 +9,23 @@ imagecubeName = 'CygA';
 datasetNames={'CYGA-ConfigA','CYGA-ConfigC'}; % allowing for multiple datasets
 
 %% channels organisation
-% option 1: provide 'effChans2Image' a cell array containing the ids of the  channels to be concatenated for each effective channel. 
-% option 2: provide all ids of channels 'nChannelsPerImage' & num of channel per effective channel 'nChannelsPerImage' channel
+%%%% option 1: provide a cell array containing the ids of the  channels to be concatenated for each effective channel.
+% example a: two effective channels, containing two 'physical' channels each
+%> effChans2Image={[1,2],[3,4]};
+
+% example b: one channel effective channel with one physical channel
+%> effChans2Image={[1]}
+
+%%%% option 2: provide all ids of channels 'nChannelsPerImage' & num of channel per effective channel 'nChannelsPerImage' channel
+% example c: EXP 1: subcube 1 (first channel from each spectral window (2 of  which are flagged).
+%>idChannels2Image  = [1:16:272 289:16:320 337:16:512]; 
+%>nChannelsPerImage   = 1; 
+
+% example d: Exp 2: reduced imagecube containing 30 effective channels each concatenating 16 physical channels
+%>idChannels2Image  = [1:272 289:320 337:512]; 
+%>nChannelsPerImage   = 16; 
+
+
 idChannels2Image  = [1:16]; % ids of the 'physical' channels to be imaged 
 nChannelsPerImage   = 16; % number of consecutive channels to be concatenated into each effective channel
 nEffChans2Image=floor(numel(idChannels2Image)/nChannelsPerImage); % channels re-structured into effective channels
@@ -26,7 +41,7 @@ end
 %Note that data 'y' are not whitened, uvw coordinates are in units of the
 %wavelength (i.e. normalised with the freq) and 'maxProjBaseline' is in
 %units of the wavelength
-%! Note the path for .mat files (stored per dataset nametag)
+%! Note the path for .mat files (dataset nametag)
 dataFilename = @(idSet,ch) strcat(cubedata_filename,filesep,datasetNames{idSet},filesep,'data_ch_',num2str(ch),'.mat');
 
 %% running one subcube at a time
