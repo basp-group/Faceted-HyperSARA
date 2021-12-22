@@ -470,14 +470,7 @@ switch algo_version
                     y{iEffCh,1}{iCh}{idSet} = double(dataloaded.y(:)).* nW{iEffCh,1}{iCh}{idSet}; dataloaded.y =[]; % data whitening
                     if flag_calib.die
                         dieloaded= load(param_preproc.filename_die(effChans2Image{iEffCh}(1),effChans2Image{iEffCh}(end)),'DIES');
-                        try 
-                            y{iEffCh,1}{iCh}{idSet}=y{iEffCh,1}{iCh}{idSet}./dieloaded.DIES{idSet,iCh};
-                           [ numel(dieloaded.DIES{idSet,iCh}) nnz(dieloaded.DIES{idSet,iCh}==1.0);numel(y{iEffCh,1}{iCh}{idSet}) nnz(y{iEffCh,1}{iCh}{idSet})]
-                        catch
-                           [iEffCh iCh idSet]
-                           [ numel(dieloaded.DIES{idSet,iCh}) nnz(dieloaded.DIES{idSet,iCh}==1.0);numel(y{iEffCh,1}{iCh}{idSet}) nnz(y{iEffCh,1}{iCh}{idSet})]
-                        end
-                            dieloaded=[];
+                        y{iEffCh,1}{iCh}{idSet}=y{iEffCh,1}{iCh}{idSet}./dieloaded.DIES{idSet,iCh};
                     end
                     try if flag_dataReduction
                             resy{iEffCh,1}{iCh}{idSet}=RDEffChansloaded.RESIDUAL_DATA{idSet,iCh}; RDEffChansloaded.RESIDUAL_DATA{idSet,iCh}=[];
