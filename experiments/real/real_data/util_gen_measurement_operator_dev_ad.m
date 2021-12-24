@@ -80,7 +80,7 @@ for i = 1:nchans
     % measurement operator initialization
     
     param_nufft.nW = nW;
-    if ~isempty(ddes)
+    if isempty(ddes)
         [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde([v{i} u{i}], w{i}, param_nufft, param_wproj,[]);
         
     else
