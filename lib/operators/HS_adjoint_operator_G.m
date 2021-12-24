@@ -1,6 +1,8 @@
 function x = HS_adjoint_operator_G(y, G, W, At, N, M,flag_dr,Sigma)
-if nargin <7
-    flag_dr=0; Sigma =[];
+if nargin ==6
+    flag_dr=0;
+    Sigma =[];
+elseif nargin ==7,Sigma =[];
 end
     c = length(y);
     x = zeros(N, M, c);

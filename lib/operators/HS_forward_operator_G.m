@@ -1,6 +1,8 @@
 function y = HS_forward_operator_G(x, G, W, A,flag_dr,Sigma)
-if nargin <5
-    flag_dr=0; Sigma =[];
+if nargin ==4
+    flag_dr=0;
+    Sigma =[];
+elseif nargin ==5,Sigma =[];
 end
 [~, ~, c] = size(x);
 y = cell(c, 1);
