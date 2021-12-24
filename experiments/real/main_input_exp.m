@@ -1,14 +1,28 @@
 clear ; clc; close all;
 %% change paths if needed
-main_dir='./Faceted-Hyper-SARA';
-cubedata_dir=[main_dir,filesep, 'data',filesep];
-calib_dir=[cubedata_dir,'pre_processing_die/'];
-
+main_dir=    '/Users/ad33/CodesScience/Faceted-Hyper-SARA/';
+project_dir = [main_dir,filesep,'experiments',filesep,'real'];
+cd(project_dir)
 %% src name & datasets
-imagecubeName = 'CygA';
+imagecubeName = 'CYGA';
 datasetNames={'CYGA-ConfigA','CYGA-ConfigC'}; % allowing for multiple datasets
+% data dir.
+data_dir=[main_dir,filesep, 'data',filesep,imagecubeName,filesep];
+fprintf('\nINFO: data are expected to be saved at %s',data_dir)
+% preproc dir.
+preproc_calib_dir=[data_dir,'pre_processing_die/'];
+% preproc_calib_dir=[cubedata_dir,'pre_processing_dde/'];
 
-% channels organisation
+% data files
+%example of data file: 'data_ch_1.mat' with vars : 'maxProjBaseline', 'u','v','w', 'nW', 'y', 'frequency'.
+%Note that data 'y' are not whitened, uvw coordinates are in units of the
+%wavelength (i.e. normalised with the freq) and 'maxProjBaseline' is in
+%units of the wavelength
+%! Note the path for .mat files (dataset nametag used)
+dataFilename = @(idSet,ch) strcat(data_dir,filesep,datasetNames{idSet},filesep,'data_ch_',num2str(ch),'.mat');
+
+
+%% channels organisation
 %%%% option 1: provide a cell array containing the ids of the  channels to be concatenated for each effective channel.
 % example a: two effective channels, containing two 'physical' channels each
 %> effChans2Image={[1,2],[3,4]};
@@ -33,18 +47,12 @@ for iEff =1:nEffChans2Image
     if iEff<nEffChans2Image, effChans2Image{iEff}=idChannels2Image((iEff-1)*nChannelsPerImage +1:iEff*nChannelsPerImage);
     else,effChans2Image{iEff}= idChannels2Image((iEff-1)*nChannelsPerImage +1:end);
     end
+    fprintf('\nEffective channel ID %d: physical channels involved: %d - %d',iEff,effChans2Image{iEff}(1),effChans2Image{iEff}(end))
 end
 
-%% data files
-%example of data file: 'data_ch_1.mat' with vars : 'maxProjBaseline', 'u','v','w', 'nW', 'y', 'frequency'.
-%Note that data 'y' are not whitened, uvw coordinates are in units of the
-%wavelength (i.e. normalised with the freq) and 'maxProjBaseline' is in
-%units of the wavelength
-%! Note the path for .mat files (dataset nametag used)
-dataFilename = @(idSet,ch) strcat(cubedata_dir,filesep,datasetNames{idSet},filesep,'data_ch_',num2str(ch),'.mat');
-
+%
 %% running one subcube at a time
-subcubeInd=0; %  id of subcube is spectral interleaving is active
+subcubeInd=0; %  id of subcube if spectral interleaving is active
 
 % measurement op. params
 param_global.measop_flag_dataReduction =1;  
@@ -57,21 +65,22 @@ param_global.im_pixelSize = 0.06;% pixelsize in asec
 %faceting params: note that if interleaving is active, one subcube is imaged at a time: Qc=1 by default.
 param_global.facet_Qx =1; % dimFacet1
 param_global.facet_Qy =1; % dimFacet2
-param_global.facet_overlap_fraction =[0.1,0.1];
+param_global.facet_overlap_fraction =[0.5,0.5];
 
 % reg params
 param_global.reg_gam=0.33; % l21 reg param
 param_global.reg_gam_bar=0.33; % nuclear norm reg param
 
 % algo & parallelisation params
-param_global.algo_version='sara';
+param_global.algo_version='fhs';
 
 % filenames and input
 param_global.exp_type = 'test';
-param_global.main_dir =main_dir;
-param_global.preproc_filename_die = @(firstch,lastch) strcat(calib_dir,'/dies/chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
-param_global.preproc_filename_l2bounds = @(firstch,lastch) strcat(calib_dir,'/l2bounds/chs',num2str(firstch),'-',num2str(lastch),'_l2bounds.mat');
-param_global.preproc_filename_model = @(firstch,lastch) strcat(calib_dir,'/model_images/chs',num2str(firstch),'-',num2str(lastch),'_model_image.fits');
+param_global.main_dir = main_dir;
+% param_global.preproc_filename_dde = @(firstch,lastch) strcat(calib_dir,'/ddes/chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
+param_global.preproc_filename_die = @(firstch,lastch) strcat(preproc_calib_dir,'/dies/chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
+param_global.preproc_filename_l2bounds = @(firstch,lastch) strcat(preproc_calib_dir,'/l2bounds/chs',num2str(firstch),'-',num2str(lastch),'_l2bounds.mat');
+param_global.preproc_filename_model = @(firstch,lastch) strcat(preproc_calib_dir,'/model_images/chs',num2str(firstch),'-',num2str(lastch),'_model_image.fits');
 
 % hardware
 param_global.hardware='local';% 'cirrus' or 'local', add your own cluster & update 'util_set_parpool_dev.m' accordingly

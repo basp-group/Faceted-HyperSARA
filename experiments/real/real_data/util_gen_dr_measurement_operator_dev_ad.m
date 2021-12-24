@@ -1,5 +1,5 @@
 function [A, At, H, W, aW,Sigma,data,noise] = util_gen_dr_measurement_operator_dev_ad(y,u, v,w,nWw, ...
-    param_precond, param_blocking, nchans, Nx, Ny, param_nufft,param_wproj,param_preproc)
+    param_precond, param_blocking, nchans, Nx, Ny, param_nufft,param_wproj,preproc_dr_residuals,ddes)
 % Build the measurement operator for a given uv-coverage at pre-defined
 % frequencies.
 %
@@ -86,16 +86,20 @@ for i = 1:nchans
     for j =1:numel(u{i})
         fprintf('\nData Block %d \n',j);
         param_nufft.nW = nW(j);
-        [~,~, G, Wcurr] = op_p_nufft_wproj_dde([v{i}(j) u{i}(j)],w{i}(j),param_nufft,param_wproj );
+        if isempty(ddes)
+            [~,~, G, Wcurr] = op_p_nufft_wproj_dde([v{i}(j) u{i}(j)],w{i}(j),param_nufft,param_wproj,[]);
+        else
+            [~,~, G, Wcurr] = op_p_nufft_wproj_dde([v{i}(j) u{i}(j)],w{i}(j),param_nufft,param_wproj,ddes{i}(j) );
+        end
         Gcurr = sparse(prod(param_nufft.No),size(G{1},1));
         Gcurr(Wcurr{1},:)= G{1}';
         clear G;        
-        
-        try % check is residual  data are available to get updatesd l2bounds
-            if j==1, res_data{i}{1} = Gcurr*param_preproc.resy{i}{j};
-            else, res_data{i}{1} =  res_data{i}{1}  + Gcurr*param_preproc.resy{i}{j};
+        if  ~isempty(preproc_dr_residuals)
+            try % check is residual  data are available to get updatesd l2bounds
+                if j==1, res_data{i}{1} = Gcurr*preproc_dr_residuals{i}{j};
+                else, res_data{i}{1} =  res_data{i}{1}  + Gcurr*preproc_dr_residuals{i}{j};
+                end
             end
-            fprintf('\nresidual data vector found ')
         end
         
         % gridded data & active Fourier modes & H
