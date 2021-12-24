@@ -1,6 +1,6 @@
-function x = HS_adjoint_operator_G(y, G, W, At, N, M,flag_dr)
+function x = HS_adjoint_operator_G(y, G, W, At, N, M,flag_dr,Sigma)
 if nargin <7
-    flag_dr=0;
+    flag_dr=0; Sigma =[];
 end
     c = length(y);
     x = zeros(N, M, c);
@@ -11,9 +11,12 @@ end
         g2 = zeros(No, 1);
         for j = 1:length(G{i})
             if flag_dr
-                g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * (y{i}{j}) +  G{i}{j} * (y{i}{j});
-            else %         g2 = g2 + G{i}{j}' * (sqrt(aW{i}{j}) .* y{i}{j});
-                g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * (y{i}{j});
+	       if istril(G{i}{j})
+		     weighted_data = (Sigma{i}{j}.*y{i}{j});
+		     g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * weighted_data  +  G{i}{j} * weighted_data;
+	       else, g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * (Sigma{i}{j}.*y{i}{j});
+               end
+	    else, g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * (y{i}{j});
             end
         end
         x(:, :, i) = At(g2);
