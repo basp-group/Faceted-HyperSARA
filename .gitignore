@@ -41,3 +41,5 @@ lib/measruement-operator/*
 data/vla_7.95h_dt10s.uvw.mat
 *.fits
 *.mat
+*.fits
+data/W28_512.fits
