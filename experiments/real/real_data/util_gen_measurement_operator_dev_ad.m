@@ -1,5 +1,5 @@
 function [A, At, G, W, aW] = util_gen_measurement_operator_dev_ad(u, v, w, nWw, ...
-    param_precond, param_blocking, nchans, Nx, Ny, param_nufft, param_wproj,ddes)
+    param_precond, param_blocking, nchans, Nx, Ny, param_nufft, param_wproj, ddes)
 % Build the measurement operator for a given uv-coverage at pre-defined
 % frequencies.
 %
@@ -78,15 +78,15 @@ for i = 1:nchans
         nW =  nWw{i};
     end
     % measurement operator initialization
-    
+
     param_nufft.nW = nW;
     if isempty(ddes)
-        [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde([v{i} u{i}], w{i}, param_nufft, param_wproj,[]);
-        
+        [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde([v{i} u{i}], w{i}, param_nufft, param_wproj, []);
+
     else
-        [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde([v{i} u{i}], w{i}, param_nufft, param_wproj,ddes{i});
+        [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde([v{i} u{i}], w{i}, param_nufft, param_wproj, ddes{i});
     end
-    
+
 end
 
 end

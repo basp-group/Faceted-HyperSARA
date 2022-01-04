@@ -133,8 +133,8 @@ if ~isfield(param_global, 'l2bounds_filename'); param_global.l2bounds_filename =
 if ~isfield(param_global, 'G_filename'); param_global.G_filename = []; end
 if ~isfield(param_global, 'model_filename'); param_global.model_filename = []; end
 
-%%-------------------------------------------------------------------------%
-%%-------------------------------------------------------------------------%
+%% -------------------------------------------------------------------------%
+%% -------------------------------------------------------------------------%
 %% get imaging setting
 
 % image dimensions & resolution
@@ -184,7 +184,7 @@ param_preproc.l2bounds_filename = param_global.l2bounds_filename;
 param_preproc.model_filename = param_global.model_filename;
 param_preproc.subcube = subcube_ind;
 param_preproc.done = ~isempty(param_preproc.l2bounds_filename) * ~isempty(param_preproc.model_filename) * ~isempty(param_preproc.G_filename);
-%%-------------------------------------------------------------------------%
+%% -------------------------------------------------------------------------%
 %% info + paths
 format compact;
 project_dir = param_global.main_dir;
@@ -260,7 +260,7 @@ if ~isempty(l2bounds_filename)
         loaded = load(param_preproc.l2bounds_filename(subcube_ind, channels2image(iCh)), 'l2bounds', 'sigmac');
         l2bounds{iCh} = loaded.l2bounds;
         try global_sigma_noise(iCh) = loaded.sigmac;
-        catch,   global_sigma_noise(iCh) = 1;
+        catch ;   global_sigma_noise(iCh) = 1;
         end
     end
 else
@@ -277,24 +277,24 @@ end
 %% image cube initialisation
 switch algo_version
     case 'sara'
-        xinit=zeros(Ny,Nx);
+        xinit = zeros(Ny, Nx);
         if param_preproc.done
-            try xinit =fitsread(param_preproc.model_filename(spwins2image));
-                if  ~(size(xinit,1)==Ny && size(xinit,2)==Nx)
-                    xinit=zeros(Ny,Nx);
-                else,fprintf('\nWARNING: init image not found')
+            try xinit = fitsread(param_preproc.model_filename(spwins2image));
+                if  ~(size(xinit, 1) == Ny && size(xinit, 2) == Nx)
+                    xinit = zeros(Ny, Nx);
+                else; fprintf('\nWARNING: init image not found');
                 end
-            catch, fprintf('\nWARNING: init image not found')
+            catch ; fprintf('\nWARNING: init image not found');
             end
         end
     otherwise
         xinit = zeros(N, nchans);
         if param_preproc.done
-            for  iSpWin =  1 : nchans
-                try    xinit(:,iSpWin) = reshape(fitsread(param_preproc.model_filename(spwins2image(iSpWin))),N,1);
-                catch, fprintf('\nWARNING: init image has diff dimensions')
+            for  iSpWin =  1:nchans
+                try    xinit(:, iSpWin) = reshape(fitsread(param_preproc.model_filename(spwins2image(iSpWin))), N, 1);
+                catch ; fprintf('\nWARNING: init image has diff dimensions');
                 end
-                
+
             end
         end
 end
@@ -406,11 +406,11 @@ switch algo_version
                 param_precond, param_blocking, 1, Nx, Ny, param_nufft, param_wproj, param_preproc);
             Sigma = [];
         end
-        
+
     otherwise % 'hs' or 'fhs'
         % create the measurement operator operator in parallel (depending on
         % the algorithm used)
-        
+
         if strcmp(algo_version, 'hs')
             spmd
                 local_fc = (freqRangeCores(labindex, 1):freqRangeCores(labindex, 2));
@@ -444,7 +444,7 @@ switch algo_version
                 end
             end
         end; clear local_fc;
-        
+
 end; clear param_blocking param_precond; %% Free memory
 
 % ids
@@ -462,7 +462,7 @@ switch algo_version
     otherwise
         yCmpst = Composite();
         epsilons = Composite();
-        
+
         for k = 1:ncores_data
             yCmpst{data_worker_id(k)} = y(freqRangeCores(k, 1):freqRangeCores(k, 2));
             epsilons{data_worker_id(k)} = l2bounds(freqRangeCores(k, 1):freqRangeCores(k, 2));
@@ -499,7 +499,7 @@ if strcmp(algo_version, 'sara')
             'Anorm', 'squared_operator_norm_precond', 'squared_operator_norm');
     end
 else
-    
+
     % save operator norm from the different subcubes into a single .mat  file
     opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
         '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
@@ -524,26 +524,26 @@ else
             squared_operator_norm(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = squared_operator_norm_Cmpst{data_worker_id(k)};
             squared_operator_norm_precond(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = squared_operator_norm_precond_Cmpst{data_worker_id(k)};
         end
-        
+
         % save operator norm from the different subcubes into a single .mat
         opnormfile.squared_operator_norm = zeros(nchans, 1);
         opnormfile.rel_var = zeros(nchans, 1);
         opnormfile.squared_operator_norm_precond = zeros(nchans, 1);
         opnormfile.rel_var_precond = zeros(nchans, 1);
-        
+
         Anorm = 0;
         for k = 1:ncores_data
             selected_channels = channels2image(freqRangeCores(k, 1):freqRangeCores(k, 2));
             opnormfile.squared_operator_norm(selected_channels, 1) =   squared_operator_norm_Cmpst{data_worker_id(k)};
             opnormfile.rel_var(selected_channels, 1) = rel_var_Cmpst{data_worker_id(k)};
-            
+
             opnormfile.squared_operator_norm_precond(selected_channels, 1) = squared_operator_norm_precond_Cmpst{data_worker_id(k)};
             opnormfile.rel_var_precond(selected_channels, 1) = rel_var_precond_Cmpst{data_worker_id(k)};
-            
+
             Anorm = max(Anorm, An_Cmpst{data_worker_id(k)});
         end
         clear An_Cmpst  rel_var_Cmpst rel_var_precond_Cmpst squared_operator_norm_precond_Cmpst;
-        
+
     else
         fprintf('\nLoading operators norm .. ');
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond; % (channels2image, 1);
@@ -553,7 +553,7 @@ else
         Anorm = max(squared_operator_norm_precond .* (1 + rel_var_precond));
         squared_operator_norm = opnormfile.squared_operator_norm;
         squared_operator_norm = squared_operator_norm(channels2image, 1);
-        
+
     end
 end
 
@@ -581,7 +581,7 @@ fprintf('Convergence parameter (measurement operator): %e \n', Anorm);
 % SARA space) involved in the reweighting scheme
 
 if strcmp(algo_version, 'sara')
-    
+
     % SARA dicionary (created out of the solver for SARA)
     dwtmode('zpd');
     [Psi1, Psit1] = op_p_sp_wlt_basis(dict.basis, dict.nlevel, Ny, Nx);
@@ -589,7 +589,7 @@ if strcmp(algo_version, 'sara')
     Psi = cell(P, 1);
     Psit = cell(P, 1);
     s = zeros(P, 1); % number of wavelet coefficients for each dictionary
-    
+
     for k = 1:P
         f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
         f = sprintf('%s%i},Ny,Nx);', f, k);
@@ -598,10 +598,10 @@ if strcmp(algo_version, 'sara')
         ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},s(' num2str(k) '));'];
         Psit{k} = eval(ft);
     end
-    
+
     % noise level / regularization parameter
     sig = compute_noise_level_sara(global_sigma_noise, squared_operator_norm);
-    
+
     % apply multiplicative factor for the regularization parameter (if needed)
     mu = param_reg.gam * sig;
     fprintf('Noise level: sig = %e\n', sig);
@@ -611,11 +611,11 @@ if strcmp(algo_version, 'sara')
 end
 
 if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
-    
+
     % noise level / regularization parameter
     [sig, sig_bar, mu_chi, sig_chi, sig_sara] = compute_noise_level(Ny, Nx, nchans, global_sigma_noise(:), ...
         algo_version, Qx, Qy, overlap_size, squared_operator_norm(:));
-    
+
     % apply multiplicative factor for the regularization parameters (if needed)
     mu_bar = param_reg.gam_bar * sig_bar;
     mu = param_reg.gam * sig;
@@ -636,19 +636,18 @@ name_checkpoint = fullfile(auxiliary_path, temp_results_name(nChannels));
 name_warmstart = fullfile(auxiliary_path, warm_start(nChannels));
 
 if flag_solveMinimization
-    %% 
+    %%
     mkdir('results/');
     if strcmp(algo_version, 'sara')
         disp('SARA');
         disp('-----------------------------------------');
-        
+
         % ! in this case, ncores_data corresponds
         % ! to the number of workers for the wavelet transform (9 maximum)
         xsol = sara(y, epsilons, A, At, aW, G, W, Psi, Psit, ...
             param_solver, name_warmstart, name_checkpoint, param_reg.gam, ...
             flag_dr, Sigma, xinit); % ,[], x0);
-        
-        
+
         fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
             '_pixelsize', num2str(pixelSize), ...
             '_', window_type, ...
@@ -657,14 +656,14 @@ if flag_solveMinimization
             '_gam', num2str(param_reg.gam), '.fits')));
     else
         %%
-        
+
         % spectral tesselation (non-overlapping)
         % ! to be updated tonight (need to be careful about the different variables needed + implicit parallelization conventions)
         cell_c_chunks = cell(ncores_data, 1); % ! to check
         for k = 1:ncores_data
             cell_c_chunks{k} = freqRangeCores(k, 1):freqRangeCores(k, 2);
         end
-        
+
         %%
         switch algo_version
             case 'hs'
@@ -685,11 +684,11 @@ if flag_solveMinimization
                     cell_c_chunks, nchans, overlap_size, param_reg.gam, param_reg.gam_bar, ...
                     Ny, Nx, param_nufft.oy, param_nufft.ox, ...
                     name_warmstart, name_checkpoint, flag_dr, Sigma, ...
-                    xinit); 
+                    xinit);
             otherwise
                 error('Unknown solver version.');
         end
-        
+
         fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
             '_', window_type, ...
             '_cellsz', num2str(pixelSize), ...
