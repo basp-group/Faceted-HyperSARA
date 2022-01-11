@@ -5,30 +5,31 @@ function [v1, g1] = hs_update_dual_sparsity_distributed(v1, Psit, Psi, ...
 %
 % Parameters
 % ----------
-% v1 : array (2d)
+% v1 : double[:, :]
 %     Dual variable associated with the facet :math:`\ell_{2,1}` norm
-%     [s, L].
+%     ``[s, L]``.
 % Psit : anonymous function
-%     Full SARA operator @[1].
+%     Full SARA operator ``@[1]``.
 % Psi : anonymous function
-%     Adjoint of the full SARA operator @[1].
-% xhat : array (3d)
-%     Auxiliary variable related to the wideband image [M, N, L].
-% weights1 : array (2d)
+%     Adjoint of the full SARA operator ``@[1]``.
+% xhat : double[:, :, :]
+%     Auxiliary variable related to the wideband image ``[M, N, L]``.
+% weights1 : double[:, :]
 %     Weights associated with the reweigthing step pixels due to the
-%     overlap between facets [M, N].
+%     overlap between facets ``[M, N]``.
 % beta1 : double
-%     Update step (mu / gamma1) [1].
+%     Update step (mu / gamma1) ``[1]``.
 % sigma1 : double
-%     Convergence parameter [1].
+%     Convergence parameter ``[1]``.
 %
 % Returns
 % -------
-% v1 : array (2d)
+% v1 : double[:, :]
 %     Dual variable associated with the :math:`\ell_{2,1}` norm prior
-%     [s, L].
-% g1 : array (3d)
-%     Auxiliary variable for the update of the primal variable [M, N, L].
+%     ``[s, L]``.
+% g1 : double[:, :, :]
+%     Auxiliary variable for the update of the primal variable 
+%     ``[M, N, L]``.
 %
 
 % -------------------------------------------------------------------------%

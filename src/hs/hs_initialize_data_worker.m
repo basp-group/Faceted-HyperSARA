@@ -18,8 +18,8 @@ function [v2, norm_res, t_block, proj] = hs_initialize_data_worker(y)
 %     Same structure as
 %     ``y``.
 % proj : cell
-%     Result of the projection step  {L}{nblocks}[M, 1]. Same structure as
-%     ``y``.
+%     Result of the projection step  ``{L}{nblocks}[M, 1]``. Same structure
+%     as ``y``.
 %
 
 nChannels = numel(y);

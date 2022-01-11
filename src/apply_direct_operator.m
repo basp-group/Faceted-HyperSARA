@@ -4,16 +4,16 @@ function y = apply_direct_operator(Fx, G, Sigma)
 %
 % Parameters
 % ----------
-% Fx : array (complex)
+% Fx : complex[:]
 %     Scaled discrete Fourier transform of a 2d array :math:`x`.
-% G : array (real)
+% G : complex[:, :]
 %     Gridding matrix (including noise whitening operator).
-% Sigma : array (real)
+% Sigma : double[:]
 %     Reduction operator.
 %
 % Returns
 % -------
-% y : array (complex)
+% y : complex[:]
 %     Visibility vector.
 %
 

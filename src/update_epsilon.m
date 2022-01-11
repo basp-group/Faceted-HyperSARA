@@ -12,14 +12,14 @@ function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
 % Parameters
 % ----------
 % epsilon : cell
-%     Radius of the :math:`\ell_2`-ball constraint {L}{nblocks}.
+%     Radius of the :math:`\ell_2`-ball constraint ``{L}{nblocks}``.
 % t : int
 %     Current iteration index.
 % t_block : cell
 %     Last iteration at which each block of ``epsilon`` constraint has been
-%     updated {L}{nblocks}.
+%     updated ``{L}{nblocks}``.
 % norm_res : cell
-%     Norm of the residual image {L}{nblocks}.
+%     Norm of the residual image ``{L}{nblocks}``.
 % adapt_eps_tol_in : double
 %     Tolerance for the norm of the residual (below the current value of
 %     ``epsilon``, within the ball).
@@ -34,9 +34,9 @@ function [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
 % Returns
 % -------
 % epsilon : cell
-%     Updated :math:`\ell_2`-ball radii {L}{nblocks}.
+%     Updated :math:`\ell_2`-ball radii ``{L}{nblocks}``.
 % t_block : cell
-%     Last iteration at which each block has been updated {L}{nblocks}.
+%     Last iteration at which each block has been updated ``{L}{nblocks}``.
 %
 
 % -------------------------------------------------------------------------%

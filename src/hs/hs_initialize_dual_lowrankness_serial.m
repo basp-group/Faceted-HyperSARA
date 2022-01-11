@@ -4,8 +4,8 @@ function [v0, weights0] = ...
 %
 % Parameters
 % ----------
-% x : array (3d)
-%     Wideband image [M, N, L].
+% x : double[:, :, :]
+%     Wideband image ``[M, N, L]``.
 % reweighting_alpha : double
 %     Reweighting parameter.
 % sig_bar : double
@@ -13,10 +13,10 @@ function [v0, weights0] = ...
 %
 % Returns
 % -------
-% v0 : cell
+% v0 : double[:, :]
 %     Dual variable associated with the nuclear-norm  prior
-%     [min(M*N, L), 1].
-% weights0 : cell
+%     ``[min(M*N, L), 1]``.
+% weights0 : double[:]
 %     Associated weights for the reweigthing step.
 %
 

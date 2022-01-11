@@ -5,12 +5,13 @@ function [v0, g0] = hs_update_dual_lowrankness_serial(v0, xhat, ...
 %
 % Parameters
 % ----------
-% v0 : array (2d)
-%     Dual variable associated with the nuclear norm prior [min(M*N, L), 1].
-% xhat : array (3d)
-%     Auxiliary variable related to the wideband image [M, N, L]
-% weights0 : array (2d)
-%     Weights for the reweighting [min(M*N, L), 1]
+% v0 : double[:, :]
+%     Dual variable associated with the nuclear norm prior 
+%     ``[min(M*N, L), 1]``.
+% xhat : double[:, :, :]
+%     Auxiliary variable related to the wideband image ``[M, N, L]``.
+% weights0 : double[:, :]
+%     Weights for the reweighting ``[min(M*N, L), 1]``.
 % beta0 : double
 %     Thresholding parameter (gamma0 / sigma0) [1]
 % sigma0 : double
@@ -18,10 +19,12 @@ function [v0, g0] = hs_update_dual_lowrankness_serial(v0, xhat, ...
 %
 % Returns
 % -------
-% v0 : array (2d)
-%     Dual variable associated with the nuclear norm prior [min(M*N, L), 1].
-% weights0 : array (3d)
-%     Auxiliary variable for the update of the primal variable [M, N, L].
+% v0 : double[:, :]
+%     Dual variable associated with the nuclear norm prior 
+%     ``[min(M*N, L), 1]``.
+% weights0 : double[:, :, :]
+%     Auxiliary variable for the update of the primal variable 
+%     ``[M, N, L].``
 %
 
 % -------------------------------------------------------------------------%

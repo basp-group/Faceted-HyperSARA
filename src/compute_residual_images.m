@@ -6,27 +6,27 @@ function residual_image = compute_residual_images(x, y, A, At, ...
 %
 % Parameters
 % ----------
-% x : array (3d)
-%     Wideband image cube [N(1), N(2), L].
+% x : double[:, :, :]
+%     Wideband image cube ``[N(1), N(2), L]``.
 % y : cell
-%     Blocked visibilities {L}{nblocks}.
+%     Blocked visibilities ``{L}{nblocks}``.
 % A : anonymous function
-%     Measurement operator @[1].
+%     Measurement operator ``@[1]``.
 % At : anonymous function
 %     Adjoint measurement operator @[1].
 % G : cell
-%     Blocked gridding matrix {L}{nblocks}.
+%     Blocked gridding matrix ``{L}{nblocks}``.
 % W : cell
-%     Masking operators (selection of data blocks) {L}{nblocks}.
+%     Masking operators (selection of data blocks) ``{L}{nblocks}``.
 % flagDR : bool
 %     Flag to activate DR functionality.
 % Sigma : cell
-%     Dimensionality reduction weights {L}{nblocks}.
+%     Dimensionality reduction weights ``{L}{nblocks}``.
 %
 % Returns
 % -------
-% residual_image : array (3d)
-%     Residual image cube [N(1), N(2), L].
+% residual_image : double[:, :, :]
+%     Residual image cube ``[N(1), N(2), L]``.
 %
 
 % -------------------------------------------------------------------------%

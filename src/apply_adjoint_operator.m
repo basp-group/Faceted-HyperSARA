@@ -5,16 +5,16 @@ function Fx = apply_adjoint_operator(y, G, Sigma)
 %
 % Parameters
 % ----------
-% y : array (complex)
+% y : complex[:]
 %     Input data array (data-block).
 % G : sparse array
 %     Gridding matrix (including noise whitening operator).
-% Sigma : array (real)
+% Sigma : double[:]
 %     Reduction operator.
 %
 % Returns
 % -------
-% Fx : array (complex)
+% Fx : complex[:]
 %     Gridded visibilities.
 %
 

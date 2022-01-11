@@ -5,10 +5,10 @@ function [v1, weights1, s] = hs_initialize_dual_sparsity_distributed(x, ...
 %
 % Parameters
 % ----------
-% x : array (3d)
-%     Wideband image [M, N, L].
+% x : double[:, :, :]
+%     Wideband image ``[M, N, L]``.
 % Psit : anonymous function
-%     Full SARA operator @[1].
+%     Full SARA operator ``@[1]``.
 % extension_mode : string
 %     Name of the boundary extension mode.
 % nlevel : int
@@ -20,12 +20,12 @@ function [v1, weights1, s] = hs_initialize_dual_sparsity_distributed(x, ...
 %
 % Returns
 % -------
-% v1 : array (double, 2d)
-%     Dual variable associated with the l21-norm prior [s, L].
-% weights1 : array (double, 2d)
-%     Weights associated for the reweigthing step [s, L].
+% v1 : double[:, :]
+%     Dual variable associated with the l21-norm prior ``[s, L]``.
+% weights1 : double[:, :]
+%     Weights associated for the reweigthing step ``[s, L]``.
 % s : int
-%     Number of wavelet decompostion for each channel [1].
+%     Number of wavelet decompostion for each channel ``[1]``.
 %
 
 % -------------------------------------------------------------------------%

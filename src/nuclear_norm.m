@@ -6,8 +6,8 @@ function f = nuclear_norm(x)
 %
 % Parameters
 % ----------
-% x : array 3d()
-%     Wideband image cube [N(1), N(2), L].
+% x : double[:, :, :]
+%     Wideband image cube ``[N(1), N(2), L]``.
 %
 % Returns
 % -------

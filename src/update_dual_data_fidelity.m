@@ -13,17 +13,17 @@ update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
 % Parameters
 % ----------
 % v2 : cell
-%     Data fidelity dual variable {L}{nblocks}[M, 1].
+%     Data fidelity dual variable ``{L}{nblocks}[M, 1]``.
 % y : cell
-%     Blocks of visibilities {L}{nblocks}[M, 1].
-% x : array (3d)
-%     Primal variable [N(1), N(2), L].
-% Fx_old : array (3d)
+%     Blocks of visibilities ``{L}{nblocks}[M, 1]``.
+% x : double[:, :, :]
+%     Primal variable ``[N(1), N(2), L]``.
+% Fx_old : complex[:, :, :]
 %     Scaled Fourier transform of :math:`x` from the previous iterations
-%     [N(1), N(2), L].
+%     ``[N(1), N(2), L]``.
 % proj : cell
 %     Value of the projection at the previous global iteration, taken as a
-%     starting point {L}{nblocks}[M, 1].
+%     starting point ``{L}{nblocks}[M, 1]``.
 % A : anonymous function
 %     Measurement operator @[1].
 % At : anonymous function
@@ -42,7 +42,7 @@ update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
 %     Minimum number of iterations (projection onto the ellipsoid)
 % elipse_proj_eps : double
 %     Stopping criterion for the projection.
-% sigma22 : array (1d)
+% sigma22 : double[:]
 %     Step-size for the update of the dual variable (tau*sigma2).
 % flag_dimensionality_reduction : bool
 %     Flag to activate DR functionality.
@@ -52,15 +52,15 @@ update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
 % Returns
 % -------
 % v2 : cell
-%     Data fidelity dual variable {L}{nblocks}[M, 1].
-% Ftx : array
-%     Auxiliary variable for the update of the primal variable [N(1), N(2)].
+%     Data fidelity dual variable ``{L}{nblocks}[M, 1]``.
+% Ftx : double[:, :]
+%     Auxiliary variable for the update of the primal variable ``[N(1), N(2)]``.
 % Fx_old
-%     Scaled Fourier transform of the updated image [N(1), N(2), L].
+%     Scaled Fourier transform of the updated image ``[N(1), N(2), L]``.
 % proj : cell
-%     Result of the projection step  {L}{nblocks}[M, 1].
+%     Result of the projection step  ``{L}{nblocks}[M, 1]``.
 % norm_res : cell
-%     Norm of the residual {L}{nblocks}[1].
+%     Norm of the residual ``{L}{nblocks}[1]``.
 % global_norm_res : double
 %     Square global norm of the residual.
 % norm_epsilon : double

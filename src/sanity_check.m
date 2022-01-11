@@ -7,9 +7,9 @@ function [global_norm_res, norm_epsilon] = sanity_check(epsilon, norm_res)
 % Parameters
 % ----------
 % epsilon : cell
-%     Norm of the residual {L}{nblocks}[1].
+%     Norm of the residual ``{L}{nblocks}[1]``.
 % norm_res : cell
-%     :math:`\ell_2`-ball constraints {L}{nblocks}[1].
+%     :math:`\ell_2`-ball constraints ``{L}{nblocks}[1]``.
 %
 % Returns
 % -------

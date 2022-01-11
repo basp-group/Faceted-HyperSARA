@@ -3,7 +3,7 @@ function Fx = apply_scaled_fourier_transform(x, A, No)
 %
 % Parameters
 % ----------
-% x : array (3d)
+% x : double[:, :, :]
 %     Input wideband image cube.
 % A : lambda function
 %     Lambda function to compute the scaled Fourier transform of each slice
@@ -13,7 +13,7 @@ function Fx = apply_scaled_fourier_transform(x, A, No)
 %
 % Returns
 % -------
-% Fx : array (2d)
+% Fx : double[:, :]
 %     Matrix whose column contain the scaled Fourier transform of each
 %     slice of ``x``.
 %

@@ -1,6 +1,33 @@
 function [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
     compute_noise_level(Ny, Nx, n_channels, std_noise, algo_version, ...
     Qx, Qy, overlap_size, squared_operator_norm)
+% [summary]
+%
+% [extended_summary]
+%
+% Parameters
+% ----------
+% Ny : [type]
+%     [description]
+% Nx : [type]
+%     [description]
+% n_channels : [type]
+%     [description]
+% std_noise : [type]
+%     [description]
+% algo_version : [type]
+%     [description]
+% Qy : [type]
+%     [description]
+% overlap_size : [type]
+%     [description]
+% squared_operator_norm : [type]
+%     [description]
+%
+% Returns
+% -------
+% [type]
+%     [description]
 
 % compute sig and sig_bar
 sig_sara = sqrt(mean((std_noise.^2) ./ squared_operator_norm));

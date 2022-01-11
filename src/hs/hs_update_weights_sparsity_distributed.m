@@ -5,21 +5,21 @@ function weights = hs_update_weights_sparsity_distributed(x, Psit, ...
 %
 % Parameters
 % ----------
-% x : array (3d)
-%     Wideband image [M, N, L].
+% x : double[:, :, :]
+%     Wideband image ``[M, N, L]``.
 % Psit : lambda functions
-%     Full SARA operator @[1].
-% weights : array (2d)
-%     Weights associated with the reweigthing step [s, L].
+%     Full SARA operator ``@[1]``.
+% weights : double[:, :]
+%     Weights associated with the reweigthing step ``[s, L]``.
 % reweight_alpha : double
-%     Reweighting parameter [1].
+%     Reweighting parameter ``[1]``.
 % sig : double
 %     Estimate of the noise level in the SARA domain.
 %
 % Returns
 % -------
-% weights : array (2d)
-%     Updated weights associated with the reweigthing step [s, L].
+% weights : double[:, :]
+%     Updated weights associated with the reweigthing step ``[s, L]``.
 %
 
 % -------------------------------------------------------------------------%
