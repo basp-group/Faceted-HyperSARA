@@ -8,23 +8,26 @@ function [v0, g0] = fhs_update_dual_lowrankness(v0, xhat, ...
 %
 % Parameters
 % ----------
-% v0 : array
-%     Dual variable associated with the nuclear norm prior [min(M*N, L), 1].
-% xhat : array
-%     Auxiliary variable related to the wideband image [M, N, L].
-% apodization_window : array, double
-%     Spatial weights applied to the facet nuclear norm [M, N, L].
-% weights0 : array
-%     Weights for the reweighting [min(M*N, L), 1].
+% v0 : double[:]
+%     Dual variable associated with the nuclear norm prior 
+%     ``[min(M*N, L), 1]``.
+% xhat : double[:, :, :]
+%     Auxiliary variable related to the wideband image ``[M, N, L]``.
+% apodization_window : double[:, :]
+%     Spatial weights applied to the facet nuclear norm ``[M, N, L]``.
+% weights0 : double[:]
+%     Weights for the reweighting ``[min(M*N, L), 1]``.
 % beta0 : double
 %     Thresholding parameter (gamma0/sigma0).
 %
 % Returns
 % -------
-% v0 : array
-%     Dual variable associated with the nuclear norm prior [min(M*N, L), 1].
-% g0 : array
-%     Auxiliary variable for the update of the primal variable [M, N, L].
+% v0 : double[:, :]
+%     Dual variable associated with the nuclear norm prior 
+%     ``[min(M*N, L), 1]``.
+% g0 : double[:, :, :]
+%     Auxiliary variable for the update of the primal variable 
+%     ``[M, N, L]``.
 %
 
 % -------------------------------------------------------------------------%

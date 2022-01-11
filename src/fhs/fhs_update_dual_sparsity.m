@@ -8,53 +8,53 @@ function [v1, g] = fhs_update_dual_sparsity(v1, x_facet, ...
 %
 % Parameters
 % ----------
-% v1 : array (2d)
-%     Dual variable associated with the :math:`\ell_{2,1}` prior [s, L].
-% x_facet : array (3d)
-%     Overlapping image facet [M, N, L].
-% apodization_window : array (2d)
+% v1 : double[:, :]
+%     Dual variable associated with the :math:`\ell_{2,1}` prior ``[s, L]``.
+% x_facet : double[:, :, :]
+%     Overlapping image facet ``[M, N, L]``.
+% apodization_window : double[:, :]
 %     Weights to mitigate tessellation aretefacts due to the overlap
-%     between facets [M, N].
+%     between facets ``[M, N]``.
 % beta1 : double
 %     Ratio between regularization and convergence parameter
 %     (gamma1 / sigma1).
-% Iq : array (1d)
-%     Starting index of the non-overlapping base facet [1, 2].
-% dims_q : array (1d)
-%     Dimensions of the non-overlapping base facet [1, 2].
-% I_overlap_q : array (1d)
-%     Starting index of the facet [1, 2].
-% dims_overlap_q : array (1d)
-%     Dimensions of the facet [1, 2].
-% offset : cell
+% Iq : int[:]
+%     Starting index of the non-overlapping base facet ``[1, 2]``.
+% dims_q : int[:]
+%     Dimensions of the non-overlapping base facet ``[1, 2]``.
+% I_overlap_q : int[:]
+%     Starting index of the facet ``[1, 2]``.
+% dims_overlap_q : int[:]
+%     Dimensions of the facet ``[1, 2]``.
+% offset : cell of int[:]
 %     Offset to be used from one dictionary to another (different overlap
-%     needed for each dictionary -> cropping) {nDictionaries}.
-% status_q : array (1d)
+%     needed for each dictionary -> cropping) ``{nDictionaries}``.
+% status_q : int[:]
 %     Status of the current facet (last or first facet along vert. or hrz.
 %     direction) [ndict, 2].
 % nlevel : int
 %     Depth of the wavelet decompositions.
 % wavelet : cell (string)
 %     Name of the wavelet dictionaries {ndict}.
-% Ncoefs_q : array (1d)
+% Ncoefs_q : int[:]
 %     Size of the wavelet decompositions at each scale.
-% temLIdxs_q : array (1d)
-%     Amount of cropping from the "left" [1, 2].
-% temRIdxs_q : array (1d)
-%     Amount of cropping from the "right" [1, 2].
-% offsetLq : array (1d)
-%     Amount of zero-pading from the "left" [1, 2].
-% offsetRq : array (1d)
-%     Amount of zero-pading from the "right" [1, 2].
-% dims_overlap_ref_q : array (1d)
-%     Dimension of the facet [1, 2].
+% temLIdxs_q : int[:]
+%     Amount of cropping from the "left" ``[1, 2]``.
+% temRIdxs_q : int[:]
+%     Amount of cropping from the "right" ``[1, 2]``.
+% offsetLq : int[:]
+%     Amount of zero-pading from the "left" ``[1, 2]``.
+% offsetRq : int[:]
+%     Amount of zero-pading from the "right" ``[1, 2]``.
+% dims_overlap_ref_q : int[:]
+%     Dimension of the facet ``[1, 2]``.
 %
 % Returns
 % -------
-% v1 : array (2d)
-%     Dual variable associated with the :math:`\ell_{2,1}` prior [s, L].
-% g : array (3d)
-%     Auxiliary variable for the update of the primal variable [M, N, L].
+% v1 : double[:, :]
+%     Dual variable associated with the :math:`\ell_{2,1}` prior ``[s, L]``.
+% g : double[:, :, :]
+%     Auxiliary variable for the update of the primal variable ``[M, N, L]``.
 %
 
 % -------------------------------------------------------------------------%

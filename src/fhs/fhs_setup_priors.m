@@ -13,81 +13,81 @@ function [Iq, dims_q, dims_oq, dims_overlap_ref_q, I_overlap_q, ...
 %     Number of facets (axis x).
 % Qy : int
 %     Number of facets (axis y).
-% I : array, int
-%     Starting index of the non-overlapping tile [1, 2].
-% dims : array, int
-%     Size of the non-overlapping tile [1, 2].
-% dims_o : array, int
-%     Dimension of a facet (with overlap) [1, 2].
-% dims_overlap_ref : array, int
-%     Dimension of the facet [1, 2].
-% I_overlap : array, int
-%     Starting index of the overlapping facets [Q, 1].
-% dims_overlap : array, int
-%     Size of the overlapping facets [Q, 2].
-% status : [type]
+% I : int[:]
+%     Starting index of the non-overlapping tile ``[1, 2]``.
+% dims : int[:]
+%     Size of the non-overlapping tile ``[1, 2]``.
+% dims_o : int[:]
+%     Dimension of a facet (with overlap) ``[1, 2]``.
+% dims_overlap_ref : int[:]
+%     Dimension of the facet ``[1, 2]``.
+% I_overlap : int[:]
+%     Starting index of the overlapping facets ``[Q, 1]``.
+% dims_overlap : int[:, :]
+%     Size of the overlapping facets ``[Q, 2]``.
+% status : int[:]
 %     Status of the current facet (last or first facet along vert. / hrz.
-%     direction) [1, 2].
-% offsetL : array, int
-%     Amount of zero-pading from the "left" [Q, 2].
-% offsetR : array, int
-%     Amount of zero-padding from the "right" [Q, 2].
-% Ncoefs : array, int
+%     direction) ``[1, 2]``.
+% offsetL : int[:, :]
+%     Amount of zero-pading from the "left" ``[Q, 2]``.
+% offsetR : int[:, :]
+%     Amount of zero-padding from the "right" ``[Q, 2]``.
+% Ncoefs : cell of int[:, :]
 %     Size of the wavelet decomposition across each scale.
-% temLIdxs : array, int
-%     Amount of cropping from the "left" [Q, 2].
-% temRIdxs : array, int
-%     Amount of cropping from the "right" [Q, 2].
+% temLIdxs : int[:, :]
+%     Amount of cropping from the "left" ``[Q, 2]``.
+% temRIdxs : int[:, :]
+%     Amount of cropping from the "right" ``[Q, 2]``.
 % window_type : string
 %     Type of apodization window considered for the faceted low-rankness
 %     prior.
-% overlap_size : array, int
+% overlap_size : int[:]
 %     Number of overlapping pixels in the current facet along each
-%     direction [1, 2].
+%     direction ``[1, 2]``.
 %
 % Returns
 % -------
-% Iq : array, int
-%     Starting index of the non-overlapping base facet [1, 2].
-% dims_q : array, int
-%     Dimensions of the non-overlapping base facet [1, 2].
-% dims_oq : array, int
-%     Diemnsions of the overlapping facet [1, 2].
-% dims_overlap_ref_q : array, int
-%     Dimension of the facet [1, 2].
-% I_overlap_q : array, int
-%     Starting index of the facet [1, 2].
-% dims_overlap_q : array, int
-%     Dimensions of the facet [1, 2].
-% status_q : array, int
+% Iq : int[:]
+%     Starting index of the non-overlapping base facet ``[1, 2]``.
+% dims_q : int[:]
+%     Dimensions of the non-overlapping base facet ``[1, 2]``.
+% dims_oq : int[:]
+%     Diemnsions of the overlapping facet ``[1, 2]``.
+% dims_overlap_ref_q : int[:]
+%     Dimension of the facet ``[1, 2]``.
+% I_overlap_q : int[:]
+%     Starting index of the facet ``[1, 2]``.
+% dims_overlap_q : int[:]
+%     Dimensions of the facet ``[1, 2]``.
+% status_q : int[:]
 %     Status of the current facet (last or first facet along vert. or hrz.
 %     direction) [ndict, 2].
-% offsetLq : array, int
-%     Amount of zero-pading from the "left" [1, 2].
-% offsetRq : array, int
-%     Amount of zero-pading from the "right" [1, 2].
-% Ncoefs_q : array, int
+% offsetLq : int[:]
+%     Amount of zero-pading from the "left" ``[1, 2]``.
+% offsetRq : int[:]
+%     Amount of zero-pading from the "right" ``[1, 2]``.
+% Ncoefs_q : int[:, :]
 %     Size of the wavelet decompositions at each scale.
-% temLIdxs_q : array, int
-%     Amount of cropping from the "left" [1, 2].
-% temRIdxs_q : array, int
-%     Amount of cropping from the "right" [1, 2].
-% overlap_g_south : array, int
+% temLIdxs_q : int[:]
+%     Amount of cropping from the "left" ``[1, 2]``.
+% temRIdxs_q : int[:]
+%     Amount of cropping from the "right" ``[1, 2]``.
+% overlap_g_south : int[:]
 %     Size of the overlap for the south neighbour [2,1].
-% overlap_g_east : array, int
+% overlap_g_east : int[:]
 %     Size of the overlap for the east neighbour [2,1].
-% overlap_g_south_east : array, int
+% overlap_g_south_east : int[:]
 %     Size of the overlap for the south-east neighbour [2,1].
-% overlap : array, int
+% overlap : int[:]
 %     Number of overlapping pixels along each direction.
-% w : array (double)
+% w : double[:, :]
 %     Apodization window considered for the faceted low-rankness prior.
-% crop_low_rank : array, int
+% crop_low_rank : int[:]
 %     [Relative cropping necessary for the faceted low-rankness prior
-%     [1, 2].
-% crop_sparsity : array, int
+%     ``[1, 2]``.
+% crop_sparsity : int[:]
 %     Relative cropping necessary for the faceted joint-sparsity prior
-%     [1, 2].
+%     ``[1, 2]``.
 %
 
 % define composite variables (local to a given worker)

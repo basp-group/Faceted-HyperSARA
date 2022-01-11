@@ -10,38 +10,38 @@ function [weights1, weights0] = fhs_update_weights(x_facet, size_v1, ...
 %
 % Parameters
 % ----------
-% x_facet : array, double
-%     Overlapping image facet [M, N, L].
-% size_v1 : int
+% x_facet : double[:, :, :]
+%     Overlapping image facet ``[M, N, L]``.
+% size_v1 : int[:]
 %     Size of the dual variable associated with the facet
-%     :math:`\ell_{2,1}` norm [1, 2].
-% I : array,int
-%     Starting index of the non-overlapping facet [1, 2].
-% offset : array, int
+%     :math:`\ell_{2,1}` norm ``[1, 2]``.
+% I : int[:]
+%     Starting index of the non-overlapping facet ``[1, 2]``.
+% offset : cell of int[:]
 %     Offset to be used from one dictionary to another (different overlap
-%     needed for each dictionary -> cropping) {nDictionaries}.
-% status : array, int
+%     needed for each dictionary -> cropping) ``{nDictionaries}``.
+% status : int[:]
 %     Status of the current facet (last or first facet along vert. / hrz.
-%     direction) [1, 2].
+%     direction) ``[1, 2]``.
 % nlevel : int
 %     Depth of the wavelet decompositions.
-% wavelet : cell, string
+% wavelet : cell of string
 %     Name of the wavelet dictionaries.
-% Ncoefs : array, int
+% Ncoefs : int[:]
 %     Size of the wavelet decompositions at each scale.
-% dims_overlap_ref : array, int
-%     Dimension of the facet [1, 2].
-% offsetL : array, int
-%     Amount of zero-pading from the "left" [1, 2].
-% offsetR : array, int
-%     Amount of zero-padding from the "right" [1, 2].
+% dims_overlap_ref : int[:]
+%     Dimension of the facet ``[1, 2]``.
+% offsetL : int[:]
+%     Amount of zero-pading from the "left" ``[1, 2]``.
+% offsetR : int[:]
+%     Amount of zero-padding from the "right" ``[1, 2]``.
 % reweight_alpha : double
 %     Reweighting parameter.
-% crop_sparsity : array, int
-%     Relative cropping necessary for the facet l21-norm [1, 2].
-% crop_low_rank : array, int
-%     Relative cropping necessary for the facet nuclear norm [1, 2].
-% apodization_window : array, double
+% crop_sparsity : int[:]
+%     Relative cropping necessary for the facet l21-norm ``[1, 2]``.
+% crop_low_rank : int[:]
+%     Relative cropping necessary for the facet nuclear norm ``[1, 2]``.
+% apodization_window : double[:, :]
 %     Spatial weights applied to the facet nuclear norm (same size as
 %     ``x_facet`` after cropping by ``crop_low_rank``).
 % sig : double
@@ -51,10 +51,10 @@ function [weights1, weights0] = fhs_update_weights(x_facet, size_v1, ...
 %
 % Returns
 % -------
-% weights1 : array, double
+% weights1 : double[:, :]
 %      Weights for the reweighting of the facet :math:`\ell_{2,1}`-norm
 %      [size_v1(1), size_v1(2)].
-% weights0 : array, double
+% weights0 : double[:, :]
 %     Weights for the reweighting of the nuclear norm [min(M*N, L), 1].
 %
 

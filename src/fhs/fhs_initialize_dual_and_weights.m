@@ -7,44 +7,44 @@ function [v0, v1, weights0, weights1] = ...
 %
 % Parameters
 % ----------
-% x_facet : array, double
-%     Overlapping image facet [M, N, L].
-% I : array, int
-%     Starting index of the non-overlapping facet [1, 2].
-% offset : array, double
+% x_facet : double[:, :, :]
+%     Overlapping image facet ``[M, N, L]``.
+% I : int[:]
+%     Starting index of the non-overlapping facet ``[1, 2]``.
+% offset : int[:]
 %     Offset to be used from one dictionary to another (different overlap
-%     needed for each dictionary -> cropping) {nDictionaries}.
-% status : array, int
+%     needed for each dictionary -> cropping) ``{nDictionaries}``.
+% status : int[:]
 %     Status of the current facet (last or first facet along vert. / hrz.
-%     direction) [1, 2].
+%     direction) ``[1, 2]``.
 % nlevel : int
 %     Depth of the wavelet decompositions.
 % wavelet : cell, string
 %     Name of the wavelet transforms involved in the faceted average
 %     joint-sparsity prior.
-% Ncoefs : array, double
+% Ncoefs : int[:]
 %     Size of the wavelet decompositions at each scale.
-% dims_o : array, double
-%     Dimension of a facet (with overlap) [1, 2].
+% dims_o : int[:]
+%     Dimension of a facet (with overlap) ``[1, 2]``.
 % n_channels : int
 %     Number of spectral channels.
-% dims_overlap_ref : array, int
-%     Dimension of the facet [1, 2].
-% offsetL : array, int
-%     Amount of zero-pading from the "left" [1, 2].
-% offsetR : array, int
-%     Amount of zero-padding from the "right" [1, 2].
+% dims_overlap_ref : int[:]
+%     Dimension of the facet ``[1, 2]``.
+% offsetL : int[:]
+%     Amount of zero-pading from the "left" ``[1, 2]``.
+% offsetR : int[:]
+%     Amount of zero-padding from the "right" ``[1, 2]``.
 % reweight_alpha : double
 %     Reweighting parameter.
-% crop_sparsity : array, int
+% crop_sparsity : int[:]
 %     Amount of pixels to be cropped from the facet along each dimension to
 %     retrieve the pixels over which the current facet's sparstiy prior is
-%     acting [1, 2].
-% crop_low_rank : array, int
+%     acting ``[1, 2]``.
+% crop_low_rank : int[:]
 %     Amount of pixels to be cropped from the facet along each dimension to
 %     retrieve the pixels over which the current facet's sparstiy prior is
-%     acting [1, 2].
-% apodization_window : array, double
+%     acting ``[1, 2]``.
+% apodization_window : double[:, :]
 %     Apodization window used in the faceted low-rankness prior.
 % sig : double
 %     Noise level for the weights (joint-sparsity prior).
@@ -53,13 +53,13 @@ function [v0, v1, weights0, weights1] = ...
 %
 % Returns
 % -------
-% v0 : array, double
+% v0 : double[:, :]
 %     Dual variable associated with the low-rankness prior.
-% v1 : array, double
-%     Dual variable associated with the low-rankness prior.
-% weights0 : array, double
+% v1 : double[:, :]
+%     Dual variable associated with the average joint-sparsity prior.
+% weights0 : double[:]
 %     Weigths associated with the low-rankness prior.
-% weights1 : array, double
+% weights1 : double[:]
 %     Weigths associated with the average joint-sparsity prior.
 %
 

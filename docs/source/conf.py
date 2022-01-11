@@ -21,12 +21,11 @@ matlab_src_dir = os.path.abspath(os.path.join("..", ".."))
 # -- Project information -----------------------------------------------------
 
 project = "faceted-hypersara"
-copyright = "2021, pthouvenin"
-author = "pthouvenin"
-# project = "Facet HyperSARA"
-# copyright = "2019, P.-A. Thouvenin, A. Abdulaziz, M. Jiang"
-# author = "P.-A. Thouvenin, A. Abdulaziz, M. Jiang"
+copyright = "2021, P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech"
+author = "P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech"
 
+# The full version, including alpha/beta/rc tags
+release = '0'
 
 # -- General configuration ---------------------------------------------------
 
@@ -102,7 +101,7 @@ html_theme_options = {
 }
 
 # Napoleon settings
-napoleon_google_docstring = True
+napoleon_google_docstring = False
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = False
 napoleon_include_private_with_doc = False
@@ -111,7 +110,7 @@ napoleon_use_admonition_for_examples = False
 napoleon_use_admonition_for_notes = False
 napoleon_use_admonition_for_references = False
 napoleon_use_ivar = False
-napoleon_use_param = True
+napoleon_use_param = False
 napoleon_use_rtype = True
 napoleon_preprocess_types = False
 napoleon_type_aliases = None

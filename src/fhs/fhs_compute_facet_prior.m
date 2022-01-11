@@ -11,39 +11,39 @@ function [l21_norm, nuclear_norm] = ...
 %
 % Parameters
 % ----------
-% x_facet : array (3d)
-%     Overlapping image facet [M, N, L].
-% Iq : array (2d)
-%     Starting index of the non-overlapping facet [1, 2].
-% offset : array (1d)
+% x_facet : double[:, :, :]
+%     Overlapping image facet ``[M, N, L]``.
+% Iq : int[:]
+%     Starting index of the non-overlapping facet ``[1, 2]``.
+% offset : int[:]
 %     offset to be used from one dictionary to another (different overlap
-%     needed for each dictionary -> cropping) {nDictionaries}.
-% status_q : array (1d)
+%     needed for each dictionary -> cropping) ``{nDictionaries}``.
+% status_q : int[:]
 %     Status of the current facet (last or first facet along vert. / hrz.
 %     direction).
 % nlevel : int
 %     Depth of the wavelet decompositions.
 % wavelet : cell (strings)
 %     Name of the wavelet dictionaries.
-% Ncoefs_q : array (2d)
+% Ncoefs_q : int[:, :]
 %     Size of the wavelet decompositions at each scale.
-% dims_overlap_ref_q : array (1d)
-%     Dimensions of the facet [1, 2].
-% offsetLq : array (1d)
-%     Amount of zero-padding from the "left" [1, 2].
-% offsetRq : array (1d)
-%     Amount of zero-padding from the "right" [1, 2].
-% crop_sparsity : array (1d)
+% dims_overlap_ref_q : int[:]
+%     Dimensions of the facet ``[1, 2]``.
+% offsetLq : int[:]
+%     Amount of zero-padding from the "left" ``[1, 2]``.
+% offsetRq : int[:]
+%     Amount of zero-padding from the "right" ``[1, 2]``.
+% crop_sparsity : int[:]
 %     Relative cropping necessary for the facet :math:`\ell_{2,1}` norm
 %     [1, 2].
-% crop_low_rank : array (1d)
-%     Relative cropping necessary for the facet nuclear norm [1, 2].
-% spatial_weights : array (2d)
+% crop_low_rank : int[:]
+%     Relative cropping necessary for the facet nuclear norm ``[1, 2]``.
+% spatial_weights : double[:, :]
 %     Spatial weights (apodization window) applied to the facet nuclear
 %     norm.
-% size_v1 : array (1d)
+% size_v1 : int[:]
 %     Size of the dual variable associated with the facet
-%     :math:`\ell_{2,1}` norm [1, 2].
+%     :math:`\ell_{2,1}` norm ``[1, 2]``.
 %
 % Returns
 % -------

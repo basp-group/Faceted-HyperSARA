@@ -14,12 +14,12 @@ function [v2, norm_res, t_block, proj] = fhs_initialize_data_worker(y)
 % norm_res : cell
 %     Norm of the residual. Same structure as ``y``.
 % t_block : cell
-%     Last iteration at which each block has been updated {L}{nblocks}.
+%     Last iteration at which each block has been updated ``{L}{nblocks}``.
 %     Same structure as
 %     ``y``.
 % proj : cell
-%     Result of the projection step  {L}{nblocks}[M, 1]. Same structure as
-%     ``y``.
+%     Result of the projection step  ``{L}{nblocks}[M, 1]``. Same structure
+%     as ``y``.
 %
 
 n_channels = numel(y);

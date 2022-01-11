@@ -2,15 +2,15 @@ function [v0, v1, weights0, weights1] = fhs_initialize_facet_dual(Ncoefs, ...
     dims_o, n_channels, nlevel)
 % Initialize dual variables (constant overlap).
 %
-% Initialize all the dual variables for a given facet (nuclear and l21
-% norms).
+% Initialize all the dual variables for a given facet (nuclear and 
+% :math:`\ell_{2, 1}` norms).
 %
 % Parameters
 % ----------
-% Ncoefs : array (2d)
+% Ncoefs : int[:, :]
 %     Number of wavelet coefficients at each scale.
-% dims_o : array (1d)
-%     Dimension of a facet (with overlap) [1, 2].
+% dims_o :int[:]
+%     Dimension of a facet (with overlap) ``[1, 2]``.
 % n_channels : int
 %     Number of spectral channels.
 % nlevel : int
@@ -18,13 +18,13 @@ function [v0, v1, weights0, weights1] = fhs_initialize_facet_dual(Ncoefs, ...
 %
 % Returns
 % -------
-% v0 : array (2d)
+% v0 : double[:, :]
 %     Dual variable associated with the nuclear norm.
-% v1 : array (2d)
+% v1 : double[:, :]
 %     Dual variable associated with the :math:`\ell_{2,1}` norm.
-% weights0 : array (1d)
+% weights0 : double[:]
 %     Weigths associated with the nuclear norm.
-% weights1 : array (1d)
+% weights1 : double[:]
 %     Weigths ssociated with the :math:`\ell_{2,1}` norm.
 %
 

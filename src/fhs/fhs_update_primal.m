@@ -6,17 +6,17 @@ function [xsol, xhat, rel_x, norm_x] = fhs_update_primal(xsol, g)
 %
 % Parameters
 % ----------
-% xsol : array
-%     Wideband facet [M, N, L].
-% g : array
-%     Auxiliary variable related to the wideband facet [M, N, L].
+% xsol : double[:, :, :]
+%     Wideband facet ``[M, N, L]``.
+% g : double[:, :, :]
+%     Auxiliary variable related to the wideband facet ``[M, N, L]``.
 %
 % Returns
 % -------
-% xsol : array
-%     Udated wideband facet [M, N, L].
-% xhat : array
-%     Auxiliary variable related to the wideband facet [M, N, L].
+% xsol : double[:, :, :]
+%     Udated wideband facet ``[M, N, L]``.
+% xhat : double[:, :, :]
+%     Auxiliary variable related to the wideband facet ``[M, N, L]``.
 % rel_x : double
 %     Squared relative variation between two consecutive iterates.
 % norm_x : double
