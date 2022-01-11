@@ -1,15 +1,15 @@
 function main_generate_data_new(image_name, ncores_data, coverage_path, ...
     exp_type, superresolution_factor, isnr, flagDR, flag_cirrus, flag_generateCoverage)
 % %% Debug parameters
-% image_name = 'W28_512'; %'cygASband_Cube_H'; %'W28_512';
-% exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
+% image_name = 'cygASband_Cube_256_512'; %'cygASband_Cube_H'; %'W28_512';
+% exp_type = 'test'; % 'spectral', 'spatial', 'test'
 % flag_generateCoverage = 0;
 % flagDR = 0;
-% 
+
 % ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % isnr = 50;
-% 
+
 % superresolution_factor = 2;
 % flag_cirrus = false;
 % kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
@@ -33,8 +33,8 @@ addpath ../../data/;
 addpath ../../src/;
 
 % setting paths to results and reference image cube
-data_path = '../../data/';
-results_path = fullfile('results', strcat(image_name, '_', exp_type));
+data_path = '../../data';
+results_path = fullfile(data_path, image_name, exp_type);
 mkdir(data_path);
 mkdir(results_path);
 
@@ -53,8 +53,8 @@ switch exp_type
         spatial_downsampling = 1;
     case "test"
         image_name = 'cygASband_Cube_512_1024_20';
-        spectral_downsampling = 1;
-        spatial_downsampling = 1;
+        spectral_downsampling = 10;
+        spatial_downsampling = 2;
     case "local_test"
         image_name = 'cygASband_Cube_256_512_100';
         spectral_downsampling = 25;
@@ -174,10 +174,11 @@ else
     w = ones(size(u));
     size(u);
     disp('Coverage loaded successfully');
-    clear uvw u1 v1;
+    clear uvw;
 end
 
 %% Setup parpool
+delete(gcp('nocreate'));
 cirrus_cluster = util_set_parpool('hs', ncores_data, 1, flag_cirrus);
 param_wproj.do = [];
 
@@ -232,8 +233,7 @@ end
 clear local_fc;
 
 %% Free memory
-clear param_blocking param_precond;
-
+% clear param_blocking param_precond;
 % save parameters (matfile solution)
 % ! need to convert from local to global channel index (i.e., index 
 % ! into the full spectral dimension by using 
@@ -272,11 +272,14 @@ spmd
         datafile.y0 = cell2mat(y0{ch});
         datafile.y = cell2mat(y{ch});
         datafile.l2bounds = cell2mat(l2bounds{ch});  % epsilons
-        % datafile.sigma_noise = sigma_noise{k}{ch};
-        datafile.u = (frequencies(rg_c(labindex, 1)+ch-1) / fmax) * u;
-        datafile.v = -(frequencies(rg_c(labindex, 1)+ch-1) / fmax) * v;
+        datafile.sigma_noise = sigma_noise(ch);
+        u_ = (frequencies(rg_c(labindex, 1)+ch-1) / fmax) * u1;
+        datafile.u = u_;
+        v_ = (frequencies(rg_c(labindex, 1)+ch-1) / fmax) * v1;
+        datafile.v = v_;
         datafile.w = ones(size(u));
         datafile.frequency = frequencies(rg_c(labindex, 1)+ch-1);
+        datafile.maxProjBaseline = max(sqrt(u_.^2 + v_.^2));
         datafile.nW = sigma_noise(ch)*ones(size(u)); % sqrt(natural weights)
     end
 end

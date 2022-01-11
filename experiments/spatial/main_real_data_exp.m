@@ -91,7 +91,7 @@ speed_of_light = 299792458;
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% check input params
-% image resolution & dimensions
+% Image resolution & dimensions
 if ~isfield(param_global, 'im_Nx');  param_global.im_Nx = 2048; end
 if ~isfield(param_global, 'im_Ny');  param_global.im_Ny = 2048; end
 if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
@@ -131,7 +131,7 @@ if ~isfield(param_global, 'algo_flag_solveMinimization'); param_global.algo_flag
 if ~isfield(param_global, 'algo_flag_computeOperatorNorm'); param_global.algo_flag_computeOperatorNorm = 1; end
 if ~isfield(param_global, 'algo_ncores_data'); param_global.algo_ncores_data = numel(effChans2Image);  end
 
-% Measurment operator
+% Measurement operator
 if ~isfield(param_global, 'measop_flag_dataReduction'); param_global.measop_flag_dataReduction = 0; end
 if ~isfield(param_global, 'measop_flag_wproj'); param_global.measop_flag_wproj = []; end
 if param_global.measop_flag_wproj
@@ -139,10 +139,10 @@ if param_global.measop_flag_wproj
     if ~isfield(param_global, 'measop_wprojGEnergyL2'); param_global.measop_wprojGEnergyL2 = 1 - 1e-4; end
 end
 
-% project dir.
+% Project dir.
 if ~isfield(param_global, 'main_dir'); param_global.main_dir = [pwd, filesep]; end
 
-% input filenames
+% Input filenames
 if ~isfield(param_global, 'preproc_filename_model'); param_global.preproc_filename_model = []; end
 if ~isfield(param_global, 'preproc_filename_l2bounds'); param_global.preproc_filename_l2bounds = []; end
 if ~isfield(param_global, 'preproc_filename_die'); param_global.preproc_filename_die = []; end
@@ -150,10 +150,10 @@ if ~isfield(param_global, 'preproc_filename_dde'); param_global.preproc_filename
 % ! not used 
 if ~isfield(param_global, 'preproc_filename_G'); param_global.preproc_filename_G = []; end
 
-% output filenams
+% Output filenames
 if ~isfield(param_global, 'exp_type'); param_global.exp_type = '';  end %  AD: maybe remove?
 
-% hardware
+% Hardware
 cirrus = param_global.hardware;
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
@@ -224,7 +224,7 @@ project_dir = param_global.main_dir;
 fprintf('\nMain project dir. is %s: ', project_dir);
 current_dir = pwd;
 if strcmp(project_dir, current_dir)
-    current_dir = [project_dir, 'experiments', filesep, 'real', filesep];
+    current_dir = [project_dir, 'experiments', filesep, 'real', filesep]; % ! possible issue here
     cd(current_dir);
 end
 fprintf('\nCurrent dir. is  %s: ', current_dir);
@@ -238,7 +238,7 @@ addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 
 addpath([project_dir, filesep, 'lib', filesep, 'faceted-wavelet-transform', filesep, 'src']);
 addpath([project_dir, filesep, 'src']);
 addpath([project_dir, filesep, 'src', filesep, 'heuristics', filesep]);
-% AD: 2 BE MODIFIED !!!!
+% ! AD: 2 BE MODIFIED !!!!
 addpath([current_dir, filesep, 'real_data']);
 addpath([current_dir, filesep, 'real_data', filesep, 'wproj_utilities']);
 if strcmp(algo_version, 'sara')
@@ -1012,13 +1012,64 @@ if flag_solveMinimization
             case 'fhs'
                 disp('Faceted HyperSARA');
                 disp('-----------------------------------------');
+                % ---
+                % ! test: load ground truth image (for debugging purposes)
+                switch exp_type
+                    case "spatial"
+                        image_name = 'cygASband_Cube_1024_2048_20';
+                        spectral_downsampling = 1;
+                        spatial_downsampling = 1;
+                    case "spectral"
+                        image_name = 'cygASband_Cube_256_512_100';
+                        spectral_downsampling = 1;
+                        spatial_downsampling = 1;
+                    case "test"
+                        image_name = 'cygASband_Cube_512_1024_20';
+                        spectral_downsampling = 10;
+                        spatial_downsampling = 2;
+                    case "local_test"
+                        image_name = 'cygASband_Cube_256_512_100';
+                        spectral_downsampling = 25;
+                        spatial_downsampling = 1;
+                        coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
+                    case "old_local_test"
+                        image_name = 'cubeW28';
+                        spectral_downsampling = 20;
+                        spatial_downsampling = 4;
+                        coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
+                    otherwise
+                        error("Unknown experiment type");
+                end
+                reference_cube_path = fullfile('../../data', strcat(image_name, '.fits'));
+                info        = fitsinfo(reference_cube_path);
+                rowend      = info.PrimaryData.Size(1);
+                colend      = info.PrimaryData.Size(2);
+                sliceend    = info.PrimaryData.Size(3);
+                if strcmp(algo_version, 'sara')
+                    x0 = fitsread(reference_cube_path, 'primary', ...
+                              'Info', info, ...
+                              'PixelRegion', {[1 spatial_downsampling rowend], ...
+                              [1 spatial_downsampling colend], ...
+                              ind});
+                else
+                    x0 = fitsread(reference_cube_path, 'primary', ...
+                              'Info', info, ...
+                              'PixelRegion', {[1 spatial_downsampling rowend], ...
+                              [1 spatial_downsampling colend], ...
+                              [1 spectral_downsampling sliceend]});
+                end
+                [Ny, Nx, nchans] = size(x0);
+                N = Nx * Ny;
+                x0 = reshape(x0, [N, nchans]);
+                % ---
+                
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     dict.basis, dict.filter_length, dict.nlevel, window_type, ...
                     cell_c_chunks, nEffectiveChans, overlap_size, gam, gam_bar, ...
                     Ny, Nx, param_nufft.oy, param_nufft.ox, ...
                     name_warmstart, name_checkpoint, flag_dataReduction, Sigma, ...
-                    xinit);
+                    xinit, x0);
             otherwise; error('Unknown solver version.');
         end
         fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...

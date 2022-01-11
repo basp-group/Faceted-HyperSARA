@@ -2,12 +2,13 @@ clear; clc; close all;
 %% change paths if needed
 % TODO (keep empty parameter for non-used variables)
 
-main_dir = '/Users/ad33/CodesScience/Faceted-Hyper-SARA/';
-project_dir = [main_dir, filesep, 'experiments', filesep, 'real'];
+main_dir = '../..'; %'/Users/ad33/CodesScience/Faceted-Hyper-SARA/';
+project_dir = [main_dir, filesep, 'experiments', filesep, 'spatial'];
 cd(project_dir);
 %% src name & datasets
-imagecubeName = 'CYGA';
-datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; % allowing for multiple datasets
+imagecubeName = 'cygASband_Cube_256_512';
+param_global.exp_type = 'test';
+datasetNames = {'test'}; % allowing for multiple datasets
 % data dir.
 data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s', data_dir);
@@ -41,8 +42,8 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 % >nChannelsPerImage   = 16;
 
 % TODO
-idChannels2Image  = [1:16]; % ids of the 'physical' channels to be imaged
-nChannelsPerImage   = 16; % number of consecutive channels to be concatenated into each effective channel
+idChannels2Image  = [1:2]; % ids of the 'physical' channels to be imaged
+nChannelsPerImage   = 1; % number of consecutive channels to be concatenated into each effective channel
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % channels re-structured into effective channels
 effChans2Image = cell(nEffChans2Image, 1);
 for iEff = 1:nEffChans2Image
@@ -55,16 +56,16 @@ end
 %
 %% running one subcube at a time
 % TODO
-subcubeInd = 0; %  id of subcube if spectral interleaving is active
+subcubeInd = 0; %  id of subcube if spectral interleaving is active, ([P.A.] 0 otherwise?)
 
 % measurement op. params
-param_global.measop_flag_dataReduction = 1;
+param_global.measop_flag_dataReduction = 0;
 
 % image details, dims &  cellsize
 % TODO
-param_global.im_Nx = 2560;
-param_global.im_Ny = 1536;
-param_global.im_pixelSize = 0.06; % pixelsize in asec
+param_global.im_Nx = 512; %2560;
+param_global.im_Ny = 256; %1536;
+param_global.im_pixelSize = []; % 0.06; % pixelsize in asec ([P.-A.] = [] if using synth data)
 
 % faceting params: note that if interleaving is active, one subcube is imaged at a time: Qc=1 by default.
 param_global.facet_Qx = 1; % dimFacet1
@@ -79,12 +80,14 @@ param_global.reg_gam_bar = 0.33; % nuclear norm reg param
 param_global.algo_version = 'fhs'; % 'fhs', 'hs' or 'sara'
 
 % filenames and input
-param_global.exp_type = 'test';
 param_global.main_dir = main_dir;
 % param_global.preproc_filename_dde = @(firstch,lastch) strcat(calib_dir,'/ddes/chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
-param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, '/dies/chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
-param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, '/l2bounds/chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
-param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, '/model_images/chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
+% param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, '/dies/chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
+param_global.preproc_filename_die = [];
+% param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, '/l2bounds/chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
+param_global.preproc_filename_l2bounds = [];
+% param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, '/model_images/chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
+param_global.preproc_filename_model = [];
 
 % hardware
 param_global.hardware = 'local'; % 'cirrus' or 'local', add your own cluster & update 'util_set_parpool_dev.m' accordingly

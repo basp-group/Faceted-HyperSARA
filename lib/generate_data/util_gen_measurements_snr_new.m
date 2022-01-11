@@ -35,9 +35,10 @@ function [y0, y, Ml, Nm, sigma_noise, norm_noise, G] = util_gen_measurements_snr
             % y{i}{j} = y0{i}{j} + noise;
 
             % new version (with noise whitening)
+            % save non-whitened data (whitening applied in the real data code)
             noise = (randn(Nmq, 1) + ...
                      1i * randn(rng_stream, Nmq, 1)) / sqrt(2);
-            y{i}{j} = y0{i}{j} / sigma_noise(i) + noise;
+            y{i}{j} = y0{i}{j} + sigma_noise(i) * noise;
             norm_noise(i) = norm_noise(i) + norm(noise(:), 2)^2;
             G{i}{j} = G{i}{j} / sigma_noise(i);
         end
