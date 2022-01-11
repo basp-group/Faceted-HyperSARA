@@ -9,12 +9,12 @@ function f = compute_sara_prior(x, Psit, n_wavelet_coefficients)
 %
 % Parameters
 % ----------
-% x : array (3d)
-%       Wideband image cube [N(1), N(2), L].
+% x : double[:, :, :]
+%       Wideband image cube ``[N(1), N(2), L]``.
 % Psit : anonymous function
-%       SARA dictionary @[1].
+%       SARA dictionary ``@[1]``.
 % n_wavelet_coefficients : int
-%       Number of wavelet coefficients (per channel) [1].
+%       Number of wavelet coefficients (per channel) ``[1]``.
 %
 % Returns
 % -------

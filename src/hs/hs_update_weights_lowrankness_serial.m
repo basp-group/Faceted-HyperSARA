@@ -4,17 +4,17 @@ function weights = hs_update_weights_lowrankness_serial(x, ...
 %
 % Parameters
 % ----------
-% x : array (3d)
-%     Wideband image [M, N, L].
+% x : double[:, :, :]
+%     Wideband image ``[M, N, L]``.
 % reweight_alpha : double
-%     Reweighting parameter [1].
+%     Reweighting parameter ``[1]``.
 % sig_bar : double
 %     Noise level (singular value space).
 %
 % Returns
 % -------
-% weights : array (2d)
-%     Weights associated with the reweigthing step [s, L].
+% weights : double[:, :]
+%     Weights associated with the reweigthing step ``[s, L]``.
 %
 
 % -------------------------------------------------------------------------%
