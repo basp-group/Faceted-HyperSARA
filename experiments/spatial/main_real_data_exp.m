@@ -147,7 +147,7 @@ if ~isfield(param_global, 'preproc_filename_model'); param_global.preproc_filena
 if ~isfield(param_global, 'preproc_filename_l2bounds'); param_global.preproc_filename_l2bounds = []; end
 if ~isfield(param_global, 'preproc_filename_die'); param_global.preproc_filename_die = []; end
 if ~isfield(param_global, 'preproc_filename_dde'); param_global.preproc_filename_dde = []; end
-% ! not used 
+% ! not used
 if ~isfield(param_global, 'preproc_filename_G'); param_global.preproc_filename_G = []; end
 
 % Output filenames
@@ -1062,7 +1062,7 @@ if flag_solveMinimization
                 N = Nx * Ny;
                 x0 = reshape(x0, [N, nchans]);
                 % ---
-                
+
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     dict.basis, dict.filter_length, dict.nlevel, window_type, ...

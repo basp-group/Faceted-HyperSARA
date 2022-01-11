@@ -137,7 +137,7 @@ switch param_synth.exp_type
         param_model.ncores_data = 2;
         Qx = 1;
         Qy = 1;
-        param_general.flag_cirrus
+        param_general.flag_cirrus;
     case "old_local_test"
         param_general.image_name = 'cubeW28';
         spectral_downsampling = 20;
@@ -146,7 +146,7 @@ switch param_synth.exp_type
         param_model.ncores_data = 2;
         Qx = 1;
         Qy = 1;
-        param_general.flag_cirrus
+        param_general.flag_cirrus;
     otherwise
         error("Unknown experiment type");
 end
@@ -597,7 +597,7 @@ if param_general.flag_solve_minimization
         for k = 1:param_model.ncores_data
             cell_c_chunks{k} = rg_c(k, 1):rg_c(k, 2);
         end
-        
+
         % ! SARA dictionary prior (hard-coded)
         % depth of the wavelet decompositions
         nlevel = 4;

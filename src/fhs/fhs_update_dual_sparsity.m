@@ -57,28 +57,28 @@ function [v1, g] = fhs_update_dual_sparsity(v1, x_facet, ...
 %     Auxiliary variable for the update of the primal variable [M, N, L].
 %
 
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revision: [30/11/2020]
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 
 spatial_size = dims_overlap_ref_q + offsetLq + offsetRq; % offset for the zero-padding
-spectral_size = size(x_facet,3);
-x_facet_size = size(x_facet) ;
+spectral_size = size(x_facet, 3);
+x_facet_size = size(x_facet);
 
 x_curr = zeros(spatial_size);
-x_curr(offsetLq(1) + 1:end - offsetRq(1), offsetLq(2) + 1:end - offsetRq(2)) = x_facet(:,:,1);
+x_curr(offsetLq(1) + 1:end - offsetRq(1), offsetLq(2) + 1:end - offsetRq(2)) = x_facet(:, :, 1);
 x_curr = sdwt2_sara_faceting(x_curr, Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
 
 w = zeros(numel(x_curr), spectral_size);
 w(:, 1) = x_curr; clear x_curr;
-for l = 2: spectral_size 
+for l = 2:spectral_size
     x_curr = zeros(spatial_size);
-    x_curr(offsetLq(1) + 1:end - offsetRq(1), offsetLq(2) + 1:end - offsetRq(2)) = x_facet(:,:,l);
+    x_curr(offsetLq(1) + 1:end - offsetRq(1), offsetLq(2) + 1:end - offsetRq(2)) = x_facet(:, :, l);
     w(:, l) = sdwt2_sara_faceting(x_curr, Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
-end, clear  x_curr;
+end; clear  x_curr;
 
 w = v1 +  w;
 
@@ -88,7 +88,7 @@ l2_soft = max(l2 - beta1 * apodization_window, 0) ./ (l2 + eps);
 v1 = w - l2_soft .* w;  clear w;
 
 g = zeros(x_facet_size);
-for l = 1 : spectral_size 
+for l = 1:spectral_size
     g(:, :, l) = isdwt2_sara_faceting(v1(:, l), Iq, dims_q, I_overlap_q, dims_overlap_q, Ncoefs_q, nlevel, wavelet, temLIdxs_q, temRIdxs_q);
 end
 

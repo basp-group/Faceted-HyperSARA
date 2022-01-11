@@ -1,7 +1,7 @@
 % List of default solver-specific parameters (reweighting, pdfb, ellispsoid
 % prjection, epsilon update scheme).
 
-% TODO: extract onlt the necessary parts, to hard-coded into the main 
+% TODO: extract onlt the necessary parts, to hard-coded into the main
 % script
 
 %% * Solver

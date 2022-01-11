@@ -58,11 +58,11 @@ function [l21_norm, nuclear_norm] = ...
 %   cropping step.
 %
 
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [08/08/2019]
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %% compute facet nuclear norm
 n_channels = size(x_facet, 3);
 xhatm = spatial_weights .* x_facet(crop_low_rank(1) + 1:end, crop_low_rank(2) + 1:end, :);
@@ -78,9 +78,9 @@ zerosNum = dims_overlap_ref_q + offsetLq + offsetRq;
 z = zeros(size_v1);
 for l = 1:n_channels
     x_curr = zeros(zerosNum);
-    x_curr(offsetLq(1) + 1:end - offsetRq(1), offsetLq(2) + 1:end - offsetRq(2)) =  x_facet(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end,l);    
+    x_curr(offsetLq(1) + 1:end - offsetRq(1), offsetLq(2) + 1:end - offsetRq(2)) =  x_facet(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, l);
     z(:, l) = sdwt2_sara_faceting(x_curr, Iq, offset, status_q, nlevel, wavelet, Ncoefs_q);
-end,clear x_curr;
+end; clear x_curr;
 l21_norm = sum(sqrt(sum(abs(z).^2, 2)), 1); clear z;
 
 end

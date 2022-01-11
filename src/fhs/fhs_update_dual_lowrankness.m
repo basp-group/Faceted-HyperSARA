@@ -27,11 +27,11 @@ function [v0, g0] = fhs_update_dual_lowrankness(v0, xhat, ...
 %     Auxiliary variable for the update of the primal variable [M, N, L].
 %
 
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % [08/08/2019]
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 
 [M, N, c] = size(xhat);
@@ -39,6 +39,6 @@ xhat_plus_v0 = v0 + reshape(xhat .* apodization_window, numel(xhat) / c, c);
 [U0, S0, V0] = svd(xhat_plus_v0, 'econ');
 S0 = diag(S0);
 v0 = xhat_plus_v0  - (U0 * diag(max(S0 - beta0 * weights0, 0)) * V0');  clear S0 U0 V0 xhat_plus_v0;
-g0 = apodization_window .* reshape(v0, M, N, c);  
+g0 = apodization_window .* reshape(v0, M, N, c);
 
 end

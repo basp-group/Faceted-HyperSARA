@@ -2,12 +2,12 @@ function [speed_of_light, param_general, param_model, param_solver, ...
     param_nufft, param_blocking, param_precond, param_synth, param_nnls] = ...
     read_json_configuration(json_filename, ind)
 
-% TODO: modify the name of the model parameters (use a structure to define 
+% TODO: modify the name of the model parameters (use a structure to define
 % these)
 
 %% Parsing json file
 fid = fopen(json_filename);
-raw = fread(fid,inf);
+raw = fread(fid, inf);
 str = char(raw');
 fclose(fid);
 config = jsondecode(str);
@@ -17,7 +17,7 @@ speed_of_light = 299792458;
 %% Paths (to dataset and uv-coverage)
 param_general = config{1, 1}.general;
 
-%% (Optional) Parameters for synthetic data generation (only useful for 
+%% (Optional) Parameters for synthetic data generation (only useful for
 % synthetic data scirpts)
 param_synth = config{1, 1}.synth;
 
@@ -33,8 +33,8 @@ param_pdfb = cell2struct(struct2cell(config{2, 1}.pdfb), strcat('pdfb_', fieldna
 param_proj = cell2struct(struct2cell(config{2, 1}.proj), strcat('elipse_proj_', fieldnames(config{2, 1}.proj)));
 
 % combining the 2 structures (reweighting and pdfb)
-param_solver = cell2struct([struct2cell(param_reweighting); struct2cell(param_pdfb);struct2cell(param_proj)], ...
-    [fieldnames(param_reweighting);fieldnames(param_pdfb);fieldnames(param_proj)]);
+param_solver = cell2struct([struct2cell(param_reweighting); struct2cell(param_pdfb); struct2cell(param_proj)], ...
+    [fieldnames(param_reweighting); fieldnames(param_pdfb); fieldnames(param_proj)]);
 param_solver.cube_id = ind;
 param_solver.verbose = config{2, 1}.verbose;
 

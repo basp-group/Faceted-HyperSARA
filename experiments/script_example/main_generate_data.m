@@ -19,11 +19,11 @@ seed = 0;
 % param_synth.exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
 % param_synth.flag_generateCoverage = 0;
 % param_model.flagDR = 0;
-% 
+%
 % param_model.ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
 % param_general.path_uv_coverage = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % param_synth.isnr = 50;
-% 
+%
 % param_synth.superresolution_factor = 2;
 % param_general.flag_cirrus = false;
 % param_nufft.kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
@@ -46,7 +46,7 @@ mkdir(results_path);
 
 %%
 % ! load the appropriate portion of the reference image cube
-% ! if spectral faceting is active, just load the interesting portion of 
+% ! if spectral faceting is active, just load the interesting portion of
 % ! the full image cube
 switch param_synth.exp_type
     case "spatial"
@@ -67,14 +67,14 @@ switch param_synth.exp_type
         spatial_downsampling = 1;
         param_general.path_uv_coverage = "data/vla_7.95h_dt10s.uvw256.mat";
         param_model.ncores_data = 2;
-        param_general.flag_cirrus
+        param_general.flag_cirrus;
     case "old_local_test"
         param_general.image_name = 'cubeW28';
         spectral_downsampling = 20;
         spatial_downsampling = 4;
         param_general.path_uv_coverage = "data/vla_7.95h_dt10s.uvw256.mat";
         param_model.ncores_data = 2;
-        param_general.flag_cirrus
+        param_general.flag_cirrus;
     otherwise
         error("Unknown experiment type");
 end
@@ -151,7 +151,7 @@ if param_synth.flag_generateCoverage
     disp(param_general.path_uv_coverage);
 else
     disp(strcat("Loading coverage: ", param_general.path_uv_coverage));
-    
+
     % VLA configuration
     % A. 762775 -> 3
     % B. 268448 -> 2
@@ -238,8 +238,8 @@ datafile.y = cell(nchans, 1);
 datafile.epsilons = cell(nchans, 1);
 datafile.sigma_noise = zeros(nchans, 1);
 
-% ! need to convert from local to global channel index (i.e., index 
-% ! into the full spectral dimension by using 
+% ! need to convert from local to global channel index (i.e., index
+% ! into the full spectral dimension by using
 % ! subcube_channels(rg_c(k, 1))
 for k = 1:param_model.ncores_data
     datafile.y0(rg_c(k, 1):rg_c(k, 2), 1) = y0{k};

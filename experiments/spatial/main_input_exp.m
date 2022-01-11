@@ -2,7 +2,7 @@ clear; clc; close all;
 %% change paths if needed
 % TODO (keep empty parameter for non-used variables)
 
-main_dir = '../..'; %'/Users/ad33/CodesScience/Faceted-Hyper-SARA/';
+main_dir = '../..'; % '/Users/ad33/CodesScience/Faceted-Hyper-SARA/';
 project_dir = [main_dir, filesep, 'experiments', filesep, 'spatial'];
 cd(project_dir);
 %% src name & datasets
@@ -63,8 +63,8 @@ param_global.measop_flag_dataReduction = 0;
 
 % image details, dims &  cellsize
 % TODO
-param_global.im_Nx = 512; %2560;
-param_global.im_Ny = 256; %1536;
+param_global.im_Nx = 512; % 2560;
+param_global.im_Ny = 256; % 1536;
 param_global.im_pixelSize = []; % 0.06; % pixelsize in asec ([P.-A.] = [] if using synth data)
 
 % faceting params: note that if interleaving is active, one subcube is imaged at a time: Qc=1 by default.

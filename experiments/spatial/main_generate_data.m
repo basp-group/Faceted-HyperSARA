@@ -5,11 +5,11 @@ function main_generate_data(image_name, ncores_data, coverage_path, ...
 % exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
 % flag_generateCoverage = 0;
 % flagDR = 0;
-% 
+%
 % ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % isnr = 50;
-% 
+%
 % superresolution_factor = 2;
 % flag_cirrus = false;
 % kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
@@ -40,7 +40,7 @@ mkdir(results_path);
 
 %%
 % ! load the appropriate portion of the reference image cube
-% ! if spectral faceting is active, just load the interesting portion of 
+% ! if spectral faceting is active, just load the interesting portion of
 % ! the full image cube
 switch exp_type
     case "spatial"
@@ -137,7 +137,7 @@ if flag_generateCoverage
     disp(coverage_path);
 else
     disp(strcat("Loading coverage: ", coverage_path));
-    
+
     % VLA configuration
     % A. 762775 -> 3
     % B. 268448 -> 2
@@ -223,8 +223,8 @@ datafile.y = cell(nchans, 1);
 datafile.epsilons = cell(nchans, 1);
 datafile.sigma_noise = zeros(nchans, 1);
 
-% ! need to convert from local to global channel index (i.e., index 
-% ! into the full spectral dimension by using 
+% ! need to convert from local to global channel index (i.e., index
+% ! into the full spectral dimension by using
 % ! subcube_channels(rg_c(k, 1))
 for k = 1:ncores_data
     datafile.y0(rg_c(k, 1):rg_c(k, 2), 1) = y0{k};

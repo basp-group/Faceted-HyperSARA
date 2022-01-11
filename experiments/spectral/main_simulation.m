@@ -445,13 +445,13 @@ if flag_generate_visibilities
 
     [rng_stream{1:ncores_data}] = RandStream.create('threefry4x64_20', ...
         'Seed', seed, 'NumStreams', ncores_data);
-    offset_worker = Q*strcmp(algo_version, 'fhs');
+    offset_worker = Q * strcmp(algo_version, 'fhs');
 
     spmd
         if labindex > Q * strcmp(algo_version, 'fhs')
             [y0, y, Ml, ~, sigma_noise, ~] = util_gen_measurements_snr( ...
-                x0(:, :, rg_c(labindex-offset_worker, 1):rg_c(labindex-offset_worker, 2)), G, W, A, ...
-                input_snr(rg_c(labindex-offset_worker, 1):rg_c(labindex-offset_worker, 2)), rng_stream{labindex-offset_worker});
+                x0(:, :, rg_c(labindex - offset_worker, 1):rg_c(labindex - offset_worker, 2)), G, W, A, ...
+                input_snr(rg_c(labindex - offset_worker, 1):rg_c(labindex - offset_worker, 2)), rng_stream{labindex - offset_worker});
             [~, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, .../
                 param_l2_ball, sigma_noise);
         end

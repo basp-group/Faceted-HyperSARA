@@ -177,11 +177,11 @@ else
             Fx = A(xsol(:, :, i));
             for j = 1:numel(G{i})
                 if istril(G{i}{j})
-		   FxSlice = Fx(W{i}{j});      
-	           r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * FxSlice  + (FxSlice' *G{i}{j})');
-		else, r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
-		end
-		[proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+           FxSlice = Fx(W{i}{j});
+               r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * FxSlice  + (FxSlice' * G{i}{j})');
+        else; r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+        end
+        [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
             end
             Fx_old(:, i) = Fx;
         end
@@ -330,27 +330,27 @@ for t = t_start:max_iter
             g2 = zeros(No, 1);
             for j = 1:length(G{i})
                 dummy =  (2 * Fx(W{i}{j})   - Fx_old(W{i}{j}, i));
-		if istril(G{i}{j})
-                   r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * dummy  + (dummy' *G{i}{j})');
-	        else,r2{i}{j} = Sigma{i}{j} .* (G{i}{j} *dummy);
-		end
-		[proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
+        if istril(G{i}{j})
+                   r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * dummy  + (dummy' * G{i}{j})');
+            else; r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * dummy);
+        end
+        [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
                 v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
 
                 % projection onto the l2-ball
                 % v2{i}{j} = v2{i}{j} + r2{i}{j} - proj_l2ball(v2{i}{j} + r2{i}{j}, epsilon{i}{j}, y{i}{j});
 
                 if istril(G{i}{j})
-	               u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j}) + G{i}{j} * (Sigma{i}{j} .* v2{i}{j});
-		else,	u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j});
-		end
-		g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+                   u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j}) + G{i}{j} * (Sigma{i}{j} .* v2{i}{j});
+        else;   u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j});
+        end
+        g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
                 % norm of residual
                 if istril(G{i}{j})
-		     norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})  + G{i}{j}' * Fx(W{i}{j}))        -y{i}{j});
-		else,norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}))-y{i}{j});
-		end
-		residual_check(counter) = norm_res{i}{j};
+             norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})  + G{i}{j}' * Fx(W{i}{j}))        - y{i}{j});
+        else; norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})) - y{i}{j});
+        end
+        residual_check(counter) = norm_res{i}{j};
                 epsilon_check(counter) = epsilon{i}{j};
                 counter = counter + 1;
 
@@ -481,15 +481,15 @@ for t = t_start:max_iter
                 Fx = A(xsol(:, :, i));
                 g2 = zeros(No, 1);
                 for j = 1:length(G{i})
-		    if istril(G{i}{j})
-			FxSlice =  Fx(W{i}{j});
-		        res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice'*G{i}{j})');
-                        u2{i}{j} = G{i}{j} * (Sigma{i}{j} .* res_f) +  ( (Sigma{i}{j} .* res_f)' * G{i}{j})' ;
- 	            else
+            if istril(G{i}{j})
+            FxSlice =  Fx(W{i}{j});
+                res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})');
+                        u2{i}{j} = G{i}{j} * (Sigma{i}{j} .* res_f) +  ((Sigma{i}{j} .* res_f)' * G{i}{j})';
+                else
                          res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
                          u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* res_f);
-	            end
-		    g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+                end
+            g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
                 end
                 res(:, :, i) = real(At(g2));
             end
@@ -584,14 +584,14 @@ if flag_dimensionality_reduction
         Fx = A(xsol(:, :, i));
         g2 = zeros(No, 1);
         for j = 1:length(G{i})
-	    if istril(G{i}{j})
-		 FxSlice = Fx(W{i}{j});
-	         res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * FxSlice  +  (FxSlice' * G{i}{j})' );
-     		 u2{i}{j} = G{i}{j} * (Sigma{i}{j} .* res_f) +  ( (Sigma{i}{j} .* res_f)' * G{i}{j})' ;
-            else, res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+        if istril(G{i}{j})
+         FxSlice = Fx(W{i}{j});
+             res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * FxSlice  +  (FxSlice' * G{i}{j})');
+             u2{i}{j} = G{i}{j} * (Sigma{i}{j} .* res_f) +  ((Sigma{i}{j} .* res_f)' * G{i}{j})';
+            else; res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
                   u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* res_f);
             end
-	    g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
+        g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
         end
         res(:, :, i) = real(At(g2));
     end

@@ -7,7 +7,7 @@ update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
 % Update the data fidelity term in the preconditioned primal-dual algorithm.
 %
 % Update the data fidelity terms owned by each worked involved in the group
-% of data nodes (with preconditioning :math:`\rightarrow` projection onto 
+% of data nodes (with preconditioning :math:`\rightarrow` projection onto
 % an ellipsoid).
 %
 % Parameters
@@ -67,12 +67,12 @@ update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
 %     Square global norm of epsilon.
 %
 
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [29/04/2021]
 % TODO: update name of variable
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 
 Ftx = zeros(size(x));
@@ -84,36 +84,36 @@ global_norm_res = 0;
 if flag_dimensionality_reduction
     for i = 1:n_channels
         Fx = A(x(:, :, i));
-        g2 = zeros(size(Fx,1),size(Fx,2));
+        g2 = zeros(size(Fx, 1), size(Fx, 2));
         norm_res{i} = cell(length(G{i}), 1);
         for j = 1:length(G{i})
             dummy = (2 * Fx(W{i}{j}) - Fx_old(W{i}{j}, i));
-	    if istril(G{i}{j})
-                 r2 = Sigma{i}{j} .* ( G{i}{j} * dummy + (dummy'* G{i}{j} )');	  
-            else,r2 = Sigma{i}{j} .* (G{i}{j} * dummy);
-	    end, clear  dummy;
+        if istril(G{i}{j})
+                 r2 = Sigma{i}{j} .* (G{i}{j} * dummy + (dummy' * G{i}{j})');
+            else; r2 = Sigma{i}{j} .* (G{i}{j} * dummy);
+        end; clear  dummy;
 
             proj{i}{j} = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, ...
                                                 r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, ...
                                                 elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
             v2{i}{j} = v2{i}{j} + pU{i}{j} .* (r2 - proj{i}{j});
-            
-	    if istril(G{i}{j})
-	         weighted_v2 = Sigma{i}{j} .* v2{i}{j};
-	       	 u2 = (weighted_v2'* G{i}{j})' + G{i}{j} * weighted_v2;
-		 clear weighted_v2;
-	    else,  u2 = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j}) ;
-	    end
+
+        if istril(G{i}{j})
+             weighted_v2 = Sigma{i}{j} .* v2{i}{j};
+             u2 = (weighted_v2' * G{i}{j})' + G{i}{j} * weighted_v2;
+         clear weighted_v2;
+        else;  u2 = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j});
+        end
             g2(W{i}{j}) = g2(W{i}{j}) + u2; clear u2;
             if istril(G{i}{j})
-		 FxSlice = Fx(W{i}{j});
-                 norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice'*G{i}{j})') - y{i}{j}, 2); 
-		 clear FxSlice;
-            else,norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})) - y{i}{j}, 2);
-	    end
-	    
-	    % norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}) + G{i}{j}' * Fx(W{i}{j}) ) - y{i}{j}, 2);
-	    global_norm_res = global_norm_res + norm_res{i}{j}^2;
+         FxSlice = Fx(W{i}{j});
+                 norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})') - y{i}{j}, 2);
+         clear FxSlice;
+            else; norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})) - y{i}{j}, 2);
+        end
+
+        % norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}) + G{i}{j}' * Fx(W{i}{j}) ) - y{i}{j}, 2);
+        global_norm_res = global_norm_res + norm_res{i}{j}^2;
             norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
         end
         Fx_old(:, i) = Fx; clear Fx;
@@ -136,7 +136,7 @@ else
             norm_res{i}{j} = norm(G{i}{j} * Fx(W{i}{j}) - y{i}{j}, 2);
             global_norm_res = global_norm_res + norm_res{i}{j}^2;
             norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
-        end, clear u2;
+        end; clear u2;
         Fx_old(:, i) = Fx; clear Fx;
         Ftx(:, :, i) = sigma22(i) * real(At(g2));
     end
