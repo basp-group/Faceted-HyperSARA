@@ -11,6 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import re
 import sys
 
 # import sphinx_rtd_theme
@@ -25,7 +26,10 @@ copyright = "2021, P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech"
 author = "P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech"
 
 # The full version, including alpha/beta/rc tags
-release = '0'
+release = re.sub('^v', '', os.popen('git describe').read().strip())
+# The short X.Y version.
+version = release
+# release = '0'
 
 # -- General configuration ---------------------------------------------------
 
