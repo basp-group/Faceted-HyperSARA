@@ -26,5 +26,5 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
+* :ref:`mat-modindex`
 * :ref:`search`
