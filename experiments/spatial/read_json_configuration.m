@@ -1,6 +1,37 @@
-function [speed_of_light, param_global, param_solver, ...
-    param_nufft, param_blocking, param_precond, param_nnls, dict] = ...
+function [param_global, param_solver, param_nufft, ...
+    param_blocking, param_precond, param_nnls, dict] = ...
     read_json_configuration(json_filename, param_global)
+% Read algorithmic configuration parameters defined in an input ``.json``
+% file.
+%
+% Parameters
+% ----------
+% json_filename : string
+%     Name of the .json configuration file.
+% param_global : struct
+%     Global parameter structure containing the following elements.
+%
+% Returns
+% -------
+% param_global
+%     Structure containing global configuration parameters.
+% param_solver
+%     Structure containing solver parameters (reweighting scheme, PDFB,
+%     projection onto the ellipsoid).
+% param_nufft
+%     Structure containing parameters
+% param_blocking
+%     Structure containing parameters
+% param_precond
+%     Structure containing parameters used to define the preconditioning
+%     matrix involved in the PDFB algorithm.
+% param_nnls
+%     Structure containing parameters to be passed to the non-negative
+%     least-squares (NNLS) algorithm used to estimate the :math:`\ell_2`
+%     bounds.
+% dict
+%     Structure defining the SARA dictionary.
+%
 
 % TODO: modify the name of the model parameters (use a structure to define
 % these)
@@ -12,8 +43,6 @@ raw = fread(fid, inf);
 str = char(raw');
 fclose(fid);
 config = jsondecode(str);
-
-speed_of_light = 299792458;
 
 %% Solver structures
 % * Reweighting

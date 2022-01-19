@@ -32,6 +32,7 @@ addpath ../../lib/faceted-wavelet-transform/src;
 addpath ../../lib/utils/;
 addpath ../../data/;
 addpath ../../src/;
+speed_of_light = 299792458;
 
 % setting paths to results and reference image cube
 data_path = '../../data';
@@ -97,7 +98,7 @@ nu_vect = [nu0 (dnu * (1:L - 1) + nu0)];
 frequencies = nu_vect(1:floor(L / n_channels):end);
 
 param_global = struct('im_Nx', Nx, 'im_Ny', Ny);
-[speed_of_light, param_global, param_solver, ...
+[param_global, param_solver, ...
     param_nufft, param_blocking, param_precond, param_nnls, dict] = ...
     read_json_configuration(json_filename, param_global);
 
