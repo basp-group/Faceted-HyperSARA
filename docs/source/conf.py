@@ -12,10 +12,9 @@
 #
 import os
 import re
-import sys
+# import sys
 
-# import sphinx_rtd_theme
-
+# sys.path.insert(0, os.path.abspath('.'))
 # sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 matlab_src_dir = os.path.abspath(os.path.join("..", ".."))
 

@@ -1,7 +1,6 @@
 clear; clc; close all;
 %% change paths if needed
 % TODO (keep empty parameter for non-used variables)
-
 main_dir = '../..'; % '/Users/ad33/CodesScience/Faceted-Hyper-SARA/';
 project_dir = [main_dir, filesep, 'experiments', filesep, 'spatial'];
 cd(project_dir);
@@ -11,10 +10,12 @@ param_global.exp_type = 'test';
 datasetNames = {'test'}; % allowing for multiple datasets
 % data dir.
 data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
-fprintf('\nINFO: data are expected to be saved at %s', data_dir);
+fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
 % preproc dir.
 preproc_calib_dir = [data_dir, 'pre_processing_die/'];
 % preproc_calib_dir=[cubedata_dir,'pre_processing_dde/'];
+% name of json parameter file
+json_filename = "default_parameters.json";
 
 % data files
 % example of data file: 'data_ch_1.mat' with vars : 'maxProjBaseline', 'u','v','w', 'nW', 'y', 'frequency'.
@@ -50,7 +51,7 @@ for iEff = 1:nEffChans2Image
     if iEff < nEffChans2Image; effChans2Image{iEff} = idChannels2Image((iEff - 1) * nChannelsPerImage + 1:iEff * nChannelsPerImage);
     else; effChans2Image{iEff} = idChannels2Image((iEff - 1) * nChannelsPerImage + 1:end);
     end
-    fprintf('\nEffective channel ID %d: physical channels involved: %d - %d', iEff, effChans2Image{iEff}(1), effChans2Image{iEff}(end));
+    fprintf('\nEffective channel ID %d: physical channels involved: %d - %d\n', iEff, effChans2Image{iEff}(1), effChans2Image{iEff}(end));
 end
 
 %
@@ -75,6 +76,10 @@ param_global.facet_overlap_fraction = [0.5, 0.5];
 % reg params
 param_global.reg_gam = 0.33; % l21 reg param
 param_global.reg_gam_bar = 0.33; % nuclear norm reg param
+param_global.reg_flag_reweighting = true;
+param_global.reg_flag_homotopy = false;
+param_global.reg_nReweights = 5;
+param_global.generate_eps_nnls = false;
 
 % algo & parallelisation params
 param_global.algo_version = 'fhs'; % 'fhs', 'hs' or 'sara'
@@ -92,5 +97,13 @@ param_global.preproc_filename_model = [];
 % hardware
 param_global.hardware = 'local'; % 'cirrus' or 'local', add your own cluster & update 'util_set_parpool_dev.m' accordingly
 
+%% read and set configuration from .json file
+[speed_of_light, param_global, param_solver, ...
+    param_nufft, param_blocking, param_precond, param_nnls, dict] = ...
+    read_json_configuration_new(json_filename, param_global);
+
 %% run main job
-main_real_data_exp(imagecubeName, datasetNames, dataFilename, subcubeInd, effChans2Image, param_global);
+% main_real_data_exp(imagecubeName, datasetNames, dataFilename, subcubeInd, effChans2Image, param_global);
+main_real_data_exp_new(imagecubeName, datasetNames, dataFilename, ...
+    subcubeInd, effChans2Image, param_solver, param_global, ...
+    param_nufft, param_blocking, param_precond, param_nnls, dict);

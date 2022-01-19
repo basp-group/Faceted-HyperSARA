@@ -1,0 +1,90 @@
+[
+    {   "__comment": "Solver parameters",
+        "verbose": true,
+        "reweighting": {
+            "__comment": "Reweighting parameters",
+            "flag_reweighting": true,
+            "nReweights": 5,
+            "flag_homotopy": false,
+            "min_iter": 1,
+            "max_iter": 10,
+            "rel_var": 1e-4,
+            "alpha": 1,
+            "alpha_ff": 1,
+            "backup_frequency": 1,
+            "verbose": 2
+        },
+        "pdfb": {
+            "__comment": "PDFB parameters",
+            "min_iter": 10,
+            "max_iter": 2000,
+            "rel_var": 1e-5,
+            "fidelity_tolerance": 1.01,
+            "rel_var_low": 5e-6
+        },
+        "proj" : {
+            "__comment": "Ellipsoid projection parameters",
+            "min_iter": 1,
+            "max_iter": 20,
+            "eps": 1e-8
+        },
+        "adapt_eps" : {
+            "__comment": "Adaptive epsilon scheme (deactivated by default)",
+            "use_adapt_eps": 0,
+            "start": 200,
+            "tol_in": 0.99,
+            "tol_out": 1.01,
+            "tol_steps": 100,
+            "rel_var": 5e-5
+        }
+    },
+    {   "__comment": "Model parameters",
+        "nufft": {
+            "__comment": "NUFFT parameters",
+            "ox": 2,
+            "oy": 2,
+            "Kx": 7,
+            "Ky": 7,
+            "kernel": "minmax:tuned"
+        },
+        "preconditioning": {
+            "__comment": "Preconditioning parameters",
+            "gen_uniform_weight_matrix": true,
+            "uniform_weight_sub_pixels": true
+        },
+        "blocking": {
+            "__comment": "Blocking parameters",
+            "use_density_partitioning": 0,
+            "density_partitioning_no": 1,
+            "use_uniform_partitioning": 0,
+            "uniform_partitioning_no": 4,
+            "use_equal_partitioning": 1,
+            "equal_partitioning_no": 1,
+            "use_manual_partitioning": 0,
+            "use_manual_frequency_partitioning": 0
+        },
+        "nnls": {
+            "__comment": "NNLS (estimation of the l2 contraint), stored in param_pre",
+            "generate_eps_nnls": false,
+            "verbose": 2,
+            "rel_obj": 1e-3,
+            "max_iter": 200,
+            "sol_steps": null,
+            "beta": 1
+        },
+        "sara": {
+            "__comment": "SARA dictionary parameters (always specify self in last position if ever used, corresponding filter length set to 0 by convention)",
+            "basis": ["db1", "db2", "db3", "db4", "db5", "db6", "db7", "db8", "self"],
+            "nlevel": 4,
+            "filter_length": [2, 4, 6, 8, 10, 12, 14, 16, 0]
+        },
+        "wproj": {
+            "measop_flag_wproj": false,
+            "measop_wprojCEnergyL2": 0.9999,
+            "measop_wprojGEnergyL2": 0.9999
+        },
+        "dataReduction": {
+            "measop_flag_dataReduction": false
+        }
+    }
+]
