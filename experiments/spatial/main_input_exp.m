@@ -67,6 +67,7 @@ param_global.measop_flag_dataReduction = 0;
 param_global.im_Nx = 512; % 2560;
 param_global.im_Ny = 256; % 1536;
 param_global.im_pixelSize = []; % 0.06; % pixelsize in asec ([P.-A.] = [] if using synth data)
+param_global.algo_flag_computeOperatorNorm = false;
 
 % faceting params: note that if interleaving is active, one subcube is imaged at a time: Qc=1 by default.
 param_global.facet_Qx = 1; % dimFacet1
@@ -103,6 +104,6 @@ param_global.hardware = 'local'; % 'cirrus' or 'local', add your own cluster & u
     read_json_configuration(json_filename, param_global);
 
 %% run main job
-main_real_data_exp_new(imagecubeName, datasetNames, dataFilename, ...
+main_real_data_exp(imagecubeName, datasetNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...
     param_nufft, param_blocking, param_precond, param_nnls, dict);

@@ -1,4 +1,4 @@
-function main_real_data_exp_new(image_name, datasetsNames, dataFilename, ...
+function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...
     param_nufft, param_blocking, param_precond, param_nnls, dict)
 % TODO: reactivate warm restart + test
@@ -202,8 +202,6 @@ algo_version = param_global.algo_version;
 ncores_data = param_global.algo_ncores_data;
 flag_computeOperatorNorm = param_global.algo_flag_computeOperatorNorm;
 flag_solveMinimization =  param_global.algo_flag_solveMinimization;
-% Output
-exp_type = param_global.exp_type;
 % Pre-processing step
 param_preproc.filename_die  = param_global.preproc_filename_die;
 param_preproc.filename_dde  = param_global.preproc_filename_dde;
@@ -251,7 +249,7 @@ elseif strcmp(algo_version, 'hs')
 else;   addpath([project_dir, filesep, 'src', filesep, 'fhs', filesep]);
 end
 % setting paths to results and reference image cube
-results_path = fullfile('results', strcat(image_name, '_', exp_type));
+results_path = fullfile('results', image_name);
 mkdir(results_path);
 auxiliary_path = fullfile(results_path, algo_version);
 mkdir(auxiliary_path);
@@ -416,7 +414,7 @@ end
 % FoV info
 param_wproj.FoVx = sin(pixelSize * Nx * pi / 180 / 3600);
 param_wproj.FoVy = sin(pixelSize * Ny * pi / 180 / 3600);
-param_wproj.uGridSiz = 1 / (param_nufft.ox * param_wproj.FoVx);
+param_wproj.uGridSize = 1 / (param_nufft.ox * param_wproj.FoVx);
 param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
@@ -802,13 +800,13 @@ fprintf('INFO: Convergence parameter (measurement operator''s norm squared): %e 
 %% Setup name of results file
 
 if strcmp(algo_version, 'sara') % AD
-    temp_results_name = @(nEffectiveChans) strcat(image_name, '_', exp_type, '_', ...
+    temp_results_name = @(nEffectiveChans) strcat(image_name, '_', ...
         algo_version, '_', num2str(pixelSize), 'asec', ...
         '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
         '_ind', num2str(subcubeInd), '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), ...
         '_g', num2str(gam), '_gb', num2str(gam_bar), '_');
 else
-    temp_results_name = @(nEffectiveChans) strcat(image_name, '_', exp_type, '_', ...
+    temp_results_name = @(nEffectiveChans) strcat(image_name, '_', ...
         algo_version, '_', num2str(pixelSize), 'asec', ...
         '_Ny', num2str(Ny), '_Nx', num2str(Nx), '_L', num2str(nEffectiveChans), ...
         '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
@@ -928,6 +926,7 @@ if flag_solveMinimization
                 disp('-----------------------------------------');
                 % ---
                 % ! test: load ground truth image (for debugging purposes)
+                exp_type = param_global.exp_type;
                 switch exp_type
                     case "spatial"
                         image_name = 'cygASband_Cube_1024_2048_20';
