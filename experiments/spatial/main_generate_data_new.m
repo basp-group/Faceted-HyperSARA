@@ -1,15 +1,16 @@
-function main_generate_data_new(image_name, ncores_data, coverage_path, ...
+function main_generate_data_new(json_filename, image_name, ncores_data, coverage_path, ...
     exp_type, superresolution_factor, isnr, flagDR, flag_cirrus, flag_generateCoverage)
 % %% Debug parameters
 % image_name = 'cygASband_Cube_256_512'; %'cygASband_Cube_H'; %'W28_512';
+% json_filename = 'default_parameters.json';
 % exp_type = 'test'; % 'spectral', 'spatial', 'test'
 % flag_generateCoverage = 0;
 % flagDR = 0;
-
+% 
 % ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
 % isnr = 50;
-
+% 
 % superresolution_factor = 2;
 % flag_cirrus = false;
 % kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
@@ -95,6 +96,11 @@ L = 100;  % number of channels
 nu_vect = [nu0 (dnu * (1:L - 1) + nu0)];
 frequencies = nu_vect(1:floor(L / n_channels):end);
 
+param_global = struct('im_Nx', Nx, 'im_Ny', Ny);
+[speed_of_light, param_global, param_solver, ...
+    param_nufft, param_blocking, param_precond, param_nnls, dict] = ...
+    read_json_configuration(json_filename, param_global);
+
 clear reference_cube_path info rowend colend sliceend;
 clear spatial_downsampling spectral_downsampling;
 
@@ -115,7 +121,7 @@ data_name = data_name_function(n_channels);
 
 %% Define problem configuration (rng, nufft, preconditioning, blocking,
 % NNLS (epsilon estimation), SARA dictionary)
-parameters_problem;
+% parameters_problem;
 
 %% Generate/load uv-coverage
 % generating u-v coverage

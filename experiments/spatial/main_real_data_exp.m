@@ -1,4 +1,9 @@
-function main_real_data_exp(image_name, dataSetsNames, dataFilenames, subcube_ind, effChans2Image, param_global)
+function main_real_data_exp_new(image_name, datasetsNames, dataFilename, ...
+    subcubeInd, effChans2Image, param_solver, param_global, ...
+    param_nufft, param_blocking, param_precond, param_nnls, dict)
+% TODO: reactivate warm restart + test
+% TODO: extract all default algorithm parameter into a single json file 
+% (avoid interaction of the user with the pipeline, error prone)
 %%
 % Main script to run the faceted HyperSARA approach on real data.
 %
@@ -87,11 +92,12 @@ function main_real_data_exp(image_name, dataSetsNames, dataFilenames, subcube_in
 %    DR features still need to be implemented in the main script.
 %
 %% constants
-speed_of_light = 299792458;
+% speed_of_light = 299792458;
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% check input params
 % Image resolution & dimensions
+%! parameters and default values (keep only what is required)
 if ~isfield(param_global, 'im_Nx');  param_global.im_Nx = 2048; end
 if ~isfield(param_global, 'im_Ny');  param_global.im_Ny = 2048; end
 if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
@@ -106,8 +112,8 @@ if ~isfield(param_global, 'facet_Qc'); param_global.facet_Qc = 1; end
 if ~isfield(param_global, 'facet_window_type'); param_global.facet_window_type = 'triangular'; end
 if ~isfield(param_global, 'facet_overlap_fraction'); param_global.facet_overlap_fraction = [0.1, 0.1]; end
 % Prior: sparsity dict.
-if ~isfield(param_global, 'wavelet_level'); param_global.wavelet_level = 4;  end
-if ~isfield(param_global, 'wavelet_basis'); param_global.wavelet_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};  end
+if ~isfield(dict, 'nlevel'); dict.nlevel = 4;  end
+if ~isfield(dict, 'basis'); dict.basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};  end
 % Prior: reg params
 if ~isfield(param_global, 'reg_gam'); param_global.reg_gam = 1;  end
 if ~isfield(param_global, 'reg_gam_bar'); param_global.reg_gam_bar = 1;  end
@@ -149,7 +155,6 @@ if ~isfield(param_global, 'preproc_filename_die'); param_global.preproc_filename
 if ~isfield(param_global, 'preproc_filename_dde'); param_global.preproc_filename_dde = []; end
 % ! not used
 if ~isfield(param_global, 'preproc_filename_G'); param_global.preproc_filename_G = []; end
-
 % Output filenames
 if ~isfield(param_global, 'exp_type'); param_global.exp_type = '';  end %  AD: maybe remove?
 
@@ -174,16 +179,12 @@ Qy = param_global.facet_Qy;
 Qc = param_global.facet_Qc;
 window_type = param_global.facet_window_type;
 overlap_fraction = param_global.facet_overlap_fraction;
-% Prior: wavelets
-dict.nlevel = param_global.wavelet_level; % depth of the wavelet decompositions
-dict.basis  = param_global.wavelet_basis; % %! always specify Dirac basis ('self') in last position if ever used
-dict.filter_length = [2 * (1:(numel(dict.basis) - 1))'; 0]; % length of the filters (0 corresponding to the 'self' basis)
 % Prior: reg params
 gam = param_global.reg_gam;
 gam_bar =  param_global.reg_gam_bar;
 flag_reweighting = param_global.reg_flag_reweighting;
 if flag_reweighting
-    reg_nReweights = param_global.reg_nReweights;
+%     reg_nReweights = param_global.reg_nReweights;
     flag_homotopy = param_global.reg_flag_homotopy;
 end
 % Data blocks
@@ -208,7 +209,7 @@ param_preproc.filename_die  = param_global.preproc_filename_die;
 param_preproc.filename_dde  = param_global.preproc_filename_dde;
 param_preproc.filename_l2bounds = param_global.preproc_filename_l2bounds;
 param_preproc.filename_model = param_global.preproc_filename_model;
-param_preproc.subcube = subcube_ind;
+param_preproc.subcube = subcubeInd;
 param_preproc.done = (~isempty(param_preproc.filename_l2bounds)) * ~isempty(param_preproc.filename_model) * (~isempty(param_preproc.filename_die) || ~isempty(param_preproc.filename_dde));
 filename_l2bounds = param_global.preproc_filename_l2bounds; % available l2bounds
 
@@ -216,6 +217,8 @@ if ~isempty(param_preproc.filename_die); flag_calib.die = 1; flag_calib.dde = 0;
 elseif ~isempty(param_preproc.filename_dde); flag_calib.die = 0; flag_calib.dde = 1;
 else; flag_calib.die = 0; flag_calib.dde = 0;
 end
+
+
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% Paths
@@ -224,7 +227,7 @@ project_dir = param_global.main_dir;
 fprintf('\nMain project dir. is %s: ', project_dir);
 current_dir = pwd;
 if strcmp(project_dir, current_dir)
-    current_dir = [project_dir, 'experiments', filesep, 'real', filesep]; % ! possible issue here
+    current_dir = [project_dir, 'experiments', filesep, 'real', filesep];
     cd(current_dir);
 end
 fprintf('\nCurrent dir. is  %s: ', current_dir);
@@ -271,7 +274,7 @@ end
 N = Nx * Ny;
 nEffectiveChans  = numel(effChans2Image);
 ImageCubeDims = [Ny, Nx, nEffectiveChans];
-nDataSets = numel(dataSetsNames);
+nDataSets = numel(datasetsNames);
 flag_l2bounds_compute = 1; % assuming a chi squared dist. for now
 % pixelsize
 if isempty(pixelSize)
@@ -279,7 +282,7 @@ if isempty(pixelSize)
     for iEffCh = 1:nEffectiveChans
         for iCh = 1:numel(effChans2Image{iEffCh})
             for idSet = 1:nDataSets
-                dataloaded = load(dataFilenames(idSet, effChans2Image{iEffCh}(iCh)), 'maxProjBaseline');
+                dataloaded = load(dataFilename(idSet, effChans2Image{iEffCh}(iCh)), 'maxProjBaseline');
                 maxProjBaseline = max(maxProjBaseline, dataloaded.maxProjBaseline);
             end
         end
@@ -407,52 +410,14 @@ freqRangeCores = split_range(ncores_data, nEffectiveChans);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% for transparancy: problem configuration (nufft, preconditioning, blocking,NNLS (epsilon estimation)):   !!  AD: nnls to be added????
-% init
-param_blocking = [];
-param_nnls = [];
-% * NUFFT (gridding parameters)
-param_nufft.ox = 2; % oversampling factor (x)
-param_nufft.oy = 2; % oversampling factor (y)
-param_nufft.Kx = 7; %  number of neighbour (x)
-param_nufft.Ky = 7; %  number of neighbour (y)
-param_nufft.kernel = 'minmax:tuned'; % nufft interpolation kernel
-% * Preconditioning
-param_precond.N = N; % number of pixels in the image
-param_precond.Nox = param_nufft.ox * Nx; % number of Fourier points (oversampled plane)
-param_precond.Noy = param_nufft.oy * Ny; % number of Fourier points (oversampled plane)
-% set weighting type
-param_precond.gen_uniform_weight_matrix = 1;
-param_precond.uniform_weight_sub_pixels = 1;
-% * Blocking
-% density-based
-param_blocking.use_density_partitioning = 0;
-param_blocking.density_partitioning_no = 1;
-% uniform
-param_blocking.use_uniform_partitioning = 0;
-param_blocking.uniform_partitioning_no = 4;
-% equal-size
-param_blocking.use_equal_partitioning = 1;
-param_blocking.equal_partitioning_no = 1;
-% manual
-param_blocking.use_manual_partitioning = 0;
-param_blocking.use_manual_frequency_partitioning = 0;
-% partition (symetrically) of the data to nodes (frequency ranges)
-param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, icdf('norm', 0.75, 0, pi / 4), pi];
-% * NNLS (estimation of the l2 contraint)
-generate_eps_nnls = param_global.generate_eps_nnls; % flag to activate NNLS
-param_nnls.verbose = 2; % print log or not
-param_nnls.rel_obj = 1e-3; % 1e-5 is too low !!% stopping criterion
-param_nnls.max_iter = 200; % max number of iterations
-param_nnls.sol_steps = [inf]; % saves images at the given iterations
-param_nnls.beta = 1;
 % param_blocking: config blocking already
 if isempty(nDataBlk); param_blocking = []; % no further blocking required
 end
 % FoV info
 param_wproj.FoVx = sin(pixelSize * Nx * pi / 180 / 3600);
 param_wproj.FoVy = sin(pixelSize * Ny * pi / 180 / 3600);
-param_wproj.uGridSize   = 1 / (param_nufft.ox * param_wproj.FoVx);
-param_wproj.vGridSize   = 1 / (param_nufft.oy * param_wproj.FoVy);
+param_wproj.uGridSiz = 1 / (param_nufft.ox * param_wproj.FoVx);
+param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% setup parpool
@@ -462,7 +427,6 @@ cirrus_cluster = util_set_parpool_dev(algo_version, ncores_data, Qx * Qy, strcmp
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% Setup measurement operator and load data
-% TODO: define lambda function measurement operator
 switch algo_version
     case 'sara'
         for iEffCh = 1:nEffectiveChans
@@ -481,7 +445,7 @@ switch algo_version
             end
             for iCh = 1:numel(effChans2Image{iEffCh})
                 for idSet = 1:nDataSets
-                    dataloaded = load(dataFilenames(idSet, effChans2Image{iEffCh}(iCh)), 'u', 'v', 'w', 'nW', 'y');
+                    dataloaded = load(dataFilename(idSet, effChans2Image{iEffCh}(iCh)), 'u', 'v', 'w', 'nW', 'y');
                     % u v w are in units of the wavelength and will be
                     % normalised between [-pi,pi] for the NUFFT
                     u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth; dataloaded.u = [];
@@ -582,12 +546,12 @@ switch algo_version
                                 end
                             end
                             %% load data
-                            dataloaded = load(dataFilenames(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w');
+                            dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w');
                             % u v w are in units of the wavelength and will be normalised between [-pi,pi] for the NUFFT
                             u{ifc, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth; dataloaded.u = [];
                             v{ifc, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth; dataloaded.v = [];
                             w{ifc, 1}{iCh}{idSet} = double(dataloaded.w(:)); dataloaded.w = [];
-                            dataloaded = load(dataFilenames(idSet, effChans2Image_lab{ifc}(iCh)), 'nW', 'y');
+                            dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'nW', 'y');
                             nW{ifc, 1}{iCh}{idSet} = double(dataloaded.nW(:)); dataloaded.nW = []; % sqrt(natural weights)
                             y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{ifc, 1}{iCh}{idSet}; dataloaded.y = []; % data whitening
                             %
@@ -675,13 +639,13 @@ switch algo_version
                                     end
                                 end
                                 %% load data
-                                dataloaded = load(dataFilenames(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w');
+                                dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w');
                                 % u v w are in units of the wavelength and will be
                                 % normalised between [-pi,pi] for the NUFFT
                                 u{ifc, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth; dataloaded.u = [];
                                 v{ifc, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth; dataloaded.v = [];
                                 w{ifc, 1}{iCh}{idSet} = double(dataloaded.w(:)); dataloaded.w = [];
-                                dataloaded = load(dataFilenames(idSet, effChans2Image_lab{ifc}(iCh)), 'nW', 'y');
+                                dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'nW', 'y');
                                 nW{ifc, 1}{iCh}{idSet} = double(dataloaded.nW(:)); dataloaded.nW = []; % sqrt(natural weights)
                                 y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{ifc, 1}{iCh}{idSet}; dataloaded.y = []; % data whitening
                                 if flag_calib.die
@@ -838,33 +802,21 @@ fprintf('INFO: Convergence parameter (measurement operator''s norm squared): %e 
 %% Setup name of results file
 
 if strcmp(algo_version, 'sara') % AD
-    results_name_function = @(nEffectiveChans) strcat(image_name, '_', exp_type, '_', ...
-        algo_version, '_', num2str(pixelSize), 'asec', ...
-        '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
-        '_ind', num2str(subcube_ind), '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), ...
-        '_g', num2str(gam), '_gb', num2str(gam_bar), '.mat');
     temp_results_name = @(nEffectiveChans) strcat(image_name, '_', exp_type, '_', ...
         algo_version, '_', num2str(pixelSize), 'asec', ...
         '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
-        '_ind', num2str(subcube_ind), '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), ...
+        '_ind', num2str(subcubeInd), '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), ...
         '_g', num2str(gam), '_gb', num2str(gam_bar), '_');
 else
-    results_name_function = @(nEffectiveChans) strcat(image_name, '_', exp_type, '_', ...
-        algo_version, '_', num2str(pixelSize), 'asec', ...
-        '_Ny', num2str(Ny), '_Nx', num2str(Nx), '_L', num2str(nEffectiveChans), ...
-        '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
-        '_ind', num2str(subcube_ind), '_g', num2str(gam), '_gb', num2str(gam_bar), ...
-        '_overlap', strjoin(strsplit(num2str(overlap_fraction)), '_'), '.mat');
     temp_results_name = @(nEffectiveChans) strcat(image_name, '_', exp_type, '_', ...
         algo_version, '_', num2str(pixelSize), 'asec', ...
         '_Ny', num2str(Ny), '_Nx', num2str(Nx), '_L', num2str(nEffectiveChans), ...
         '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
-        '_ind', num2str(subcube_ind), '_g', num2str(gam), '_gb', num2str(gam_bar), ...
+        '_ind', num2str(subcubeInd), '_g', num2str(gam), '_gb', num2str(gam_bar), ...
         '_overlap', strjoin(strsplit(num2str(overlap_fraction)), '_'));
 end
 
 warm_start = @(nEffectiveChans) strcat(temp_results_name(nEffectiveChans), '_rw', num2str(flag_reweighting), '.mat');
-results_name = results_name_function(nEffectiveChans);
 %% Regularization parameters and solver
 
 % estimate noise level (set regularization parameters to the same value)
@@ -926,50 +878,13 @@ param_solver.nu2 = squared_operator_norm_precond; % upper bound on the norm of t
 if ~strcmp(algo_version, 'sara'); param_solver.gamma0 = mu_bar; % regularization parameter nuclear norm
 end
 param_solver.gamma = mu; % regularization parameter l21-norm (soft th parameter) ! for SARA, take the value given as an input to the solver
-param_solver.cube_id = subcube_ind; % id of the cube to be reconstructed
-param_solver.backup_frequency = 1; % AD :????
-param_solver.verbose = 2; % print log or not
-% * reweighting
-param_solver.reweighting_rel_var = 1e-4; % relative variation (reweighting)
+param_solver.cube_id = subcubeInd; % id of the cube to be reconstructed
+param_solver.backup_frequency = 1; % PA: checkpoint frequency! AD :????
 try param_solver.flag_homotopy = flag_homotopy; % flag homotopy strategy
 catch ; param_solver.flag_homotopy = 0;
 end
-if param_solver.flag_homotopy
-    % homotopy strategy
-    param_solver.reweighting_alpha = 20;
-    param_solver.reweighting_min_iter = 5; % minimum number of reweighting iterations, weights updated reweighting_min_iter times
-    param_solver.reweighting_alpha_ff = (1 / param_solver.reweighting_alpha)^(1 / (param_solver.reweighting_min_iter - 1));
-    % reach the floor level after min_iter updates of the weights
-    % 0.63 -> otherwise need 10 reweights minimum
-else
-    % minimum number of reweighting iterations
-    param_solver.reweighting_min_iter = 1;
-    param_solver.reweighting_alpha = 1;
-    param_solver.reweighting_alpha_ff = 1;
-end
-param_solver.reweighting_max_iter = max(reg_nReweights, param_solver.reweighting_min_iter + 1); % maximum number of reweighting iterations reached (weights updated
-% nReweights times)
-% * pdfb
-param_solver.pdfb_min_iter = 10; % minimum number of iterations
-param_solver.pdfb_max_iter = 2000; % maximum number of iterations
-param_solver.pdfb_rel_var = 1e-5; % relative variation tolerance
-param_solver.pdfb_fidelity_tolerance = 1.01; % tolerance to check data constraints are satisfied
 param_solver.alph = gam;
 param_solver.alph_bar = gam_bar;
-param_solver.pdfb_rel_var_low = 5e-6; % minimum relative variation tolerance (allows stopping earlier if data
-% fidelity constraint not about to be satisfied)
-% * ellipsoid projection (if active preconditioning)
-param_solver.elipse_proj_max_iter = 20; % max. number of iterations
-param_solver.elipse_proj_min_iter = 1; % min. number of iterations
-param_solver.elipse_proj_eps = 1e-8; % precision of the projection onto the ellipsoid
-% * epsilon update scheme
-param_solver.use_adapt_eps = 0; % flag to activate adaptive epsilon (no need for simulated data)
-param_solver.adapt_eps_start = 200; % minimum num of iter before stating adjustment
-param_solver.adapt_eps_tol_in = 0.99; % tolerance inside the l2 ball
-param_solver.adapt_eps_tol_out = 1.01; % tolerance outside the l2 ball
-param_solver.adapt_eps_steps = 100; % min num of iter between consecutive updates
-param_solver.adapt_eps_rel_var = 5e-5; % bound on the relative change of the solution
-param_solver.adapt_eps_change_percentage = (sqrt(5) - 1) / 2; % the weight of the update w.r.t the l2 norm of the residual data
 % temp filenames
 name_checkpoint = fullfile(auxiliary_path, temp_results_name(nEffectiveChans));
 name_warmstart = fullfile(auxiliary_path, warm_start(nEffectiveChans));
@@ -991,10 +906,9 @@ if flag_solveMinimization
     else
         %%
         % spectral tesselation (non-overlapping)
-        % ! to be updated tonight (need to be careful about the different variables needed + implicit parallelization conventions)
-        cell_c_chunks = cell(ncores_data, 1); % ! to check
+        channel_chunks = cell(ncores_data, 1);
         for k = 1:ncores_data
-            cell_c_chunks{k} = freqRangeCores(k, 1):freqRangeCores(k, 2);
+            channel_chunks{k} = freqRangeCores(k, 1):freqRangeCores(k, 2);
         end
 
         %
@@ -1005,7 +919,7 @@ if flag_solveMinimization
                 disp('-----------------------------------------');
                 xsol = hyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, ...
-                    ncores_data, dict.basis, dict.nlevel, cell_c_chunks, ...
+                    ncores_data, dict.basis, dict.nlevel, channel_chunks, ...
                     nEffectiveChans, Ny, Nx, param_nufft.oy, param_nufft.ox, ...
                     name_warmstart, name_checkpoint, flag_dataReduction, Sigma, ...
                     xinit);
@@ -1066,7 +980,7 @@ if flag_solveMinimization
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     dict.basis, dict.filter_length, dict.nlevel, window_type, ...
-                    cell_c_chunks, nEffectiveChans, overlap_size, gam, gam_bar, ...
+                    channel_chunks, nEffectiveChans, overlap_size, gam, gam_bar, ...
                     Ny, Nx, param_nufft.oy, param_nufft.ox, ...
                     name_warmstart, name_checkpoint, flag_dataReduction, Sigma, ...
                     xinit, x0);
@@ -1075,7 +989,7 @@ if flag_solveMinimization
         fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
             '_', num2str(pixelSize), 'asec', ...
             '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
-            '_ind', num2str(subcube_ind), ...
+            '_ind', num2str(subcubeInd), ...
             '_gam', num2str(gam), '_gambar', num2str(gam_bar), ...
             '_overlap', strjoin(strsplit(num2str(overlap_fraction)), '_'), ...
             '.fits')));

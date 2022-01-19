@@ -73,7 +73,7 @@
             "beta": 1
         },
         "sara": {
-            "__comment": "SARA dictionary parameters (always specify self in last position if ever used, corresponding filter length set to 0 by convention)",
+            "__comment": "SARA dictionary parameters (always specify Dirac basis ('self') in last position if ever used, filter length of Dirac set to 0 by convention)",
             "basis": ["db1", "db2", "db3", "db4", "db5", "db6", "db7", "db8", "self"],
             "nlevel": 4,
             "filter_length": [2, 4, 6, 8, 10, 12, 14, 16, 0]
