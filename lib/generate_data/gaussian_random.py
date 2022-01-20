@@ -3,13 +3,18 @@ import numpy as np
 
 
 def fftIndgen(n):
-    """
-    [summary]
-    
-    [extended_summary]
-    
-    Args:
-        n ([type]): [description]
+    """Generate a list of indices after the equivalent of an fft-shift
+    operation.
+
+    Parameters
+    ----------
+    n : int
+        Number of elements considered.
+
+    Returns
+    -------
+    numpy.ndarray of int
+        Reorder indices after fftshift.
     """
     a = np.arange(0, n // 2)
     b = np.arange(1, n // 2 + 1)
@@ -25,17 +30,21 @@ def Pk2(kx, ky, Pk=lambda k: k ** (-3.0)):
 
 
 def gaussian_random_field(Pk=lambda k: k ** (-3.0), size=100):
-    """
-    [summary]
+    """[summary]
 
     [extended_summary]
 
-    Args:
-        Pk ([type], optional): [description]. Defaults to lambdak:k**(-3.0).
-        size (int, optional): [description]. Defaults to 100.
+    Parameters
+    ----------
+    Pk : [type], optional
+        [description], by default lambdak:k**(-3.0)
+    size : int, optional
+        [description], by default 100
 
-    Returns:
-        [type]: [description]
+    Returns
+    -------
+    [type]
+        [description]
     """
     noise = np.fft.fft2(np.random.normal(size=(size, size)))
     amplitude = np.zeros((size, size))

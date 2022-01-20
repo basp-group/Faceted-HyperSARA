@@ -953,7 +953,7 @@ if flag_solveMinimization
                     otherwise
                         error("Unknown experiment type");
                 end
-                reference_cube_path = fullfile('../../data', strcat(image_name, '.fits'));
+                reference_cube_path = fullfile('../data', strcat(image_name, '.fits'));
                 info        = fitsinfo(reference_cube_path);
                 rowend      = info.PrimaryData.Size(1);
                 colend      = info.PrimaryData.Size(2);

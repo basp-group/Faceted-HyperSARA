@@ -13,23 +13,24 @@ function [param_global, param_solver, param_nufft, ...
 %
 % Returns
 % -------
-% param_global
+% param_global : struct
 %     Structure containing global configuration parameters.
-% param_solver
+% param_solver : struct
 %     Structure containing solver parameters (reweighting scheme, PDFB,
-%     projection onto the ellipsoid).
-% param_nufft
+%     projection onto the ellipsoid). Contains the following entries:
+%     - pdfb_min_iter: int, minimum number of iterations
+% param_nufft : struct
 %     Structure containing parameters
-% param_blocking
+% param_blocking : struct
 %     Structure containing parameters
-% param_precond
+% param_precond : struct
 %     Structure containing parameters used to define the preconditioning
 %     matrix involved in the PDFB algorithm.
-% param_nnls
+% param_nnls : struct
 %     Structure containing parameters to be passed to the non-negative
 %     least-squares (NNLS) algorithm used to estimate the :math:`\ell_2`
 %     bounds.
-% dict
+% dict : struct
 %     Structure defining the SARA dictionary.
 %
 
