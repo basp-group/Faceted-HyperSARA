@@ -2,7 +2,7 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...
     param_nufft, param_blocking, param_precond, param_nnls, dict)
 % TODO: reactivate warm restart + test
-% TODO: extract all default algorithm parameter into a single json file 
+% TODO: extract all default algorithm parameter into a single json file
 % (avoid interaction of the user with the pipeline, error prone)
 %%
 % Main script to run the faceted HyperSARA approach on real data.
@@ -97,7 +97,7 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 % -------------------------------------------------------------------------%
 %% check input params
 % Image resolution & dimensions
-%! parameters and default values (keep only what is required)
+% ! parameters and default values (keep only what is required)
 if ~isfield(param_global, 'im_Nx');  param_global.im_Nx = 2048; end
 if ~isfield(param_global, 'im_Ny');  param_global.im_Ny = 2048; end
 if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
@@ -216,7 +216,6 @@ elseif ~isempty(param_preproc.filename_dde); flag_calib.die = 0; flag_calib.dde 
 else; flag_calib.die = 0; flag_calib.dde = 0;
 end
 
-
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% Paths
@@ -304,7 +303,7 @@ switch algo_version
                     fprintf('\nWARNING: init. image not found.');
                 else; fprintf('\nINFO: init. image found.');
                 end
-            catch ; fprintf('\nWARNING: init. image not found.');
+            catch; fprintf('\nWARNING: init. image not found.');
             end
         end
     otherwise
@@ -314,7 +313,7 @@ switch algo_version
             for  iEffCh =  1:nEffectiveChans
                 try  xinit(:, iEffCh) = reshape(fitsread(param_preproc.filename_model(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end))), N, 1);
                     fprintf('\nINFO: init. image found.');
-                catch ; fprintf('\nWARNING: init. image not found.');
+                catch; fprintf('\nWARNING: init. image not found.');
                 end
             end
         end
@@ -343,7 +342,7 @@ if ~isempty(filename_l2bounds)
         else
             try  l2bounds{iEffCh}{1}{1} =  l2EffChansloaded.l2bounds.gridded; % one single block assumed if reduced data
                 fprintf('\nINFO: l2 bounds loaded successfully.\n');
-            catch ; fprintf('\nWARNING: l2 bounds not found, will assume a chi squared distribution.\n');
+            catch; fprintf('\nWARNING: l2 bounds not found, will assume a chi squared distribution.\n');
                 flag_l2bounds_compute = 1;
             end
         end
@@ -353,7 +352,7 @@ if ~isempty(filename_l2bounds)
                     global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac);
                 else;  global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac.gridded);
                 end
-            catch ;  global_sigma_noise(iEffCh, 1) = 1;
+            catch;  global_sigma_noise(iEffCh, 1) = 1;
                 flag_l2bounds_compute = 1; % assuming a ch squared dist.
                 fprintf('\nWARNING: global sigma noise not found, will assume white data.\n');
             end
@@ -507,7 +506,7 @@ switch algo_version
                     l2bounds{iEffCh}{1} = noise.l2bounds{iEffCh}{1};
                     global_sigma_noise(iEffCh, 1) = noise.sigma{iEffCh};
                 end
-            catch ; fprintf('\nCould not update l2 bounds given residual !!!! ');
+            catch; fprintf('\nCould not update l2 bounds given residual !!!! ');
             end
         else
             [A, At, G, W, aW] = util_gen_measurement_operator_dev_ad(u, v, w, nW, ...
@@ -585,7 +584,7 @@ switch algo_version
                             preproc_dr_residuals{ifc, 1} = vertcat(preproc_dr_residuals{ifc, 1}{:});
                             preproc_dr_residuals{ifc, 1} =  preproc_dr_residuals{ifc, 1}(:);
                         end
-                    catch ; preproc_dr_residuals = [];
+                    catch; preproc_dr_residuals = [];
                     end
                 end
 
@@ -879,7 +878,7 @@ param_solver.gamma = mu; % regularization parameter l21-norm (soft th parameter)
 param_solver.cube_id = subcubeInd; % id of the cube to be reconstructed
 param_solver.backup_frequency = 1; % PA: checkpoint frequency! AD :????
 try param_solver.flag_homotopy = flag_homotopy; % flag homotopy strategy
-catch ; param_solver.flag_homotopy = 0;
+catch; param_solver.flag_homotopy = 0;
 end
 param_solver.alph = gam;
 param_solver.alph_bar = gam_bar;

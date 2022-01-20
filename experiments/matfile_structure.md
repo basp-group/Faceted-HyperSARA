@@ -10,7 +10,7 @@
       - [DDE calibration](#dde-calibration)
     - [(Optional) Gridding matrices (NUFFT)](#optional-gridding-matrices-nufft)
     - [(Optional) Initial image file](#optional-initial-image-file)
-  - [List of outpu .mat files](#list-of-outpu-mat-files)
+  - [List of output .mat files](#list-of-output-mat-files)
     - [Operator norm](#operator-norm)
     - [Temporary results (checkpoints)](#temporary-results-checkpoints)
 
@@ -52,8 +52,7 @@ One file per channel / effective channel. One dataset for each different VLA con
 
 Image initialized to 0 by default if no input initial image is found.
 
-## List of outpu .mat files
-
+## List of output .mat files
 
 ### Operator norm
 
@@ -61,5 +60,3 @@ Image initialized to 0 by default if no input initial image is found.
 
 Name structure: ...
 Variables: ...
-
-###

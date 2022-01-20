@@ -1,16 +1,54 @@
-function main_generate_data_new(json_filename, image_name, ncores_data, coverage_path, ...
-    exp_type, superresolution_factor, isnr, flagDR, flag_cirrus, flag_generateCoverage)
+function main_generate_data(json_filename, image_name, ncores_data, ...
+    coverage_path, exp_type, superresolution_factor, isnr, flag_dr, ...
+    flag_cirrus, flag_generateCoverage)
+% Generate a ``.mat`` synthetic dataset compatible with the requirements
+% from the imaging interface specified in
+% :file:`experiments.main_input_exp.m`
+%
+% Parameters
+% ----------
+% json_filename : string
+%     Name of the input ``.json`` configuration file specifying the
+%     value of the algorithm parameters (PDFB, reweighting, ellipsoid,
+%     projection, preconditioning, ...).
+% image_name : string
+%     Name of the image cube to be reconstructed.
+% ncores_data : int
+%     Number of CPU cores allocated to the data generation process.
+% coverage_path : string
+%     Path to a pre-generated coverage file (a single ``.mat`` file
+%     containing a 3 column array `uvw`, each corresponding to the u, v and
+%     w coordinates).
+% exp_type : string
+%     Type of experiment considered, reproducing those of the associated
+%     publication.
+% superresolution_factor : double
+%     Base super-resolution factor used to define the pixelSize (by
+%     default, twice the nominal resolution of the instrument).
+% isnr : double
+%     Input SNR of the generated data.
+% flag_dr : bool
+%     Flag to activate dimensionality reduction (not active at the moment).
+% flag_cirrus : bool
+%     Flag specifying whether the simulation runs on cirrus or not.
+% flag_generateCoverage : bool
+%     Flag to generate a custom coverage. Otherwise, load a pre-defined
+%     coverage file.
+%
+
 % %% Debug parameters
 % image_name = 'cygASband_Cube_256_512'; %'cygASband_Cube_H'; %'W28_512';
 % json_filename = 'default_parameters.json';
 % exp_type = 'test'; % 'spectral', 'spatial', 'test'
 % flag_generateCoverage = 0;
-% flagDR = 0;
-% 
-% ncores_data = 2; % number of cores assigned to the data fidelity terms (groups of channels)
-% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ;%"data/msSpecs.mat"; % "data/vla_7.95h_dt10s.uvw256.mat";
+% flag_dr = 0;
+%
+% % number of cores assigned to the data fidelity terms (groups of channels)
+% ncores_data = 2;
+% coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ; %"data/msSpecs.mat";
+% % "data/vla_7.95h_dt10s.uvw256.mat";
 % isnr = 50;
-% 
+%
 % superresolution_factor = 2;
 % flag_cirrus = false;
 % kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
@@ -23,19 +61,19 @@ disp('Synthetic data generation');
 disp(['Reference image: ', image_name]);
 disp(['Input SNR: ', num2str(isnr)]);
 
-addpath ../../lib/operators/;
-addpath ../../lib/measurement-operator/nufft/;
-addpath ../../lib/measurement-operator/lib/operators/;
-addpath ../../lib/generate_data;
-addpath ../../lib/measurement-operator/lib/utils/;
-addpath ../../lib/faceted-wavelet-transform/src;
-addpath ../../lib/utils/;
-addpath ../../data/;
-addpath ../../src/;
+addpath ../lib/operators/;
+addpath ../lib/measurement-operator/nufft/;
+addpath ../lib/measurement-operator/lib/operators/;
+addpath ../lib/generate_data;
+addpath ../lib/measurement-operator/lib/utils/;
+addpath ../lib/faceted-wavelet-transform/src;
+addpath ../lib/utils/;
+addpath ../data/;
+addpath ../src/;
 speed_of_light = 299792458;
 
 % setting paths to results and reference image cube
-data_path = '../../data';
+data_path = '../data';
 results_path = fullfile(data_path, image_name, exp_type);
 mkdir(data_path);
 mkdir(results_path);
@@ -158,8 +196,10 @@ else
         v1 = uvw(obsId == 2, 2) * fmax / speed_of_light;
         clear obsId;
     else
-        % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv expressed in
-        % units of the smallest wavelenght, associated with the highest frequency)
+        % ! normalize u,v coverage w.r.t. the highest frequency (i.e., uv
+        % ! expressed in
+        % units of the smallest wavelenght, associated with the highest
+        % frequency)
         load(coverage_path, 'uvw');
         size(uvw);
         u1 = uvw(:, 1) * fmax / speed_of_light;
@@ -202,7 +242,7 @@ param_l2_ball.sigma_ball = 2;
 
 spmd
     local_fc = frequencies(rg_c(labindex, 1):rg_c(labindex, 2));
-    if flagDR
+    if flag_dr
         % ! define Sigma (weight matrix involved in DR)
         % ! define G as the holographic matrix
     else
@@ -210,7 +250,9 @@ spmd
 
         % generate w/o noise whitening
         [A, At, G, W, aW] = util_gen_measurement_operator(u, -v, ...
-        param_precond, param_blocking, local_fc, fmax, Nx, Ny, param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, kernel);
+        param_precond, param_blocking, local_fc, fmax, Nx, Ny, ...
+        param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, ...
+        kernel);
 
         % generate noiseless data, account for noise whitening and generate noisy data
         % [y0, y, Ml, ~, sigma_noise, norm_noise] = util_gen_measurements_snr( ...
@@ -220,15 +262,14 @@ spmd
         % [~, l2bounds] = util_gen_data_fidelity_bounds2(y, Ml, .../
         %     param_l2_ball, sigma_noise);
 
-        [y0, y, Ml, ~, sigma_noise, norm_noise, ~] = util_gen_measurements_snr_new( ...
+        [y0, y, Ml, ~, sigma_noise, norm_noise, ~] = ...
+        util_gen_measurements_snr_new( ...
         x0(:, :, rg_c(labindex, 1):rg_c(labindex, 2)), G, W, A, ...
-        input_snr(rg_c(labindex, 1):rg_c(labindex, 2)), rng_stream{labindex});
+        input_snr(rg_c(labindex, 1):rg_c(labindex, 2)), ...
+        rng_stream{labindex});
 
         [~, l2bounds] = util_gen_data_fidelity_bounds2(y, Ml, .../
             param_l2_ball, 1.);
-
-        % [A, At, G, W, aW, Sigma, y, noise] = util_gen_dr_measurement_operator_dev_ad(y, u, v, w, nW, ...
-        %         param_precond, param_blocking, 1, Nx, Ny, param_nufft, param_wproj, [], []);
 
         Sigma = [];
     end
@@ -238,11 +279,13 @@ clear local_fc;
 %% Save datasets (one per frequency) in parallel
 spmd
     for ch = 1:rg_c(labindex, 2) - rg_c(labindex, 1) + 1
-        datafile = matfile(fullfile(results_path, strcat('data_ch_', num2str(rg_c(labindex, 1) + ch - 1), '.mat')), ...
-            'Writable', true);
+        datafile = matfile(fullfile(results_path, ...
+        strcat('data_ch_', num2str(rg_c(labindex, 1) + ch - 1), '.mat')), ...
+        'Writable', true);
         datafile.y0 = cell2mat(y0{ch});
         datafile.y = cell2mat(y{ch});
-        datafile.l2bounds = cell2mat(l2bounds{ch});  % epsilons
+        % epsilons
+        datafile.l2bounds = cell2mat(l2bounds{ch});
         datafile.sigma_noise = sigma_noise(ch);
         u_ = (frequencies(rg_c(labindex, 1) + ch - 1) / fmax) * u1;
         datafile.u = u_;
@@ -251,6 +294,7 @@ spmd
         datafile.w = ones(size(u));
         datafile.frequency = frequencies(rg_c(labindex, 1) + ch - 1);
         datafile.maxProjBaseline = max(sqrt(u_.^2 + v_.^2));
-        datafile.nW = sigma_noise(ch) * ones(size(u)); % sqrt(natural weights)
+        % sqrt(natural weights)
+        datafile.nW = sigma_noise(ch) * ones(size(u));
     end
 end

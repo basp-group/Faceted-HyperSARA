@@ -1,12 +1,12 @@
 % Main imaging utility script, to be configured by the user to run an
 % experiment.
 %
-% This file calls the generic imaging pipeline 
-% :func:`experiments.main_real_data_exp` to reconstruct an image from the 
+% This file calls the generic imaging pipeline
+% :func:`experiments.main_real_data_exp` to reconstruct an image from the
 % input dataset.
 %
 % Parameters
-% ---------- 
+% ----------
 % imagecubeName : string
 %     Name of the image cube to be reconstructed.
 % datasetNames : cell of string
@@ -16,7 +16,7 @@
 %     Name of the input ``.json`` configuration file specifying the
 %     value of the algorithm parameters (PDFB, reweighting, ellipsoid,
 %     projection, preconditioning, ...).
-% dataFilename : anonymous function 
+% dataFilename : anonymous function
 %     Function handle taking a channel index as an input, and returning the
 %     name of the associated data ``.mat`` file (one file per wavelength).
 % idChannels2Image : array[int]
@@ -25,7 +25,7 @@
 %     Number of consecutive channels to be concatenated into each effective
 %     channel (1 if no reduction is used).
 % subcubeInd : int
-%     Index of the subcube to be reconstructed (if spectral faceting is 
+%     Index of the subcube to be reconstructed (if spectral faceting is
 %     used). To be set to ``0`` otherwise.
 % main_dir : string
 %     Directory of the Faceted-HyperSARA repository.
@@ -34,7 +34,7 @@
 % project_dir : string
 %     Directory of the experiment project.
 % preproc_calib_dir : anonymous function
-%     Name of the folder containing pre-estimated calibration kernels. If 
+%     Name of the folder containing pre-estimated calibration kernels. If
 %     not used or not available, to be set to ``[]``
 % param_global.preproc_filename_die : anonymous function
 %     Function handle, taking the index of the first and last channel, and
@@ -43,12 +43,12 @@
 % param_global.preproc_filename_l2bounds : anonymous function
 %     Function handle, taking the index of the first and last channel, and
 %     returning a string corresponding to the name of a file
-%     containingpre-computed :math:`ell_2` bounds. If not used, to be set 
+%     containingpre-computed :math:`ell_2` bounds. If not used, to be set
 %     to ``[]``.
 % param_global.preproc_filename_model : anonymous function
 %     Function handle, taking the index of the first and last channel, and
 %     returning the name of a file containing a model image to be used to
-%     initialize the reconstruction algorithm. If not used, to be set to 
+%     initialize the reconstruction algorithm. If not used, to be set to
 %     ``[]``.
 % param_global.measop_flag_dataReduction : bool
 %     Flag to activate data reduction.
@@ -62,7 +62,7 @@
 % param_global.im_Ny : int
 %     Number of pixels along axis y in the reconstructed image.
 % param_global.im_pixelSize  : double
-%     Pixel-size in arcsec in the frequency domain. Set to ``[]`` to use 
+%     Pixel-size in arcsec in the frequency domain. Set to ``[]`` to use
 %     the default computation (implemented in :func:`main_real_data_exp`).
 % param_global.generate_eps_nnls : bool
 %     Flag to activate the computation of the :math:`\ell_2` bounds.
@@ -72,8 +72,8 @@
 %     Maximum number of reweighting steps.
 % param_global.reg_flag_homotopy : bool
 %     Flag to use the reweighting homotopy strategy (deactivated for now).
-% param_global.hardware : string 
-%     String to specify the hardware configuration for the parallelization. 
+% param_global.hardware : string
+%     String to specify the hardware configuration for the parallelization.
 %     Possible values are ``'cirrus'`` or ``'local'``.
 % param_global.algo_version : string
 %     Name of the imaging approach used. Possible values are ``'fhs'``
@@ -88,10 +88,10 @@
 %     Array containing the overlap fraction between consecutive facets along
 %     each axis (y and x). Will be reset
 %     automatically to ``[0, 0]`` if ``param_global.algo_version = 'sara'``
-%     or 'hs'. Besides, each entry of 
+%     or 'hs'. Besides, each entry of
 %     ``param_global.facet_overlap_fraction`` is reset to 0 the
 %     number of facet along the corresponding dimension is equal to 1
-%     (i.e., ``param_global.facet_Qy = 1`` and/or 
+%     (i.e., ``param_global.facet_Qy = 1`` and/or
 %     ``param_global.facet_Qx = 1``).
 % param_global.reg_gam : double
 %     Average joint sparsity prior regularization parameter.
@@ -101,7 +101,7 @@
 %
 % Example
 % -------
-% 
+%
 % .. code-block:: matlab
 %
 %    %% option 1: provide a cell array containing the ids of the channels
@@ -109,18 +109,18 @@
 %    % example a: two effective channels, containing two 'physical'
 %    % channels each
 %    effChans2Image = {[1,2],[3,4]};
-%    
+%
 %    % example b: one channel effective channel with one physical channel
 %    effChans2Image={[1]}
-%    
-%    
+%
+%
 %    %% option 2: provide all ids of channels 'nChannelsPerImage' & number
 %    % of channel per effective channel 'nChannelsPerImage' channel
-%    % example c: EXP 1: subcube 1 (first channel from each spectral 
+%    % example c: EXP 1: subcube 1 (first channel from each spectral
 %    % window (2 of  which are flagged).
 %    idChannels2Image = [1:16:272 289:16:320 337:16:512];
 %    nChannelsPerImage = 1;
-%    
+%
 %    % example d: reduced imagecube containing 30 effective channels
 %    % each concatenating 16 physical channels
 %    idChannels2Image = [1:272 289:320 337:512];
@@ -128,10 +128,10 @@
 %
 % Note
 % ----
-% - Data files: example of data filename: ``'data_ch_1.mat'``. 
+% - Data files: example of data filename: ``'data_ch_1.mat'``.
 % - Any data file should contain the following variables : `maxProjBaseline` (double, maximum projection basline), `u` , `v`, `w` (arrays of :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (vector of visibilities), `frequency` (associated frequency value).
 % - Note that the data `y` are not whitened, uvw coordinates shoud be given
-% in units of the wavelength (i.e. normalised with the frequency) and 
+% in units of the wavelength (i.e. normalised with the frequency) and
 % `maxProjBaseline` in units of the wavelength.
 %
 %
@@ -197,7 +197,6 @@ for iEff = 1:nEffChans2Image
     fprintf('\nEffective channel ID %d: physical channels involved: %d - %d\n', iEff, effChans2Image{iEff}(1), effChans2Image{iEff}(end));
 end
 
-
 %% running one subcube at a time
 % TODO: to be modified
 subcubeInd = 0; % id of subcube if spectral interleaving is active
@@ -212,7 +211,7 @@ param_global.im_Ny = 256; % 1536;
 param_global.im_pixelSize = []; % 0.06; % pixelsize in asec
 param_global.algo_flag_computeOperatorNorm = false;
 
-% faceting params: note that if interleaving is active, one subcube is 
+% faceting params: note that if interleaving is active, one subcube is
 % imaged at a time: Qc=1 by default.
 % TODO: to be modified
 param_global.facet_Qx = 1; % dimFacet1
