@@ -14,6 +14,7 @@ Faceted-Hyper-SARA
 
    _src/src
    _lib/lib
+   _experiments/experiments
    figures
 
 .. note::

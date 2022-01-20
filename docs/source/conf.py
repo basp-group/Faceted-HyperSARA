@@ -119,4 +119,4 @@ napoleon_preprocess_types = False
 napoleon_type_aliases = None
 napoleon_attr_annotations = True
 
-primary_domain = "mat"
+# primary_domain = "mat"
