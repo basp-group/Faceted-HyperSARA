@@ -237,8 +237,8 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
         # data = (data_corr_1[:,ifreq] +data_corr_4[:,ifreq])*0.5
         weightI = w1 + w4
         # flag
-        flag = flag_row + flag_doneAll[:, ifreq] + numpy.absolute(data)
-        flag = flag != 0  # numpy.array(flag0,dtype=bool);
+        flag = flag_row + flag_doneAll[:, ifreq] + np.absolute(data)
+        flag = flag != 0  # np.array(flag0,dtype=bool);
         # save data
         info("Reading data and writing file..Freq %s" % (ifreq))
 
@@ -270,10 +270,10 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
                 info(u.shape)
                 v = v[flag_slice]
                 w = w[flag_slice]
-                maxProjBaseline = numpy.sqrt(max(u ** 2 + v ** 2))
-                nW = numpy.sqrt(weightI_slice[flag_slice])
+                maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2))
+                nW = np.sqrt(weightI_slice[flag_slice])
                 try:
-                    wimag = numpy.sqrt(wimagI_slice[flag_slice])
+                    wimag = np.sqrt(wimagI_slice[flag_slice])
                 except:
                     wimag = []
                 fileid = 1 + fileid0 + (ich * 16) + ifreq
@@ -302,9 +302,9 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
             v = uvw[flag, 1]
             w = uvw[flag, 2]
             uvw = []
-            nW = numpy.sqrt(weightI[flag])
-            wimagI = numpy.sqrt(wimagI[flag])
-            maxProjBaseline = numpy.sqrt(max(u ** 2 + v ** 2))
+            nW = np.sqrt(weightI[flag])
+            wimagI = np.sqrt(wimagI[flag])
+            maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2))
             dataFileName = "%s/data_ch_%s.mat" % (path_data, ifreq + 1)
             info("Channel id: %d. File saved at %s" % (ifreq + 1, dataFileName))
             sio.savemat(
