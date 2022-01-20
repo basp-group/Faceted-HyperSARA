@@ -37,7 +37,7 @@ function [param_global, param_solver, param_nufft, ...
 % ---------
 % The ``.json`` file should contain fields corresponding to the following structure attributes.
 %
-% - param_solver.reweighting_rel_var  (double)
+% param_solver.reweighting_rel_var  (double)
 %     Relative variation stopping criterion (reweighting).
 % param_solver.reweighting_min_iter  (int)
 %     Minimum number of reweighting iterations.
@@ -117,6 +117,7 @@ function [param_global, param_solver, param_nufft, ...
 % dict.wavelet_basis  (cell{:} of string)
 %     Name of the wavelet basis to be used (`'self'` corresponding to the 
 %     Dirac basis).
+%
 %
 
 % TODO: modify the name of the model parameters (use a structure to define

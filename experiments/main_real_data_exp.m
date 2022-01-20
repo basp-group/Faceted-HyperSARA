@@ -1,10 +1,6 @@
 function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...
     param_nufft, param_blocking, param_precond, param_nnls, dict)
-% TODO: reactivate warm restart + test
-% TODO: extract all default algorithm parameter into a single json file
-% (avoid interaction of the user with the pipeline, error prone)
-%%
 % Main script to run the faceted HyperSARA approach on real data.
 %
 % This script generates synthetic data and runs the SARA, HyperSARA or
@@ -16,50 +12,42 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 % image_name : string
 %     Name of the reference synthetic image (from the data/ folder).
 % dataSetsNames: cell of string
-%     Names of the datasets to be imaged
-%     example a:  one dataset -name tag is not compulsory:
-%     > datasetNames={''};
-%     example b: two data sets from two configurations of the VLA
-%     > datasetNames={'CYGA-ConfigA','CYGA-ConfigC'};
+%     Names of the datasets to be imaged.
 % dataFilenames: cell of string
-%     Name of the data set files
+%     Name of the data set files.
 % subcube_ind : int
 %     Index of the spectral facet to be reconstructed (set to -1 or 0 to
-%     deactivate spectral faceting).       AD: is this  still the case ????
+%     deactivate spectral faceting).  AD: is this  still the case ????
 % effChans2Image: cell array
-%     Ids of the 'physical' channels to  concatenated for each effective channel.
-%     example a: two effective channels, containing two 'physical' channels each
-%     > effChans2Image={[1,2],[3,4]};
-%     example b: one channel effective channel with one physical channel
-%     > effChans2Image={[1]}
-
+%     Indices of the ``physical'' channels to be concatenated for each 
+%     effective channel.
 % param_global: struct
-% param_global.algo_version : string ('sara', 'hs' or 'fhs')
+%     Global imaging pipeline parameters (see :file:`main_input_exp.m`).
+% param_global.algo_version : string (``'sara'``, ``'hs'`` or ``'fhs'``).
 %     Selected solver.
 % param_global.ncores_data : int
-%     Number of cores handlig the data fidelity terms ("data cores").
-%     For Faceted HyperSARA, the total number of cores used is Qx*Qy +
-%     ncores_data + 1. For SARA and HyperSARA, represents the number of
-%     cores used for the parallelization.
-%
+%     Number of cores handlig the data fidelity terms (data cores). For 
+%     Faceted HyperSARA, the total number of cores used
+%     is ``Qx*Qy + ncores_data + 1``. For SARA and HyperSARA, represents 
+%     the number of cores used for the parallelization.
 % param_global.im_pixelSize : double
 %     pixel size in arcsec.
 % param_global.im_Nx : int
-%     image dim. 1
+%     Image dimension (x axis, dimension 2).
 % param_global.im_Ny : int
-%     image dim 2
+%     Image dimension (y axis, dimension 1).
 % param_global.facet_Qx : int
-%     Number of spatial facets along axis 2 (x).
+%     Number of spatial facets along axis 2 (axis x).
 % param_global.facet_Qy : int
-%     Number of spatial facets along axis 1 (y)
+%     Number of spatial facets along axis 1 (axis y).
 % param_global.facet_Qc : int
 %     Number of spectral facets.
-% param_global.facet_window_type : string ('triangular', 'hamming' or 'pc' (piecewise-constant))
+% param_global.facet_window_type : string (``'triangular'``, ``'hamming'`` or ``'pc'`` (piecewise-constant))
 %     Type of apodization window considered for the faceted nuclear norm
 %     prior (FHS solver).
-% param_global.facet_overlap_fraction : array (1d)
-%     Fraction of the total size of a facet overlapping with a neighbour facet.
-%
+% param_global.facet_overlap_fraction : double[2]
+%     Fraction of the total size of a facet overlapping with a neighbour 
+%     facet.
 % param_global.reg_nReweights : int
 %     Maximum number of reweighting steps.
 % param_global.reg_gam : double
@@ -69,32 +57,44 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     Additional multiplicative factor affecting the low-rankness
 %     regularization term.
 % param_global.reg_flag_reweight : int
-%     flat to activate re-weighting
+%     Flag to activate re-weighting.
 % param_global.reg_flag_homotopy : int
-%     flat to activate  homotopy strategy in the re-weighting
-%
-% param_global.exp_type : string ('spatial' or 'spectral' or 'real')       % AD: maybe remove????
-%     Type of the experiment to be reproduced.
-%
+%     Flag to activate  homotopy strategy in the re-weighting.
 % param_global.algo_flag_computeOperatorNorm : bool
 %     Flag triggering the computation of the (preconditioned) operator norm.
 % param_global.algo_flag_solveMinimization : bool
 %     Flag triggering the solver (SARA, HS or FHS).
 % param_global.algo_flag_dataReduction : bool
-%     Flag to activate Data reduction features in the definition of the measurement
-%     operator.
-%
+%     Flag to activate Data reduction features in the definition of the
+%     measurement operator.
 % cirrus:
-%     hardware: Specify whether the solver runs on cirrus or not (for the creation of
-%     the parpool).
+%     hardware: Specify whether the solver runs on cirrus or not (for the
+%     creation of the parpool).
 %
-% ..note::
-%    DR features still need to be implemented in the main script.
+% Note
+% ----
+% - DR features still need to be implemented in the main script.
+% - Example:
 %
-%% constants
-% speed_of_light = 299792458;
-% -------------------------------------------------------------------------%
-% -------------------------------------------------------------------------%
+% .. code-block:: matlab
+%
+%     %% Name of the dataset to be imaged
+%     % example a:  one dataset -name tag is not compulsory:
+%     datasetNames={''};
+%     % example b: two data sets from two configurations of the VLA
+%     datasetNames={'CYGA-ConfigA','CYGA-ConfigC'};
+%     %% Indices of the 'physical' channels to be concatenated
+%     % example a: two effective channels, containing two 'physical' 
+%     % channels each
+%     effChans2Image={[1,2],[3,4]};
+%     % example b: one channel effective channel with one physical channel
+%     effChans2Image={[1]}
+%
+%
+
+
+% ------------------------------------------------------------------------%
+% ------------------------------------------------------------------------%
 %% check input params
 % Image resolution & dimensions
 % ! parameters and default values (keep only what is required)

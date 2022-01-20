@@ -126,14 +126,18 @@
 %    idChannels2Image = [1:272 289:320 337:512];
 %    nChannelsPerImage = 16;
 %
-% Note
-% ----
+% Warning
+% -------
 % - Data files: example of data filename: ``'data_ch_1.mat'``.
-% - Any data file should contain the following variables : `maxProjBaseline` (double, maximum projection basline), `u` , `v`, `w` (arrays of :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (vector of visibilities), `frequency` (associated frequency value).
-% - Note that the data `y` are not whitened, uvw coordinates shoud be given
-% in units of the wavelength (i.e. normalised with the frequency) and
-% `maxProjBaseline` in units of the wavelength.
 %
+% - Any data file should contain the following variables : `maxProjBaseline`
+%   (double, maximum projection basline), `u` , `v`, `w` (arrays of 
+%   :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (vector of 
+%   visibilities), `frequency` (associated frequency value).
+%
+% - Note that the data `y` are not whitened, uvw coordinates shoud be given
+%   in units of the wavelength (i.e. normalised with the frequency) and
+%   `maxProjBaseline` in units of the wavelength.
 %
 
 % TODO give Matlab config file for a cluster (intead of just providing CIRRUS)
