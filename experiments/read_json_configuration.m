@@ -33,6 +33,91 @@ function [param_global, param_solver, param_nufft, ...
 % dict : struct
 %     Structure defining the SARA dictionary.
 %
+% Important
+% ---------
+% The ``.json`` file should contain fields corresponding to the following structure attributes.
+%
+% - param_solver.reweighting_rel_var  (double)
+%     Relative variation stopping criterion (reweighting).
+% param_solver.reweighting_min_iter  (int)
+%     Minimum number of reweighting iterations.
+% param_solver.reweighting_max_iter  (int)
+%     Maximum number of reweighting iterations.
+% param_solver.reweighting_alpha_ff  (double)
+%     Update reweighting parameter, if homotopy is active.
+% param_solver.reweighting_alpha  (double)
+%     Initial value of the reweighting parameter, by default 1.
+% param_solver.pdfb_min_iter  (int)
+%     Minimum number of iterations.
+% param_solver.pdfb_max_iter  (int)
+%     Maximum number of iterations.
+% param_solver.pdfb_rel_var  (double)
+%     Relative variation tolerance.
+% param_solver.pdfb_fidelity_tolerance  (double)
+%     Tolerance to check data constraints are satisfied.
+% param_solver.pdfb_rel_var_low  (double)
+%     Minimum relative variation tolerance.
+% param_solver.elipse_proj_max_iter  (int)
+%     Max. number of iterations, 20.
+% param_solver.elipse_proj_min_iter  (int)
+%     Min. number of iterations, 1.
+% param_solver.elipse_proj_eps  (int)
+%     Precision of the projection onto the ellipsoid, 1e-8.
+% param_nufft.ox  (int)
+%     Oversampling factor (axis x), defaults to 2.
+% param_nufft.oy  (int)
+%     Oversampling factor (axis y), defaults to 2.
+% param_nufft.Kx  (int)
+%     Number of neighbour (axis x), defaults to 7.
+% param_nufft.Ky  (int)
+%     Number of neighbour (axis y), defaults to 7.
+% param_nufft.kernel  (string)
+%     Name of the nufft interpolation kernel, defaults to 'minmaxt(uned'. )
+%     Possible options (``'minmaxt(uned'``, ``'...'``)
+% param_blocking.use_density_partitioning  (bool)
+%     Density-based blocking.
+% param_blocking.density_partitioning_no  (int)
+%     Number of blocks.
+% param_blocking.use_uniform_partitioning  (bool)
+%     Uniform blocking.
+% param_blocking.uniform_partitioning_no  (int)
+%     Number of blocks
+% param_blocking.use_equal_partitioning  (bool)
+%     Equal-size blocking.
+% param_blocking.equal_partitioning_no  (int)
+%     Number of blocks.
+% param_blocking.use_manual_partitioning  (bool)
+%     Manual blocking.
+% param_blocking.use_manual_frequency_partitioning  (bool)
+%     Manual frequency blocking.     
+% param_precond.N  (int)
+%     Number of pixels in the image.
+% param_precond.Nox  (int)
+%     Number of Fourier points (oversampled plane, x axis).
+% param_precond.Noy  (int)
+%     Number of Fourier points (oversampled plane, y axis).
+% param_precond.gen_uniform_weight_matrix  (bool)
+%     Flag to generate uniform weighting matrix (?).
+% param_precond.uniform_weight_sub_pixels  (bool)
+%     Flag to activate uniform weighting (?).
+% param_nnls.generate_eps_nnls  (bool)
+%     Flag to activate NNLS.
+% param_nnls.verbose  (int)
+%     Print log or not.
+% param_nnls.rel_obj  (double)
+%     Stopping criterion.
+% param_nnls.max_iter  (int)
+%     Maximum number of iterations.
+% param_nnls.sol_steps  (array of int)
+%     Iterations at which the NNLs solution is saved.
+% param_nnls.beta  (double)
+%     Regularization parameter NNLS.
+% dict.wavelet_level  (int)
+%     Depth of wavelet decomposition.
+% dict.wavelet_basis  (cell{:} of string)
+%     Name of the wavelet basis to be used (`'self'` corresponding to the 
+%     Dirac basis).
+%
 
 % TODO: modify the name of the model parameters (use a structure to define
 % these)
@@ -57,21 +142,16 @@ config = jsondecode(str);
 % reweighting_min_iter: int,minimum number of reweighting iterations, weights updated reweighting_min_iter times, 5
 % reweighting_alpha_ff: double, update reweighting parameter, if homotopy is active. (1 / param_solver.reweighting_alpha)^(1 / (param_solver.reweighting_min_iter - 1));
 % reweighting_alpha: double, initial value of the reweighting parameter, 1
-param_reweighting = cell2struct(struct2cell(config{1, 1}.reweighting), strcat('reweighting_', fieldnames(config{1, 1}.reweighting)));
+param_reweighting = cell2struct(struct2cell(config{1, 1}.reweighting), ...
+strcat('reweighting_', fieldnames(config{1, 1}.reweighting)));
 
 % * PDFB
-% pdfb_min_iter: int, minimum number of iterations
-% pdfb_max_iter: int, maximum number of iterations
-% pdfb_rel_var: double, relative variation tolerance
-% pdfb_fidelity_tolerance: double, tolerance to check data constraints are satisfied
-% pdfb_rel_var_low: double, minimum relative variation tolerance 
-param_pdfb = cell2struct(struct2cell(config{1, 1}.pdfb), strcat('pdfb_', fieldnames(config{1, 1}.pdfb)));
+param_pdfb = cell2struct(struct2cell(config{1, 1}.pdfb), ...
+strcat('pdfb_', fieldnames(config{1, 1}.pdfb)));
 
 % * Projection onto the ellipsoid
-% elipse_proj_max_iter: int, max. number of iterations, 20
-% elipse_proj_min_iter: int, min. number of iterations, 1
-% elipse_proj_eps: int, precision of the projection onto the ellipsoid, 1e-8
-param_proj = cell2struct(struct2cell(config{1, 1}.proj), strcat('elipse_proj_', fieldnames(config{1, 1}.proj)));
+param_proj = cell2struct(struct2cell(config{1, 1}.proj), ...
+strcat('elipse_proj_', fieldnames(config{1, 1}.proj)));
 
 % combining the 3 structures (reweighting, pdfb, proj)
 param_solver = cell2struct([struct2cell(param_reweighting); struct2cell(param_pdfb); struct2cell(param_proj)], ...
@@ -101,41 +181,15 @@ param_solver.adapt_eps_change_percentage = (sqrt(5) - 1) / 2;
 
 %% Model structures
 % * NUFFT (gridding parameters)
-% ox: int, oversampling factor (x), defaults to 2
-% oy: int, oversampling factor (y), defaults to 2
-% Kx: int, number of neighbour (x), defaults to 7
-% Ky: int, number of neighbour (y), defaults to 7
-% kernel: string, nufft interpolation kernel, defaults to 'minmax:tuned'
 param_nufft = config{2, 1}.nufft;
 
 % * Blocking
-% % density-based
-% use_density_partitioning
-% density_partitioning_no
-% % uniform
-% use_uniform_partitioning
-% uniform_partitioning_no
-% % equal-size
-% use_equal_partitioning
-% equal_partitioning_no
-% % manual
-% use_manual_partitioning
-% use_manual_frequency_partitioning
-% % partition (symetrically) of the data to nodes (frequency ranges)
-% fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, icdf('norm', 0.75, 0, pi / 4), pi];
-%
 param_blocking = config{2, 1}.blocking;
 % partition (symetrically) of the data to nodes (frequency ranges)
-param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, icdf('norm', 0.75, 0, pi / 4), pi];
+param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, ...
+    icdf('norm', 0.75, 0, pi / 4), pi];
 
 % * Preconditioning
-% N: number of pixels in the image
-% Nox: number of Fourier points (oversampled plane)
-% Noy:number of Fourier points (oversampled plane)
-% set weighting type
-% gen_uniform_weight_matrix
-% uniform_weight_sub_pixels
-%
 % set weighting type
 param_precond = config{2, 1}.preconditioning;
 % number of pixels in the image
@@ -145,12 +199,6 @@ param_precond.Nox = param_nufft.ox * param_global.im_Nx;
 param_precond.Noy = param_nufft.oy * param_global.im_Ny;
 
 % * NNLS
-% generate_eps_nnls: flag to activate NNLS
-% verbose: print log or not
-% rel_obj: stopping criterion
-% max_iter: max number of iterations
-% sol_steps: (vector) saves images at the given iterations
-% beta: double, regularization parameter 
 % ! revise place of parameter
 % if ~isfield(param_global, 'generate_eps_nnls'); param_global.generate_eps_nnls = false; end
 param_nnls = config{2, 1}.nnls;
