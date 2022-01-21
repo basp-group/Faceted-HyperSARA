@@ -74,21 +74,23 @@
 %     Flag to use the reweighting homotopy strategy (deactivated for now).
 % param_global.hardware : string
 %     String to specify the hardware configuration for the parallelization.
-%     Possible values are ``'cirrus'`` or ``'local'``.
+%     Possible values are ``"cirrus"`` or ``"local"``.
 % param_global.algo_version : string
-%     Name of the imaging approach used. Possible values are ``'fhs'``
-%     (Faceted-HyperSARA), ``'hs'`` (HyperSARA) and ``'sara'`` (SARA).
+%     Name of the imaging approach used. Possible values are ``"fhs"``
+%     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
 % param_global.facet_Qx : int
 %     Number of spatial facets along spatial axis x. Will be reset
-%     automaticallt to 1 if ``param_global.algo_version = 'sara'`` or 'hs'.
+%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or 
+%     ``"hs"``.
 % param_global.facet_Qy : int
 %     Number of spatial facets along spatial axis y. Will be reset
-%     automaticallt to 1 if ``param_global.algo_version = 'sara'`` or 'hs'.
+%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or 
+%     ``"hs"``.
 % param_global.facet_overlap_fraction : array[double]
 %     Array containing the overlap fraction between consecutive facets along
 %     each axis (y and x). Will be reset
-%     automatically to ``[0, 0]`` if ``param_global.algo_version = 'sara'``
-%     or 'hs'. Besides, each entry of
+%     automatically to ``[0, 0]`` if ``param_global.algo_version = "sara"``
+%     or ``"hs"``. Besides, each entry of
 %     ``param_global.facet_overlap_fraction`` is reset to 0 the
 %     number of facet along the corresponding dimension is equal to 1
 %     (i.e., ``param_global.facet_Qy = 1`` and/or
@@ -106,24 +108,24 @@
 %
 %    %% option 1: provide a cell array containing the ids of the channels
 %    % to be concatenated for each effective channel.
-%    % example a: two effective channels, containing two 'physical'
+%    % example a: two effective channels, containing two "physical"
 %    % channels each
-%    effChans2Image = {[1,2],[3,4]};
+%    effChans2Image = {[1,2], [3,4]};
 %
 %    % example b: one channel effective channel with one physical channel
-%    effChans2Image={[1]}
+%    effChans2Image = {[1]};
 %
 %
-%    %% option 2: provide all ids of channels 'nChannelsPerImage' & number
-%    % of channel per effective channel 'nChannelsPerImage' channel
+%    %% option 2: provide all ids of channels nChannelsPerImage & number
+%    % of channel per effective channel nChannelsPerImage channel
 %    % example c: EXP 1: subcube 1 (first channel from each spectral
 %    % window (2 of  which are flagged).
-%    idChannels2Image = [1:16:272 289:16:320 337:16:512];
+%    idChannels2Image = [1:16:272, 289:16:320, 337:16:512];
 %    nChannelsPerImage = 1;
 %
 %    % example d: reduced imagecube containing 30 effective channels
 %    % each concatenating 16 physical channels
-%    idChannels2Image = [1:272 289:320 337:512];
+%    idChannels2Image = [1:272, 289:320, 337:512];
 %    nChannelsPerImage = 16;
 %
 % Warning
@@ -136,8 +138,8 @@
 %   visibilities), `frequency` (associated frequency value).
 %
 % - Note that the data `y` are not whitened, uvw coordinates shoud be given
-%   in units of the wavelength (i.e. normalised with the frequency) and
-%   `maxProjBaseline` in units of the wavelength.
+%   in units of the wavelength, and `maxProjBaseline` is expressed in units
+%   of the wavelength.
 %
 
 % TODO give Matlab config file for a cluster (intead of just providing CIRRUS)

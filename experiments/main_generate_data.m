@@ -35,6 +35,35 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
 %     Flag to generate a custom coverage. Otherwise, load a pre-defined
 %     coverage file.
 %
+% Important
+% ---------
+% The resulting ``.mat`` files (one for each frequency) are composed of the
+% following variables
+%
+% y0 (complex[:])
+%     Clean (i.e., noiseless) visibility vector.
+% y (complex[:])
+%     Noisy visibility vector.
+% l2bounds (double)
+%     :math:`\ell_2` bounds to be used in the data fidelity constraints.
+% sigma_noise (double)
+%     Standard deviation of the additive white complex Gaussian noise 
+%     affecting the clean data `y0`.
+% u (double[:])
+%     :math:`u` coordinate, expressed in units of the wavelength.
+%     (``speed_of_light / frequency``).
+% v (double[:])
+%     :math:`v` coordinate, expressed in units of the wavelength.
+% w (double[:])
+%     :math:`w` component, expressed in units of the wavelength
+%     (``speed_of_light / frequency``) (?).
+% frequency (double)
+%     Acquisition frequency (in Hz).
+% maxProjBaseline (double)
+%     Maximum projected baseline, expressed in units of the wavelength.
+% nW (double[:])
+%     Inverse noise whitening vector (``1/sigma_noise``).
+%
 
 % %% Debug parameters
 % image_name = 'cygASband_Cube_256_512'; %'cygASband_Cube_H'; %'W28_512';

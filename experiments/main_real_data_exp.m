@@ -23,7 +23,7 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     effective channel.
 % param_global: struct
 %     Global imaging pipeline parameters (see :file:`main_input_exp.m`).
-% param_global.algo_version : string (``'sara'``, ``'hs'`` or ``'fhs'``).
+% param_global.algo_version : string (``"sara"``, ``"hs"`` or ``"fhs"``).
 %     Selected solver.
 % param_global.ncores_data : int
 %     Number of cores handlig the data fidelity terms (data cores). For 
@@ -42,7 +42,7 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     Number of spatial facets along axis 1 (axis y).
 % param_global.facet_Qc : int
 %     Number of spectral facets.
-% param_global.facet_window_type : string (``'triangular'``, ``'hamming'`` or ``'pc'`` (piecewise-constant))
+% param_global.facet_window_type : string (``"triangular"``, ``"hamming"`` or ``"pc"`` (piecewise-constant))
 %     Type of apodization window considered for the faceted nuclear norm
 %     prior (FHS solver).
 % param_global.facet_overlap_fraction : double[2]
@@ -79,16 +79,17 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 % .. code-block:: matlab
 %
 %     %% Name of the dataset to be imaged
-%     % example a:  one dataset -name tag is not compulsory:
-%     datasetNames={''};
+%     % example a: one dataset -name tag is not compulsory:
+%     datasetNames = {''};
 %     % example b: two data sets from two configurations of the VLA
-%     datasetNames={'CYGA-ConfigA','CYGA-ConfigC'};
+%     datasetNames = {'CYGA-ConfigA','CYGA-ConfigC'};
+%
 %     %% Indices of the 'physical' channels to be concatenated
 %     % example a: two effective channels, containing two 'physical' 
 %     % channels each
-%     effChans2Image={[1,2],[3,4]};
+%     effChans2Image = {[1,2], [3,4]};
 %     % example b: one channel effective channel with one physical channel
-%     effChans2Image={[1]}
+%     effChans2Image = {[1]};
 %
 %
 
