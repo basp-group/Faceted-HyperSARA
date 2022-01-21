@@ -2,8 +2,8 @@
 % experiment.
 %
 % This file calls the generic imaging pipeline
-% :func:`experiments.main_real_data_exp` to reconstruct an image from the
-% input dataset.
+% :mat:func:`experiments.main_real_data_exp` to reconstruct an image from 
+% the input dataset.
 %
 % Parameters
 % ----------
@@ -43,7 +43,7 @@
 % param_global.preproc_filename_l2bounds : anonymous function
 %     Function handle, taking the index of the first and last channel, and
 %     returning a string corresponding to the name of a file
-%     containingpre-computed :math:`ell_2` bounds. If not used, to be set
+%     containing pre-computed :math:`\ell_2` bounds. If not used, to be set
 %     to ``[]``.
 % param_global.preproc_filename_model : anonymous function
 %     Function handle, taking the index of the first and last channel, and
@@ -56,14 +56,15 @@
 %     Flag to trigger the computation of the norm of the measurement
 %     operator. If set to ``false``, MATLAB will look for a file where this
 %     quantity has been saved (save and computation step are triggered in
-%     :func:`main_real_data_exp`).
+%     :mat:func:`experiments.main_real_data_exp`).
 % param_global.im_Nx  : int
 %     Number of pixels along axis x in the reconstructed image.
 % param_global.im_Ny : int
 %     Number of pixels along axis y in the reconstructed image.
 % param_global.im_pixelSize  : double
 %     Pixel-size in arcsec in the frequency domain. Set to ``[]`` to use
-%     the default computation (implemented in :func:`main_real_data_exp`).
+%     the default computation (implemented in 
+%     :mat:func:`experiments.main_real_data_exp`).
 % param_global.generate_eps_nnls : bool
 %     Flag to activate the computation of the :math:`\ell_2` bounds.
 % param_global.reg_flag_reweighting : bool

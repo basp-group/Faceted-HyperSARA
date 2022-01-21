@@ -48,11 +48,10 @@ Reconstructing an image cube from an MS-Table
    update the main algorithm parameters specified in this file (all values are 
    set to default, reliable values).
 
-3. Configure ``experiments/main_input_exp.m`` following the instructions 
-   provided in the file. Additional documentation is available in the 
-   documentation of the :mod:`experiments` module.
+3. Configure :mat:scpt:`experiments.main_input_exp` following the instructions
+   provided in the file.
 
-4. Run the ``experiments/main_input_exp.m`` with MATLAB.
+4. Run the :mat:scpt:`experiments.main_input_exp` with MATLAB.
 
 .. .. code-block:: bash
 
@@ -67,13 +66,12 @@ Testing the library with a synthetic dataset
 To test the imaging pipeline with a synthetic data test.
 
 1. Generate a synthetic dataset using 
-   :func:`experiments/main_generate_data`, and run the (properly
-   configured) `experiments/main_input_exp.m` script (see 
+   :mat:func:`experiments.main_generate_data`, and run the (properly
+   configured) `experiments.main_input_exp.m` script (see 
    :ref:`previous section<Reconstructing an image cube from an MS-Table>`).
 
-2. Configure ``experiments/main_input_exp.m`` following the instructions 
-   provided in the file. Additional documentation is available in the 
-   documentation of the :mod:`experiments` module.
+2. Configure :mat:scpt:`experiments.main_input_exp` following the instructions 
+   provided in the file.
 
 
 Contributing

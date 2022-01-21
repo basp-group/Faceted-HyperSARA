@@ -19,10 +19,11 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     Index of the spectral facet to be reconstructed (set to -1 or 0 to
 %     deactivate spectral faceting).  AD: is this  still the case ????
 % effChans2Image: cell array
-%     Indices of the ``physical'' channels to be concatenated for each 
+%     Indices of the "physical" channels to be concatenated for each 
 %     effective channel.
 % param_global: struct
-%     Global imaging pipeline parameters (see :file:`main_input_exp.m`).
+%     Global imaging pipeline parameters (see 
+%     :mat:func:`experiments.main_input_exp`).
 % param_global.algo_version : string (``"sara"``, ``"hs"`` or ``"fhs"``).
 %     Selected solver.
 % param_global.ncores_data : int
