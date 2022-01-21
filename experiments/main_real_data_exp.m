@@ -19,16 +19,16 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     Index of the spectral facet to be reconstructed (set to -1 or 0 to
 %     deactivate spectral faceting).  AD: is this  still the case ????
 % effChans2Image: cell array
-%     Indices of the ``physical'' channels to be concatenated for each 
+%     Indices of the ``physical'' channels to be concatenated for each
 %     effective channel.
 % param_global: struct
 %     Global imaging pipeline parameters (see :file:`main_input_exp.m`).
 % param_global.algo_version : string (``'sara'``, ``'hs'`` or ``'fhs'``).
 %     Selected solver.
 % param_global.ncores_data : int
-%     Number of cores handlig the data fidelity terms (data cores). For 
+%     Number of cores handlig the data fidelity terms (data cores). For
 %     Faceted HyperSARA, the total number of cores used
-%     is ``Qx*Qy + ncores_data + 1``. For SARA and HyperSARA, represents 
+%     is ``Qx*Qy + ncores_data + 1``. For SARA and HyperSARA, represents
 %     the number of cores used for the parallelization.
 % param_global.im_pixelSize : double
 %     pixel size in arcsec.
@@ -46,7 +46,7 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     Type of apodization window considered for the faceted nuclear norm
 %     prior (FHS solver).
 % param_global.facet_overlap_fraction : double[2]
-%     Fraction of the total size of a facet overlapping with a neighbour 
+%     Fraction of the total size of a facet overlapping with a neighbour
 %     facet.
 % param_global.reg_nReweights : int
 %     Maximum number of reweighting steps.
@@ -84,7 +84,7 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     % example b: two data sets from two configurations of the VLA
 %     datasetNames={'CYGA-ConfigA','CYGA-ConfigC'};
 %     %% Indices of the 'physical' channels to be concatenated
-%     % example a: two effective channels, containing two 'physical' 
+%     % example a: two effective channels, containing two 'physical'
 %     % channels each
 %     effChans2Image={[1,2],[3,4]};
 %     % example b: one channel effective channel with one physical channel
@@ -95,15 +95,16 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 
 % ------------------------------------------------------------------------%
 % ------------------------------------------------------------------------%
-%% check input params
+%% constant
+speed_of_light = 299792458;
+
+%% check input params : @PA in light of the new structure of params, many of these fields will be deleted I guess ..
 % Image resolution & dimensions
 % ! parameters and default values (keep only what is required)
 if ~isfield(param_global, 'im_Nx');  param_global.im_Nx = 2048; end
 if ~isfield(param_global, 'im_Ny');  param_global.im_Ny = 2048; end
 if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
-if isempty (param_global.im_pixelSize); imResolution = 'nominal';
-else; imResolution = 'user_defined';
-end
+
 
 % Prior: wideband facet related
 if ~isfield(param_global, 'facet_Qx');  param_global.facet_Qx =  floor(param_global.facet_Nx / 256); end
@@ -124,12 +125,12 @@ end
 if ~isfield(param_global, 'reg_flag_homotopy'); param_global.reg_flag_homotopy = 0; end
 
 % Data blocks
-if ~isfield(param_global, 'generate_eps_nnls'); param_global.generate_eps_nnls = false; end
-if ~isfield(param_global, 'data_nDataBlk');  param_global.data_nDataBlk = []; end
-if ~isfield(param_global, 'data_sizeDataBlk');  param_global.data_sizeDataBlk = []; end
-if isempty(param_global.data_sizeDataBlk) && isempty (param_global.data_nDataBlk)
-    param_global.data_sizeDataBlk = 2e5;
-end
+% if ~isfield(param_global, 'generate_eps_nnls'); param_global.generate_eps_nnls = false; end
+% if ~isfield(param_global, 'data_nDataBlk');  param_global.data_nDataBlk = []; end
+% if ~isfield(param_global, 'data_sizeDataBlk');  param_global.data_sizeDataBlk = []; end
+% if isempty(param_global.data_sizeDataBlk) && isempty (param_global.data_nDataBlk)
+%     param_global.data_sizeDataBlk = 2e5;
+% end
 
 % Algo
 if ~isfield(param_global, 'algo_version'); param_global.algo_version = 'fhs'; end
@@ -143,6 +144,9 @@ if ~isfield(param_global, 'measop_flag_wproj'); param_global.measop_flag_wproj =
 if param_global.measop_flag_wproj
     if ~isfield(param_global, 'measop_wprojCEnergyL2'); param_global.measop_wprojCEnergyL2 = 1 - 1e-4; end
     if ~isfield(param_global, 'measop_wprojGEnergyL2'); param_global.measop_wprojGEnergyL2 = 1 - 1e-4; end
+else
+    param_global.measop_wprojCEnergyL2 = 1;
+    param_global.measop_wprojGEnergyL2 = 1;
 end
 
 % Project dir.
@@ -153,13 +157,11 @@ if ~isfield(param_global, 'preproc_filename_model'); param_global.preproc_filena
 if ~isfield(param_global, 'preproc_filename_l2bounds'); param_global.preproc_filename_l2bounds = []; end
 if ~isfield(param_global, 'preproc_filename_die'); param_global.preproc_filename_die = []; end
 if ~isfield(param_global, 'preproc_filename_dde'); param_global.preproc_filename_dde = []; end
-% ! not used
-if ~isfield(param_global, 'preproc_filename_G'); param_global.preproc_filename_G = []; end
 % Output filenames
 if ~isfield(param_global, 'exp_type'); param_global.exp_type = '';  end %  AD: maybe remove?
 
 % Hardware
-cirrus = param_global.hardware;
+hpc = param_global.hardware;
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% get params
@@ -167,9 +169,14 @@ cirrus = param_global.hardware;
 Nx = param_global.im_Nx;
 Ny = param_global.im_Ny;
 pixelSize  = param_global.im_pixelSize;
+if isempty (pixelSize)
+    imResolution = 'nominal';
+else
+    imResolution = 'user_defined';
+end
 switch imResolution
     case 'nominal'
-        fprintf('\nWARNING: pixelsize not found, switching to default.\n');
+        fprintf('\nWARNING: pixelsize not found, default is considered.\n');
     otherwise
         fprintf('\nINFO: pixelsize: %f arcsec.\n', pixelSize);
 end
@@ -184,19 +191,20 @@ gam = param_global.reg_gam;
 gam_bar =  param_global.reg_gam_bar;
 flag_reweighting = param_global.reg_flag_reweighting;
 if flag_reweighting
-%     reg_nReweights = param_global.reg_nReweights;
+    reg_nReweights = param_global.reg_nReweights; % @PA: why commented?
     flag_homotopy = param_global.reg_flag_homotopy;
 end
-% Data blocks
-nDataBlk = param_global.data_nDataBlk;
-szDataBlk = param_global.data_sizeDataBlk;
+% % Data blocks
+% nDataBlk = param_global.data_nDataBlk;
+% szDataBlk = param_global.data_sizeDataBlk;
 % Meas. op.
 flag_dataReduction = param_global.measop_flag_dataReduction; % data reduction
 param_wproj.do = param_global.measop_flag_wproj; % w projection
-if param_wproj.do
-    param_wproj.CEnergyL2 = param_global.measop_wprojCEnergyL2;
-    param_wproj.GEnergyL2 = param_global.measop_wprojGEnergyL2;
+if isempty(param_global.measop_flag_wproj)
+    param_wproj.do =0;
 end
+param_wproj.CEnergyL2 = param_global.measop_wprojCEnergyL2; % w projection
+param_wproj.GEnergyL2 = param_global.measop_wprojGEnergyL2; % w projection
 % Algo
 algo_version = param_global.algo_version;
 ncores_data = param_global.algo_ncores_data;
@@ -211,9 +219,12 @@ param_preproc.subcube = subcubeInd;
 param_preproc.done = (~isempty(param_preproc.filename_l2bounds)) * ~isempty(param_preproc.filename_model) * (~isempty(param_preproc.filename_die) || ~isempty(param_preproc.filename_dde));
 filename_l2bounds = param_global.preproc_filename_l2bounds; % available l2bounds
 
-if ~isempty(param_preproc.filename_die); flag_calib.die = 1; flag_calib.dde = 0;
-elseif ~isempty(param_preproc.filename_dde); flag_calib.die = 0; flag_calib.dde = 1;
-else; flag_calib.die = 0; flag_calib.dde = 0;
+flag_calib.die = 0;
+flag_calib.dde = 0;
+if ~isempty(param_preproc.filename_die)
+    flag_calib.die = 1;
+elseif ~isempty(param_preproc.filename_dde)
+    flag_calib.dde = 1;
 end
 
 % -------------------------------------------------------------------------%
@@ -224,7 +235,7 @@ project_dir = param_global.main_dir;
 fprintf('\nMain project dir. is %s: ', project_dir);
 current_dir = pwd;
 if strcmp(project_dir, current_dir)
-    current_dir = [project_dir, 'experiments', filesep, 'real', filesep];
+    current_dir = [project_dir, 'experiments', filesep];
     cd(current_dir);
 end
 fprintf('\nCurrent dir. is  %s: ', current_dir);
@@ -238,14 +249,15 @@ addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 
 addpath([project_dir, filesep, 'lib', filesep, 'faceted-wavelet-transform', filesep, 'src']);
 addpath([project_dir, filesep, 'src']);
 addpath([project_dir, filesep, 'src', filesep, 'heuristics', filesep]);
-% ! AD: 2 BE MODIFIED !!!!
-addpath([current_dir, filesep, 'real_data']);
-addpath([current_dir, filesep, 'real_data', filesep, 'wproj_utilities']);
+%
+addpath([current_dir, filesep, 'real_data']);% AD: will be ommited later
+%
 if strcmp(algo_version, 'sara')
     addpath([project_dir, filesep, 'src', filesep, 'sara']);
 elseif strcmp(algo_version, 'hs')
     addpath([project_dir, filesep, 'src', filesep, 'hs', filesep]);
-else;   addpath([project_dir, filesep, 'src', filesep, 'fhs', filesep]);
+elseif strcmp(algo_version, 'fhs')
+    addpath([project_dir, filesep, 'src', filesep, 'fhs', filesep]);
 end
 % setting paths to results and reference image cube
 results_path = fullfile('results', image_name);
@@ -272,9 +284,8 @@ N = Nx * Ny;
 nEffectiveChans  = numel(effChans2Image);
 ImageCubeDims = [Ny, Nx, nEffectiveChans];
 nDataSets = numel(datasetsNames);
-flag_l2bounds_compute = 1; % assuming a chi squared dist. for now
-% pixelsize
-if isempty(pixelSize)
+% set pixelsize
+if strcmp(imResolution,'nominal')
     maxProjBaseline = 0;
     for iEffCh = 1:nEffectiveChans
         for iCh = 1:numel(effChans2Image{iEffCh})
@@ -286,17 +297,17 @@ if isempty(pixelSize)
     end; clear dataloaded;
     spatialBandwidth = 2 * maxProjBaseline;
     pixelSize = (180 / pi) * 3600 / (2 * spatialBandwidth);
-    fprintf('\nINFO: the pixelsize is fixed to %f arcsec, that is 2x nominal resolution at the highest freq.', pixelSize);
+    fprintf('\nINFO: the pixelsize is set to %f arcsec, that is 2x nominal resolution at the highest freq.', pixelSize);
 end
 halfSpatialBandwidth = (180 / pi) * 3600 / (pixelSize) / 2;
-
+% -------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %% image cube initialisation: load if available otherwise set to 0
 switch algo_version
     case 'sara'
         xinit = zeros(Ny, Nx);
         if ~isempty(param_preproc.filename_model)
-            fprintf('\nLoading  init. image estimate  ...');
-
+            fprintf('\nLoading  available image estimate  ...');
             try xinit = fitsread(param_preproc.filename_model(effChans2Image{1}(1), effChans2Image{1}(end)));
                 if  ~(size(xinit, 1) == Ny && size(xinit, 2) == Nx)
                     xinit = zeros(Ny, Nx);
@@ -309,7 +320,7 @@ switch algo_version
     otherwise
         xinit = zeros(N, nEffectiveChans);
         if ~isempty(param_preproc.filename_model)
-            fprintf('\nLoading  init. image estimate  ...');
+            fprintf('\nLoading  available image estimate  ...');
             for  iEffCh =  1:nEffectiveChans
                 try  xinit(:, iEffCh) = reshape(fitsread(param_preproc.filename_model(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end))), N, 1);
                     fprintf('\nINFO: init. image found.');
@@ -321,20 +332,23 @@ end
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% l2 bounds: load if available otherwise compute later
-if ~isempty(filename_l2bounds)
+flag_l2bounds_compute = 1; % default, will be updated below..
+if isempty(filename_l2bounds)
+    % assuming Chi squared dist.
+    fprintf('\nINFO: l2 bounds will be computed based on the assumption of a chi squared distribution.\n');
+else
     fprintf('\nLoading estimates of the l2-bounds ...');
     for iEffCh = 1:nEffectiveChans
         l2EffChansloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'sigmac', 'l2bounds');
         if ~flag_dataReduction
             for iCh = 1:numel(effChans2Image{iEffCh})
                 for idSet = 1:nDataSets
-                    try
-                        % get bounds
+                    try % get bounds
                         l2bounds{iEffCh}{iCh}{idSet} = l2EffChansloaded.l2bounds{idSet, iCh};
                         flag_l2bounds_compute = 0;
                         fprintf('\nINFO: l2 bounds loaded successfully.');
                     catch
-                        fprintf('\nWARNING: l2 bounds not found, will assume a chi squared distribution.');
+                        fprintf('\nWARNING: l2 bounds not found. \nChi squared distribution is assumed to determine the l2 bounds.');
                         flag_l2bounds_compute = 1;
                     end
                 end
@@ -342,7 +356,7 @@ if ~isempty(filename_l2bounds)
         else
             try  l2bounds{iEffCh}{1}{1} =  l2EffChansloaded.l2bounds.gridded; % one single block assumed if reduced data
                 fprintf('\nINFO: l2 bounds loaded successfully.\n');
-            catch; fprintf('\nWARNING: l2 bounds not found, will assume a chi squared distribution.\n');
+            catch; fprintf('\nWARNING: l2 bounds not found. \nChi squared distribution is assumed to determine the l2 bounds.\n');
                 flag_l2bounds_compute = 1;
             end
         end
@@ -353,17 +367,12 @@ if ~isempty(filename_l2bounds)
                 else;  global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac.gridded);
                 end
             catch;  global_sigma_noise(iEffCh, 1) = 1;
-                flag_l2bounds_compute = 1; % assuming a ch squared dist.
+                flag_l2bounds_compute = 1; % assuming a chi squared dist.
                 fprintf('\nWARNING: global sigma noise not found, will assume white data.\n');
             end
         end
     end
-else
-    % assuming Chi squared dist.
-    flag_l2bounds_compute = 1; % will computed later.
-    fprintf('\nINFO: l2 bounds will be computed based on the assumption of a chi squared distribution.\n');
 end
-
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% Auxiliary function needed to select the appropriate workers
@@ -376,7 +385,7 @@ switch algo_version
     case 'fhs'
         data_worker_id = @(k) k + Qx * Qy;
     otherwise
-        error('Undefined algo_version');
+        error('Undefined algo_version (available options: ''sara'',''hs'',''fhs'')');
 end
 %% Get faceting parameter (spectral + spatial)
 % fix faceting parameters in case these are not consistent with the
@@ -400,17 +409,13 @@ if ~strcmp(algo_version, 'sara')
 end
 % index of channels from the subcube to be handled on each data worker
 if strcmp(algo_version, 'sara')
-    ncores = numel(param_global.wavelet_basis);
+    ncores = numel(dict.basis );
     ncores_data = ncores;
 end
 freqRangeCores = split_range(ncores_data, nEffectiveChans);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
-%% for transparancy: problem configuration (nufft, preconditioning, blocking,NNLS (epsilon estimation)):   !!  AD: nnls to be added????
-% param_blocking: config blocking already
-if isempty(nDataBlk); param_blocking = []; % no further blocking required
-end
-% FoV info
+%%  FoV info
 param_wproj.FoVx = sin(pixelSize * Nx * pi / 180 / 3600);
 param_wproj.FoVy = sin(pixelSize * Ny * pi / 180 / 3600);
 param_wproj.uGridSize = 1 / (param_nufft.ox * param_wproj.FoVx);
@@ -419,101 +424,120 @@ param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
 % -------------------------------------------------------------------------%
 %% setup parpool
 delete(gcp('nocreate'));
-if strcmp(algo_version, 'sara'); cirrus = 'local'; end
-cirrus_cluster = util_set_parpool_dev(algo_version, ncores_data, Qx * Qy, strcmp(cirrus, 'cirrus'));
+if strcmp(algo_version, 'sara')
+    hpc = 'local';
+end
+cirrus_cluster = util_set_parpool_dev(algo_version, ncores_data, Qx * Qy, strcmp(hpc, 'cirrus'));
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% Setup measurement operator and load data
 switch algo_version
     case 'sara'
         for iEffCh = 1:nEffectiveChans
-            %% if data reduction and residual data available, load them
-            try if flag_dataReduction
-                    RDEffChansloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'RESIDUAL_DATA');
-                end
-            end
-            %% if die calib, correct data
+            
+            %% if die/dde calib, get dies/ddes
             if flag_calib.die
-                dieloaded = load(param_preproc.filename_die(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DIES');
+                dieloaded = load(param_preproc.filename_die(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DIEs');
+            elseif flag_calib.dde
+                ddeloaded = load(param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DDEs');
             end
-            %% if dde calib, get ddes
-            if flag_calib.dde
-                ddeloaded = load(param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DDES');
+            %% if data reduction and residual data available, load them
+            if flag_dataReduction
+                DR_residualdataloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'RESIDUAL_DATA');
             end
             for iCh = 1:numel(effChans2Image{iEffCh})
                 for idSet = 1:nDataSets
-                    dataloaded = load(dataFilename(idSet, effChans2Image{iEffCh}(iCh)), 'u', 'v', 'w', 'nW', 'y');
-                    % u v w are in units of the wavelength and will be
+                    dataloaded = load(dataFilename(idSet, effChans2Image{iEffCh}(iCh)), 'u', 'v', 'w', 'nW', 'y','frequency');
+                    frequency = dataloaded.frequency;
+                    % u v  are in units of the wavelength and will be
                     % normalised between [-pi,pi] for the NUFFT
-                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth; dataloaded.u = [];
-                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth; dataloaded.v = [];
-                    w{iEffCh, 1}{iCh}{idSet} = double(dataloaded.w(:)); dataloaded.w = [];
-                    nW{iEffCh, 1}{iCh}{idSet} = double(dataloaded.nW(:)); dataloaded.nW = []; % sqrt(natural weights)
-                    y{iEffCh, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{iEffCh, 1}{iCh}{idSet}; dataloaded.y = []; % data whitening
-                    %% if die calib, correct data
+                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth/(speed_of_light/frequency);
+                    dataloaded.u = [];
+                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth/(speed_of_light/frequency);
+                    dataloaded.v = [];
+                    w{iEffCh, 1}{iCh}{idSet} = double(dataloaded.w(:));
+                    dataloaded.w = [];
+                    nW{iEffCh, 1}{iCh}{idSet} = double(dataloaded.nW(:)); % nW: sqrt(natural weights)
+                    dataloaded.nW = [];
+                    y{iEffCh, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{iEffCh, 1}{iCh}{idSet}; % data whitening
+                    dataloaded.y = [];
+                    
                     if flag_calib.die
-                        try y{iEffCh, 1}{iCh}{idSet} = y{iEffCh, 1}{iCh}{idSet} ./ dieloaded.DIES{idSet, iCh};
-                            dieloaded.DIES{idSet, iCh} = [];
-                        end
+                        % if die calib, correct data
+                        y{iEffCh, 1}{iCh}{idSet} = y{iEffCh, 1}{iCh}{idSet} ./ dieloaded.DIEs{idSet, iCh};
+                        dieloaded.DIEs{idSet, iCh} = [];
                     elseif flag_calib.dde
-                        % if dde calib, get ddes
-                        ddes{iEffCh, 1}{iCh}{idSet} = ddeloaded.DDES{idSet, iCh};
-                        ddeloaded.DDES{idSet, iCh} = [];
+                        % dde calib
+                        ddes{iEffCh, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
+                        ddeloaded.DDEs{idSet, iCh} = [];
                     end
-                    %% if data reduction and residual data available, load them
-                    try if flag_dataReduction
-                            preproc_dr_residuals{iEffCh, 1}{iCh}{idSet} = RDEffChansloaded.RESIDUAL_DATA{idSet, iCh}; RDEffChansloaded.RESIDUAL_DATA{idSet, iCh} = [];
+                    if flag_dataReduction
+                        % if residual data are available, use them to get
+                        % l2 bounds.
+                        try preproc_dr_residuals{iEffCh, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
+                            DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh} = [];
+                        catch,  preproc_dr_residuals = [];
                         end
                     end
-                    %% if l2bounds not found, compute them
+                    %% Compute l2bounds if not found
                     if flag_l2bounds_compute
                         global_sigma_noise(iEffCh, 1) = 1;
-                        pos = numel(y{iEffCh, 1}{iCh}{idSet});
-                        l2bounds{iEffCh, 1}{iCh}{idSet} =  sqrt(pos + 2 * sqrt(pos));
+                        nmeas_curr = numel(y{iEffCh, 1}{iCh}{idSet});
+                        l2bounds{iEffCh, 1}{iCh}{idSet} =  sqrt(nmeas_curr + 2 * sqrt(nmeas_curr));
                     end
                 end
             end
-
+            
             %% re-structure data: collapse cells
-            u{iEffCh, 1} = vertcat(u{iEffCh, 1}{:}); u{iEffCh, 1} = u{iEffCh, 1}(:);
-            v{iEffCh, 1} = vertcat(v{iEffCh, 1}{:}); v{iEffCh, 1} = v{iEffCh, 1}(:);
-            w{iEffCh, 1} = vertcat(w{iEffCh, 1}{:}); w{iEffCh, 1} = w{iEffCh, 1}(:);
-            nW{iEffCh, 1} = vertcat(nW{iEffCh, 1}{:}); nW{iEffCh, 1} =  nW{iEffCh, 1}(:);
-            y{iEffCh, 1} = vertcat(y{iEffCh, 1}{:}); y{iEffCh, 1} =  y{iEffCh, 1}(:);
-            l2bounds{iEffCh, 1} = vertcat(l2bounds{iEffCh, 1}{:}); l2bounds{iEffCh, 1} = l2bounds{iEffCh, 1}(:);
-
+            u{iEffCh, 1} = vertcat(u{iEffCh, 1}{:});
+            v{iEffCh, 1} = vertcat(v{iEffCh, 1}{:});
+            w{iEffCh, 1} = vertcat(w{iEffCh, 1}{:});
+            nW{iEffCh, 1} = vertcat(nW{iEffCh, 1}{:});
+            y{iEffCh, 1} = vertcat(y{iEffCh, 1}{:});
+            l2bounds{iEffCh, 1} = vertcat(l2bounds{iEffCh, 1}{:});
+            
+            u{iEffCh, 1} = u{iEffCh, 1}(:);
+            v{iEffCh, 1} = v{iEffCh, 1}(:);
+            w{iEffCh, 1} = w{iEffCh, 1}(:);
+            nW{iEffCh, 1} = nW{iEffCh, 1}(:);
+            y{iEffCh, 1} =  y{iEffCh, 1}(:);
+            l2bounds{iEffCh, 1} = l2bounds{iEffCh, 1}(:);
+            
             if flag_calib.dde
-                ddes{iEffCh, 1} = vertcat(ddes{iEffCh, 1}{:}); ddes{iEffCh, 1} =  ddes{iEffCh, 1}(:);
+                ddes{iEffCh, 1} = vertcat(ddes{iEffCh, 1}{:});
+                ddes{iEffCh, 1} =  ddes{iEffCh, 1}(:);
+            else, ddes = [];
             end
-
-            try
-                if flag_dataReduction
-                    preproc_dr_residuals{iEffCh, 1} = vertcat(resy{iEffCh, 1}{:}); resy{iEffCh, 1} = [];
-                    preproc_dr_residuals{iEffCh, 1} =  preproc_dr_residuals{iEffCh, 1}(:);
+            
+            if flag_dataReduction
+                % if residual data are available
+                if exist('preproc_dr_residuals', 'var')
+                    preproc_dr_residuals{iEffCh, 1} = vertcat(preproc_dr_residuals{iEffCh, 1}{:});
+                    preproc_dr_residuals{iEffCh, 1} = preproc_dr_residuals{iEffCh, 1}(:);
                 end
             end
         end
-        if ~exist('ddes', 'var'); ddes = [];
-        end
+        
         if flag_dataReduction
-            if ~exist('preproc_dr_residuals', 'var'); preproc_dr_residuals = [];
-            end
-
-            [A, At, G, W, aW, Sigma, y, noise] = util_gen_dr_measurement_operator_dev_ad(y, u, v, w, nW, ...
-                param_precond, param_blocking, 1, Nx, Ny, param_nufft, param_wproj, preproc_dr_residuals, ddes);
-            try
+            % (DR) one data block & one channel 
+            [A, At, G, W, aW, Sigma, y, noise] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
+                1, Nx, Ny, param_nufft, param_wproj,param_precond, param_blocking,preproc_dr_residuals);
+            % (DR) get the computed l2 bounds from the continuous residual
+            % data if available
+            if isfield(noise,'l2bounds') && isfield(noise,'sigma')
                 for iEffCh = 1:nEffectiveChans
                     l2bounds{iEffCh}{1} = noise.l2bounds{iEffCh}{1};
                     global_sigma_noise(iEffCh, 1) = noise.sigma{iEffCh};
                 end
-            catch; fprintf('\nCould not update l2 bounds given residual !!!! ');
+            elseif ~isempty(preproc_dr_residuals)
+                fprintf('\nWARNING: computing l2 bounds from the given residual data failed. ');
             end
         else
-            [A, At, G, W, aW] = util_gen_measurement_operator_dev_ad(u, v, w, nW, ...
+            [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
                 param_precond, param_blocking, 1, Nx, Ny, param_nufft, param_wproj, ddes);
             Sigma = [];
         end; clear u v w nW;
-
+        
     otherwise % 'hs' or 'fhs'
         % create the measurement operator operator in parallel (depending on
         % the algorithm used)
@@ -524,80 +548,97 @@ switch algo_version
                 local_fc = (freqRangeCores(labindex, 1):freqRangeCores(labindex, 2));
                 effChans2Image_lab = (effChans2Image(local_fc));
                 for ifc  = 1:numel(local_fc)
-                    %% if data reduction and residual data available, load them
-                    try if flag_dataReduction
-                            RDEffChansloaded = load(filename_l2bounds(effChans2Image_lab{ifc}(1), effChans2Image_lab{ifc}(end)), 'RESIDUAL_DATA');
-                        end
-                    end
-                    %% load dies
+                    %% if die/ddes calib, get dies/ddes
                     if flag_calib.die
-                        dieloaded = load(param_preproc.filename_die(effChans2Image_lab{ifc}(1), effChans2Image_lab{ifc}(end)), 'DIES');
+                        dieloaded = load(param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DIEs');
                     elseif flag_calib.dde
-                        ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDES');
+                        ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
+                    end
+                    %% if data reduction and residual data available, load them
+                    if flag_dataReduction
+                        DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
                     end
                     for iCh = 1:numel(effChans2Image_lab{ifc})
                         for idSet = 1:nDataSets
-                            try if flag_dataReduction
-                                    preproc_dr_residuals{ifc, 1}{iCh}{idSet} = RDEffChansloaded.RESIDUAL_DATA{idSet, iCh};
-                                    RDEffChansloaded.RESIDUAL_DATA{idSet, iCh} = [];
-                                end
-                            end
                             %% load data
-                            dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w');
-                            % u v w are in units of the wavelength and will be normalised between [-pi,pi] for the NUFFT
-                            u{ifc, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth; dataloaded.u = [];
-                            v{ifc, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth; dataloaded.v = [];
-                            w{ifc, 1}{iCh}{idSet} = double(dataloaded.w(:)); dataloaded.w = [];
-                            dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'nW', 'y');
-                            nW{ifc, 1}{iCh}{idSet} = double(dataloaded.nW(:)); dataloaded.nW = []; % sqrt(natural weights)
-                            y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{ifc, 1}{iCh}{idSet}; dataloaded.y = []; % data whitening
-                            %
+                            dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w', 'nW', 'y','frequency');
+                            % u v  are in units of the wavelength and will be normalised between [-pi,pi] for the NUFFT
+                            u{ifc, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;
+                            dataloaded.u = [];
+                            v{ifc, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;
+                            dataloaded.v = [];
+                            w{ifc, 1}{iCh}{idSet} = double(dataloaded.w(:));
+                            dataloaded.w = [];
+                            nW{ifc, 1}{iCh}{idSet} = double(dataloaded.nW(:)); % sqrt(natural weights)
+                            dataloaded.nW = [];
+                            y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{ifc, 1}{iCh}{idSet};% data whitening
+                            dataloaded.y = [];
+                            % Output of the pre-processing step if any
                             if flag_calib.die
                                 % if die calib, correct data
-                                y{ifc, 1}{iCh}{idSet} = y{ifc, 1}{iCh}{idSet} ./ dieloaded.DIES{idSet, iCh};
-                                dieloaded.DIES{idSet, iCh} = [];
+                                y{ifc, 1}{iCh}{idSet} = y{ifc, 1}{iCh}{idSet} ./ dieloaded.DIEs{idSet, iCh};
+                                dieloaded.DIEs{idSet, iCh} = [];
                             elseif flag_calib.dde
                                 % if dde calib, get ddes
-                                ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDES{idSet, iCh};
-                                ddeloaded.DDES{idSet, iCh} = [];
+                                ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
+                                ddeloaded.DDEs{idSet, iCh} = [];
                             end
-                            %% if l2bounds not found, compute them
+                            if flag_dataReduction
+                                % if residual data are available, use them to get
+                                % l2 bounds.
+                                try preproc_dr_residuals{ifc, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
+                                    DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh} = [];
+                                catch, preproc_dr_residuals = [];
+                                end
+                            end
+                            
+                            %% Compute l2bounds if not found
                             if flag_l2bounds_compute
                                 global_sigma_noise_cmpst = 1;
-                                pos = numel(y{ifc, 1}{iCh}{idSet});
-                                l2bounds{ifc, 1}{iCh}{idSet} =  sqrt(pos + 2 * sqrt(pos));
+                                nmeas_curr = numel(y{ifc, 1}{iCh}{idSet});
+                                l2bounds{ifc, 1}{iCh}{idSet} =  sqrt(nmeas_curr + 2 * sqrt(nmeas_curr));
                             end
                         end
                     end
                     %% re-structure data: collapse cells
-                    u{ifc, 1} = vertcat(u{ifc, 1}{:}); u{ifc, 1} = u{ifc, 1}(:);
-                    v{ifc, 1} = vertcat(v{ifc, 1}{:}); v{ifc, 1} = v{ifc, 1}(:);
-                    w{ifc, 1} = vertcat(w{ifc, 1}{:}); w{ifc, 1} = w{ifc, 1}(:);
-                    nW{ifc, 1} = vertcat(nW{ifc, 1}{:}); nW{ifc, 1} =  nW{ifc, 1}(:);
-                    y{ifc, 1} = vertcat(y{ifc, 1}{:}); y{ifc, 1} =  y{ifc, 1}(:);
-                    l2bounds{ifc, 1} = vertcat(l2bounds{ifc, 1}{:}); l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
+                    u{ifc, 1} = vertcat(u{ifc, 1}{:});
+                    v{ifc, 1} = vertcat(v{ifc, 1}{:});
+                    w{ifc, 1} = vertcat(w{ifc, 1}{:});
+                    nW{ifc, 1} = vertcat(nW{ifc, 1}{:});
+                    y{ifc, 1} = vertcat(y{ifc, 1}{:});
+                    l2bounds{ifc, 1} = vertcat(l2bounds{ifc, 1}{:});
+                    %
+                    u{ifc, 1} = u{ifc, 1}(:);
+                    v{ifc, 1} = v{ifc, 1}(:);
+                    w{ifc, 1} = w{ifc, 1}(:);
+                    nW{ifc, 1} = nW{ifc, 1}(:);
+                    y{ifc, 1} =  y{ifc, 1}(:);
+                    l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
+                    
                     if flag_calib.dde
-                        ddes{ifc, 1} = vertcat(ddes{ifc, 1}{:}); ddes{ifc, 1} =  ddes{ifc, 1}(:);
+                        ddes{ifc, 1} = vertcat(ddes{ifc, 1}{:});
+                        ddes{ifc, 1} = ddes{ifc, 1}(:);
                     else; ddes = [];
                     end
-                    try if flag_dataReduction
-                            preproc_dr_residuals{ifc, 1} = vertcat(preproc_dr_residuals{ifc, 1}{:});
-                            preproc_dr_residuals{ifc, 1} =  preproc_dr_residuals{ifc, 1}(:);
+                    
+                    if flag_dataReduction
+                        try preproc_dr_residuals{ifc, 1} = vertcat(preproc_dr_residuals{ifc, 1}{:});
+                            preproc_dr_residuals{ifc, 1} = preproc_dr_residuals{ifc, 1}(:);
+                        catch; preproc_dr_residuals = [];
                         end
-                    catch; preproc_dr_residuals = [];
                     end
                 end
-
+                
                 if flag_dataReduction
                     % ! define Sigma (weight matrix involved in DR)
                     % ! define G as the holographic matrix
-
-                    [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev_ad(y, u, v, w, nW, ...
-                        param_precond, param_blocking, numel(local_fc), Nx, Ny, param_nufft, param_wproj, preproc_dr_residuals, ddes);
+                    fprintf('\nCompute the holographic matrix H .. \n');
+                    [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
+                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, param_blocking, preproc_dr_residuals, ddes);
                 else
                     % ! ideally, simplify irt nufft interface to do so
-                    [A, At, G, W, aW] = util_gen_measurement_operator_dev_ad(u, v, w, nW, ...
-                        param_precond, param_blocking, numel(local_fc), Nx, Ny, param_nufft, param_wproj, ddes);
+                    [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
+                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, param_blocking , ddes);
                     Sigma = [];
                 end
                 u = []; v = []; w = []; nW = [];
@@ -605,7 +646,7 @@ switch algo_version
                 for l = 1:numel(G)
                     F = HS_forward_operator_G(full(dirac), G(l), W(l), A, flag_dataReduction, Sigma);
                     psf_peak = max(max(HS_adjoint_operator_G(F, G(l), W(l), At, Ny, Nx, flag_dataReduction, Sigma)));
-                    fprintf('\nLab %d: peak of PSF (for residual normalisation): %f', labindex, psf_peak);
+                    fprintf('\nLab %d: INFO: peak of PSF (for residual normalisation): %f', labindex, psf_peak);
                 end
             end
         else
@@ -617,99 +658,114 @@ switch algo_version
                     local_fc = (freqRangeCores(labindex - Q, 1):freqRangeCores(labindex - Q, 2));
                     effChans2Image_lab = (effChans2Image(local_fc));
                     for ifc  = 1:numel(local_fc)
-                        %% if data reduction and residual data available, load them
-                        try if flag_dataReduction
-                                RDEffChansloaded = load(filename_l2bounds(effChans2Image_lab{ifc}(1), effChans2Image_lab{ifc}(end)), 'RESIDUAL_DATA');
-                            end
-                        end
-                        %% load dies
+                        %% if die/ddes calib, get dies/ddes
                         if flag_calib.die
-                            dieloaded = load(param_preproc.filename_die(effChans2Image_lab{ifc}(1), effChans2Image_lab{ifc}(end)), 'DIES');
+                            dieloaded = load(param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DIEs');
                         elseif flag_calib.dde
-                            ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDES');
+                            ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
+                        end
+                        %% if data reduction and residual data available, load them
+                        if flag_dataReduction
+                            DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
                         end
                         for iCh = 1:numel(effChans2Image_lab{ifc})
                             for idSet = 1:nDataSets
-                                try if flag_dataReduction
-                                        preproc_dr_residuals{ifc, 1}{iCh}{idSet} = RDEffChansloaded.RESIDUAL_DATA{idSet, iCh};
-                                        RDEffChansloaded.RESIDUAL_DATA{idSet, iCh} = [];
-                                    end
-                                end
                                 %% load data
-                                dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w');
-                                % u v w are in units of the wavelength and will be
-                                % normalised between [-pi,pi] for the NUFFT
-                                u{ifc, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth; dataloaded.u = [];
-                                v{ifc, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth; dataloaded.v = [];
-                                w{ifc, 1}{iCh}{idSet} = double(dataloaded.w(:)); dataloaded.w = [];
-                                dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'nW', 'y');
-                                nW{ifc, 1}{iCh}{idSet} = double(dataloaded.nW(:)); dataloaded.nW = []; % sqrt(natural weights)
-                                y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{ifc, 1}{iCh}{idSet}; dataloaded.y = []; % data whitening
+                                dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w', 'nW', 'y','frequency');
+                                % u v  are in units of the wavelength and will be normalised between [-pi,pi] for the NUFFT
+                                u{ifc, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;
+                                dataloaded.u = [];
+                                v{ifc, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;
+                                dataloaded.v = [];
+                                w{ifc, 1}{iCh}{idSet} = double(dataloaded.w(:));
+                                dataloaded.w = [];
+                                nW{ifc, 1}{iCh}{idSet} = double(dataloaded.nW(:)); % sqrt(natural weights)
+                                dataloaded.nW = [];
+                                y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{ifc, 1}{iCh}{idSet};% data whitening
+                                dataloaded.y = [];
+                                % Output of the pre-processing step if any
                                 if flag_calib.die
                                     % if die calib, correct data
-                                    try
-                                        y{ifc, 1}{iCh}{idSet} = y{ifc, 1}{iCh}{idSet} ./ dieloaded.DIES{idSet, iCh};
-                                        dieloaded.DIES{idSet, iCh} = [];
-                                    end
+                                    y{ifc, 1}{iCh}{idSet} = y{ifc, 1}{iCh}{idSet} ./ dieloaded.DIEs{idSet, iCh};
+                                    dieloaded.DIEs{idSet, iCh} = [];
                                 elseif flag_calib.dde
                                     % if dde calib, get ddes
-                                    ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDES{idSet, iCh};
-                                    ddeloaded.DDES{idSet, iCh} = [];
+                                    ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
+                                    ddeloaded.DDEs{idSet, iCh} = [];
                                 end
-                                %% if l2bounds not found, compute them
+                                if flag_dataReduction
+                                    % if residual data are available, use them to get
+                                    % l2 bounds.
+                                    try preproc_dr_residuals{ifc, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
+                                        DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh} = [];
+                                    catch, preproc_dr_residuals = [];
+                                    end
+                                end
+                                
+                                %% Compute l2bounds if not found
                                 if flag_l2bounds_compute
                                     global_sigma_noise_cmpst = 1;
-                                    pos = numel(y{ifc, 1}{iCh}{idSet});
-                                    l2bounds{ifc, 1}{iCh}{idSet} =  sqrt(pos + 2 * sqrt(pos));
+                                    nmeas_curr = numel(y{ifc, 1}{iCh}{idSet});
+                                    l2bounds{ifc, 1}{iCh}{idSet} =  sqrt(nmeas_curr + 2 * sqrt(nmeas_curr));
                                 end
-
                             end
                         end
                         %% re-structure data: collapse cells
-                        u{ifc, 1} = vertcat(u{ifc, 1}{:}); u{ifc, 1} = u{ifc, 1}(:);
-                        v{ifc, 1} = vertcat(v{ifc, 1}{:}); v{ifc, 1} = v{ifc, 1}(:);
-                        w{ifc, 1} = vertcat(w{ifc, 1}{:}); w{ifc, 1} = w{ifc, 1}(:);
-                        nW{ifc, 1} = vertcat(nW{ifc, 1}{:}); nW{ifc, 1} =  nW{ifc, 1}(:);
-                        y{ifc, 1} = vertcat(y{ifc, 1}{:}); y{ifc, 1} =  y{ifc, 1}(:);
-                        l2bounds{ifc, 1} = vertcat(l2bounds{ifc, 1}{:}); l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
+                        u{ifc, 1} = vertcat(u{ifc, 1}{:});
+                        v{ifc, 1} = vertcat(v{ifc, 1}{:});
+                        w{ifc, 1} = vertcat(w{ifc, 1}{:});
+                        nW{ifc, 1} = vertcat(nW{ifc, 1}{:});
+                        y{ifc, 1} = vertcat(y{ifc, 1}{:});
+                        l2bounds{ifc, 1} = vertcat(l2bounds{ifc, 1}{:});
+                        %
+                        u{ifc, 1} = u{ifc, 1}(:);
+                        v{ifc, 1} = v{ifc, 1}(:);
+                        w{ifc, 1} = w{ifc, 1}(:);
+                        nW{ifc, 1} = nW{ifc, 1}(:);
+                        y{ifc, 1} =  y{ifc, 1}(:);
+                        l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
+                        
                         if flag_calib.dde
-                            ddes{ifc, 1} = vertcat(ddes{ifc, 1}{:}); ddes{ifc, 1} =  ddes{ifc, 1}(:);
+                            ddes{ifc, 1} = vertcat(ddes{ifc, 1}{:});
+                            ddes{ifc, 1} = ddes{ifc, 1}(:);
+                        else; ddes = [];
                         end
-                        try if flag_dataReduction
-                                preproc_dr_residuals{ifc, 1} = vertcat(preproc_dr_residuals{ifc, 1}{:});
-                                preproc_dr_residuals{ifc, 1} =  preproc_dr_residuals{ifc, 1}(:);
+                        
+                        if flag_dataReduction
+                            try preproc_dr_residuals{ifc, 1} = vertcat(preproc_dr_residuals{ifc, 1}{:});
+                                preproc_dr_residuals{ifc, 1} = preproc_dr_residuals{ifc, 1}(:);
+                            catch; preproc_dr_residuals = [];
                             end
                         end
                     end
-
+                    
                     if flag_dataReduction
                         % ! define Sigma (weight matrix involved in DR)
                         % ! define G as the holographic matrix
-
-                        fprintf('\nCompute H\n');
-                        [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev_ad(y, u, v, w, nW, ...
-                            param_precond, param_blocking, numel(local_fc), Nx, Ny, param_nufft, param_wproj, preproc_dr_residuals, ddes);
+                        fprintf('\nCompute the holographic matrix H ..\n');
+                        [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
+                            numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, param_blocking, preproc_dr_residuals, ddes);
                     else
                         % ! ideally, simplify irt nufft interface to do so
-                        [A, At, G, W, aW] = util_gen_measurement_operator_dev_ad(u, v, w, nW, ...
-                            param_precond, param_blocking, numel(local_fc), Nx, Ny, param_nufft, param_wproj, ddes);
+                        [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
+                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  param_precond, param_blocking, ddes);
                         Sigma = [];
                     end; u = []; v = []; w = []; nW = [];
-
+                    
                     dirac = sparse(Ny * 0.5 + 1, Nx * 0.5 + 1, 1, Ny, Nx);
                     for l = 1:numel(G)
                         F = HS_forward_operator_G(full(dirac), G(l), W(l), A, flag_dataReduction, Sigma);
                         psf_peak = max(max(HS_adjoint_operator_G(F, G(l), W(l), At, Ny, Nx, flag_dataReduction, Sigma)));
-                        fprintf('\nLab %d: peak of PSF (for residual normalisation): %f', labindex, psf_peak);
+                        fprintf('\nLab %d: INFO: peak of PSF (for residual normalisation): %f', labindex, psf_peak);
                     end
-
+                    
                 end
             end
         end; clear local_fc  u v w nW dataSpWinloaded;
-
+        
 end
 
-clear  resyCmpst param_wproj param_preproc  param_blocking param_precond; %% Free memory
+clear  resyCmpst param_wproj param_preproc  ; %% Free memory
 
 %% load l2 bounds (generate only full spectral dataset)
 % only generatr data in 'hs' or 'fhs' configuration (otherwise, load the data)
@@ -763,31 +819,31 @@ else
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
             '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
             '_L', num2str(nEffectiveChans), '.mat')), 'Writable', true);
-
+        
         opnormfile.squared_operator_norm = zeros(nEffectiveChans, 1);
         opnormfile.rel_var = zeros(nEffectiveChans, 1);
         opnormfile.squared_operator_norm_precond = zeros(nEffectiveChans, 1);
         opnormfile.rel_var_precond = zeros(nEffectiveChans, 1);
-
+        
         Anorm = 0;
         for k = 1:ncores_data
             opnormfile.squared_operator_norm(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = squared_operator_norm{data_worker_id(k)};
             opnormfile.rel_var(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = rel_var{data_worker_id(k)};
-
+            
             opnormfile.squared_operator_norm_precond(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = squared_operator_norm_precond{data_worker_id(k)};
             opnormfile.rel_var_precond(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = rel_var_precond{data_worker_id(k)};
-
+            
             Anorm = max(Anorm, An{data_worker_id(k)});
         end
         clear An rel_var rel_var_precond squared_operator_norm_precond;
         squared_operator_norm =   opnormfile.squared_operator_norm(subcube_channels, 1);
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(subcube_channels, 1);
-
+        
     else
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
             '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
             '_L', num2str(nEffectiveChans), '.mat')));
-
+        
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(subcube_channels, 1);
         rel_var_precond = opnormfile.rel_var_precond(subcube_channels, 1);
         Anorm = max(squared_operator_norm_precond .* (1 + rel_var_precond));
@@ -907,7 +963,7 @@ if flag_solveMinimization
         for k = 1:ncores_data
             channel_chunks{k} = freqRangeCores(k, 1):freqRangeCores(k, 2);
         end
-
+        
         %
         xinit = reshape(xinit, ImageCubeDims);
         switch algo_version
@@ -959,22 +1015,22 @@ if flag_solveMinimization
                 sliceend    = info.PrimaryData.Size(3);
                 if strcmp(algo_version, 'sara')
                     x0 = fitsread(reference_cube_path, 'primary', ...
-                              'Info', info, ...
-                              'PixelRegion', {[1 spatial_downsampling rowend], ...
-                              [1 spatial_downsampling colend], ...
-                              ind});
+                        'Info', info, ...
+                        'PixelRegion', {[1 spatial_downsampling rowend], ...
+                        [1 spatial_downsampling colend], ...
+                        ind});
                 else
                     x0 = fitsread(reference_cube_path, 'primary', ...
-                              'Info', info, ...
-                              'PixelRegion', {[1 spatial_downsampling rowend], ...
-                              [1 spatial_downsampling colend], ...
-                              [1 spectral_downsampling sliceend]});
+                        'Info', info, ...
+                        'PixelRegion', {[1 spatial_downsampling rowend], ...
+                        [1 spatial_downsampling colend], ...
+                        [1 spectral_downsampling sliceend]});
                 end
                 [Ny, Nx, nchans] = size(x0);
                 N = Nx * Ny;
                 x0 = reshape(x0, [N, nchans]);
                 % ---
-
+                
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     dict.basis, dict.filter_length, dict.nlevel, window_type, ...

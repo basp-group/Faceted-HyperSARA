@@ -136,7 +136,7 @@
 %   visibilities), `frequency` (associated frequency value).
 %
 % - Note that the data `y` are not whitened, uvw coordinates shoud be given
-%   in units of the wavelength (i.e. normalised with the frequency) and
+%   in units of the wavelength (i.e. normalised with the wavelength) and
 %   `maxProjBaseline` in units of the wavelength.
 %
 
@@ -151,22 +151,22 @@ cd(project_dir);
 
 %% src name & datasets
 % TODO: to be modified
-imagecubeName = 'cygASband_Cube_256_512';
+imagecubeName = 'CYGA';
 param_global.exp_type = 'test'; % ! only for debugging purposes
-datasetNames = {'test'}; % allowing for multiple datasets
+datasetNames = {'CYGA-ConfigA','CYGA-ConfigC'}; % allowing for multiple datasets
 % data dir.
 data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
 % preproc dir.
 preproc_calib_dir = [data_dir, 'pre_processing_die/'];
-% preproc_calib_dir=[cubedata_dir,'pre_processing_dde/'];
+% preproc_calib_dir=[data_dir,'pre_processing_dde/'];
 % name of json parameter file
 json_filename = "default_parameters.json";
 
 % data files
 % example of data file: 'data_ch_1.mat' with vars : 'maxProjBaseline', 'u','v','w', 'nW', 'y', 'frequency'.
 % Note that data 'y' are not whitened, uvw coordinates are in units of the
-% wavelength (i.e. normalised with the freq) and 'maxProjBaseline' is in
+% wavelength (i.e. normalised with the wavelength) and 'maxProjBaseline' (maximum projected baseline) is in
 % units of the wavelength
 % ! Note the path for .mat files (dataset nametag used)
 dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, filesep, 'data_ch_', num2str(ch), '.mat');
@@ -189,8 +189,8 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 % >nChannelsPerImage = 16;
 
 % TODO: to be modified
-idChannels2Image = [1:2]; % ids of the 'physical' channels to be imaged
-nChannelsPerImage = 1; % number of consecutive channels to be concatenated into each effective channel
+idChannels2Image = 1:16; % ids of the 'physical' channels to be imaged
+nChannelsPerImage = 16; % number of consecutive channels to be concatenated into each effective channel
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % channels re-structured into effective channels
 effChans2Image = cell(nEffChans2Image, 1);
@@ -206,14 +206,14 @@ end
 subcubeInd = 0; % id of subcube if spectral interleaving is active
 
 % measurement op. params
-param_global.measop_flag_dataReduction = 0;
+param_global.measop_flag_dataReduction = 1;
 
 % image details, dims &  cellsize
 % TODO: to be modified
-param_global.im_Nx = 512; % 2560;
-param_global.im_Ny = 256; % 1536;
-param_global.im_pixelSize = []; % 0.06; % pixelsize in asec
-param_global.algo_flag_computeOperatorNorm = false;
+param_global.im_Nx = 2560; 
+param_global.im_Ny = 1536; 
+param_global.im_pixelSize =  0.06; % pixelsize in asec
+param_global.algo_flag_computeOperatorNorm = true;
 
 % faceting params: note that if interleaving is active, one subcube is
 % imaged at a time: Qc=1 by default.
@@ -227,24 +227,26 @@ param_global.facet_overlap_fraction = [0.5, 0.5];
 param_global.reg_gam = 0.33; % l21 reg param
 param_global.reg_gam_bar = 0.33; % nuclear norm reg param
 param_global.reg_flag_reweighting = true;
-param_global.reg_flag_homotopy = false;
+param_global.reg_flag_homotopy = false; % not compulsory to be defined here..
 param_global.reg_nReweights = 5;
 param_global.generate_eps_nnls = false;
 
 % algo & parallelisation params
 % TODO: to be modified
-param_global.algo_version = 'fhs'; % 'fhs', 'hs' or 'sara'
+param_global.algo_version = 'sara'; % 'fhs', 'hs' or 'sara'
 
 % filenames and input
 % TODO: to be modified
 param_global.main_dir = main_dir;
-% param_global.preproc_filename_dde = @(firstch,lastch) strcat(calib_dir,'/ddes/chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
-% param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, '/dies/chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
-param_global.preproc_filename_die = [];
-% param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, '/l2bounds/chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
-param_global.preproc_filename_l2bounds = [];
-% param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, '/model_images/chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
-param_global.preproc_filename_model = [];
+% param_global.preproc_filename_dde = @(firstch,lastch) strcat(preproc_calib_dir,filesep,'ddes',filesep,'chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
+param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
+%param_global.preproc_filename_die = [];
+%
+param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'l2bounds',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
+% param_global.preproc_filename_l2bounds = [];
+%
+param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'model_images',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
+%param_global.preproc_filename_model = [];
 
 % hardware
 param_global.hardware = 'local'; % 'cirrus' or 'local', add your own cluster & update 'util_set_parpool_dev.m' accordingly
