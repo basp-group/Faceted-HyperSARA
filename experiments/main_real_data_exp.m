@@ -451,9 +451,9 @@ switch algo_version
                     frequency = dataloaded.frequency;
                     % u v  are in units of the wavelength and will be
                     % normalised between [-pi,pi] for the NUFFT
-                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth/(speed_of_light/frequency);
+                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;
                     dataloaded.u = [];
-                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth/(speed_of_light/frequency);
+                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;
                     dataloaded.v = [];
                     w{iEffCh, 1}{iCh}{idSet} = double(dataloaded.w(:));
                     dataloaded.w = [];
