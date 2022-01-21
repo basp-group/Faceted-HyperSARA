@@ -10,7 +10,7 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 % Parameters
 % ----------
 % image_name : string
-%     Name of the reference synthetic image (from the data/ folder).
+%     Name of the reference synthetic image (from the ``data/`` folder).
 % dataSetsNames: cell of string
 %     Names of the datasets to be imaged.
 % dataFilenames: cell of string

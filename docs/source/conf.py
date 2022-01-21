@@ -20,7 +20,7 @@ matlab_src_dir = os.path.abspath(os.path.join("..", ".."))
 
 # -- Project information -----------------------------------------------------
 
-project = "faceted-hypersara"
+project = "Faceted-Hyper-SARA"
 copyright = "2021, P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech"
 author = "P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech"
 
@@ -44,6 +44,7 @@ extensions = [
     "sphinx_rtd_theme",
     "sphinxcontrib.bibtex",
     "sphinx.ext.mathjax",  # LaTeX support
+    "sphinx.ext.autosectionlabel",  # references in the same document 
 ]
 
 autosummary_generate = True
