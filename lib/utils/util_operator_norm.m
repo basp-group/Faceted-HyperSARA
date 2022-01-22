@@ -1,4 +1,36 @@
 function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, tol, max_iter,flag_dr,Sigma)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% G : [type]
+%     [description]
+% W : [type]
+%     [description]
+% A : [type]
+%     [description]
+% At : [type]
+%     [description]
+% aW : [type]
+%     [description]
+% Ny : [type]
+%     [description]
+% Nx : [type]
+%     [description]
+% tol : [type]
+%     [description]
+% max_iter : [type]
+%     [description]
+% flag_dr : [type]
+%     [description]
+% Sigma : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
+
 if nargin<10 
     flag_dr=0; Sigma =[];
 end

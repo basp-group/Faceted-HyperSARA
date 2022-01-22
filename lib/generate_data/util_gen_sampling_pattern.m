@@ -1,4 +1,17 @@
 function [u, v, uw, vw, Nm] = util_gen_sampling_pattern(pattern, param)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% pattern : [type]
+%     [description]
+% param : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
 
     if ~isfield(param, 'fpartition') && ~isfield(param, 'fpartition_x') && ~isfield(param, 'fpartition_y')
         % symetric partitioning

@@ -1,4 +1,21 @@
 function cirrus_cluster = util_set_parpool(algo_version, ncores_data, Q, flag_cirrus)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% algo_version : [type]
+%     [description]
+% ncores_data : [type]
+%     [description]
+% Q : [type]
+%     [description]
+% flag_cirrus : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
 
     switch algo_version
         case 'sara'

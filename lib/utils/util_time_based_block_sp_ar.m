@@ -1,4 +1,20 @@
 function out = util_time_based_block_sp_ar(u, time_, param)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% u : [type]
+%     [description]
+% time_ : [type]
+%     [description]
+% param : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
+
     param.pos = [0 param.pos];
     out.partition = [];
     length(param.pos) - 1;

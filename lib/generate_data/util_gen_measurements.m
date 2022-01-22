@@ -1,4 +1,24 @@
 function [y0, y, Nm, sigma_noise] = util_gen_measurements(x, G, W, A, input_snr)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% x : [type]
+%     [description]
+% G : [type]
+%     [description]
+% W : [type]
+%     [description]
+% A : [type]
+%     [description]
+% input_snr : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
+
     % generates the input data
 
     c = size(x, 3);

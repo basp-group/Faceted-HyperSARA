@@ -1,4 +1,19 @@
 function [x0, X0] = generate_cube_W28(file_name, f, emission_lines)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% file_name : [type]
+%     [description]
+% f : [type]
+%     [description]
+% emission_lines : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
 
     disp '/*----------------------------------------------------------------*/';
     disp ' example: Simulation of wide band radio interferometric data NEW';

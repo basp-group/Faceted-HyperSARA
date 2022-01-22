@@ -1,4 +1,32 @@
 function x = HS_adjoint_operator_precond_G(y, G, W, At, aW, N, M,flag_dr,Sigma)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% y : [type]
+%     [description]
+% G : [type]
+%     [description]
+% W : [type]
+%     [description]
+% At : [type]
+%     [description]
+% aW : [type]
+%     [description]
+% N : [type]
+%     [description]
+% M : [type]
+%     [description]
+% flag_dr : [type]
+%     [description]
+% Sigma : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
+
 if nargin ==7
     flag_dr=0;
     Sigma =[];

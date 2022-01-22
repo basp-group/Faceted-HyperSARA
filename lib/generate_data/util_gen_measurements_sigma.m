@@ -1,4 +1,26 @@
 function [y0, y, Nm] = util_gen_measurements_sigma(x, G, W, A, sigma_noise, seed)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% x : [type]
+%     [description]
+% G : [type]
+%     [description]
+% W : [type]
+%     [description]
+% A : [type]
+%     [description]
+% sigma_noise : [type]
+%     [description]
+% seed : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
+
     % generates the input data
     rng(seed);
 

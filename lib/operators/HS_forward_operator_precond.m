@@ -1,4 +1,21 @@
 function y = HS_forward_operator_precond(x, Gw, A, aW)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% x : [type]
+%     [description]
+% Gw : [type]
+%     [description]
+% A : [type]
+%     [description]
+% aW : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
 
     [~, ~, c] = size(x);
     y = cell(c, 1);

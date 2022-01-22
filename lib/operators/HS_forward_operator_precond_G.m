@@ -1,4 +1,28 @@
 function y = HS_forward_operator_precond_G(x, G, W, A, aW,flag_dr,Sigma)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% x : [type]
+%     [description]
+% G : [type]
+%     [description]
+% W : [type]
+%     [description]
+% A : [type]
+%     [description]
+% aW : [type]
+%     [description]
+% flag_dr : [type]
+%     [description]
+% Sigma : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
+
 if nargin ==5
     flag_dr=0;
     Sigma =[];

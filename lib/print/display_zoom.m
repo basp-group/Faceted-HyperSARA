@@ -1,33 +1,33 @@
 function [f, h] = display_zoom(x, fig_size, pixel_shift_colorbar, clim, cmap, fontsize, tickLabel)
-    % Display a the input image :math:`x` (zoomed-in regions from the MNRAS
-    % paper).
-    %
-    % Parameters
-    % ----------
-    % x : array
-    %     Input image.
-    % fig_size : array (int)
-    %     Size of the figure (in pixels).
-    % pixel_shift_colorbar : array
-    %     Shift applied to the position of the colorbar (in pixels).
-    % clim : array
-    %     Values associated to the limits of the colorbar.
-    % cmap : array
-    %     Colormap.
-    % fontsize : int
-    %     Size of the font.
-    % tickLabel : array
-    %     Values for the ticks reported on the colorbar.
-    %
-    % Returns
-    % -------
-    % f : handle
-    %     Figure handle.
-    % h : handle
-    %     Colorbar handle.
-    %
+% Display a the input image :math:`x` (zoomed-in regions from the MNRAS
+% paper).
+%
+% Parameters
+% ----------
+% x : array
+%     Input image.
+% fig_size : array (int)
+%     Size of the figure (in pixels).
+% pixel_shift_colorbar : array
+%     Shift applied to the position of the colorbar (in pixels).
+% clim : array
+%     Values associated to the limits of the colorbar.
+% cmap : array
+%     Colormap.
+% fontsize : int
+%     Size of the font.
+% tickLabel : array
+%     Values for the ticks reported on the colorbar.
+%
+% Returns
+% -------
+% f : handle
+%     Figure handle.
+% h : handle
+%     Colorbar handle.
+%
 
-    %%
+%%
     f = figure('visible', 'on');
     % sets axes background
     set(gca, 'Color', 'none');

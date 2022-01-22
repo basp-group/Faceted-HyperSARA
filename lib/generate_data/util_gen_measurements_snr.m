@@ -1,4 +1,25 @@
 function [y0, y, Ml, Nm, sigma_noise, norm_noise] = util_gen_measurements_snr(x, G, W, A, input_snr, rng_stream)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% x : [type]
+%     [description]
+% G : [type]
+%     [description]
+% W : [type]
+%     [description]
+% A : [type]
+%     [description]
+% input_snr : [type]
+%     [description]
+% rng_stream : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
 
     % generates the input data
     % rng(seed);
