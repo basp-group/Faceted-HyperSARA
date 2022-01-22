@@ -48,7 +48,14 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     prior (FHS solver).
 % param_global.facet_overlap_fraction : double[2]
 %     Fraction of the total size of a facet overlapping with a neighbour 
-%     facet.
+%     facet along each axis (y and x) for the faceted low-rankness prior.
+%     Will be reset automatically to ``[0, 0]`` if 
+%     ``param_global.algo_version = "sara"``
+%     or ``"hs"``. Besides, each entry of
+%     ``param_global.facet_overlap_fraction`` is reset to 0 the
+%     number of facet along the corresponding dimension is equal to 1
+%     (i.e., ``param_global.facet_Qy = 1`` and/or
+%     ``param_global.facet_Qx = 1``).
 % param_global.reg_nReweights : int
 %     Maximum number of reweighting steps.
 % param_global.reg_gam : double

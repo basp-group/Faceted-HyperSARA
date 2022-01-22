@@ -117,6 +117,9 @@ function [param_global, param_solver, param_nufft, ...
 % dict.wavelet_basis  (cell{:} of string)
 %     Name of the wavelet basis to be used (``"self"`` corresponding to the 
 %     Dirac basis).
+% dict.filter_length (int[:])
+%     Length of each wavelet filter considered for the SARA dictionary (0 
+%     by convention for the Dirac basis).
 %
 %
 

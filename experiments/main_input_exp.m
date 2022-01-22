@@ -89,7 +89,7 @@
 %     ``"hs"``.
 % param_global.facet_overlap_fraction : array[double]
 %     Array containing the overlap fraction between consecutive facets along
-%     each axis (y and x). Will be reset
+%     each axis (y and x) for the faceted low-rankness prior. Will be reset
 %     automatically to ``[0, 0]`` if ``param_global.algo_version = "sara"``
 %     or ``"hs"``. Besides, each entry of
 %     ``param_global.facet_overlap_fraction`` is reset to 0 the
