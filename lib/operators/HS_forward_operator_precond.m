@@ -1,21 +1,25 @@
 function y = HS_forward_operator_precond(x, Gw, A, aW)
-% [extended_summary]
+% Apply the forward preconditioned wideband measurement operator 
+% (w/o data blocking, adjoint of 
+% :mat:func:`lib.operators.HS_adjoint_operator_precond`).
 % 
 % Parameters
 % ----------
-% x : [type]
-%     [description]
-% Gw : [type]
-%     [description]
-% A : [type]
-%     [description]
-% aW : [type]
-%     [description]
+% x : double[:, :, :]
+%     Wideband image.
+% Gw : cell of sparse complex[:, :]
+%     Degridding matrix (per channel).
+% A : anonymous function
+%     Weighted FFT involved in the NUFFT.
+% aW : cell of double[:]
+%     Diagonal preconditioning matrices (encoded as vector, each cell entry
+%     associated with a different channel).
 % 
 % Returns
 % -------
-% [type]
-%     [description]
+% y : cell of complex[:]
+%     Output visibilities.
+%
 
     [~, ~, c] = size(x);
     y = cell(c, 1);

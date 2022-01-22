@@ -1,5 +1,6 @@
 function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
-                                                           param_precond, param_blocking, fc, fmax, Nx, Ny, Kx, Ky, ox, oy, kernel)
+                                param_precond, param_blocking, fc, ...
+                                fmax, Nx, Ny, Kx, Ky, ox, oy, kernel)
 % Build the measurement operator for a given uv-coverage at pre-defined
 % frequencies.
 %

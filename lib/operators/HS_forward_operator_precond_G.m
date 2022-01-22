@@ -1,27 +1,31 @@
 function y = HS_forward_operator_precond_G(x, G, W, A, aW,flag_dr,Sigma)
-% [extended_summary]
+% Apply the forward preconditioned wideband measurement operator 
+% (with or w/o data dimensionality reduction, adjoint of 
+% :mat:func:`lib.operators.HS_adjoint_operator_precond_G`).
 % 
 % Parameters
 % ----------
-% x : [type]
-%     [description]
-% G : [type]
-%     [description]
-% W : [type]
-%     [description]
-% A : [type]
-%     [description]
-% aW : [type]
-%     [description]
-% flag_dr : [type]
-%     [description]
-% Sigma : [type]
-%     [description]
+% x : double[:, :, :]
+%     Wideband image.
+% G : cell of cell of sparse complex[:, :]
+%     Degridding matrix (per channel per block).
+% W : cell of cell of int[:]
+%     Selection vector to map data blocks to the full Fourier plane.
+% A : anonymous function
+%     Weighted FFT involved in the NUFFT.
+% aW : cell of cell of double
+%     Diagonal preconditioning matrices (encoded as vector, for each
+%     channel and data block within a channel).
+% flag_dr : bool
+%     Flag indicating whether data dimensionality reduction is considered.
+% Sigma : cell of cell of double[:]
+%     Dimensionality reduction matrix.
 % 
 % Returns
 % -------
-% [type]
-%     [description]
+% y : cell of cell of complex[:]
+%     Output visibilities.
+%
 
 if nargin ==5
     flag_dr=0;

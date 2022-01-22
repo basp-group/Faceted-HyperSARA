@@ -1,38 +1,56 @@
 function [sol, norm_res] = fb_nnls(y, A, At, param)
-    % fb_nnls - Solve non negative least squares problem.
-    %
-    % sol = solve_nnls(y, A, At, PARAM) solves:
-    %
-    %   min  0.5*||y-A x||_2^2 s.t. x >= 0
-    %
-    %
-    % Y contains the measurements. A is the forward measurement operator and
-    % At the associated adjoint operator.
-    % PARAM a Matlab structure containing the following fields:
-    %
-    %   General parameters:
-    %
-    %   - verbose: 0 no log, 1 print main steps, 2 print all steps.
-    %
-    %   - max_iter: max. nb. of iterations (default: 200).
-    %
-    %   - rel_obj: minimum relative change of the objective value (default:
-    %   1e-4)
-    %       The algorithm stops if
-    %           | f(x(t)) - f(x(t-1)) | / f(x(t)) < rel_obj,
-    %       where x(t) is the estimate of the solution at iteration t.
-    %
-    %
-    %
-    % The problem is solved using the forward-backward algorithm with
-    % FISTA-like acceleration
-    %
-    %
-    %
-    % Author: Rafael Carrillo
-    % E-mail: carrillo.rafael@epfl.ch
-    % Date: Oct. 26, 2014
-    %
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% y : [type]
+%     [description]
+% A : [type]
+%     [description]
+% At : [type]
+%     [description]
+% param : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
+
+% fb_nnls - Solve non negative least squares problem.
+%
+% sol = solve_nnls(y, A, At, PARAM) solves:
+%
+%   min  0.5*||y-A x||_2^2 s.t. x >= 0
+%
+%
+% Y contains the measurements. A is the forward measurement operator and
+% At the associated adjoint operator.
+% PARAM a Matlab structure containing the following fields:
+%
+%   General parameters:
+%
+%   - verbose: 0 no log, 1 print main steps, 2 print all steps.
+%
+%   - max_iter: max. nb. of iterations (default: 200).
+%
+%   - rel_obj: minimum relative change of the objective value (default:
+%   1e-4)
+%       The algorithm stops if
+%           | f(x(t)) - f(x(t-1)) | / f(x(t)) < rel_obj,
+%       where x(t) is the estimate of the solution at iteration t.
+%
+%
+%
+% The problem is solved using the forward-backward algorithm with
+% FISTA-like acceleration
+%
+%
+%
+% Author: Rafael Carrillo
+% E-mail: carrillo.rafael@epfl.ch
+% Date: Oct. 26, 2014
+%
 
     % Optional input arguments
     if ~isfield(param, 'verbose')

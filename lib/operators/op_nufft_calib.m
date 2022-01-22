@@ -1,4 +1,28 @@
 function [A, At, Gw, scale] = op_nufft_calib(p, D, N, Nn, No, Ns, S)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% p : [type]
+%     [description]
+% D : [type]
+%     [description]
+% N : [type]
+%     [description]
+% Nn : [type]
+%     [description]
+% No : [type]
+%     [description]
+% Ns : [type]
+%     [description]
+% S : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
+
 % Create the nonuniform gridding matrix and fft operators
 %
 % in:

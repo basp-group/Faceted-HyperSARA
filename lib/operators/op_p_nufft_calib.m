@@ -1,4 +1,31 @@
 function [A, At, G, W] = op_p_nufft_calib(p, D, N, Nn, No, Ns, S, ww, param)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% p : [type]
+%     [description]
+% D : [type]
+%     [description]
+% N : [type]
+%     [description]
+% Nn : [type]
+%     [description]
+% No : [type]
+%     [description]
+% Ns : [type]
+%     [description]
+% S : [type]
+%     [description]
+% ww : [type]
+%     [description]
+% param : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+
 % Create the nonuniform gridding matrix and fft operators to be used for
 % parallel processing
 %
