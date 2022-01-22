@@ -23,11 +23,11 @@ From an existing `faceted-hyper-sara` repository, issue the following commands
 
 .. code-block:: bash
 
-    cd path/to/repo
-    git pull
-    git submodule sync --recursive # update submodule address, in case the url has changed
-    git submodule update --init --recursive # update the content of the submodules
-    git submodule update --remote --merge # fetch and merge latest state of the submodule
+   cd path/to/repo
+   git pull
+   git submodule sync --recursive # update submodule address, in case the url has changed
+   git submodule update --init --recursive # update the content of the submodules
+   git submodule update --remote --merge # fetch and merge latest state of the submodule
 
 
 Getting started
@@ -53,24 +53,27 @@ Reconstructing an image cube from an MS-Table
 
 4. Run the :mat:scpt:`experiments.main_input_exp` with MATLAB.
 
-.. .. code-block:: bash
-
-..    conda activate async_sampling
-..    cd path/to/repo
-..    # to check the list of input parameters
-..    # ...
 
 Testing the library with a synthetic dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To test the imaging pipeline with a synthetic data test.
 
-1. Generate a synthetic dataset using 
+1. Retrieve the 
+   `S_DDE_MODEL.fits <https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits>`_ image file associated with :cite:p:`Dabbech2021`.
+   Place the file in the ``data/`` folder at the root of the library.
+
+2. Generate one (or all) synthetic wideband image cube used in
+   :cite:p:`Thouvenin2021` using the
+   :mat:scpt:`experiments.main_generate_cyga_cubes` script, following the
+   instructions.
+
+3. Generate a synthetic dataset using 
    :mat:func:`experiments.main_generate_data`, and run the (properly
-   configured) `experiments.main_input_exp.m` script (see 
+   configured) :mat:scpt:`experiments.main_input_exp` script (see 
    :ref:`previous section<Reconstructing an image cube from an MS-Table>`).
 
-2. Configure :mat:scpt:`experiments.main_input_exp` following the instructions 
+4. Configure :mat:scpt:`experiments.main_input_exp` following the instructions 
    provided in the file.
 
 

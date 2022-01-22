@@ -51,7 +51,7 @@ cd data
 wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
 ```
 
-You can then execute the `sim_script_cyga_cubes.m` script to generate all the different synthetic data cubes considered.
+You can then execute the `experiments/sim_script_cyga_cubes.m` script to generate all the different synthetic data cubes considered in the paper.
 
 ## Configuration
 
