@@ -1,3 +1,6 @@
+% Main script to generate the figures obtained for the spatial faceting 
+% experiments reported in :cite:p:`Thouvenin2021`.
+
 clc; clear all; close all;
 format compact;
 
