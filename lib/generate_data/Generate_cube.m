@@ -1,19 +1,24 @@
 function [x0, X0] = generate_cube(file_name, f, emission_lines)
-% [extended_summary]
+% Script to generate a fully synthetic image cube as in
+% :cite:p:`Abdulaziz2019`.
 % 
 % Parameters
 % ----------
-% file_name : [type]
-%     [description]
-% f : [type]
-%     [description]
-% emission_lines : [type]
-%     [description]
+% file_name : string
+%     Name of a reference monochromatic image in ``.fits`` format.
+% f : double[:]
+%     Frequencies over which the wideband image is generated.
+% emission_lines : bool
+%     If set to true, insert emission lines in the synthetic wideband
+%     image.
 % 
 % Returns
 % -------
-% [type]
-%     [description]
+% x0 : double[:, :, :]
+%     Synthetic wideband image (3D) [N(1), N(2), L].
+% X0 : double[:, :]
+%     Synthetic wideband image (reshape in 2D format) [N(1)*N*(2), L].
+%
 
     disp '/*----------------------------------------------------------------*/';
     disp ' example: Simulation of wide band radio interferometric data';

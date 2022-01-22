@@ -3,27 +3,36 @@ function [y0, y, Ml, Nm, sigma_noise, norm_noise] = util_gen_measurements_snr(x,
 % 
 % Parameters
 % ----------
-% x : [type]
-%     [description]
-% G : [type]
-%     [description]
-% W : [type]
-%     [description]
-% A : [type]
-%     [description]
-% input_snr : [type]
-%     [description]
-% rng_stream : [type]
-%     [description]
+% x : double[:, :, :]
+%     Input wodeband image.
+% G : cell of cell of sparse complex[:, :]
+%     Degridding matrix (per channel, per block).
+% W : cell of cell of int[:]
+%     Selection vector to extract data blocks from the full Fourier plane.
+% A : anonymous function.
+%     Function handle implementing the NUFFT.
+% input_snr : double[:]
+%     Input SNR for each spectral channel.
+% rng_stream : random number generator
+%     Random number generator.
 % 
 % Returns
 % -------
-% [type]
-%     [description]
+% y0 : cell of cell of complex[:]
+%     Clean (i.e., noiseless) visibilities.
+% y : cell of cell of complex[:]
+%     Noisy visibilities.
+% Ml : int[:]
+%     Number of data points in each spectral channel.
+% Nm : int
+%     Total number of visbilities (across all data blocks and channels).
+% sigma_noise : double[:]
+%     Noise level in each spectral channel.
+% norm_noise : double[:]
+%     Euclidean norm of the Gaussian noise affecting each data channel.
+%
 
     % generates the input data
-    % rng(seed);
-
     c = size(x, 3);
     y0 = cell(c, 1);
     Ml = zeros(c, 1); % number of data points per channel

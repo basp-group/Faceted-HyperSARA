@@ -22,7 +22,6 @@ function [y0, y, Ml, Nm, sigma_noise, norm_noise, G] = util_gen_measurements_snr
 %     [description]
 
     % [11/01/2022]
-
     c = size(x, 3);
     y0 = cell(c, 1);  % data w/o noise, not whitened
     Ml = zeros(c, 1); % number of data points per channel
