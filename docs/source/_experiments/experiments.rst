@@ -1,6 +1,8 @@
 experiments package
 ===================
 
+Collection of scripts to launch the proposed imaging pipeline on synthetic or real data.
+
 .. .. mat:automodule:: experiments
 ..     :members:
 ..     :undoc-members:

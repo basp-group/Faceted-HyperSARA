@@ -1,6 +1,8 @@
 src package
 ===========
 
+Core implementation of the SARA, HyperSARA and Faceted HyperSARA imaging algorithms.
+
 .. contents:: :local:
 
 .. toctree::
