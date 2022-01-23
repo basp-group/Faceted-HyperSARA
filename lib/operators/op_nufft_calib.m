@@ -1,45 +1,35 @@
 function [A, At, Gw, scale] = op_nufft_calib(p, D, N, Nn, No, Ns, S)
-% [extended_summary]
+% Create the nonuniform gridding matrix and fft operators.
 % 
 % Parameters
 % ----------
-% p : [type]
-%     [description]
-% D : [type]
-%     [description]
-% N : [type]
-%     [description]
-% Nn : [type]
-%     [description]
-% No : [type]
-%     [description]
-% Ns : [type]
-%     [description]
-% S : [type]
-%     [description]
+% p : double[:, 2]
+%     Nonuniformly distributed frequency location points.
+% D : complex[:, :]
+%     DDE kernels (in the Fourier domain).
+% N : int[2]
+%     Size of the reconstruction image.
+% Nn : int[2]
+%     Size of the kernels (number of neighbors considered on each direction).
+% No : int[2]
+%     Oversampled fft from which to recover the non uniform fft via kernel
+%     convolution.
+% Ns : int[2]
+%     FFT shift.
+% S : int[1]
+%     Size of the DDE support (square support).
 % 
 % Returns
 % -------
-% [type]
-%     [description]
-
-% Create the nonuniform gridding matrix and fft operators
+% A: function handle
+%     Function handle for direct operator.
+% At : function handle
+%     Function handle for adjoint operator.
+% Gw : sparse complex[:, :]
+%     Global convolution kernel matrix.
+% scale : complex[:, :]
+%     Scale paremters for the oversampled FFT.
 %
-% in:
-% p[2]    - nonuniformly distributed frequency location points
-% D[2]    - DDE kernels (in the Fourier domain)
-% N[2]    - size of the reconstruction image
-% Nn[2]   - size of the kernels (number of neighbors considered on each direction)
-% No[2]   - oversampled fft from which to recover the non uniform fft via
-%           kernel convolution
-% Ns[2]   - fft shift
-% S[1]    - size of the DDE support (square support)
-%
-% out:
-% A[@]          - function handle for direct operator
-% At[@]         - function handle for adjoint operator
-% Gw[:][:]      - global convolution kernel matrix
-% scale[:][:]   - scale paremters for the oversampled FFT
 
 % [06/08/2019] Code modification, P.-A. Thouvenin.
 

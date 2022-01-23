@@ -1,5 +1,6 @@
 function [y0, y, Ml, Nm, sigma_noise, norm_noise] = util_gen_measurements_snr(x, G, W, A, input_snr, rng_stream)
-% [extended_summary]
+% Generate noisy synthetic viasilities using a predefined per-channel input 
+% SNR.
 % 
 % Parameters
 % ----------

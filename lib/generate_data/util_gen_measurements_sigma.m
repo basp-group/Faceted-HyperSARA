@@ -1,5 +1,5 @@
 function [y0, y, Nm] = util_gen_measurements_sigma(x, G, W, A, sigma_noise, seed)
-% [extended_summary]
+% Generate noisy synthetic viasilities using a predefined noise level.
 % 
 % Parameters
 % ----------

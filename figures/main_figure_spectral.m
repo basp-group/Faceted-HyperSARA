@@ -1,5 +1,5 @@
-% Main script to generate the figures obtained for the spectral faceting 
-% experiments reported in :cite:p:`Thouvenin2021`.
+% Main script to generate the figures reported for the spectral faceting 
+% in :cite:p:`Thouvenin2021`.
 
 clc; clear all; close all;
 format compact;
