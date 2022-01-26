@@ -995,58 +995,7 @@ if flag_solveMinimization
             case 'fhs'
                 disp('Faceted HyperSARA');
                 disp('-----------------------------------------');
-                % ---
-                % ! test: load ground truth image (for debugging purposes)
-                exp_type = param_global.exp_type;
-                switch exp_type
-                    case "spatial"
-                        image_name = 'cygASband_Cube_1024_2048_20';
-                        spectral_downsampling = 1;
-                        spatial_downsampling = 1;
-                    case "spectral"
-                        image_name = 'cygASband_Cube_256_512_100';
-                        spectral_downsampling = 1;
-                        spatial_downsampling = 1;
-                    case "test"
-                        image_name = 'cygASband_Cube_512_1024_20';
-                        spectral_downsampling = 10;
-                        spatial_downsampling = 2;
-                    case "local_test"
-                        image_name = 'cygASband_Cube_256_512_100';
-                        spectral_downsampling = 25;
-                        spatial_downsampling = 1;
-                        coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
-                    case "old_local_test"
-                        image_name = 'cubeW28';
-                        spectral_downsampling = 20;
-                        spatial_downsampling = 4;
-                        coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
-                    otherwise
-                        error("Unknown experiment type");
-                end
-                reference_cube_path = fullfile('../data', strcat(image_name, '.fits'));
-                info        = fitsinfo(reference_cube_path);
-                rowend      = info.PrimaryData.Size(1);
-                colend      = info.PrimaryData.Size(2);
-                sliceend    = info.PrimaryData.Size(3);
-                if strcmp(algo_version, 'sara')
-                    x0 = fitsread(reference_cube_path, 'primary', ...
-                        'Info', info, ...
-                        'PixelRegion', {[1 spatial_downsampling rowend], ...
-                        [1 spatial_downsampling colend], ...
-                        ind});
-                else
-                    x0 = fitsread(reference_cube_path, 'primary', ...
-                        'Info', info, ...
-                        'PixelRegion', {[1 spatial_downsampling rowend], ...
-                        [1 spatial_downsampling colend], ...
-                        [1 spectral_downsampling sliceend]});
-                end
-                [Ny, Nx, nchans] = size(x0);
-                N = Nx * Ny;
-                x0 = reshape(x0, [N, nchans]);
-                % ---
-                
+              
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     dict.basis, dict.filter_length, dict.nlevel, window_type, ...
