@@ -154,9 +154,9 @@ cd(project_dir);
 
 %% src name & datasets
 % TODO: to be modified
-imagecubeName = 'CYGA';
+imagecubeName = 'cygASband_Cube_256_512';
 param_global.exp_type = 'test'; % ! only for debugging purposes
-datasetNames = {}; % allowing for multiple datasets
+datasetNames = {'test'}; % allowing for multiple datasets, empty cell if a single dataset
 % data dir.
 data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
@@ -192,7 +192,7 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 % >nChannelsPerImage = 16;
 
 % TODO: to be modified
-idChannels2Image = 1:2; % ids of the 'physical' channels to be imaged
+idChannels2Image = [1:2]; % ids of the 'physical' channels to be imaged
 nChannelsPerImage = 1; % number of consecutive channels to be concatenated into each effective channel
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % channels re-structured into effective channels
@@ -209,14 +209,14 @@ end
 subcubeInd = 0; % id of subcube if spectral interleaving is active, 0 if inactive
 
 % measurement op. params
-param_global.measop_flag_dataReduction = 0; % 0 or 1
+param_global.measop_flag_dataReduction = 0;
 
 % image details, dims &  cellsize
 % TODO: to be modified
-param_global.im_Nx = 2560; 
-param_global.im_Ny = 1536; 
-param_global.im_pixelSize = []; % pixelsize in asec, use [] to use the default (defined uing a factor 2 super-resolution)
-param_global.algo_flag_computeOperatorNorm = true;
+param_global.im_Nx = 512; % 2560;
+param_global.im_Ny = 256; % 1536;
+param_global.im_pixelSize = []; % 0.06; % pixelsize in asec, use [] to use the default value set from the uv-coverage
+param_global.algo_flag_computeOperatorNorm = false;
 
 % faceting params: note that if interleaving is active, one subcube is
 % imaged at a time: Qc=1 by default.
@@ -236,7 +236,7 @@ param_global.generate_eps_nnls = false;
 
 % algo & parallelisation params
 % TODO: to be modified
-param_global.algo_version = 'sara'; % 'fhs', 'hs' or 'sara'
+param_global.algo_version = 'fhs'; % 'fhs', 'hs' or 'sara'
 
 % filenames and input
 % TODO: to be modified
