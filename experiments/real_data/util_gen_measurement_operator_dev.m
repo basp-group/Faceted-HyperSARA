@@ -1,5 +1,5 @@
-function [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nWw, ...
-     nchans, Nx, Ny, param_nufft, param_wproj,param_precond, param_blocking,ddes)
+function [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
+     nchans, Nx, Ny, param_nufft, param_wproj,param_precond ,ddes)
 % Build the measurement operator for a given uv-coverage at pre-defined
 % frequencies.
 %
@@ -57,7 +57,7 @@ function [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nWw, ...
 %     data block within a channel.
 %%
 if ~exist('ddes','var')
-    ddes =[];
+    ddes = [];
 end
 param_nufft.N = [Ny Nx];
 param_nufft.Nn = [param_nufft.Ky param_nufft.Kx];
@@ -69,27 +69,21 @@ W = cell(nchans, 1);
 aW = cell(nchans, 1);
 
 % get fft operators
-[A, At, ~, ~] = op_p_nufft_wproj_dde([], 1, param_nufft, param_wproj);
+[A, At, ~, ~] = op_p_nufft_wproj_dde(param_nufft);
 
 for i = 1:nchans
     % set the blocks structure
     aW{i} = cell(numel(u{i}), 1);
-    nW = cell(numel(u{i}), 1);
     for j = 1:numel(u{i})
         % compute uniform weights (sampling density) for the preconditioning
         aW{i}{j} = util_gen_preconditioning_matrix(u{i}{j}, v{i}{j}, param_precond);
-        % set the weighting matrix, these are the natural weights for real data
-        [u{i}{j}, v{i}{j}, ~, ~, aW{i}{j}, nW{j}] = util_gen_block_structure(u{i}{j}, v{i}{j}, aW{i}{j}, nWw{i}{j}, param_blocking);
     end
-    
     % measurement operator initialization
-    param_nufft.nW = nW;
     if isempty(ddes)
-        [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde([v{i} u{i}], w{i}, param_nufft, param_wproj);
+        [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde(param_nufft,[v{i} u{i}], w{i}, nW{i}, param_wproj);
     else
-        [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde([v{i} u{i}], w{i}, param_nufft, param_wproj,ddes{i});
+        [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde(param_nufft,[v{i} u{i}], w{i}, nW{i}, param_wproj,ddes{i});
     end
-    
 end
 
 end

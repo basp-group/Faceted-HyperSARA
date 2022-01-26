@@ -203,9 +203,6 @@ if flag_reweighting
     reg_nReweights = param_global.reg_nReweights; % @PA: why commented?
     flag_homotopy = param_global.reg_flag_homotopy;
 end
-% % Data blocks
-% nDataBlk = param_global.data_nDataBlk;
-% szDataBlk = param_global.data_sizeDataBlk;
 % Meas. op.
 flag_dataReduction = param_global.measop_flag_dataReduction; % data reduction
 param_wproj.do = param_global.measop_flag_wproj; % w projection
@@ -432,7 +429,8 @@ param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% setup parpool
-delete(gcp('nocreate'));
+try delete(gcp('nocreate'));
+end
 if strcmp(algo_version, 'sara')
     hpc = 'local';
 end
@@ -451,8 +449,11 @@ switch algo_version
                 ddeloaded = load(param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DDEs');
             end
             %% if data reduction and residual data available, load them
-            if flag_dataReduction
-                DR_residualdataloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'RESIDUAL_DATA');
+            if flag_dataReduction 
+                try
+                    DR_residualdataloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'RESIDUAL_DATA');
+                catch, flag_l2bounds_compute =1;
+                end
             end
             for iCh = 1:numel(effChans2Image{iEffCh})
                 for idSet = 1:nDataSets
@@ -530,7 +531,7 @@ switch algo_version
         if flag_dataReduction
             % (DR) one data block & one channel 
             [A, At, G, W, aW, Sigma, y, noise] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
-                1, Nx, Ny, param_nufft, param_wproj,param_precond, param_blocking,preproc_dr_residuals);
+                1, Nx, Ny, param_nufft, param_wproj,preproc_dr_residuals,ddes);
             % (DR) get the computed l2 bounds from the continuous residual
             % data if available
             if isfield(noise,'l2bounds') && isfield(noise,'sigma')
@@ -543,7 +544,7 @@ switch algo_version
             end
         else
             [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
-                param_precond, param_blocking, 1, Nx, Ny, param_nufft, param_wproj, ddes);
+                 1, Nx, Ny,param_nufft, param_wproj,param_precond,ddes);
             Sigma = [];
         end; clear u v w nW;
         
@@ -565,7 +566,10 @@ switch algo_version
                     end
                     %% if data reduction and residual data available, load them
                     if flag_dataReduction
-                        DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
+                        try
+                            DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
+                        catch, flag_l2bounds_compute =1;
+                        end
                     end
                     for iCh = 1:numel(effChans2Image_lab{ifc})
                         for idSet = 1:nDataSets
@@ -643,11 +647,11 @@ switch algo_version
                     % ! define G as the holographic matrix
                     fprintf('\nCompute the holographic matrix H .. \n');
                     [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
-                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, param_blocking, preproc_dr_residuals, ddes);
+                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, preproc_dr_residuals, ddes);
                 else
                     % ! ideally, simplify irt nufft interface to do so
                     [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
-                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, param_blocking , ddes);
+                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond , ddes);
                     Sigma = [];
                 end
                 u = []; v = []; w = []; nW = [];
@@ -675,7 +679,10 @@ switch algo_version
                         end
                         %% if data reduction and residual data available, load them
                         if flag_dataReduction
-                            DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
+                            try
+                                DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
+                            catch, flag_l2bounds_compute =1;
+                            end
                         end
                         for iCh = 1:numel(effChans2Image_lab{ifc})
                             for idSet = 1:nDataSets
@@ -753,11 +760,11 @@ switch algo_version
                         % ! define G as the holographic matrix
                         fprintf('\nCompute the holographic matrix H ..\n');
                         [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
-                            numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, param_blocking, preproc_dr_residuals, ddes);
+                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  preproc_dr_residuals, ddes);
                     else
                         % ! ideally, simplify irt nufft interface to do so
                         [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
-                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  param_precond, param_blocking, ddes);
+                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  param_precond, ddes);
                         Sigma = [];
                     end; u = []; v = []; w = []; nW = [];
                     
@@ -988,65 +995,14 @@ if flag_solveMinimization
             case 'fhs'
                 disp('Faceted HyperSARA');
                 disp('-----------------------------------------');
-                % ---
-                % ! test: load ground truth image (for debugging purposes)
-                exp_type = param_global.exp_type;
-                switch exp_type
-                    case "spatial"
-                        image_name = 'cygASband_Cube_1024_2048_20';
-                        spectral_downsampling = 1;
-                        spatial_downsampling = 1;
-                    case "spectral"
-                        image_name = 'cygASband_Cube_256_512_100';
-                        spectral_downsampling = 1;
-                        spatial_downsampling = 1;
-                    case "test"
-                        image_name = 'cygASband_Cube_512_1024_20';
-                        spectral_downsampling = 10;
-                        spatial_downsampling = 2;
-                    case "local_test"
-                        image_name = 'cygASband_Cube_256_512_100';
-                        spectral_downsampling = 25;
-                        spatial_downsampling = 1;
-                        coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
-                    case "old_local_test"
-                        image_name = 'cubeW28';
-                        spectral_downsampling = 20;
-                        spatial_downsampling = 4;
-                        coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
-                    otherwise
-                        error("Unknown experiment type");
-                end
-                reference_cube_path = fullfile('../data', strcat(image_name, '.fits'));
-                info        = fitsinfo(reference_cube_path);
-                rowend      = info.PrimaryData.Size(1);
-                colend      = info.PrimaryData.Size(2);
-                sliceend    = info.PrimaryData.Size(3);
-                if strcmp(algo_version, 'sara')
-                    x0 = fitsread(reference_cube_path, 'primary', ...
-                        'Info', info, ...
-                        'PixelRegion', {[1 spatial_downsampling rowend], ...
-                        [1 spatial_downsampling colend], ...
-                        ind});
-                else
-                    x0 = fitsread(reference_cube_path, 'primary', ...
-                        'Info', info, ...
-                        'PixelRegion', {[1 spatial_downsampling rowend], ...
-                        [1 spatial_downsampling colend], ...
-                        [1 spectral_downsampling sliceend]});
-                end
-                [Ny, Nx, nchans] = size(x0);
-                N = Nx * Ny;
-                x0 = reshape(x0, [N, nchans]);
-                % ---
-                
+              
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     dict.basis, dict.filter_length, dict.nlevel, window_type, ...
                     channel_chunks, nEffectiveChans, overlap_size, gam, gam_bar, ...
                     Ny, Nx, param_nufft.oy, param_nufft.ox, ...
                     name_warmstart, name_checkpoint, flag_dataReduction, Sigma, ...
-                    xinit, x0);
+                    xinit);
             otherwise; error('Unknown solver version.');
         end
         fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
