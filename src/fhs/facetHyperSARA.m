@@ -108,7 +108,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %     low-rankness dual variable (identity for ``rectangular`` window, thus
 %     fixed to 1).
 % param.nu1 (double)
-%     Upper bound on the norm of the SARA operator :math:`\Psi`.
+%     Upper bound on the norm of the SARA operator :math:`\Psi^\dagger`.
 % param.nu2 (double)
 %     Upper bound on the norm of the measurement operator :math:`\Phi`
 % param.gamma  (double)

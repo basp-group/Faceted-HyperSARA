@@ -68,7 +68,7 @@ function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
 %     Print log or not
 %
 % param.nu1 (double)
-%     Upper bound on the norm of the SARA operator :math:`\Psi`.
+%     Upper bound on the norm of the SARA operator :math:`\Psi^\dagger`.
 % param.nu2 (double)
 %     Upper bound on the norm of the measurement operator :math:`\Phi`
 % param.gamma  (double)
