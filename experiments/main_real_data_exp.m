@@ -203,9 +203,6 @@ if flag_reweighting
     reg_nReweights = param_global.reg_nReweights; % @PA: why commented?
     flag_homotopy = param_global.reg_flag_homotopy;
 end
-% % Data blocks
-% nDataBlk = param_global.data_nDataBlk;
-% szDataBlk = param_global.data_sizeDataBlk;
 % Meas. op.
 flag_dataReduction = param_global.measop_flag_dataReduction; % data reduction
 param_wproj.do = param_global.measop_flag_wproj; % w projection
@@ -432,7 +429,8 @@ param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% setup parpool
-delete(gcp('nocreate'));
+try delete(gcp('nocreate'));
+end
 if strcmp(algo_version, 'sara')
     hpc = 'local';
 end
@@ -451,8 +449,11 @@ switch algo_version
                 ddeloaded = load(param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DDEs');
             end
             %% if data reduction and residual data available, load them
-            if flag_dataReduction
-                DR_residualdataloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'RESIDUAL_DATA');
+            if flag_dataReduction 
+                try
+                    DR_residualdataloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'RESIDUAL_DATA');
+                catch, flag_l2bounds_compute =1;
+                end
             end
             for iCh = 1:numel(effChans2Image{iEffCh})
                 for idSet = 1:nDataSets
@@ -530,7 +531,7 @@ switch algo_version
         if flag_dataReduction
             % (DR) one data block & one channel 
             [A, At, G, W, aW, Sigma, y, noise] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
-                1, Nx, Ny, param_nufft, param_wproj,param_precond, param_blocking,preproc_dr_residuals);
+                1, Nx, Ny, param_nufft, param_wproj,preproc_dr_residuals,ddes);
             % (DR) get the computed l2 bounds from the continuous residual
             % data if available
             if isfield(noise,'l2bounds') && isfield(noise,'sigma')
@@ -543,7 +544,7 @@ switch algo_version
             end
         else
             [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
-                param_precond, param_blocking, 1, Nx, Ny, param_nufft, param_wproj, ddes);
+                 1, Nx, Ny,param_nufft, param_wproj,param_precond,ddes);
             Sigma = [];
         end; clear u v w nW;
         
@@ -565,7 +566,10 @@ switch algo_version
                     end
                     %% if data reduction and residual data available, load them
                     if flag_dataReduction
-                        DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
+                        try
+                            DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
+                        catch, flag_l2bounds_compute =1;
+                        end
                     end
                     for iCh = 1:numel(effChans2Image_lab{ifc})
                         for idSet = 1:nDataSets
@@ -643,11 +647,11 @@ switch algo_version
                     % ! define G as the holographic matrix
                     fprintf('\nCompute the holographic matrix H .. \n');
                     [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
-                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, param_blocking, preproc_dr_residuals, ddes);
+                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, preproc_dr_residuals, ddes);
                 else
                     % ! ideally, simplify irt nufft interface to do so
                     [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
-                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, param_blocking , ddes);
+                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond , ddes);
                     Sigma = [];
                 end
                 u = []; v = []; w = []; nW = [];
@@ -675,7 +679,10 @@ switch algo_version
                         end
                         %% if data reduction and residual data available, load them
                         if flag_dataReduction
-                            DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
+                            try
+                                DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
+                            catch, flag_l2bounds_compute =1;
+                            end
                         end
                         for iCh = 1:numel(effChans2Image_lab{ifc})
                             for idSet = 1:nDataSets
@@ -753,11 +760,11 @@ switch algo_version
                         % ! define G as the holographic matrix
                         fprintf('\nCompute the holographic matrix H ..\n');
                         [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
-                            numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, param_blocking, preproc_dr_residuals, ddes);
+                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  preproc_dr_residuals, ddes);
                     else
                         % ! ideally, simplify irt nufft interface to do so
                         [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
-                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  param_precond, param_blocking, ddes);
+                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  param_precond, ddes);
                         Sigma = [];
                     end; u = []; v = []; w = []; nW = [];
                     

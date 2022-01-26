@@ -1,5 +1,5 @@
-function [A, At, H, W, aW,Sigma,data,noise] = util_gen_dr_measurement_operator_dev(y,u, v,w,nWw, ...
-    nchans, Nx, Ny, param_nufft,param_wproj,param_precond, param_blocking,preproc_dr_residuals,ddes)
+function [A, At, H, W, aW,Sigma,data,noise] = util_gen_dr_measurement_operator_dev(y,u, v,w,nW, ...
+    nchans, Nx, Ny, param_nufft,param_wproj,preproc_dr_residuals,ddes)
 % Build the measurement operator for a given uv-coverage at pre-defined
 % frequencies.
 %
@@ -54,13 +54,12 @@ function [A, At, H, W, aW,Sigma,data,noise] = util_gen_dr_measurement_operator_d
 %%
 % check if data pre-processing exist
 %ddes
-if nargin<14
+if ~exist('ddes','var')
     ddes = [];
 end
 %residual data
-if nargin<13
-    ddes = [];
-    preproc_dr_residuals =[];
+if  ~exist('preproc_dr_residuals','var')
+    preproc_dr_residuals = [];
 end
 
 % dims.
@@ -78,14 +77,13 @@ data = cell(nchans, 1);
 noise = [];
 
 % get Fourier operators
-[A, At] = op_p_nufft_wproj_dde([],1,param_nufft,param_wproj);
+[A, At] = op_p_nufft_wproj_dde(param_nufft);
 
 % get holographic matrix and other vars
 for i = 1:nchans
     %INFO!!  no -precond for DR  and 1 single block per channel for now
     aW{i}{1} = 1;% no precond ...
     
-    nW =  nWw{i};
     res_data =  [];
     
     % measurement operator initialization
@@ -93,11 +91,10 @@ for i = 1:nchans
     
     for j =1:numel(u{i})
         fprintf('\nData Block %d \n',j);
-        param_nufft.nW = nW(j);
         if isempty(ddes)
-            [~,~, G, W_curr] = op_p_nufft_wproj_dde([v{i}(j) u{i}(j)],w{i}(j),param_nufft,param_wproj);
+            [~,~, G, W_curr] = op_p_nufft_wproj_dde(param_nufft,[v{i}(j) u{i}(j)],w{i}(j),nW{i}(j),param_wproj);
         else
-            [~,~, G, W_curr] = op_p_nufft_wproj_dde([v{i}(j) u{i}(j)],w{i}(j),param_nufft,param_wproj,ddes{i}(j) );
+            [~,~, G, W_curr] = op_p_nufft_wproj_dde(param_nufft,[v{i}(j) u{i}(j)],w{i}(j),nW{i}(j),param_wproj,ddes{i}(j) );
         end
         G_curr = sparse(prod(param_nufft.No),size(G{1},1));
         G_curr(W_curr{1},:)= G{1}'; %#ok<SPRIX>
