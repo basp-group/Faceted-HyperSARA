@@ -156,7 +156,7 @@ cd(project_dir);
 % TODO: to be modified
 imagecubeName = 'CYGA';
 param_global.exp_type = 'test'; % ! only for debugging purposes
-datasetNames = {'CYGA-ConfigA','CYGA-ConfigC'}; % allowing for multiple datasets
+datasetNames = {}; % allowing for multiple datasets
 % data dir.
 data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
@@ -192,8 +192,8 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 % >nChannelsPerImage = 16;
 
 % TODO: to be modified
-idChannels2Image = 1:16; % ids of the 'physical' channels to be imaged
-nChannelsPerImage = 16; % number of consecutive channels to be concatenated into each effective channel
+idChannels2Image = 1:2; % ids of the 'physical' channels to be imaged
+nChannelsPerImage = 1; % number of consecutive channels to be concatenated into each effective channel
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % channels re-structured into effective channels
 effChans2Image = cell(nEffChans2Image, 1);
@@ -206,16 +206,16 @@ end
 
 %% running one subcube at a time
 % TODO: to be modified
-subcubeInd = 0; % id of subcube if spectral interleaving is active
+subcubeInd = 0; % id of subcube if spectral interleaving is active, 0 if inactive
 
 % measurement op. params
-param_global.measop_flag_dataReduction = 1;
+param_global.measop_flag_dataReduction = 0; % 0 or 1
 
 % image details, dims &  cellsize
 % TODO: to be modified
 param_global.im_Nx = 2560; 
 param_global.im_Ny = 1536; 
-param_global.im_pixelSize =  0.06; % pixelsize in asec
+param_global.im_pixelSize = []; % pixelsize in asec, use [] to use the default (defined uing a factor 2 super-resolution)
 param_global.algo_flag_computeOperatorNorm = true;
 
 % faceting params: note that if interleaving is active, one subcube is
@@ -242,14 +242,15 @@ param_global.algo_version = 'sara'; % 'fhs', 'hs' or 'sara'
 % TODO: to be modified
 param_global.main_dir = main_dir;
 % param_global.preproc_filename_dde = @(firstch,lastch) strcat(preproc_calib_dir,filesep,'ddes',filesep,'chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
-param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
-%param_global.preproc_filename_die = [];
+% param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
+param_global.preproc_filename_dde = [];
+param_global.preproc_filename_die = [];
 %
-param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'l2bounds',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
-% param_global.preproc_filename_l2bounds = [];
+% param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'l2bounds',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
+param_global.preproc_filename_l2bounds = [];
 %
-param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'model_images',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
-%param_global.preproc_filename_model = [];
+% param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'model_images',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
+param_global.preproc_filename_model = [];
 
 % hardware
 param_global.hardware = 'local'; % 'cirrus' or 'local', add your own cluster & update 'util_set_parpool_dev.m' accordingly
