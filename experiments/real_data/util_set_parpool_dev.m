@@ -11,7 +11,8 @@ switch algo_version
         numworkers = Q + ncores_data;
 end
 
-delete(gcp('nocreate'));
+try delete(gcp('nocreate'));
+end
 
 if flag_cirrus
        fprintf('\nINFO: will open a cirrus parpool of size %d',numworkers)
