@@ -1,6 +1,32 @@
 function [y0, y, Nm, sigma_noise] = util_gen_measurements(x, G, W, A, input_snr)
-    % generates the input data
+% Generate noisy visibilities over several spectral channels.
+% 
+% Parameters
+% ----------
+% x : double[:, :, :]
+%     Input wodeband image.
+% G : cell of cell of sparse complex[:, :]
+%     Degridding matrix (per channel, per block).
+% W : cell of cell of int[:]
+%     Selection vector to extract data blocks from the full Fourier plane.
+% A : anonymous function.
+%     Function handle implementing the NUFFT.
+% input_snr : double
+%     Target input SNR taken over all channels.
+% 
+% Returns
+% -------
+% y0 : cell of cell of complex[:]
+%     Clean (i.e., noiseless) visibilities.
+% y : cell of cell of complex[:]
+%     Noisy visibilities.
+% Nm : int
+%     Total number of visbilities (across all data blocks and channels).
+% sigma_noise : double
+%     Overall noise level.
+%
 
+    % generate the input data
     c = size(x, 3);
     y_full = [];
     for i = 1:c

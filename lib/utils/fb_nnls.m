@@ -1,38 +1,45 @@
 function [sol, norm_res] = fb_nnls(y, A, At, param)
-    % fb_nnls - Solve non negative least squares problem.
-    %
-    % sol = solve_nnls(y, A, At, PARAM) solves:
-    %
-    %   min  0.5*||y-A x||_2^2 s.t. x >= 0
-    %
-    %
-    % Y contains the measurements. A is the forward measurement operator and
-    % At the associated adjoint operator.
-    % PARAM a Matlab structure containing the following fields:
-    %
-    %   General parameters:
-    %
-    %   - verbose: 0 no log, 1 print main steps, 2 print all steps.
-    %
-    %   - max_iter: max. nb. of iterations (default: 200).
-    %
-    %   - rel_obj: minimum relative change of the objective value (default:
-    %   1e-4)
-    %       The algorithm stops if
-    %           | f(x(t)) - f(x(t-1)) | / f(x(t)) < rel_obj,
-    %       where x(t) is the estimate of the solution at iteration t.
-    %
-    %
-    %
-    % The problem is solved using the forward-backward algorithm with
-    % FISTA-like acceleration
-    %
-    %
-    %
-    % Author: Rafael Carrillo
-    % E-mail: carrillo.rafael@epfl.ch
-    % Date: Oct. 26, 2014
-    %
+% Forward-backward algorithm to solve a non-negative least-squares problem of
+% the form
+%
+% .. math::
+%
+%   \min_{x \in \mathbb{R}^N_+}  \frac{1}{2} \| y - Ax \|_2^2,
+%
+% using a FISTA-like acceleration.
+% 
+% Parameters
+% ----------
+% y : complex[:]
+%     Input measurements.
+% A : function handle
+%     Forward measurement operator
+% At : function handle
+%     Adjoint measurement operator.
+% param : strut
+%     Parameter structure complsed of the following fields.
+% param.verbose : int
+%     0 no log, 1 print main steps, 2 print all steps.
+% param.max_iter : int
+%     Maximum number of iterations (default: 200).
+% param.rel_obj : double
+%     Minimum relative change of the objective value (default:
+%     1e-4). The algorithm stops if
+%     :math:`| f(x^{(t)}) - f(x^{(t-1)}) | / f(x^{(t)}) < \text{rel}_\text{obj}`, where :math:`x^{(t)}` is the estimate of the solution at iteration :math:`t`.
+% 
+% Returns
+% -------
+% sol : double[:, :]
+%     Estimated image.
+% norm_res : double
+%     Norm of the residual image :math:`\|y - Ax\|^2_2`.
+%
+
+%
+% Author: Rafael Carrillo
+% E-mail: carrillo.rafael@epfl.ch
+% Date: Oct. 26, 2014
+%
 
     % Optional input arguments
     if ~isfield(param, 'verbose')

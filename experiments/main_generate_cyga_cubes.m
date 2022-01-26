@@ -1,16 +1,30 @@
+% Main script to generate the reference synthetic wideband image cubes
+% used in :cite:p:`Thouvenin2021`. Requires the
+% `S_DDE_MODEL.fits <https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits>`_
+% image file associated with :cite:p:`Dabbech2021`, which can be retrieved 
+% as follows from a unix (MAC, Linux, Windows WSL or MinGw) terminal.
+%
+% .. code-block:: bash
+%    
+%    # if on MAC: 
+%    # brew install wget
+%    cd path/to/Faceted-Hyper-SARA
+%    mkdir data && cd data
+%    wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits     
+%
+
 clear;
 clc;
 close all;
 
-addpath('data');
-addpath('lib/generate_data');
-
-data_path = 'data/';
+data_path = '../data/';
+addpath(data_path);
+addpath('../lib/generate_data');
 
 %% Freq info
-nu_1 = 2.052e9; % starting freq
-dnu = 16e6;     % freq step
-L = 100;     % number of channels
+nu_1 = 2.052e9;  % starting freq
+dnu = 16e6;  % freq step
+L = 100;  % number of channels
 nu_vect = [nu_1 (dnu * (1:L - 1) + nu_1)];
 
 %% for info
@@ -22,7 +36,7 @@ nu_512 = nu_vect;
 % Note: dataset to be retrived at
 % https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits,
 % DOI: 10.17861/529cdcbc-7c18-47a6-970f-755a5da19071
-im_ref = fitsread('data/S_DDE_MODEL.fits');
+im_ref = fitsread(fullfile(data_path, 'S_DDE_MODEL.fits'));
 % adjust the FoV desired and the image size 2kx1k
 Nh = 3000;
 imr = imresize(im_ref, [Nh, Nh]);

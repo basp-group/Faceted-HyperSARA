@@ -17,12 +17,11 @@ function [param_global, param_solver, param_nufft, ...
 %     Structure containing global configuration parameters.
 % param_solver : struct
 %     Structure containing solver parameters (reweighting scheme, PDFB,
-%     projection onto the ellipsoid). Contains the following entries:
-%     - pdfb_min_iter: int, minimum number of iterations
+%     projection onto the ellipsoid).
 % param_nufft : struct
-%     Structure containing parameters
+%     Structure containing the non-uniform FFT parameters.
 % param_blocking : struct
-%     Structure containing parameters
+%     Structure containing blocking parameters.
 % param_precond : struct
 %     Structure containing parameters used to define the preconditioning
 %     matrix involved in the PDFB algorithm.
@@ -72,8 +71,9 @@ function [param_global, param_solver, param_nufft, ...
 % param_nufft.Ky  (int)
 %     Number of neighbour (axis y), defaults to 7.
 % param_nufft.kernel  (string)
-%     Name of the nufft interpolation kernel, defaults to 'minmaxt(uned'. )
-%     Possible options (``'minmaxt(uned'``, ``'...'``)
+%     Name of the nufft interpolation kernel, defaults to "minmax:tuned".
+%     Possible options are ``"minmax:tuned"``, ``"minmax:kb"`` or
+%     ``"kaiser"``, see ...
 % param_blocking.use_density_partitioning  (bool)
 %     Density-based blocking.
 % param_blocking.density_partitioning_no  (int)
@@ -115,14 +115,13 @@ function [param_global, param_solver, param_nufft, ...
 % dict.wavelet_level  (int)
 %     Depth of wavelet decomposition.
 % dict.wavelet_basis  (cell{:} of string)
-%     Name of the wavelet basis to be used (`'self'` corresponding to the 
+%     Name of the wavelet basis to be used (``"self"`` corresponding to the 
 %     Dirac basis).
+% dict.filter_length (int[:])
+%     Length of each wavelet filter considered for the SARA dictionary (0 
+%     by convention for the Dirac basis).
 %
 %
-
-% TODO: modify the name of the model parameters (use a structure to define
-% these)
-% TODO: include full list of fields set in this function
 
 %% Parsing json file
 fid = fopen(json_filename);
@@ -134,7 +133,6 @@ config = jsondecode(str);
 %% Solver structures
 % * Reweighting
 % https://fr.mathworks.com/matlabcentral/answers/273955-how-do-i-rename-fields-of-a-structure-array
-% ! revise place of parameter
 % if ~isfield(param_global, 'reg_flag_reweighting'); param_global.reg_flag_reweighting = 1; end
 % if param_global.reg_flag_reweighting &&  ~isfield(param_global, 'reg_nReweights')
 %     param_global.reg_nReweights = 5;
@@ -200,7 +198,6 @@ param_precond.Nox = param_nufft.ox * param_global.im_Nx;
 param_precond.Noy = param_nufft.oy * param_global.im_Ny;
 
 % * NNLS
-% ! revise place of parameter
 % if ~isfield(param_global, 'generate_eps_nnls'); param_global.generate_eps_nnls = false; end
 param_nnls = config{2, 1}.nnls;
 
@@ -212,7 +209,6 @@ param_nnls = config{2, 1}.nnls;
 % param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
 
 % * SARA dictionary
-% ! revise place of parameter
 % if ~isfield(param_global, 'level'); param_global.wavelet_level = 4;  end
 % if ~isfield(param_global, 'basis'); param_global.wavelet_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};  end
 dict = config{2, 1}.sara;

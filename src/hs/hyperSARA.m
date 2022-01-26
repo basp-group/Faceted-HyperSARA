@@ -1,132 +1,245 @@
 function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
     wavelet, nlevel, spectral_chunk, n_channels, M, N, oy, ox, ...
     warmstart_name, checkpoint_name, flag_dimensionality_reduction, Sigma, varargin)
+% Implementation of the HyperSARA imaging algorithm.
+%
+% Implementation of the reweighting / PDFB algorithm underlying the 
+% HyperSARA imaging approach :cite:p:`Abdulaziz2019`. At each iteration of 
+% the outer reweighting scheme, the PDFB solves a problem of the form
+%
+% .. math::
+%
+%   \min_{X \in \mathbb{R}_+^{N \times L}} 
+%   \overline{\mu} \| X \|_{\overline{\omega}, *} 
+%   + \mu \|\Psi^\dagger X \|_{\omega, 2,1} + \sum_{\ell, b} 
+%   \iota_{ \{\| y_{\ell, b} - \Phi_{\ell, b}(\cdot) \|_2 
+%   \leq \varepsilon_{\ell, b}\} } (x_\ell).
+%
+% Parameters
+% ----------
+% y : composite, cell
+%     Blocks of visibilities {L}{nblocks_l}.
+% epsilon : composite, cell
+%     Data fidelity constraints {L}{nblocks_l}.
+% A : function handle
+%     Measurement operator.
+% At : function handle
+%     Adjoint of the measurement operator.
+% pU : composite, cell
+%     Preconditioning matrices {L}{nblocks_l}.
+% G : composite, cell of sparse matrices
+%     Degridding matrices {L}{nblocks_l}.
+% W : composite, cell of int[:]
+%     Masks for selection of the blocks of visibilities.
+% param : struct
+%     Algorithm parameters.
+% K : int
+%     Number of data workers.
+% wavelet : cell of string
+%     List of wavelet basis (for the SARA prior). If the Dirac basis 
+%     (``'self'``) is considered, it needs to appear in last position.
+% nlevel : int
+%     Number of wavelet decomposition levels.
+% spectral_chunk : cell of int[:]
+%     List of channels handled by each data process {K, 1}.
+% n_channels : int
+%     Total number of spectral channels.
+% M : int
+%     Spatial image size along axis y.
+% N : int
+%     Spatial image size along axis x.
+% oy : int
+%     Fourier oversampling factor along axis y.
+% ox : int
+%     Fourier oversampling factor along axis x.
+% warmstart_name : string
+%     Name of a valid ``.mat`` file to initialize the solver (warm-start).
+% checkpoint_name : string
+%     Name defining the name for checkpoint files saved 
+%     throughout the iterations.
+% flag_dimensionality_reduction : bool
+%     Flag to indicate data dimensiomality reduction is used.
+% Sigma : composite, cell of complex[:, :]
+%     Dimensionality reduction matrix. (?)
+% varargin{1} : double[:, :]
+%     Initial value for the primal variable [M*N, L].
+% varargin{2} : double[:, :]
+%     Ground truth wideband image (only when debugging synthetic 
+%     data experiments) [M*N, L].
+%
+% Returns
+% -------
+% xsol : double[:, :]
+%     Reconstructed wideband image [M*N, L].
+%
+%
+% Important
+% ---------
+% - The `param` structure should contain the following fields.
+% 
+% param.verbose (string) 
+%     Print log or not
+%
+% param.nu0 (double)
+%     Norm of the splitting operator used to defined the low-rankness dual 
+%     variable (identity, thus fixed to 1).
+% param.nu1 (double)
+%     Upper bound on the norm of the SARA operator :math:`\Psi^\dagger`.
+% param.nu2 (double)
+%     Upper bound on the norm of the measurement operator :math:`\Phi`
+% param.gamma  (double)
+%     Regularization parameter (sparsity prior).
+% param.gamma0  (double)
+%     Regularization parameter (low-rankness prior).
+%
+% param.pdfb_min_iter (int)
+%     Minimum number of iterations (PDFB).
+% param.pdfb_max_iter (int)  
+%     Maximum number of iterations (PDFB).
+% param.pdfb_rel_var (double)          
+%     Relative variation tolerance (PDFB).
+% param.pdfb_fidelity_tolerance (double) 
+%     Tolerance to check data constraints are satisfied (PDFB).
+%
+% param.reweighting_max_iter (int) 
+%     Maximum number of reweighting steps.
+% param.reweighting_min_iter (int)
+%     Minimum number of reweighting steps (to reach "noise" level).
+% param.reweighting_rel_var (double)
+%     Tolerance relative variation (reweighting).
+% param.reweighting_alpha (double)
+%     Starting reweighting parameter.
+% param.reweighting_alpha_ff (double)
+%     Multiplicative parameter update (< 1).
+% param.reweighting_sig (double)              
+%     Noise level (in wavelet space)
+% param.reweighting_sig_bar (double)          
+%     Noise level (singular value space)
+%
+% param.elipse_proj_max_iter (int)
+%     Maximum number of iterations for the FB algo that implements the 
+%     projection onto the ellipsoid.
+% param.elipse_proj_min_iter (int)
+%     Minimum number of iterations for the FB algo that implements the 
+%     projection onto the ellipsoid.
+% parma.elipse_proj_eps (double)
+%     Stopping criterion for the projection.
+%
+% param.use_adapt_eps (bool)
+%     Flag to activate adaptive epsilon (note that there is no need to use 
+%     the adaptive strategy for experiments on synthetic data).
+% param.adapt_eps_start (int)
+%     Minimum number of iterations before starting to adjust the data
+%     constaints.
+% param.adapt_eps_tol_in (double)
+%     Tolerance inside the :math:`\ell_2` ball (< 1).
+% param.adapt_eps_tol_out (double)
+%     Tolerance inside the :math:`\ell_2` ball (> 1).
+% param.adapt_eps_steps (int)         
+%     Minimum number of iterations between consecutive data constraint 
+%     updates.
+% param.adapt_eps_rel_var (double) 
+%     Bound on the relative change of the solution to trigger the update of
+%     the data constraints :cite:p:`Dabbech2018`.
+% param.adapt_eps_change_percentage (double)  
+%     Update parameter to update data constaints :cite:p:`Dabbech2018`.
+%
+% - The following fileds are added to `param` in the course of the
+%   algorithm to be able to restart it from a previous state
+%
+% param.reweighting_alpha (double)
+%     Current state of the reweighting parameter.
+% param.init_reweight_step_count (int)
+%     Iteration index of the current reweighting step when the checkpoint
+%     file is written.
+% param.init_reweight_last_iter_step (int)
+%     Global iteration index (unrolled over all pdfb iterations performed 
+%     in the reweighting scheme) from which to restart the algorithm.
+% param.init_t_start (int)
+%     Global iteration index (unrolled over all pdfb iterations performed 
+%     in the reweighting scheme) from which to restart the algorithm
+%     (``param.init_t_start = param.init_reweight_last_iter_step + 1``).
+%
+% - The following fileds are added to `param` in the course of the
+%   algorithm to be able to restart it from a previous state
+%
+% param.reweighting_alpha (double)
+%     Current state of the reweighting parameter.
+% param.init_reweight_step_count (int)
+%     Iteration index of the current reweighting step when the checkpoint
+%     file is written.
+% param.init_reweight_last_iter_step (int)
+%     Global iteration index (unrolled over all pdfb iterations performed 
+%     in the reweighting scheme) from which to restart the algorithm.
+% param.init_t_start (int)
+%     Global iteration index (unrolled over all pdfb iterations performed 
+%     in the reweighting scheme) from which to restart the algorithm
+%     (``param.init_t_start = param.init_reweight_last_iter_step + 1``).
+%
+% Note
+% ----
+% The checkpoint file saved throughout the iterations is composed of the
+% following variables (to be verified).
+%
+% param (struct)
+%     Current state of the parameter structure (updated with auxiliary
+%     parameters describing the state of the solver when the checkpoint
+%     file has been written).
+% xsol (double[:, :])
+%     Current state of the image estimate.
+% res (double[:, :, :])
+%     Current state of the wideband residual image.
+% g (double[:, :])
+%     Auxiliary variable involved in the update of the primal variable.
+% epsilon (cell of cell of double)
+%     (Updated) Value of the l2-ball radii.
+% t_block (cell of cell of int)
+%     Index of the last iteration where the weigths have been updated.
+% proj (cell of cell of complex[:])
+%     Auxiliary variable involved in the update of the data fidelity dual
+%     variables.
+% norm_res (cell of cell of double)
+%     Norm of the residual image (per channel per block).
+% v0 (cell of double[:])         
+%     Dual variables associated with the low-rankness.
+% v1 (double[:, :])
+%     Dual variables associated with the sparsity prior.
+% v2 (cell of cell complex[:])
+%     Dual variables associated with the data fidelity terms (each cell
+%     corresponding to a data block).
+% weights0 (cell of double[:])
+%     Weights associated with the low-rankness prior.
+% weights1 (cell of double[:])
+%     Weights associated with the sparsity prior.
+% end_iter (int)
+%     Last iteration (unrolled over all pdfb iterations).
+% t_l21 (double)
+%     Time to update the sparsity dual variable.
+% t_nuclear (double)
+%     Time to update the low-rankness dual variable.
+% t_master (double)
+%     Time to perform update/computations on the master process.
+% t_data (double)
+%     Time to update the data fidelity dual variables.
+% rel_val (double)
+%     Relative variation of the solution across the iterations.
+%
 
-% TODO: to distribute before entering the solver: y, G, pU, W, X0
-% TODO: try to replace A, At, pU, G, W by a functor (if possible)
-
-% HyperSARA
-%
-% ...
-%
-% -------------------------------------------------------------------------%
-%%
-% Input:
-%
-% > y           blocks of visibilities {L}{nblocks_l}
-% > epsilon     l2-ball norms {L}{nblocks_l}
-% > A           measurement operator
-% > At          adjoint of the measurement operator
-% > pU          preconditioning matrices {L}{nblocks_l}
-% > G           gridding matrices {L}{nblocks_l}
-% > W           masks for selection of the blocks of visibilities
-% > param       algorithm parameters (struct)
-% > X0          ground truth image cube
-% > K           number of data workers
-% > wavelet     list of wavelet basis (for the SARA prior)
-% > nlevel      number of wavelet decomposition levels
-% > spectral_chunk    list of channels handled by each data process
-% > n_channels           total number of channels
-% > warmstart_name checkpoint_name of the file to restart from
-% > checkpoint_name        lambda function defining the checkpoint_name of the backup file
-% > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
-% > varargin     initial value for the primal variable
-%
-%   general
-%   > .verbose  print log or not
-%
-%   convergence
-%   > .nu0 = 1
-%   > .nu1      upper bound on the norm of the operator Psi
-%   > .nu2      upper bound on the norm of the measurement operator
-%   > .gamma0   regularization parameter (nuclear norm)
-%   > .gamma    regularization parameter (l21 norm)
-%
-%   pdfb
-%   > .pdfb_min_iter               minimum number of iterations
-%   > .pdfb_max_iter               maximum number of iterations
-%   > .pdfb_rel_var                relative variation tolerance
-%   > .pdfb_fidelity_tolerance     tolerance to check data constraints are satisfied
-%
-%   reweighting
-%   > .reweighting_max_iter  (30)    maximum number of reweighting steps %! (weights updated reweighting_max_iter - 1 times)
-%   > .reweighting_min_iter          minimum number of reweighting steps (to reach "noise" level)
-%   > .reweighting_rel_var  (1e-4)   relative variation
-%   > .reweighting_alpha             starting reweighting parameter (> 1)
-%   > .reweighting_alpha_ff  (0.9)   multiplicative parameter update (< 1)
-%   > .reweighting_sig               noise level (wavelet space)
-%   > .reweighting_sig_bar           noise level (singular value space)
-%
-%   projection onto ellipsoid (preconditioning)
-%   > .elipse_proj_max_iter (20)     max num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
-%   > .elipse_proj_min_iter  (1)     min num of iter for the FB algo that implements the preconditioned projection onto the l2 ball
-%   > .elipse_proj_eps    (1e-8)     stopping criterion
-%
-%   adaptive epsilon
-%   > .use_adapt_eps                 flag to activate adaptive epsilon (Note that there is no need to use the adaptive strategy on simulations)
-%   > .adapt_eps_start (200)         minimum num of iter before stating adjustment
-%   > .adapt_eps_tol_in (0.99)       tolerance inside the l2 ball
-%   > .adapt_eps_tol_out (1.001)     tolerance outside the l2 ball
-%   > .adapt_eps_steps (100)         min num of iter between consecutive updates
-%   > .adapt_eps_rel_var (5e-4)      bound on the relative change of the solution
-%   > .adapt_eps_change_percentage  (0.5*(sqrt(5)-1)) weight of the update w.r.t the l2 norm of the residual data
-%
-% > X0          ground truth wideband image [M*N, L]
-% > K           number of Matlab data fidelity processes [1]
-% > wavelet     wavelet doctionaries considered (should contain 'self' by
-%               default in last position)
-% > nlevel      decomposition depth [1]
-% > spectral_chunk    indices of the bands handled by each data node {K, 1}
-% > n_channels           total number of spectral channels [1]
-% > warmstart_name  checkpoint_name of a valid .mat file for initialization (for warm-restart)
-% > checkpoint_name        lambda function defining the checkpoint_name of the backup file
-% > flag_homotopy flag to activate homotopy scheme in the reweighting scheme
-% > varargin     initial value for the primal variable
-%
-%
-% Output:
-%
-% < xsol        reconstructed wideband image [M*N, L]
-% < v0          dual variables associated with the nuclear norms {Q}
-% < v1          dual variables associated with the l21 norms {Q}
-% < v2          dual variables associated with the data fidelity terms {K}
-% < weights0    weights associated with the nuclear norm prior {Q}
-% < weights1    weights associated with the nuclear norm prior {Q}
-% < proj        projected
-% < t_block     index of the last iteration where the weigths have been
-%               updated
-% < reweighting_alpha  last value of the reweigthing parameter [1]
-% < epsilon         updated value of th l2-ball radii {...}
-% < t               index of the last iteration step [1]
-% < rel_val        relative variation
-% < nuclear         value of the faceted nuclear norm
-% < l21             value of the l21 regularization term
-% < norm_res_out    norm of the reidual image
-% < res             residual image [M, N]
-% < end_iter        last iteration
-% -------------------------------------------------------------------------%
+% ------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin, A. Abdulaziz, M. Jiang
-% [../../2019]
-% -------------------------------------------------------------------------%
+% ------------------------------------------------------------------------%
 %%
 % Note:
 % Code based on the HyperSARA code developed by A. Abdulaziz, available at
 % https://basp-group.github.io/Hyper-SARA/
-% -------------------------------------------------------------------------%
+% ------------------------------------------------------------------------%
 %%
-% SPMD version: use spmd for all the priors, deal with the data fidelity
+% ! SPMD version: use spmd for all the priors, deal with the data fidelity
 % term in a single place.
-
-% This function solves:
 %
-% min || X ||_* + lambda * ||Psit(X)||_2,1   s.t.  || Y - A(X) ||_2 <= epsilon and x>=0
-%
-% Author: Abdullah Abdulaziz
-% Modified by: P.-A. Thouvenin.
-
 %% REMARKS
-% 1. Do I need to have the number of nodes Q, I available as parallel
+% 1. Do we need to have the number of nodes Q, I available as parallel
 % constants? (automatically broadcasted otherwise each time they are used?)
 % 2. Try to find a compromise between Li and Nk, depending on the size of
 % the problem at hand (assuming the data size is not the main bottleneck),

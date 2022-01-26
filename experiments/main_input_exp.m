@@ -2,8 +2,8 @@
 % experiment.
 %
 % This file calls the generic imaging pipeline
-% :func:`experiments.main_real_data_exp` to reconstruct an image from the
-% input dataset.
+% :mat:func:`experiments.main_real_data_exp` to reconstruct an image from 
+% the input dataset.
 %
 % Parameters
 % ----------
@@ -43,7 +43,7 @@
 % param_global.preproc_filename_l2bounds : anonymous function
 %     Function handle, taking the index of the first and last channel, and
 %     returning a string corresponding to the name of a file
-%     containingpre-computed :math:`ell_2` bounds. If not used, to be set
+%     containing pre-computed :math:`\ell_2` bounds. If not used, to be set
 %     to ``[]``.
 % param_global.preproc_filename_model : anonymous function
 %     Function handle, taking the index of the first and last channel, and
@@ -56,14 +56,15 @@
 %     Flag to trigger the computation of the norm of the measurement
 %     operator. If set to ``false``, MATLAB will look for a file where this
 %     quantity has been saved (save and computation step are triggered in
-%     :func:`main_real_data_exp`).
+%     :mat:func:`experiments.main_real_data_exp`).
 % param_global.im_Nx  : int
 %     Number of pixels along axis x in the reconstructed image.
 % param_global.im_Ny : int
 %     Number of pixels along axis y in the reconstructed image.
 % param_global.im_pixelSize  : double
 %     Pixel-size in arcsec in the frequency domain. Set to ``[]`` to use
-%     the default computation (implemented in :func:`main_real_data_exp`).
+%     the default computation (implemented in 
+%     :mat:func:`experiments.main_real_data_exp`).
 % param_global.generate_eps_nnls : bool
 %     Flag to activate the computation of the :math:`\ell_2` bounds.
 % param_global.reg_flag_reweighting : bool
@@ -74,21 +75,23 @@
 %     Flag to use the reweighting homotopy strategy (deactivated for now).
 % param_global.hardware : string
 %     String to specify the hardware configuration for the parallelization.
-%     Possible values are ``'cirrus'`` or ``'local'``.
+%     Possible values are ``"cirrus"`` or ``"local"``.
 % param_global.algo_version : string
-%     Name of the imaging approach used. Possible values are ``'fhs'``
-%     (Faceted-HyperSARA), ``'hs'`` (HyperSARA) and ``'sara'`` (SARA).
+%     Name of the imaging approach used. Possible values are ``"fhs"``
+%     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
 % param_global.facet_Qx : int
 %     Number of spatial facets along spatial axis x. Will be reset
-%     automaticallt to 1 if ``param_global.algo_version = 'sara'`` or 'hs'.
+%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or 
+%     ``"hs"``.
 % param_global.facet_Qy : int
 %     Number of spatial facets along spatial axis y. Will be reset
-%     automaticallt to 1 if ``param_global.algo_version = 'sara'`` or 'hs'.
+%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or 
+%     ``"hs"``.
 % param_global.facet_overlap_fraction : array[double]
 %     Array containing the overlap fraction between consecutive facets along
-%     each axis (y and x). Will be reset
-%     automatically to ``[0, 0]`` if ``param_global.algo_version = 'sara'``
-%     or 'hs'. Besides, each entry of
+%     each axis (y and x) for the faceted low-rankness prior. Will be reset
+%     automatically to ``[0, 0]`` if ``param_global.algo_version = "sara"``
+%     or ``"hs"``. Besides, each entry of
 %     ``param_global.facet_overlap_fraction`` is reset to 0 the
 %     number of facet along the corresponding dimension is equal to 1
 %     (i.e., ``param_global.facet_Qy = 1`` and/or
@@ -106,24 +109,24 @@
 %
 %    %% option 1: provide a cell array containing the ids of the channels
 %    % to be concatenated for each effective channel.
-%    % example a: two effective channels, containing two 'physical'
+%    % example a: two effective channels, containing two "physical"
 %    % channels each
-%    effChans2Image = {[1,2],[3,4]};
+%    effChans2Image = {[1,2], [3,4]};
 %
 %    % example b: one channel effective channel with one physical channel
-%    effChans2Image={[1]}
+%    effChans2Image = {[1]};
 %
 %
-%    %% option 2: provide all ids of channels 'nChannelsPerImage' & number
-%    % of channel per effective channel 'nChannelsPerImage' channel
+%    %% option 2: provide all ids of channels nChannelsPerImage & number
+%    % of channel per effective channel nChannelsPerImage channel
 %    % example c: EXP 1: subcube 1 (first channel from each spectral
 %    % window (2 of  which are flagged).
-%    idChannels2Image = [1:16:272 289:16:320 337:16:512];
+%    idChannels2Image = [1:16:272, 289:16:320, 337:16:512];
 %    nChannelsPerImage = 1;
 %
 %    % example d: reduced imagecube containing 30 effective channels
 %    % each concatenating 16 physical channels
-%    idChannels2Image = [1:272 289:320 337:512];
+%    idChannels2Image = [1:272, 289:320, 337:512];
 %    nChannelsPerImage = 16;
 %
 % Warning
@@ -136,8 +139,13 @@
 %   visibilities), `frequency` (associated frequency value).
 %
 % - Note that the data `y` are not whitened, uvw coordinates shoud be given
+<<<<<<< HEAD
 %   in units of the wavelength (i.e. normalised with the wavelength) and
 %   `maxProjBaseline` in units of the wavelength.
+=======
+%   in units of the wavelength, and `maxProjBaseline` is expressed in units
+%   of the wavelength.
+>>>>>>> local_doc
 %
 
 % TODO give Matlab config file for a cluster (intead of just providing CIRRUS)

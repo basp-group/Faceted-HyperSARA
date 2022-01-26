@@ -1,4 +1,31 @@
 function [y0, y, Nm] = util_gen_measurements_sigma(x, G, W, A, sigma_noise, seed)
+% Generate noisy synthetic viasilities using a predefined noise level.
+% 
+% Parameters
+% ----------
+% x : double[:, :, :]
+%     Input wodeband image.
+% G : cell of cell of sparse complex[:, :]
+%     Degridding matrix (per channel, per block).
+% W : cell of cell of int[:]
+%     Selection vector to extract data blocks from the full Fourier plane.
+% A : anonymous function.
+%     Function handle implementing the NUFFT.
+% sigma_noise : double
+%     Overall noise level.
+% seed : int
+%     Seed to initialize the random number generator.
+% 
+% Returns
+% -------
+% y0 : cell of cell of complex[:]
+%     Clean (i.e., noiseless) visibilities.
+% y : cell of cell of complex[:]
+%     Noisy visibilities.
+% Nm : int
+%     Total number of visbilities (across all data blocks and channels).
+%
+
     % generates the input data
     rng(seed);
 

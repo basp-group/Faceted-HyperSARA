@@ -1,4 +1,29 @@
 function y = HS_forward_operator_G(x, G, W, A,flag_dr,Sigma)
+% Apply the forward wideband measurement operator (with or w/o
+% data dimensionality reduction, adjoint of 
+% :mat:func:`lib.operators.HS_adjoint_operator_G`).
+% 
+% Parameters
+% ----------
+% x : double[:, :, :]
+%     Wideband image.
+% G : cell of cell of sparse complex[:, :]
+%     Degridding matrix (per channel per block).
+% W : cell of cell of int[:]
+%     Selection vector to map data blocks to the full Fourier plane.
+% A : anonymous function
+%     Weighted FFT involved in the NUFFT.
+% flag_dr : bool
+%     Flag indicating whether data dimensionality reduction is considered.
+% Sigma : cell of cell of double[:]
+%     Dimensionality reduction matrix.
+% 
+% Returns
+% -------
+% y : cell of cell of complex[:]
+%     Output visibilities.
+%
+
 if nargin ==4
     flag_dr=0;
     Sigma =[];

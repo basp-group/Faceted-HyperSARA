@@ -1,23 +1,51 @@
 function [A, At, G, W] = op_p_nufft_calib(p, D, N, Nn, No, Ns, S, ww, param)
-    % Create the nonuniform gridding matrix and fft operators to be used for
-    % parallel processing
-    %
-    % in:
-    % p{:}[2] - nonuniformly distributed frequency location points for each
-    %           cell member which will be treated in parallel
-    % N[2]    - size of the reconstruction image
-    % Nn[2]   - size of the kernels (number of neighbors considered on each direction)
-    % No[2]   - oversampled fft from which to recover the non uniform fft via
-    %           kernel convolution
-    % Ns[2]   - fft shift
-    %
-    % out:
-    % A[@]          - function handle for direct operator
-    % At[@]         - function handle for adjoint operator
-    % G{:}[:][:]    - convolution kernel matrix (small) associated with each
-    %               patch in the fourier plane
-    % W{:}          - mask of the values that contribute to the convolution
-    % Gw[:][:]      - global convolution kernel matrix
+% Create the nonuniform gridding matrix and fft operators to be used for
+% parallel processing
+% 
+% Parameters
+% ----------
+% p : cell of double[:, 2]
+%     Nonuniformly distributed frequency location points for each
+%     cell member which will be treated in parallel.
+% D : complex[:, :]
+%     DDE kernels (in the Fourier domain).
+% N : int[2]
+%     Size of the reconstructed image.
+% Nn : int[2]
+%     Size of the kernels (number of neighbors considered on each direction).
+% No : int[2]
+%     Oversampled fft from which to recover the non uniform fft via
+%     kernel convolution.
+% Ns : int[2]
+%     FFT shift.
+% S : int[1]
+%     Size of the DDE support (square support).
+% ww : cell of double[:, 2]
+%     :`math`:`w` component for each cell member which will be treated in
+%     parallel.
+% param : struct
+%     Parameters to build the degridding matrices, composed of the following
+%     fields.
+% param.use_nufft_blocks : bool
+%     Flag to specify NUFFT blocks are used (data blocking).
+% param.gen_only_fft_op : bool
+%     Flag to only generate the weighted FFT and inverse FFT involved in the
+%     the forward and the adjoint NUFFT operators, respectively.
+% 
+% Returns
+% -------
+% A : function handle
+%     Function handle for direct operator.
+% At : function handle
+%     Function handle for adjoint operator.
+% G : cell of sparse complex[:, :]
+%     Convolution kernel matrix (small) associated with each patch in the 
+%     Fourier plane.
+% W : cell of int[:]
+%     Mask of the values that contribute to the convolution.
+% Gw : sparse complex[:, :]
+%     Global convolution kernel matrix.
+%
 
     if ~exist('param', 'var')
         param = struct();

@@ -1,33 +1,49 @@
 function [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
     compute_noise_level(Ny, Nx, n_channels, std_noise, algo_version, ...
     Qx, Qy, overlap_size, squared_operator_norm)
-% [summary]
-%
-% [extended_summary]
+% Compute heuristic order of magnitude for the regularization parameters 
+% involved in SARA :cite:p:`Abdulaziz2019` or Faceted HyperSARA 
+% :cite:p:`Thouvenin2021`.
 %
 % Parameters
 % ----------
-% Ny : [type]
-%     [description]
-% Nx : [type]
-%     [description]
-% n_channels : [type]
-%     [description]
-% std_noise : [type]
-%     [description]
-% algo_version : [type]
-%     [description]
-% Qy : [type]
-%     [description]
-% overlap_size : [type]
-%     [description]
-% squared_operator_norm : [type]
-%     [description]
+% Ny : int
+%     Spatial image size along axis y.
+% Nx : int
+%     Spatial image size along axis y.
+% n_channels : int
+%     Number of frequency channels.
+% std_noise : double
+%     Estimate of the standard deviation of the white Gaussian noise
+%     affecting the data.
+% algo_version : string
+%     Imaging problem considered (HyperSARA, ``'hs'`` or Faceted
+%     HyperSARA ``'fhs'``),
+% Qx : int
+%     Number of spatial facets along spatial axis x.
+% Qy : int
+%     Number of spatial facets along spatial axis y.
+% overlap_size : int[2]
+%     Overlap size between consecutive facets along each axis (y and x).
+% squared_operator_norm : double
+%     Square of the measurement operator norm, :math:`\|\Phi\|_2^2`.
 %
 % Returns
 % -------
-% [type]
-%     [description]
+% sig : double
+%     Heuristic value sparsity regularization parameter.
+% sig_bar : double
+%     Heursitic value low-rankness regularization parameter.
+% mu_chi : double
+%     Heuristic estimate of the mean of the noise using a
+%     :math:`\chi_2` approximation. (?)
+% sig_chi : double
+%     Heuristic estimate of the standard deviation of the noise using a
+%     :math:`\chi_2` approximation. (?)
+% sig_sara : double
+%     Heuristic estimate of the noise level (standard deviation) when
+%     transferred to the SARA dictionary domain. (?)
+%
 
 % compute sig and sig_bar
 sig_sara = sqrt(mean((std_noise.^2) ./ squared_operator_norm));

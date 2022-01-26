@@ -1,4 +1,21 @@
 function [epsilon, epsilons] = util_gen_data_fidelity_bounds2(y, Ml, param, sigma_noise)
+% [extended_summary]
+% 
+% Parameters
+% ----------
+% y : [type]
+%     [description]
+% Ml : [type]
+%     [description]
+% param : [type]
+%     [description]
+% sigma_noise : [type]
+%     [description]
+% 
+% Returns
+% -------
+% [type]
+%     [description]
 
     c = length(y);
     epsilons = cell(numel(y), 1);

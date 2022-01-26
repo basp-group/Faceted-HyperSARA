@@ -10,7 +10,7 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 % Parameters
 % ----------
 % image_name : string
-%     Name of the reference synthetic image (from the data/ folder).
+%     Name of the reference synthetic image (from the ``data/`` folder).
 % dataSetsNames: cell of string
 %     Names of the datasets to be imaged.
 % dataFilenames: cell of string
@@ -19,11 +19,12 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     Index of the spectral facet to be reconstructed (set to -1 or 0 to
 %     deactivate spectral faceting).  AD: is this  still the case ????
 % effChans2Image: cell array
-%     Indices of the ``physical'' channels to be concatenated for each
+%     Indices of the "physical" channels to be concatenated for each 
 %     effective channel.
 % param_global: struct
-%     Global imaging pipeline parameters (see :file:`main_input_exp.m`).
-% param_global.algo_version : string (``'sara'``, ``'hs'`` or ``'fhs'``).
+%     Global imaging pipeline parameters (see 
+%     :mat:func:`experiments.main_input_exp`).
+% param_global.algo_version : string (``"sara"``, ``"hs"`` or ``"fhs"``).
 %     Selected solver.
 % param_global.ncores_data : int
 %     Number of cores handlig the data fidelity terms (data cores). For
@@ -42,12 +43,19 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     Number of spatial facets along axis 1 (axis y).
 % param_global.facet_Qc : int
 %     Number of spectral facets.
-% param_global.facet_window_type : string (``'triangular'``, ``'hamming'`` or ``'pc'`` (piecewise-constant))
+% param_global.facet_window_type : string (``"triangular"``, ``"hamming"`` or ``"pc"`` (piecewise-constant))
 %     Type of apodization window considered for the faceted nuclear norm
 %     prior (FHS solver).
 % param_global.facet_overlap_fraction : double[2]
-%     Fraction of the total size of a facet overlapping with a neighbour
-%     facet.
+%     Fraction of the total size of a facet overlapping with a neighbour 
+%     facet along each axis (y and x) for the faceted low-rankness prior.
+%     Will be reset automatically to ``[0, 0]`` if 
+%     ``param_global.algo_version = "sara"``
+%     or ``"hs"``. Besides, each entry of
+%     ``param_global.facet_overlap_fraction`` is reset to 0 the
+%     number of facet along the corresponding dimension is equal to 1
+%     (i.e., ``param_global.facet_Qy = 1`` and/or
+%     ``param_global.facet_Qx = 1``).
 % param_global.reg_nReweights : int
 %     Maximum number of reweighting steps.
 % param_global.reg_gam : double
@@ -79,16 +87,17 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 % .. code-block:: matlab
 %
 %     %% Name of the dataset to be imaged
-%     % example a:  one dataset -name tag is not compulsory:
-%     datasetNames={''};
+%     % example a: one dataset -name tag is not compulsory:
+%     datasetNames = {''};
 %     % example b: two data sets from two configurations of the VLA
-%     datasetNames={'CYGA-ConfigA','CYGA-ConfigC'};
+%     datasetNames = {'CYGA-ConfigA','CYGA-ConfigC'};
+%
 %     %% Indices of the 'physical' channels to be concatenated
 %     % example a: two effective channels, containing two 'physical'
 %     % channels each
-%     effChans2Image={[1,2],[3,4]};
+%     effChans2Image = {[1,2], [3,4]};
 %     % example b: one channel effective channel with one physical channel
-%     effChans2Image={[1]}
+%     effChans2Image = {[1]};
 %
 %
 

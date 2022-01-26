@@ -1,4 +1,28 @@
 function [u, v, uw, vw, Nm] = util_gen_sampling_pattern(pattern, param)
+% Function to generate a synthetic :math:`uv`-coverage as in
+% :cite:p:`Onose2017`.
+% 
+% Parameters
+% ----------
+% pattern : string
+%     Type of :math:`uv`-coverage. Available options are ...
+% param : struct
+%     Configuration options for the generation of the synthetic sampling 
+%     pattern (to be completed).
+% 
+% Returns
+% -------
+% u
+%     [description]
+% v
+%     [description]
+% uw
+%     [description]
+% vw
+%     [description]
+% Nm
+%     [description]
+%
 
     if ~isfield(param, 'fpartition') && ~isfield(param, 'fpartition_x') && ~isfield(param, 'fpartition_y')
         % symetric partitioning
