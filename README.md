@@ -67,22 +67,6 @@ python job_spatial.py
 
 To use the scripts reported in `figures`, make sure the [`Cubehelix`](...) package is installed.
 
-## Real data development
-
-Most of the instructions reported below refer to the content of the `experiment/real` folder. To help you in configuring the final scripts, you can use the scripts used for the first submission of the paper (`experiments/archive/mnras_real`) or those proposed by Arwa at an earlier stgae of the development (`experiments/archive/real_data`).
-
-- All the source files for the solvers are defined in `src/`. Any modification to the measurement operator needs to be defined separately in the `measurement-operator` repository, later synchronized fron this project (see the submodules update instructions in the [installation](#installation) section).
-- All user-defined and default parameters are defined in two separate files:
-    1. `parameters_problem.m`: problem-specific parameters (blocking, nufft, ...)
-    2. `parameters_solver.m`: solver-specific parameters (pdfb, reweighting, ...)
-Note that real-data parameters, (weighting scheme, ...) if any, still need to be added in `parameters_problem.m`.
-- Before running: update and configure the sections delimited by `# !` in following files
-    1. `main.m`
-    2. `job_cyga.py`
-    3. `run_cyga.slurm`
-
-**DR agnostic algorithm interface**: the DR-agnostic interface is ready. Make sure the `Sigma` variable (DR thershold matrix) is properly defined in the main script.
-
 ## Contributions
 
 ### Building the documentation
@@ -127,9 +111,4 @@ mh_style --fix .
 
 ## TODO
 
-- [x] Prepare draft Python scripts for real data examples (only keep useful values, see if anything needs to be added)
 - [ ] Replace FB by FISTA for the projection onto the ellipsoids
-- [x] Update function interface + name of variables (if necessary)
-- [x] Adding H matrices to `measurement-operator`
-- [x] Adapt synth data scripts to real data
-- [x] Documenting all functions (ongoing)
