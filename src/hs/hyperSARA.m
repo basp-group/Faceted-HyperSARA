@@ -640,7 +640,7 @@ for t = t_start:max_iter
     % flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update
     % (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
     % (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
-
+    %
     % if flag_epsilonUpdate
     %     spmd
     %         [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
