@@ -77,7 +77,8 @@ To build the documentation, make sure the following Python packages have been in
 # setup conda environment to build the documentation
 conda create -n fhs-doc
 conda activate fhs-doc
-pip install sphinx sphinx_rtd_theme sphinxcontrib-bibtex sphinxcontrib-matlabdomain
+conda install pip
+pip install -r requirement.txt
 
 # building the documentation in html format
 cd docs
@@ -97,18 +98,10 @@ conda env remove -n fhs-doc
 Make sure any pull request has been properly formatted with the [`miss_hit`](https://pypi.org/project/miss-hit/) package using the `miss_hit.cfg` file provided
 
 ```bash
-# activate measurement-operator-doc environment (see previous paragraph)
-conda activate measurement-operator-doc
+# activate fhs-doc environment (see previous paragraph)
+conda activate fhs-doc
 # install miss_hit
 pip install miss_hit
-
-# mh_style my_file.m # only analyse the file my_file.m
-# mh_style --fix my_file.m # fix the file based on the rules given in miss_hit.cfg
-
 # run the following command from the root of the package (where the miss_hit.cfg file is)
 mh_style --fix .
 ```
-
-## TODO
-
-- [ ] Replace FB by FISTA for the projection onto the ellipsoids
