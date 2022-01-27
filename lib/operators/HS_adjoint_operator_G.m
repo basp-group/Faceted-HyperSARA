@@ -28,10 +28,11 @@ function x = HS_adjoint_operator_G(y, G, W, At, N, M,flag_dr,Sigma)
 %     Output wideband image.
 %
 
-if nargin ==6
+if ~exist('flag_dr','var')
     flag_dr=0;
     Sigma =[];
-elseif nargin ==7,Sigma =[];
+elseif ~exist('Sigma','var')
+    Sigma =[];
 end
 c = length(y);
 x = zeros(N, M, c);

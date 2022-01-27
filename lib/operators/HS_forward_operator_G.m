@@ -24,16 +24,18 @@ function y = HS_forward_operator_G(x, G, W, A,flag_dr,Sigma)
 %     Output visibilities.
 %
 
-if nargin ==4
+if ~exist('flag_dr','var')
     flag_dr=0;
     Sigma =[];
-elseif nargin ==5,Sigma =[];
+elseif ~exist('Sigma','var')
+    Sigma =[];
 end
 [~, ~, c] = size(x);
 y = cell(c, 1);
 
 for i = 1:c
     Fx = A(x(:, :, i));
+    y{i} =cell(length(G{i}),1);
     for j = 1:length(G{i})
         if flag_dr
             if istril(G{i}{j})
