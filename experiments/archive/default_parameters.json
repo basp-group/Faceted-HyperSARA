@@ -4,6 +4,7 @@
         "reweighting": {
             "__comment": "Reweighting parameters",
             "flag_reweighting": true,
+            "nReweights": 5,
             "flag_homotopy": false,
             "min_iter": 1,
             "max_iter": 10,
@@ -27,6 +28,15 @@
             "max_iter": 20,
             "eps": 1e-8
         },
+        "adapt_eps" : {
+            "__comment": "Adaptive epsilon scheme (deactivated by default)",
+            "use_adapt_eps": 0,
+            "start": 200,
+            "tol_in": 0.99,
+            "tol_out": 1.01,
+            "tol_steps": 100,
+            "rel_var": 5e-5
+        }
     },
     {   "__comment": "Model parameters",
         "nufft": {
@@ -52,6 +62,15 @@
             "equal_partitioning_no": 1,
             "use_manual_partitioning": 0,
             "use_manual_frequency_partitioning": 0
+        },
+        "nnls": {
+            "__comment": "NNLS (estimation of the l2 contraint), stored in param_pre",
+            "generate_eps_nnls": false,
+            "verbose": 2,
+            "rel_obj": 1e-3,
+            "max_iter": 200,
+            "sol_steps": null,
+            "beta": 1
         },
         "sara": {
             "__comment": "SARA dictionary parameters (always specify Dirac basis ('self') in last position if ever used, filter length of Dirac set to 0 by convention)",

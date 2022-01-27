@@ -19,7 +19,7 @@ Clone the current repository with all the submodules as follows
 Updating submodules (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-From an existing `faceted-hyper-sara` repository, issue the following commands
+From an existing ``faceted-hyper-sara`` repository, issue the following commands
 
 .. code-block:: bash
 
@@ -99,7 +99,8 @@ Building the documentation
    # setup conda environment to build the documentation
    conda create -n fhs-doc
    conda activate fhs-doc
-   pip install sphinx sphinx_rtd_theme sphinxcontrib-bibtex sphinxcontrib-matlabdomain
+   conda install pip
+   pip install -r requirement.txt
    # building the documentation in html format
    cd docs
    make html
@@ -110,3 +111,17 @@ Building the documentation
 .. code-block:: bash
    
    conda env remove -n fhs-doc
+
+Code layout
+^^^^^^^^^^^
+
+If you contribute code to the library (through a `pull request <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests>`_), make sure any submitted code is properly formatted with the `miss_hit <https://pypi.org/project/miss-hit/>`_ package using the provided ``miss_hit.cfg`` configuration file
+
+.. code-block:: bash
+
+   # activate sdwt-doc environment (see previous paragraph)
+   conda activate sdwt-doc
+   # install miss_hit
+   pip install miss_hit
+   # run the following command from the root of the package (where the miss_hit.cfg file is)
+   mh_style --fix .

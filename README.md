@@ -1,5 +1,9 @@
 # Parallel faceted imaging in radio interferometry via proximal splitting
 
+[![license](https://img.shields.io/badge/license-GPL--3.0-brightgreen.svg)](LICENSE)
+[![docs-page](https://img.shields.io/badge/docs-latest-blue)](#)
+<!-- [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) -->
+
 ## Description
 
 This repository contains Matlab codes associated with the approach described in
@@ -67,22 +71,6 @@ python job_spatial.py
 
 To use the scripts reported in `figures`, make sure the [`Cubehelix`](...) package is installed.
 
-## Real data development
-
-Most of the instructions reported below refer to the content of the `experiment/real` folder. To help you in configuring the final scripts, you can use the scripts used for the first submission of the paper (`experiments/archive/mnras_real`) or those proposed by Arwa at an earlier stgae of the development (`experiments/archive/real_data`).
-
-- All the source files for the solvers are defined in `src/`. Any modification to the measurement operator needs to be defined separately in the `measurement-operator` repository, later synchronized fron this project (see the submodules update instructions in the [installation](#installation) section).
-- All user-defined and default parameters are defined in two separate files:
-    1. `parameters_problem.m`: problem-specific parameters (blocking, nufft, ...)
-    2. `parameters_solver.m`: solver-specific parameters (pdfb, reweighting, ...)
-Note that real-data parameters, (weighting scheme, ...) if any, still need to be added in `parameters_problem.m`.
-- Before running: update and configure the sections delimited by `# !` in following files
-    1. `main.m`
-    2. `job_cyga.py`
-    3. `run_cyga.slurm`
-
-**DR agnostic algorithm interface**: the DR-agnostic interface is ready. Make sure the `Sigma` variable (DR thershold matrix) is properly defined in the main script.
-
 ## Contributions
 
 ### Building the documentation
@@ -93,7 +81,8 @@ To build the documentation, make sure the following Python packages have been in
 # setup conda environment to build the documentation
 conda create -n fhs-doc
 conda activate fhs-doc
-pip install sphinx sphinx_rtd_theme sphinxcontrib-bibtex sphinxcontrib-matlabdomain
+conda install pip
+pip install -r requirement.txt
 
 # building the documentation in html format
 cd docs
@@ -113,23 +102,10 @@ conda env remove -n fhs-doc
 Make sure any pull request has been properly formatted with the [`miss_hit`](https://pypi.org/project/miss-hit/) package using the `miss_hit.cfg` file provided
 
 ```bash
-# activate measurement-operator-doc environment (see previous paragraph)
-conda activate measurement-operator-doc
+# activate fhs-doc environment (see previous paragraph)
+conda activate fhs-doc
 # install miss_hit
 pip install miss_hit
-
-# mh_style my_file.m # only analyse the file my_file.m
-# mh_style --fix my_file.m # fix the file based on the rules given in miss_hit.cfg
-
 # run the following command from the root of the package (where the miss_hit.cfg file is)
 mh_style --fix .
 ```
-
-## TODO
-
-- [x] Prepare draft Python scripts for real data examples (only keep useful values, see if anything needs to be added)
-- [ ] Replace FB by FISTA for the projection onto the ellipsoids
-- [x] Update function interface + name of variables (if necessary)
-- [x] Adding H matrices to `measurement-operator`
-- [x] Adapt synth data scripts to real data
-- [x] Documenting all functions (ongoing)
