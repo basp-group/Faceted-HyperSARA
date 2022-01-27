@@ -31,11 +31,13 @@ function x = HS_adjoint_operator_precond_G(y, G, W, At, aW, N, M,flag_dr,Sigma)
 %     Output wideband image.
 %
 
-if nargin ==7
-    flag_dr=0;
-    Sigma =[];
-elseif nargin ==8,Sigma =[];
+if ~exist('flag_dr','var')
+    flag_dr = 0;
+    Sigma = [];
+elseif ~exist('Sigma','var')
+    Sigma = [];
 end
+
 c = length(y);
 x = zeros(N, M, c);
 % No = size(G{1}{1}, 2);

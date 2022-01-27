@@ -42,17 +42,6 @@
             "gen_uniform_weight_matrix": true,
             "uniform_weight_sub_pixels": true
         },
-        "blocking": {
-            "__comment": "Blocking parameters",
-            "use_density_partitioning": 0,
-            "density_partitioning_no": 1,
-            "use_uniform_partitioning": 0,
-            "uniform_partitioning_no": 4,
-            "use_equal_partitioning": 1,
-            "equal_partitioning_no": 1,
-            "use_manual_partitioning": 0,
-            "use_manual_frequency_partitioning": 0
-        },
         "sara": {
             "__comment": "SARA dictionary parameters (always specify Dirac basis ('self') in last position if ever used, filter length of Dirac set to 0 by convention)",
             "basis": ["db1", "db2", "db3", "db4", "db5", "db6", "db7", "db8", "self"],
