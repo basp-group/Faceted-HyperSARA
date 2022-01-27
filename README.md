@@ -1,5 +1,9 @@
 # Parallel faceted imaging in radio interferometry via proximal splitting
 
+[![license](https://img.shields.io/badge/license-GPL--3.0-brightgreen.svg)](LICENSE)
+[![docs-page](https://img.shields.io/badge/docs-latest-blue)](#)
+<!-- [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit) -->
+
 ## Description
 
 This repository contains Matlab codes associated with the approach described in

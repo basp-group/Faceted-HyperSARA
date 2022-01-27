@@ -19,7 +19,7 @@ Clone the current repository with all the submodules as follows
 Updating submodules (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-From an existing `faceted-hyper-sara` repository, issue the following commands
+From an existing ``faceted-hyper-sara`` repository, issue the following commands
 
 .. code-block:: bash
 
