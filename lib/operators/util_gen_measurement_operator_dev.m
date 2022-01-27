@@ -56,8 +56,8 @@ function [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
 %     Cell containing the preconditioning vectors for each channel, and
 %     data block within a channel.
 %%
-if ~exist('ddes','var')
-    ddes = [];
+% check for available dde solutions per each measurements.
+if ~exist('ddes','var'),  ddes = [];
 end
 param_nufft.N = [Ny Nx];
 param_nufft.Nn = [param_nufft.Ky param_nufft.Kx];
@@ -72,7 +72,6 @@ aW = cell(nchans, 1);
 [A, At, ~, ~] = op_p_nufft_wproj_dde(param_nufft);
 
 for i = 1:nchans
-    % set the blocks structure
     aW{i} = cell(numel(u{i}), 1);
     for j = 1:numel(u{i})
         % compute uniform weights (sampling density) for the preconditioning

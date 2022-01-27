@@ -1,5 +1,6 @@
-function [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
-     nchans, Nx, Ny, param_nufft, param_wproj,param_precond ,ddes)
+function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
+                                param_precond, param_blocking, fc, ...
+                                fmax, Nx, Ny, Kx, Ky, ox, oy, kernel)
 % Build the measurement operator for a given uv-coverage at pre-defined
 % frequencies.
 %
@@ -9,20 +10,15 @@ function [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
 % Parameters
 % ----------
 % u : array (vector)
-%     `u` coordinate.
+%     `u` coverage.
 % v : array (vector)
-%     `v` coordinate.
-% w : array (vector)
-%     `w` coordinate.
+%     `v` coverage.
 % param_precond : struct
 %     Structure to configure the preconditioning matrices.
 % param_blocking : struct
 %     Structure to configure data blocking.
-% param_nufft : struct
-%     Structure to configure NUFFT.
-% param_wproj : struct
-%     Structure to configure w-projection.
-% nchans : Number of channels
+% fc : array (vector)
+%     Frequencies at which the operator needs to be defined.
 % Nx : int
 %     Image dimension (x-axis).
 % Ny : int
@@ -37,8 +33,7 @@ function [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
 %     Fourier oversampling factor(y-axis).
 % kernel : string
 %     Type of interpolation kernel selected ('kaiser' or 'minmax:tuned').
-% ddes: array
-%     Array of antenna gains to be incorporated in the de-gridding matrix.
+%
 % Returns
 % -------
 % A : lambda function
@@ -52,38 +47,34 @@ function [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
 % W : cell
 %     Cell containing the selection vector for each channel, and
 %     data block within a channel.
-% aW : cell
+% aWw : cell
 %     Cell containing the preconditioning vectors for each channel, and
 %     data block within a channel.
 %%
-if ~exist('ddes','var')
-    ddes = [];
-end
-param_nufft.N = [Ny Nx];
-param_nufft.Nn = [param_nufft.Ky param_nufft.Kx];
-param_nufft.No = [param_nufft.oy * Ny param_nufft.ox * Nx];
-param_nufft.Ns = [Ny / 2 Nx / 2];
 
+nchans = numel(fc);
 G = cell(nchans, 1);
 W = cell(nchans, 1);
 aW = cell(nchans, 1);
 
-% get fft operators
-[A, At, ~, ~] = op_p_nufft_wproj_dde(param_nufft);
-
 for i = 1:nchans
+
+    % need to normalize by the maximum over all the available frequencies
+    uw = (fc(i) / fmax) * u;
+    vw = (fc(i) / fmax) * v;
+
+    % compute uniform weights (sampling density) for the preconditioning
+    aWw = util_gen_preconditioning_matrix(uw, vw, param_precond);
+
+    % set the weighting matrix, these are the natural weights for real data
+    nWw = ones(length(uw), 1);
+
     % set the blocks structure
-    aW{i} = cell(numel(u{i}), 1);
-    for j = 1:numel(u{i})
-        % compute uniform weights (sampling density) for the preconditioning
-        aW{i}{j} = util_gen_preconditioning_matrix(u{i}{j}, v{i}{j}, param_precond);
-    end
+    [u1, v1, ~, ~, aW{i}, nW] = util_gen_block_structure(uw, vw, aWw, nWw, param_blocking);
+
     % measurement operator initialization
-    if isempty(ddes)
-        [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde(param_nufft,[v{i} u{i}], w{i}, nW{i}, param_wproj);
-    else
-        [~, ~, G{i}, W{i}] = op_p_nufft_wproj_dde(param_nufft,[v{i} u{i}], w{i}, nW{i}, param_wproj,ddes{i});
-    end
+    % [A, At, G{i}, W{i}] = op_p_nufft_irt([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW, kernel);
+    [A, At, G{i}, W{i}] = op_p_nufft([v1 u1], [Ny Nx], [Ky Kx], [oy * Ny ox * Nx], [Ny / 2 Nx / 2], nW);
 end
 
 end
