@@ -26,7 +26,7 @@
             "min_iter": 1,
             "max_iter": 20,
             "eps": 1e-8
-        },
+        }
     },
     {   "__comment": "Model parameters",
         "nufft": {
