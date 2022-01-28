@@ -461,11 +461,11 @@ switch algo_version
                     frequency = dataloaded.frequency;
                     % u v  are in units of the wavelength and will be
                     % normalised between [-pi,pi] for the NUFFT
-                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;%/(speed_of_light/frequency);
+                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;
                     dataloaded.u = [];
-                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;%/(speed_of_light/frequency);
+                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;
                     dataloaded.v = [];
-                    w{iEffCh, 1}{iCh}{idSet} = double(dataloaded.w(:));
+                    w{iEffCh, 1}{iCh}{idSet} = 100*double(dataloaded.w(:));
                     dataloaded.w = [];
                     nW{iEffCh, 1}{iCh}{idSet} = double(dataloaded.nW(:)); % nW: sqrt(natural weights)
                     dataloaded.nW = [];
@@ -530,7 +530,7 @@ switch algo_version
         
         if flag_dataReduction
             % (DR) one data block & one channel 
-            [A, At, G, W, aW, Sigma, y, noise] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
+            [A, At, G, W, aW, Sigma, y, noise] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
                 1, Nx, Ny, param_nufft, param_wproj,preproc_residuals,ddes);
             % (DR) get the computed l2 bounds from the continuous residual
             % data if available
@@ -543,7 +543,7 @@ switch algo_version
                   fprintf('\nWARNING: computing l2 bounds from the given residual data failed. ');
             end
         else
-            [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
+            [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
                  1, Nx, Ny,param_nufft, param_wproj,param_precond,ddes);
             Sigma = [];
         end
@@ -653,11 +653,11 @@ switch algo_version
                     % ! define Sigma (weight matrix involved in DR)
                     % ! define G as the holographic matrix
                     fprintf('\nCompute the holographic matrix H .. \n');
-                    [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
+                    [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
                          numel(local_fc), Nx, Ny, param_nufft, param_wproj, preproc_residuals, ddes);
                 else
                     % ! ideally, simplify irt nufft interface to do so
-                    [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
+                    [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
                          numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond , ddes);
                     Sigma = [];
                 end,   u = []; v = []; w = []; nW = []; ddes=[];
@@ -765,11 +765,11 @@ switch algo_version
                         % ! define Sigma (weight matrix involved in DR)
                         % ! define G as the holographic matrix
                         fprintf('\nCompute the holographic matrix H ..\n');
-                        [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
+                        [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
                             numel(local_fc), Nx, Ny, param_nufft, param_wproj,  preproc_residuals, ddes);
                     else
                         % ! ideally, simplify irt nufft interface to do so
-                        [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
+                        [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
                             numel(local_fc), Nx, Ny, param_nufft, param_wproj,  param_precond, ddes);
                         Sigma = [];
                     end; u = []; v = []; w = []; nW = [];ddes=[];
