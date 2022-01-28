@@ -1,6 +1,6 @@
 function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...
-    param_nufft, param_blocking, param_precond, param_nnls, dict)
+    param_nufft, param_precond, dict)
 % Main script to run the faceted HyperSARA approach on real data.
 %
 % This script generates synthetic data and runs the SARA, HyperSARA or
@@ -461,9 +461,9 @@ switch algo_version
                     frequency = dataloaded.frequency;
                     % u v  are in units of the wavelength and will be
                     % normalised between [-pi,pi] for the NUFFT
-                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;
+                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;%/(speed_of_light/frequency);
                     dataloaded.u = [];
-                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;
+                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;%/(speed_of_light/frequency);
                     dataloaded.v = [];
                     w{iEffCh, 1}{iCh}{idSet} = double(dataloaded.w(:));
                     dataloaded.w = [];
@@ -484,9 +484,9 @@ switch algo_version
                     if flag_dataReduction
                         % if residual data are available, use them to get
                         % l2 bounds.
-                        try preproc_dr_residuals{iEffCh, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
+                        try preproc_residuals{iEffCh, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
                             DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh} = [];
-                        catch,  preproc_dr_residuals = [];
+                        catch,  preproc_residuals = [];
                         end
                     end
                     %% Compute l2bounds if not found
@@ -521,9 +521,9 @@ switch algo_version
             
             if flag_dataReduction
                 % if residual data are available
-                if exist('preproc_dr_residuals', 'var')
-                    preproc_dr_residuals{iEffCh, 1} = vertcat(preproc_dr_residuals{iEffCh, 1}{:});
-                    preproc_dr_residuals{iEffCh, 1} = preproc_dr_residuals{iEffCh, 1}(:);
+                if exist('preproc_residuals', 'var')
+                    preproc_residuals{iEffCh, 1} = vertcat(preproc_residuals{iEffCh, 1}{:});
+                    preproc_residuals{iEffCh, 1} = preproc_residuals{iEffCh, 1}(:);
                 end
             end
         end
@@ -531,7 +531,7 @@ switch algo_version
         if flag_dataReduction
             % (DR) one data block & one channel 
             [A, At, G, W, aW, Sigma, y, noise] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
-                1, Nx, Ny, param_nufft, param_wproj,preproc_dr_residuals,ddes);
+                1, Nx, Ny, param_nufft, param_wproj,preproc_residuals,ddes);
             % (DR) get the computed l2 bounds from the continuous residual
             % data if available
             if isfield(noise,'l2bounds') && isfield(noise,'sigma')
@@ -539,14 +539,21 @@ switch algo_version
                     l2bounds{iEffCh}{1} = noise.l2bounds{iEffCh}{1};
                     global_sigma_noise(iEffCh, 1) = noise.sigma{iEffCh};
                 end
-            elseif ~isempty(preproc_dr_residuals)
-                fprintf('\nWARNING: computing l2 bounds from the given residual data failed. ');
+            elseif ~isempty(preproc_residuals)
+                  fprintf('\nWARNING: computing l2 bounds from the given residual data failed. ');
             end
         else
             [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
                  1, Nx, Ny,param_nufft, param_wproj,param_precond,ddes);
             Sigma = [];
-        end; clear u v w nW;
+        end
+        clear u v w nW ddes;
+        dirac = sparse(Ny * 0.5 + 1, Nx * 0.5 + 1, 1, Ny, Nx);
+        for l = 1:numel(G)
+            F = HS_forward_operator_G(full(dirac), G(l), W(l), A, flag_dataReduction, Sigma);
+            psf_peak = max(max(HS_adjoint_operator_G(F, G(l), W(l), At, Ny, Nx, flag_dataReduction, Sigma)));
+            fprintf('\nINFO: peak of PSF (for residual normalisation): %f', psf_peak);
+        end
         
     otherwise % 'hs' or 'fhs'
         % create the measurement operator operator in parallel (depending on
@@ -554,7 +561,7 @@ switch algo_version
         Sigma = Composite();
         if strcmp(algo_version, 'hs')
             spmd
-                ddes = []; preproc_dr_residuals = [];
+                ddes = []; preproc_residuals = [];
                 local_fc = (freqRangeCores(labindex, 1):freqRangeCores(labindex, 2));
                 effChans2Image_lab = (effChans2Image(local_fc));
                 for ifc  = 1:numel(local_fc)
@@ -599,9 +606,9 @@ switch algo_version
                             if flag_dataReduction
                                 % if residual data are available, use them to get
                                 % l2 bounds.
-                                try preproc_dr_residuals{ifc, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
+                                try preproc_residuals{ifc, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
                                     DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh} = [];
-                                catch, preproc_dr_residuals = [];
+                                catch, preproc_residuals = [];
                                 end
                             end
                             
@@ -635,9 +642,9 @@ switch algo_version
                     end
                     
                     if flag_dataReduction
-                        try preproc_dr_residuals{ifc, 1} = vertcat(preproc_dr_residuals{ifc, 1}{:});
-                            preproc_dr_residuals{ifc, 1} = preproc_dr_residuals{ifc, 1}(:);
-                        catch; preproc_dr_residuals = [];
+                        try preproc_residuals{ifc, 1} = vertcat(preproc_residuals{ifc, 1}{:});
+                            preproc_residuals{ifc, 1} = preproc_residuals{ifc, 1}(:);
+                        catch; preproc_residuals = [];
                         end
                     end
                 end
@@ -647,14 +654,13 @@ switch algo_version
                     % ! define G as the holographic matrix
                     fprintf('\nCompute the holographic matrix H .. \n');
                     [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
-                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, preproc_dr_residuals, ddes);
+                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, preproc_residuals, ddes);
                 else
                     % ! ideally, simplify irt nufft interface to do so
                     [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
                          numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond , ddes);
                     Sigma = [];
-                end
-                u = []; v = []; w = []; nW = [];
+                end,   u = []; v = []; w = []; nW = []; ddes=[];
                 dirac = sparse(Ny * 0.5 + 1, Nx * 0.5 + 1, 1, Ny, Nx);
                 for l = 1:numel(G)
                     F = HS_forward_operator_G(full(dirac), G(l), W(l), A, flag_dataReduction, Sigma);
@@ -665,7 +671,7 @@ switch algo_version
         else
             Sigma = Composite();
             spmd
-                ddes = []; preproc_dr_residuals = [];
+                ddes = []; preproc_residuals = [];
                 % define operator on data workers only
                 if labindex > Q
                     local_fc = (freqRangeCores(labindex - Q, 1):freqRangeCores(labindex - Q, 2));
@@ -712,9 +718,9 @@ switch algo_version
                                 if flag_dataReduction
                                     % if residual data are available, use them to get
                                     % l2 bounds.
-                                    try preproc_dr_residuals{ifc, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
+                                    try preproc_residuals{ifc, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
                                         DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh} = [];
-                                    catch, preproc_dr_residuals = [];
+                                    catch, preproc_residuals = [];
                                     end
                                 end
                                 
@@ -748,9 +754,9 @@ switch algo_version
                         end
                         
                         if flag_dataReduction
-                            try preproc_dr_residuals{ifc, 1} = vertcat(preproc_dr_residuals{ifc, 1}{:});
-                                preproc_dr_residuals{ifc, 1} = preproc_dr_residuals{ifc, 1}(:);
-                            catch; preproc_dr_residuals = [];
+                            try preproc_residuals{ifc, 1} = vertcat(preproc_residuals{ifc, 1}{:});
+                                preproc_residuals{ifc, 1} = preproc_residuals{ifc, 1}(:);
+                            catch; preproc_residuals = [];
                             end
                         end
                     end
@@ -760,13 +766,13 @@ switch algo_version
                         % ! define G as the holographic matrix
                         fprintf('\nCompute the holographic matrix H ..\n');
                         [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator_dev(y, u, v, w, nW, ...
-                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  preproc_dr_residuals, ddes);
+                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  preproc_residuals, ddes);
                     else
                         % ! ideally, simplify irt nufft interface to do so
                         [A, At, G, W, aW] = util_gen_measurement_operator_dev(u, v, w, nW, ...
                             numel(local_fc), Nx, Ny, param_nufft, param_wproj,  param_precond, ddes);
                         Sigma = [];
-                    end; u = []; v = []; w = []; nW = [];
+                    end; u = []; v = []; w = []; nW = [];ddes=[];
                     
                     dirac = sparse(Ny * 0.5 + 1, Nx * 0.5 + 1, 1, Ny, Nx);
                     for l = 1:numel(G)
@@ -774,14 +780,13 @@ switch algo_version
                         psf_peak = max(max(HS_adjoint_operator_G(F, G(l), W(l), At, Ny, Nx, flag_dataReduction, Sigma)));
                         fprintf('\nLab %d: INFO: peak of PSF (for residual normalisation): %f', labindex, psf_peak);
                     end
-                    
                 end
             end
-        end; clear local_fc  u v w nW dataSpWinloaded;
+        end; clear local_fc  u v w nW dataSpWinloaded ddes;
         
 end
-
-clear  resyCmpst param_wproj param_preproc  ; %% Free memory
+% Free memory
+clear   param_wproj param_preproc  preproc_residuals; 
 
 %% load l2 bounds (generate only full spectral dataset)
 % only generatr data in 'hs' or 'fhs' configuration (otherwise, load the data)
@@ -995,7 +1000,7 @@ if flag_solveMinimization
             case 'fhs'
                 disp('Faceted HyperSARA');
                 disp('-----------------------------------------');
-              
+                
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     dict.basis, dict.filter_length, dict.nlevel, window_type, ...

@@ -162,7 +162,7 @@ data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
 % preproc dir.
 preproc_calib_dir = [data_dir, 'pre_processing_die/'];
-% preproc_calib_dir=[data_dir,'pre_processing_dde/'];
+ preproc_calib_dir=[data_dir,'pre_processing_dde/'];
 % name of json parameter file
 json_filename = "default_parameters.json";
 
@@ -192,8 +192,8 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 % >nChannelsPerImage = 16;
 
 % TODO: to be modified
-idChannels2Image = 1:16; % ids of the 'physical' channels to be imaged
-nChannelsPerImage = 16; % number of consecutive channels to be concatenated into each effective channel
+idChannels2Image = 289; % ids of the 'physical' channels to be imaged
+nChannelsPerImage = 1; % number of consecutive channels to be concatenated into each effective channel
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % channels re-structured into effective channels
 effChans2Image = cell(nEffChans2Image, 1);
@@ -209,7 +209,7 @@ end
 subcubeInd = 0; % id of subcube if spectral interleaving is active
 
 % measurement op. params
-param_global.measop_flag_dataReduction = 1;
+param_global.measop_flag_dataReduction = 0;
 
 % image details, dims &  cellsize
 % TODO: to be modified
@@ -241,8 +241,8 @@ param_global.algo_version = 'sara'; % 'fhs', 'hs' or 'sara'
 % filenames and input
 % TODO: to be modified
 param_global.main_dir = main_dir;
-% param_global.preproc_filename_dde = @(firstch,lastch) strcat(preproc_calib_dir,filesep,'ddes',filesep,'chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
-param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
+ param_global.preproc_filename_dde = @(firstch,lastch) strcat(preproc_calib_dir,filesep,'ddes',filesep,'chs',num2str(firstch),'-',num2str(lastch),'_ddes.mat');
+%param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
 %param_global.preproc_filename_die = [];
 %
 param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'l2bounds',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
@@ -256,10 +256,12 @@ param_global.hardware = 'local'; % 'cirrus' or 'local', add your own cluster & u
 
 %% read and set configuration from .json file
 [param_global, param_solver, ...
-    param_nufft, param_blocking, param_precond, param_nnls, dict] = ...
+    param_nufft, param_blocking, param_precond, param_nnls, dict]= ...
     read_json_configuration(json_filename, param_global);
+
+%% ad; temp
 
 %% run main job
 main_real_data_exp(imagecubeName, datasetNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...
-    param_nufft, param_blocking, param_precond, param_nnls, dict);
+    param_nufft, param_precond, dict);
