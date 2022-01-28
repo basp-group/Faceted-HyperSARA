@@ -25,10 +25,6 @@ function [param_global, param_solver, param_nufft, ...
 % param_precond : struct
 %     Structure containing parameters used to define the preconditioning
 %     matrix involved in the PDFB algorithm.
-% param_nnls : struct
-%     Structure containing parameters to be passed to the non-negative
-%     least-squares (NNLS) algorithm used to estimate the :math:`\ell_2`
-%     bounds.
 % dict : struct
 %     Structure defining the SARA dictionary.
 %
@@ -100,6 +96,23 @@ function [param_global, param_solver, param_nufft, ...
 %     Flag to generate uniform weighting matrix (?).
 % param_precond.uniform_weight_sub_pixels  (bool)
 %     Flag to activate uniform weighting (?).
+% dict.wavelet_level  (int)
+%     Depth of wavelet decomposition.
+% dict.wavelet_basis  (cell{:} of string)
+%     Name of the wavelet basis to be used (``"self"`` corresponding to the 
+%     Dirac basis).
+% dict.filter_length (int[:])
+%     Length of each wavelet filter considered for the SARA dictionary (0 
+%     by convention for the Dirac basis).
+%
+
+% Deprecated fields
+%
+% param_nnls : struct
+%     Structure containing parameters to be passed to the non-negative
+%     least-squares (NNLS) algorithm used to estimate the :math:`\ell_2`
+%     bounds.
+%
 % param_nnls.generate_eps_nnls  (bool)
 %     Flag to activate NNLS.
 % param_nnls.verbose  (int)
@@ -112,16 +125,6 @@ function [param_global, param_solver, param_nufft, ...
 %     Iterations at which the NNLs solution is saved.
 % param_nnls.beta  (double)
 %     Regularization parameter NNLS.
-% dict.wavelet_level  (int)
-%     Depth of wavelet decomposition.
-% dict.wavelet_basis  (cell{:} of string)
-%     Name of the wavelet basis to be used (``"self"`` corresponding to the 
-%     Dirac basis).
-% dict.filter_length (int[:])
-%     Length of each wavelet filter considered for the SARA dictionary (0 
-%     by convention for the Dirac basis).
-%
-%
 
 %% Parsing json file
 fid = fopen(json_filename);
@@ -199,7 +202,8 @@ param_precond.Noy = param_nufft.oy * param_global.im_Ny;
 
 % * NNLS
 % if ~isfield(param_global, 'generate_eps_nnls'); param_global.generate_eps_nnls = false; end
-param_nnls = config{2, 1}.nnls;
+% param_nnls = config{2, 1}.nnls;
+param_nnls = [];
 
 % * Wproj
 % FoV info

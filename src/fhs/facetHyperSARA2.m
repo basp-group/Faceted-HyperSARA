@@ -347,10 +347,10 @@ end
 elipse_proj_max_iter = parallel.pool.Constant(param.elipse_proj_max_iter);
 elipse_proj_min_iter = parallel.pool.Constant(param.elipse_proj_min_iter);
 elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
-adapt_eps_tol_in = parallel.pool.Constant(param.adapt_eps_tol_in);
-adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
-adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
-adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
+% adapt_eps_tol_in = parallel.pool.Constant(param.adapt_eps_tol_in);
+% adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
+% adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
+% adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
 
 if init_flag
     norm_res = Composite();
@@ -670,19 +670,19 @@ for t = t_start:max_iter
     % && rel_obj <= param.pdfb_rel_obj
 
     %% Update epsilons (in parallel)
-    flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update
-    (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
-    (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
-
-    if flag_epsilonUpdate
-        spmd
-            if labindex > Qp.Value
-                [epsilon, t_block] = update_epsilon(epsilon, t, t_block, norm_res, ...
-                    adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
-                    adapt_eps_change_percentage.Value);
-            end
-        end
-    end
+    % flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update
+    % (t > param.adapt_eps_start) && ...               % update allowed after a % minimum of iterations in the 1st reweighting
+    % (rel_val(t) < param.adapt_eps_rel_var);          % relative variation % between 2 consecutive pdfb iterations
+    % 
+    % if flag_epsilonUpdate
+    %     spmd
+    %         if labindex > Qp.Value
+    %             [epsilon, t_block] = update_epsilon(epsilon, t, t_block, % norm_res, ...
+    %                 adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, % adapt_eps_steps.Value, ...
+    %                 adapt_eps_change_percentage.Value);
+    %         end
+    %     end
+    % end
     % ! --
 
     %% Reweighting (in parallel)

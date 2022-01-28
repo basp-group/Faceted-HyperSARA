@@ -125,25 +125,6 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 % parma.elipse_proj_eps (double)
 %     Stopping criterion for the projection.
 %
-% param.use_adapt_eps (bool)
-%     Flag to activate adaptive epsilon (note that there is no need to use 
-%     the adaptive strategy for experiments on synthetic data).
-% param.adapt_eps_start (int)
-%     Minimum number of iterations before starting to adjust the data
-%     constaints.
-% param.adapt_eps_tol_in (double)
-%     Tolerance inside the :math:`\ell_2` ball (< 1).
-% param.adapt_eps_tol_out (double)
-%     Tolerance inside the :math:`\ell_2` ball (> 1).
-% param.adapt_eps_steps (int)         
-%     Minimum number of iterations between consecutive data constraint 
-%     updates.
-% param.adapt_eps_rel_var (double) 
-%     Bound on the relative change of the solution to trigger the update of
-%     the data constraints :cite:p:`Dabbech2018`.
-% param.adapt_eps_change_percentage (double)  
-%     Update parameter to update data constaints :cite:p:`Dabbech2018`.
-%
 % - The following fileds are added to `param` in the course of the
 %   algorithm to be able to restart it from a previous state
 %
@@ -223,6 +204,29 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 %     Time to update the data fidelity dual variables.
 % rel_val (double)
 %     Relative variation of the solution across the iterations.
+%
+
+%
+% Deprecated fields (adaptive espilon scheme)
+%
+% param.use_adapt_eps (bool)
+%     Flag to activate adaptive epsilon (note that there is no need to use 
+%     the adaptive strategy for experiments on synthetic data).
+% param.adapt_eps_start (int)
+%     Minimum number of iterations before starting to adjust the data
+%     constaints.
+% param.adapt_eps_tol_in (double)
+%     Tolerance inside the :math:`\ell_2` ball (< 1).
+% param.adapt_eps_tol_out (double)
+%     Tolerance inside the :math:`\ell_2` ball (> 1).
+% param.adapt_eps_steps (int)         
+%     Minimum number of iterations between consecutive data constraint 
+%     updates.
+% param.adapt_eps_rel_var (double) 
+%     Bound on the relative change of the solution to trigger the update of
+%     the data constraints :cite:p:`Dabbech2018`.
+% param.adapt_eps_change_percentage (double)  
+%     Update parameter to update data constaints :cite:p:`Dabbech2018`.
 %
 
 % ------------------------------------------------------------------------%
@@ -385,11 +389,11 @@ end
 elipse_proj_max_iter = parallel.pool.Constant(param.elipse_proj_max_iter);
 elipse_proj_min_iter = parallel.pool.Constant(param.elipse_proj_min_iter);
 elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
-adapt_eps_tol_in = parallel.pool.Constant(param.adapt_eps_tol_in);
-adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
-adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
+% adapt_eps_tol_in = parallel.pool.Constant(param.adapt_eps_tol_in);
+% adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
+% adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
 % adapt_eps_rel_var = parallel.pool.Constant(param.adapt_eps_rel_var);
-adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
+% adapt_eps_change_percentage = parallel.pool.Constant(param.adapt_eps_change_percentage);
 
 % TODO: load x directly on data nodes for Fourier transform
 % ! need to be applied differently (A only exists in spmd blocks)
@@ -632,19 +636,19 @@ for t = t_start:max_iter
             rel_val(t) <= param.pdfb_rel_var_low ... % relative variation really small and data fidelity criterion not satisfied yet
         );
 
-    %% Update epsilons (in parallel)
-    flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update
-    (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
-    (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
-
-    if flag_epsilonUpdate
-        spmd
-            [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
-                norm_res, adapt_eps_tol_in.Value, ...
-                adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
-                adapt_eps_change_percentage.Value);
-        end
-    end
+    % %% Update epsilons (in parallel)
+    % flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update
+    % (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
+    % (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
+    %
+    % if flag_epsilonUpdate
+    %     spmd
+    %         [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
+    %             norm_res, adapt_eps_tol_in.Value, ...
+    %             adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
+    %             adapt_eps_change_percentage.Value);
+    %     end
+    % end
     % ! --
 
     %% Reweighting (in parallel)
