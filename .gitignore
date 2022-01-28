@@ -264,13 +264,12 @@ docs/_*
 .vscode*
 
 *.err
-*.txt
 *.out
 *local_cluster_jobs*
 *pref_*
 docs/build
 lib/faceted-wavelet-transform/*
-lib/measruement-operator/*
+lib/measurement-operator/*
 *.mat
 *.mat
 *.fits

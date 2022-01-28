@@ -18,6 +18,4 @@ API src
 -------
 
 .. mat:automodule:: src
-    :members:
-    :undoc-members:
-    :show-inheritance:
+    :members: apply_adjoint_operator, apply_direct_operator, apply_scaled_fourier_transform, compute_residual_images, compute_sara_prior, nuclear_norm, proj_l2ball, sanity_check, update_dual_data_fidelity

@@ -105,25 +105,6 @@ function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
 % parma.elipse_proj_eps (double)
 %     Stopping criterion for the projection.
 %
-% param.use_adapt_eps (bool)
-%     Flag to activate adaptive epsilon (note that there is no need to use 
-%     the adaptive strategy for experiments on synthetic data).
-% param.adapt_eps_start (int)
-%     Minimum number of iterations before starting to adjust the data
-%     constaints.
-% param.adapt_eps_tol_in (double)
-%     Tolerance inside the :math:`\ell_2` ball (< 1).
-% param.adapt_eps_tol_out (double)
-%     Tolerance inside the :math:`\ell_2` ball (> 1).
-% param.adapt_eps_steps (int)         
-%     Minimum number of iterations between consecutive data constraint 
-%     updates.
-% param.adapt_eps_rel_var (double) 
-%     Bound on the relative change of the solution to trigger the update of
-%     the data constraints :cite:p:`Dabbech2018`.
-% param.adapt_eps_change_percentage (double)  
-%     Update parameter to update data constaints :cite:p:`Dabbech2018`.
-%
 % - The following fileds are added to `param` in the course of the
 %   algorithm to be able to restart it from a previous state
 %
@@ -182,6 +163,29 @@ function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
 %     Time to update the data fidelity dual variables.
 % rel_val (double)
 %     Relative variation of the solution across the iterations.
+%
+
+%
+% Deprecated fields (adaptive espilon scheme)
+%
+% param.use_adapt_eps (bool)
+%     Flag to activate adaptive epsilon (note that there is no need to use 
+%     the adaptive strategy for experiments on synthetic data).
+% param.adapt_eps_start (int)
+%     Minimum number of iterations before starting to adjust the data
+%     constaints.
+% param.adapt_eps_tol_in (double)
+%     Tolerance inside the :math:`\ell_2` ball (< 1).
+% param.adapt_eps_tol_out (double)
+%     Tolerance inside the :math:`\ell_2` ball (> 1).
+% param.adapt_eps_steps (int)         
+%     Minimum number of iterations between consecutive data constraint 
+%     updates.
+% param.adapt_eps_rel_var (double) 
+%     Bound on the relative change of the solution to trigger the update of
+%     the data constraints :cite:p:`Dabbech2018`.
+% param.adapt_eps_change_percentage (double)  
+%     Update parameter to update data constaints :cite:p:`Dabbech2018`.
 %
 
 % ------------------------------------------------------------------------%
@@ -618,18 +622,17 @@ for t = t_start:max_iter
         (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance * norm_epsilon_check) || ... % relative variation and data fidelity within tolerance
         rel_val(t) <= param.pdfb_rel_var_low ... % relative variation really small and data fidelity criterion not satisfied yet
         );
-    % && rel_obj <= param.pdfb_rel_obj
     
-    %% Update epsilons
-    flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update
-        (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
-        (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
+    % %% Update epsilons
+    % flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update
+    %     (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
+    %     (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
     
-    if flag_epsilonUpdate
-        [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
-            norm_res, param.adapt_eps_tol_in, param.adapt_eps_tol_out, param.adapt_eps_steps, ...
-            param.adapt_eps_change_percentage);
-    end
+    % if flag_epsilonUpdate
+    %     [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
+    %         norm_res, param.adapt_eps_tol_in, param.adapt_eps_tol_out, param.adapt_eps_steps, ...
+    %         param.adapt_eps_change_percentage);
+    % end
     
     %% Reweighting
     if pdfb_converged
