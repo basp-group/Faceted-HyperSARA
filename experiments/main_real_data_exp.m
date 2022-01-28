@@ -465,7 +465,7 @@ switch algo_version
                     dataloaded.u = [];
                     v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;
                     dataloaded.v = [];
-                    w{iEffCh, 1}{iCh}{idSet} = 100*double(dataloaded.w(:));
+                    w{iEffCh, 1}{iCh}{idSet} = double(dataloaded.w(:));
                     dataloaded.w = [];
                     nW{iEffCh, 1}{iCh}{idSet} = double(dataloaded.nW(:)); % nW: sqrt(natural weights)
                     dataloaded.nW = [];
