@@ -1,5 +1,5 @@
 function [param_global, param_solver, param_nufft, ...
-    param_blocking, param_precond, param_nnls, dict] = ...
+   param_precond, dict] = ...
     read_json_configuration(json_filename, param_global)
 % Read algorithmic configuration parameters defined in an input ``.json``
 % file.
@@ -186,10 +186,10 @@ param_solver.adapt_eps_change_percentage = (sqrt(5) - 1) / 2;
 param_nufft = config{2, 1}.nufft;
 
 % * Blocking
-param_blocking = config{2, 1}.blocking;
-% partition (symetrically) of the data to nodes (frequency ranges)
-param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, ...
-    icdf('norm', 0.75, 0, pi / 4), pi];
+% param_blocking = config{2, 1}.blocking;
+% % partition (symetrically) of the data to nodes (frequency ranges)
+% param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, ...
+%     icdf('norm', 0.75, 0, pi / 4), pi];
 
 % * Preconditioning
 % set weighting type
