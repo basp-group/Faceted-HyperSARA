@@ -97,10 +97,15 @@ Building the documentation
 .. code-block:: bash
 
    # setup conda environment to build the documentation
-   conda create -n fhs-doc
-   conda activate fhs-doc
-   conda install pip
-   pip install -r requirement.txt
+   conda env create --name fhs-doc --file environment.yml 
+
+   # alternative using conda/pip
+   # conda create -n fhs-doc
+   # conda activate fhs-doc
+   # conda install pip
+   # pip install miss_hit
+   # pip install -r requirement.txt
+
    # building the documentation in html format
    cd docs
    make html
@@ -121,7 +126,5 @@ If you contribute code to the library (through a `pull request <https://docs.git
 
    # activate sdwt-doc environment (see previous paragraph)
    conda activate sdwt-doc
-   # install miss_hit
-   pip install miss_hit
    # run the following command from the root of the package (where the miss_hit.cfg file is)
    mh_style --fix .

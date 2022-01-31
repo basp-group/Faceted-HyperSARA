@@ -79,10 +79,13 @@ To build the documentation, make sure the following Python packages have been in
 
 ```bash
 # setup conda environment to build the documentation
-conda create -n fhs-doc
-conda activate fhs-doc
-conda install pip
-pip install -r requirement.txt
+conda env create --name fhs-doc --file environment.yml
+
+## or using conda/pip
+# conda create -n fhs-doc
+# conda activate fhs-doc
+# conda install pip
+# pip install -r requirement.txt
 
 # building the documentation in html format
 cd docs
@@ -104,8 +107,6 @@ Make sure any pull request has been properly formatted with the [`miss_hit`](htt
 ```bash
 # activate fhs-doc environment (see previous paragraph)
 conda activate fhs-doc
-# install miss_hit
-pip install miss_hit
 # run the following command from the root of the package (where the miss_hit.cfg file is)
 mh_style --fix .
 ```
