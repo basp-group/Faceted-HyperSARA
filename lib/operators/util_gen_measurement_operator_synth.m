@@ -1,4 +1,4 @@
-function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
+function [A, At, G, W, aW] = util_gen_measurement_operator_synth(u, v, ...
                                 param_precond, param_blocking, fc, ...
                                 fmax, Nx, Ny, Kx, Ky, ox, oy, kernel)
 % Build the measurement operator for a given uv-coverage at pre-defined
@@ -32,7 +32,9 @@ function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
 % oy : int
 %     Fourier oversampling factor(y-axis).
 % kernel : string
-%     Type of interpolation kernel selected ('kaiser' or 'minmax:tuned').
+%     Selected interpolator (among ``'minmax:kb'``, ``'minmax:tuned'`` and 
+%     ``'kaiser'``). Recommended default is 
+%     ``'minmax:kb'``.
 %
 % Returns
 % -------
@@ -50,12 +52,17 @@ function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, ...
 % aWw : cell
 %     Cell containing the preconditioning vectors for each channel, and
 %     data block within a channel.
-%%
+%
 
+%%
 nchans = numel(fc);
 G = cell(nchans, 1);
 W = cell(nchans, 1);
 aW = cell(nchans, 1);
+
+if ~exist('kernel', 'var')
+    kernel = 'minmax:kb';
+end
 
 for i = 1:nchans
 
@@ -67,14 +74,16 @@ for i = 1:nchans
     aWw = util_gen_preconditioning_matrix(uw, vw, param_precond);
 
     % set the weighting matrix, these are the natural weights for real data
-    nWw = ones(length(uw), 1);
+    % nWw = ones(length(uw), 1);
+    nW = {ones(length(uw), 1)};
 
     % set the blocks structure
-    [u1, v1, ~, ~, aW{i}, nW] = util_gen_block_structure(uw, vw, aWw, nWw, param_blocking);
+    % [u1, v1, ~, ~, aW{i}, nW] = util_gen_block_structure(uw, vw, aWw, nWw, param_blocking);
+    aW{i} = {aWw};
 
     % measurement operator initialization
-    % [A, At, G{i}, W{i}] = op_p_nufft_irt([v1 u1], [Ny Nx], [Ky Kx], [oy*Ny ox*Nx], [Ny/2 Nx/2], nW, kernel);
-    [A, At, G{i}, W{i}] = op_p_nufft([v1 u1], [Ny Nx], [Ky Kx], [oy * Ny ox * Nx], [Ny / 2 Nx / 2], nW);
+    % [A, At, G{i}, W{i}] = op_p_nufft([v1 u1], [Ny Nx], [Ky Kx], [oy * Ny ox * Nx], [Ny / 2 Nx / 2], nW, [], kernel);
+    [A, At, G{i}, W{i}] = op_p_nufft([{vw} {uw}], [Ny Nx], [Ky Kx], [oy * Ny ox * Nx], [Ny / 2 Nx / 2], nW, [], kernel);
 end
 
 end

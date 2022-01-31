@@ -51,6 +51,8 @@ function [A, At, H, W, aW,Sigma,data,noise] = util_gen_dr_measurement_operator(y
 % aWw : cell
 %     Cell containing the preconditioning vectors for each channel, and
 %     data block within a channel.
+%
+
 %%
 % check if data pre-processing exist
 %ddes

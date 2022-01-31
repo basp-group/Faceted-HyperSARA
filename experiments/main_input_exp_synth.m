@@ -139,10 +139,14 @@
 %   `maxProjBaseline` in units of the wavelength.
 %
 
+%
+% Deprecated fields
+%
 % param_global.generate_eps_nnls : bool
 %     Flag to activate the computation of the :math:`\ell_2` bounds.
 % param_global.reg_flag_homotopy : bool
 %     Flag to use the reweighting homotopy strategy (deactivated for now).
+%
 
 % TODO give Matlab config file for a cluster (intead of just providing CIRRUS)
 % TODO (keep empty parameter for non-used variables)
@@ -193,7 +197,7 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 % > nChannelsPerImage = 16;
 
 % TODO: to be modified
-idChannels2Image = [1]; % ids of the 'physical' channels to be imaged
+idChannels2Image = [1:2]; % ids of the 'physical' channels to be imaged
 nChannelsPerImage = 1; % number of consecutive channels to be concatenated into each effective channel
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % channels re-structured into effective channels
@@ -232,12 +236,12 @@ param_global.reg_gam = 0.33; % l21 reg param
 param_global.reg_gam_bar = 0.33; % nuclear norm reg param
 param_global.reg_flag_reweighting = true;
 param_global.reg_nReweights = 5;
-% sparam_global.reg_flag_homotopy = false; % not compulsory to be defined here..
+% param_global.reg_flag_homotopy = false; % not compulsory to be defined here..
 % param_global.generate_eps_nnls = false;
 
 % algo & parallelisation params
 % TODO: to be modified
-param_global.algo_version = 'sara'; % 'fhs', 'hs' or 'sara'
+param_global.algo_version = 'fhs'; % 'fhs', 'hs' or 'sara'
 
 % filenames and input
 % TODO: to be modified
@@ -264,7 +268,7 @@ param_global.hardware = 'local'; % 'cirrus' or 'local', add your own cluster & u
 %% run main job
 
 % ---
-% % ! test: load ground truth image (for debugging purposes)
+% ! test: load ground truth image (for debugging purposes)
 % exp_type = param_global.exp_type;
 % switch exp_type
 %     case "spatial"
@@ -313,7 +317,7 @@ param_global.hardware = 'local'; % 'cirrus' or 'local', add your own cluster & u
 % [Ny, Nx, nchans] = size(x0);
 % N = Nx * Ny;
 % x0 = reshape(x0, [N, nchans]);
-% % ---
+% ---
 
 main_real_data_exp(imagecubeName, datasetNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...

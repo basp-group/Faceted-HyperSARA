@@ -71,16 +71,16 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
 % exp_type = 'test'; % 'spectral', 'spatial', 'test'
 % flag_generateCoverage = 0;
 % flag_dr = 0;
-%
+% 
 % % number of cores assigned to the data fidelity terms (groups of channels)
 % ncores_data = 2;
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ; %"data/msSpecs.mat";
 % % "data/vla_7.95h_dt10s.uvw256.mat";
 % isnr = 50;
-%
+% 
 % superresolution_factor = 2;
 % flag_cirrus = false;
-% kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
+% kernel = 'minmax:kb'; % 'kaiser' (for real data), 'minmax:tuned'
 
 %%
 % TODO: update util_gen_measurement_operator to enable kaiser kernels
@@ -168,6 +168,10 @@ param_global = struct('im_Nx', Nx, 'im_Ny', Ny);
 [param_global, param_solver, ...
     param_nufft, param_precond, dict] = ...
     read_json_configuration(json_filename, param_global);
+param_blocking = [];
+% [param_global, param_solver, ...
+%     param_nufft, param_precond, param_blocking, dict] = ...
+%     read_json_configuration_blocking(json_filename, param_global);
 
 clear reference_cube_path info rowend colend sliceend;
 clear spatial_downsampling spectral_downsampling;
@@ -186,10 +190,6 @@ data_name_function = @(nchannels) strcat('y_', ...
     '_snr=', num2str(isnr), '.mat');
 
 data_name = data_name_function(n_channels);
-
-%% Define problem configuration (rng, nufft, preconditioning, blocking,
-% NNLS (epsilon estimation), SARA dictionary)
-% parameters_problem;
 
 %% Generate/load uv-coverage
 % generating u-v coverage
@@ -278,7 +278,9 @@ spmd
         % ! ideally, simplify irt nufft interface to do so
 
         % generate w/o noise whitening
-        [A, At, G, W, aW] = util_gen_measurement_operator(u, -v, ...
+        % blocking deactivated for now, following Arwa's changes (does not
+        % impact synthetic data setting)
+        [A, At, G, W, aW] = util_gen_measurement_operator_synth(u, -v, ...
         param_precond, param_blocking, local_fc, fmax, Nx, Ny, ...
         param_nufft.Kx, param_nufft.Ky, param_nufft.ox, param_nufft.oy, ...
         kernel);

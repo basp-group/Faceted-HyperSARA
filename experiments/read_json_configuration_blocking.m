@@ -1,8 +1,8 @@
 function [param_global, param_solver, param_nufft, ...
    param_precond, dict] = ...
-    read_json_configuration(json_filename, param_global)
+    read_json_configuration_blocking(json_filename, param_global)
 % Read algorithmic configuration parameters defined in an input ``.json``
-% file.
+% file (includes blocking configuration).
 %
 % Parameters
 % ----------
@@ -188,10 +188,10 @@ param_solver.reweighting_max_iter = max(param_global.reg_nReweights, param_solve
 param_nufft = config{2, 1}.nufft;
 
 % * Blocking
-% param_blocking = config{2, 1}.blocking;
-% % partition (symetrically) of the data to nodes (frequency ranges)
-% param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, ...
-%     icdf('norm', 0.75, 0, pi / 4), pi];
+param_blocking = config{2, 1}.blocking;
+% partition (symetrically) of the data to nodes (frequency ranges)
+param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, ...
+    icdf('norm', 0.75, 0, pi / 4), pi];
 
 % * Preconditioning
 % set weighting type

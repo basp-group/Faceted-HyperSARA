@@ -139,10 +139,13 @@
 %   `maxProjBaseline` in units of the wavelength.
 %
 
+% 
+% Deprecated fields%
 % param_global.generate_eps_nnls : bool
 %     Flag to activate the computation of the :math:`\ell_2` bounds.
 % param_global.reg_flag_homotopy : bool
 %     Flag to use the reweighting homotopy strategy (deactivated for now).
+%
 
 % TODO give Matlab config file for a cluster (intead of just providing CIRRUS)
 % TODO (keep empty parameter for non-used variables)

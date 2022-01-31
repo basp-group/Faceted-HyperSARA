@@ -99,8 +99,12 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %
 %
 
+%
+% Deprecated fields
+%
 % param_global.reg_flag_homotopy : int
-%     Flag to activate homotopy strategy in the re-weighting.
+%     Flag to activate homotopy strategy in the re-weighting scheme.
+%
 
 % ------------------------------------------------------------------------%
 % ------------------------------------------------------------------------%
