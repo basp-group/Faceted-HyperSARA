@@ -65,14 +65,10 @@
 %     Pixel-size in arcsec in the frequency domain. Set to ``[]`` to use
 %     the default computation (implemented in 
 %     :mat:func:`experiments.main_real_data_exp`).
-% param_global.generate_eps_nnls : bool
-%     Flag to activate the computation of the :math:`\ell_2` bounds.
 % param_global.reg_flag_reweighting : bool
 %     Flag to activate the use of multiple reweighting steps.
 % param_global.reg_nReweights : int
 %     Maximum number of reweighting steps.
-% param_global.reg_flag_homotopy : bool
-%     Flag to use the reweighting homotopy strategy (deactivated for now).
 % param_global.hardware : string
 %     String to specify the hardware configuration for the parallelization.
 %     Possible values are ``"cirrus"`` or ``"local"``.
@@ -143,6 +139,11 @@
 %   `maxProjBaseline` in units of the wavelength.
 %
 
+% param_global.generate_eps_nnls : bool
+%     Flag to activate the computation of the :math:`\ell_2` bounds.
+% param_global.reg_flag_homotopy : bool
+%     Flag to use the reweighting homotopy strategy (deactivated for now).
+
 % TODO give Matlab config file for a cluster (intead of just providing CIRRUS)
 % TODO (keep empty parameter for non-used variables)
 clear; clc; close all;
@@ -162,7 +163,7 @@ data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
 % preproc dir.
 preproc_calib_dir = [data_dir, 'pre_processing_die/'];
-% preproc_calib_dir=[data_dir,'pre_processing_dde/'];
+% preproc_calib_dir = [data_dir,'pre_processing_dde/'];
 % name of json parameter file
 json_filename = "default_parameters.json";
 
@@ -188,11 +189,11 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 % > nChannelsPerImage = 1;
 
 % example d: Exp 2: reduced imagecube containing 30 effective channels each concatenating 16 physical channels
-% >idChannels2Image = [1:272 289:320 337:512];
-% >nChannelsPerImage = 16;
+% > idChannels2Image = [1:272 289:320 337:512];
+% > nChannelsPerImage = 16;
 
 % TODO: to be modified
-idChannels2Image = [1:2]; % ids of the 'physical' channels to be imaged
+idChannels2Image = [1]; % ids of the 'physical' channels to be imaged
 nChannelsPerImage = 1; % number of consecutive channels to be concatenated into each effective channel
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % channels re-structured into effective channels
@@ -216,7 +217,7 @@ param_global.measop_flag_dataReduction = 0;
 param_global.im_Nx = 512; % 2560;
 param_global.im_Ny = 256; % 1536;
 param_global.im_pixelSize = []; % 0.06; % pixelsize in asec, use [] to use the default value set from the uv-coverage
-param_global.algo_flag_computeOperatorNorm = false;
+param_global.algo_flag_computeOperatorNorm = true;
 
 % faceting params: note that if interleaving is active, one subcube is
 % imaged at a time: Qc=1 by default.
@@ -230,13 +231,13 @@ param_global.facet_overlap_fraction = [0.5, 0.5];
 param_global.reg_gam = 0.33; % l21 reg param
 param_global.reg_gam_bar = 0.33; % nuclear norm reg param
 param_global.reg_flag_reweighting = true;
-param_global.reg_flag_homotopy = false; % not compulsory to be defined here..
 param_global.reg_nReweights = 5;
-param_global.generate_eps_nnls = false;
+% sparam_global.reg_flag_homotopy = false; % not compulsory to be defined here..
+% param_global.generate_eps_nnls = false;
 
 % algo & parallelisation params
 % TODO: to be modified
-param_global.algo_version = 'fhs'; % 'fhs', 'hs' or 'sara'
+param_global.algo_version = 'sara'; % 'fhs', 'hs' or 'sara'
 
 % filenames and input
 % TODO: to be modified

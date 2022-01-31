@@ -38,8 +38,6 @@ function [param_global, param_solver, param_nufft, ...
 %     Minimum number of reweighting iterations.
 % param_solver.reweighting_max_iter  (int)
 %     Maximum number of reweighting iterations.
-% param_solver.reweighting_alpha_ff  (double)
-%     Update reweighting parameter, if homotopy is active.
 % param_solver.reweighting_alpha  (double)
 %     Initial value of the reweighting parameter, by default 1.
 % param_solver.pdfb_min_iter  (int)
@@ -108,6 +106,9 @@ function [param_global, param_solver, param_nufft, ...
 
 % Deprecated fields
 %
+% param_solver.reweighting_alpha_ff  (double)
+%     Update reweighting parameter, if homotopy is active.
+%
 % param_nnls : struct
 %     Structure containing parameters to be passed to the non-negative
 %     least-squares (NNLS) algorithm used to estimate the :math:`\ell_2`
@@ -165,21 +166,20 @@ if ~isfield(param_global, 'reg_nReweights')
 end
 param_solver.reweighting_max_iter = max(param_global.reg_nReweights, param_solver.reweighting_min_iter + 1);
 
-% * Adaptive epsilon
-% TODO : to be removed completely from the solver?
-param_solver.use_adapt_eps = 0;
-% minimum num of iter before stating adjustment
-param_solver.adapt_eps_start = 200;
-% tolerance inside the l2 ball
-param_solver.adapt_eps_tol_in = 0.99;
-% tolerance outside the l2 ball
-param_solver.adapt_eps_tol_out = 1.01;
-% min num of iter between consecutive updates
-param_solver.adapt_eps_steps = 100;
-% bound on the relative change of the solution
-param_solver.adapt_eps_rel_var = 5e-5;
-% the weight of the update w.r.t the l2 norm of the residual data
-param_solver.adapt_eps_change_percentage = (sqrt(5) - 1) / 2;
+% * Adaptive epsilon (deactivated)
+% param_solver.use_adapt_eps = 0;
+% % minimum num of iter before stating adjustment
+% param_solver.adapt_eps_start = 200;
+% % tolerance inside the l2 ball
+% param_solver.adapt_eps_tol_in = 0.99;
+% % tolerance outside the l2 ball
+% param_solver.adapt_eps_tol_out = 1.01;
+% % min num of iter between consecutive updates
+% param_solver.adapt_eps_steps = 100;
+% % bound on the relative change of the solution
+% param_solver.adapt_eps_rel_var = 5e-5;
+% % the weight of the update w.r.t the l2 norm of the residual data
+% param_solver.adapt_eps_change_percentage = (sqrt(5) - 1) / 2;
 
 %% Model structures
 % * NUFFT (gridding parameters)
@@ -203,7 +203,6 @@ param_precond.Noy = param_nufft.oy * param_global.im_Ny;
 % * NNLS
 % if ~isfield(param_global, 'generate_eps_nnls'); param_global.generate_eps_nnls = false; end
 % param_nnls = config{2, 1}.nnls;
-param_nnls = [];
 
 % * Wproj
 % FoV info

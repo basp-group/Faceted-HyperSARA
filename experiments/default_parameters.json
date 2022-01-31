@@ -4,12 +4,10 @@
         "reweighting": {
             "__comment": "Reweighting parameters",
             "flag_reweighting": true,
-            "flag_homotopy": false,
             "min_iter": 1,
             "max_iter": 10,
             "rel_var": 1e-4,
             "alpha": 1,
-            "alpha_ff": 1,
             "backup_frequency": 1,
             "verbose": 2
         },

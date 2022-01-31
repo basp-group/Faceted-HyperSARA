@@ -65,14 +65,10 @@
 %     Pixel-size in arcsec in the frequency domain. Set to ``[]`` to use
 %     the default computation (implemented in 
 %     :mat:func:`experiments.main_real_data_exp`).
-% param_global.generate_eps_nnls : bool
-%     Flag to activate the computation of the :math:`\ell_2` bounds.
 % param_global.reg_flag_reweighting : bool
 %     Flag to activate the use of multiple reweighting steps.
 % param_global.reg_nReweights : int
 %     Maximum number of reweighting steps.
-% param_global.reg_flag_homotopy : bool
-%     Flag to use the reweighting homotopy strategy (deactivated for now).
 % param_global.hardware : string
 %     String to specify the hardware configuration for the parallelization.
 %     Possible values are ``"cirrus"`` or ``"local"``.
@@ -142,6 +138,11 @@
 %   in units of the wavelength (i.e. normalised with the wavelength) and
 %   `maxProjBaseline` in units of the wavelength.
 %
+
+% param_global.generate_eps_nnls : bool
+%     Flag to activate the computation of the :math:`\ell_2` bounds.
+% param_global.reg_flag_homotopy : bool
+%     Flag to use the reweighting homotopy strategy (deactivated for now).
 
 % TODO give Matlab config file for a cluster (intead of just providing CIRRUS)
 % TODO (keep empty parameter for non-used variables)
@@ -230,9 +231,9 @@ param_global.facet_overlap_fraction = [0.5, 0.5];
 param_global.reg_gam = 0.33; % l21 reg param
 param_global.reg_gam_bar = 0.33; % nuclear norm reg param
 param_global.reg_flag_reweighting = true;
-param_global.reg_flag_homotopy = false; % not compulsory to be defined here..
 param_global.reg_nReweights = 5;
-param_global.generate_eps_nnls = false;
+% param_global.reg_flag_homotopy = false; % not compulsory to be defined here..
+% param_global.generate_eps_nnls = false;
 
 % algo & parallelisation params
 % TODO: to be modified

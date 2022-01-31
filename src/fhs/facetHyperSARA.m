@@ -133,8 +133,6 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %     Tolerance relative variation (reweighting).
 % param.reweighting_alpha (double)
 %     Starting reweighting parameter.
-% param.reweighting_alpha_ff (double)
-%     Multiplicative parameter update (< 1).
 % param.reweighting_sig (double)              
 %     Noise level (in wavelet space)
 % param.reweighting_sig_bar (double)          
@@ -229,6 +227,8 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %
 % Deprecated fields (adaptive espilon scheme)
 %
+% param.reweighting_alpha_ff (double)
+%     Multiplicative parameter update (< 1).
 % param.use_adapt_eps (bool)
 %     Flag to activate adaptive epsilon (note that there is no need to use 
 %     the adaptive strategy for experiments on synthetic data).
@@ -338,14 +338,15 @@ if init_flag
     fprintf('Resume from file %s\n\n', warmstart_name);
 end
 
-% ! -- TO BE CHECKED (primal initialization)
-% AD: check flag homotopy strategy --> AD: added due to error otherwise
-if ~isfield(param, 'flag_homotopy')
-    flag_homotopy = false;
-else
-    flag_homotopy = param.flag_homotopy;
-end
+% ! -- HOMOTOPY (deactivated)
+% if ~isfield(param, 'flag_homotopy')
+%     flag_homotopy = false;
+% else
+%     flag_homotopy = param.flag_homotopy;
+% end
+% ! --
 
+% ! -- Primal initialization
 if init_flag
     xsol = init_m.xsol;
     pdfb_rel_var_low = param.pdfb_rel_var_low;
@@ -417,7 +418,7 @@ reweighting_alphap = Composite();
 for q = 1:Q
     reweighting_alphap{q} = reweighting_alpha;
 end
-reweighting_alpha_ffp = parallel.pool.Constant(param.reweighting_alpha_ff);
+% reweighting_alpha_ffp = parallel.pool.Constant(param.reweighting_alpha_ff);
 
 if isfield(param, 'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
@@ -873,14 +874,15 @@ for t = t_start:max_iter
                 x_facet = comm2d_update_borders(x_facet, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
 
                 fprintf('\nUpdating weights,  xfacet size  %d x  %d', size(x_facet, 1), size(x_facet, 2));
-                % ! -- TO BE CHECKED (using new reweighting with proper floor level)
+                % ! -- New reweighting with proper floor level
                 [weights1_, weights0_] = fhs_update_weights(x_facet, size(v1_), ...
                     Iq, offsetp.Value, status_q, nlevelp.Value, waveletp.Value, ...
                     Ncoefs_q, dims_overlap_ref_q, offsetLq, offsetRq, ...
                     reweighting_alphap, crop_sparsity, crop_low_rank, apodization_window, sig_, sig_bar_);
-                if flag_homotopy
-                    reweighting_alphap = max(reweighting_alpha_ffp.Value * reweighting_alphap, 1);
-                end
+                % ! HOMOTOPY (deactivated)
+                % if flag_homotopy
+                %     reweighting_alphap = max(reweighting_alpha_ffp.Value * reweighting_alphap, 1);
+                % end
                 % ! --
             else
                 % compute residual image on the data nodes
@@ -889,10 +891,10 @@ for t = t_start:max_iter
                 fprintf('\nResidual computed');
             end
         end; clear xsol_node;
-        % ! -- TO BE CHECKED
-        if flag_homotopy
-            reweighting_alpha = max(param.reweighting_alpha_ff * reweighting_alpha, 1);
-        end
+        % ! -- HOMOTOPY (deactivated)
+        % if flag_homotopy
+        %     reweighting_alpha = max(param.reweighting_alpha_ff * reweighting_alpha, 1);
+        % end
         % ! --
         param.reweighting_alpha = reweighting_alpha;
         param.init_reweight_step_count = reweight_step_count + 1;

@@ -66,8 +66,6 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     regularization term.
 % param_global.reg_flag_reweight : int
 %     Flag to activate re-weighting.
-% param_global.reg_flag_homotopy : int
-%     Flag to activate  homotopy strategy in the re-weighting.
 % param_global.algo_flag_computeOperatorNorm : bool
 %     Flag triggering the computation of the (preconditioned) operator norm.
 % param_global.algo_flag_solveMinimization : bool
@@ -101,6 +99,8 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %
 %
 
+% param_global.reg_flag_homotopy : int
+%     Flag to activate homotopy strategy in the re-weighting.
 
 % ------------------------------------------------------------------------%
 % ------------------------------------------------------------------------%
@@ -131,7 +131,7 @@ if ~isfield(param_global, 'reg_flag_reweighting'); param_global.reg_flag_reweigh
 if param_global.reg_flag_reweighting &&  ~isfield(param_global, 'reg_nReweights')
     param_global.reg_nReweights = 5;
 end
-if ~isfield(param_global, 'reg_flag_homotopy'); param_global.reg_flag_homotopy = 0; end
+% if ~isfield(param_global, 'reg_flag_homotopy'); param_global.reg_flag_homotopy = 0; end
 
 % Data blocks
 % if ~isfield(param_global, 'generate_eps_nnls'); param_global.generate_eps_nnls = false; end
@@ -200,8 +200,8 @@ gam = param_global.reg_gam;
 gam_bar =  param_global.reg_gam_bar;
 flag_reweighting = param_global.reg_flag_reweighting;
 if flag_reweighting
-    reg_nReweights = param_global.reg_nReweights; % @PA: why commented?
-    flag_homotopy = param_global.reg_flag_homotopy;
+    reg_nReweights = param_global.reg_nReweights;
+    % flag_homotopy = param_global.reg_flag_homotopy;
 end
 % Meas. op.
 flag_dataReduction = param_global.measop_flag_dataReduction; % data reduction
@@ -415,10 +415,13 @@ if ~strcmp(algo_version, 'sara')
 end
 % index of channels from the subcube to be handled on each data worker
 if strcmp(algo_version, 'sara')
+    % for SARA, parallelization is only active over the different wavelet
+    % dictionaries composing the SARA prior
     ncores = numel(dict.basis );
     ncores_data = ncores;
+else
+   freqRangeCores = split_range(ncores_data, nEffectiveChans); 
 end
-freqRangeCores = split_range(ncores_data, nEffectiveChans);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %%  FoV info
@@ -954,9 +957,9 @@ end
 param_solver.gamma = mu; % regularization parameter l21-norm (soft th parameter) ! for SARA, take the value given as an input to the solver
 param_solver.cube_id = subcubeInd; % id of the cube to be reconstructed
 param_solver.backup_frequency = 1; % PA: checkpoint frequency! AD :????
-try param_solver.flag_homotopy = flag_homotopy; % flag homotopy strategy
-catch; param_solver.flag_homotopy = 0;
-end
+%try param_solver.flag_homotopy = flag_homotopy; % flag homotopy strategy
+%catch; param_solver.flag_homotopy = 0;
+%end
 param_solver.alph = gam;
 param_solver.alph_bar = gam_bar;
 % temp filenames

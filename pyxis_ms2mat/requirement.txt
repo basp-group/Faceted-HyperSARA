@@ -1,0 +1,25 @@
+owlcat
+py-casacore
+tigger
+meqtrees-cattery
+meqtrees-timba
+pyfits
+mpt
+
+
+pip
+scipy
+numpy
+python-casacore
+
+pip install meqtrees-cattery
+pip install owlcat
+pip install tigger
+pip install astro-tigger-lsm
+
+pyxis?
+ms?
+mqt?
+import im
+import im.argo
+import im.lwimager

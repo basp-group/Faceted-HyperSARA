@@ -109,8 +109,6 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 %     Tolerance relative variation (reweighting).
 % param.reweighting_alpha (double)
 %     Starting reweighting parameter.
-% param.reweighting_alpha_ff (double)
-%     Multiplicative parameter update (< 1).
 % param.reweighting_sig (double)              
 %     Noise level (in wavelet space)
 % param.reweighting_sig_bar (double)          
@@ -209,6 +207,8 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 %
 % Deprecated fields (adaptive espilon scheme)
 %
+% param.reweighting_alpha_ff (double)
+%     Multiplicative parameter update (< 1).
 % param.use_adapt_eps (bool)
 %     Flag to activate adaptive epsilon (note that there is no need to use 
 %     the adaptive strategy for experiments on synthetic data).
@@ -281,12 +281,14 @@ if init_flag
         param.pdfb_rel_var_low = pdfb_rel_var_low;
     end
 
+    % ! -- HOMOTOPY (deactivated)
     % check flag homotopy strategy
-    if ~isfield(param, 'flag_homotopy')
-        flag_homotopy = false;
-    else
-        flag_homotopy = param.flag_homotopy;
-    end
+    % if ~isfield(param, 'flag_homotopy')
+    %     flag_homotopy = false;
+    % else
+    %     flag_homotopy = param.flag_homotopy;
+    % end
+    % ! --
 
     epsilon = Composite();
     for k = 1:K
@@ -332,8 +334,7 @@ else
     fprintf('g initialized \n\n');
 end
 
-% ! -- TO BE CHECKED
-% Reweighting parameters
+% ! Reweighting parameters
 sig_bar_ = param.reweighting_sig_bar;
 sig_ = Composite();
 for k = 1:K
@@ -680,10 +681,10 @@ for t = t_start:max_iter
             res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex}), y, A, At, G, W, flag_dimensionality_reduction, Sigma);
         end
 
-        % ! -- TO BE CHECKED
-        if flag_homotopy
-            reweighting_alpha = max(param.reweighting_alpha_ff * reweighting_alpha, 1);
-        end
+        % ! -- HOMOTOPY (deactivated)
+        % if flag_homotopy
+        %     reweighting_alpha = max(param.reweighting_alpha_ff * reweighting_alpha, 1);
+        % end
         % ! --
         param.reweighting_alpha = reweighting_alpha;
         param.init_reweight_step_count = reweight_step_count + 1;
@@ -759,7 +760,9 @@ for t = t_start:max_iter
                 fprintf('Backup iter: %i\n', t);
                 fprintf('N-norm = %e, L21-norm = %e, rel_val = %e\n', nuclear, l21, rel_val(t));
                 fprintf(' epsilon = %e, residual = %e\n', norm_epsilon_check, norm_residual_check);
-                fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+                if flag_synth_data
+                    fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
+                end
             end
         end
 

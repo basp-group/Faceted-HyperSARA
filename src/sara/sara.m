@@ -91,8 +91,6 @@ function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
 %     Tolerance relative variation (reweighting).
 % param.reweighting_alpha (double)
 %     Starting reweighting parameter.
-% param.reweighting_alpha_ff (double)
-%     Multiplicative parameter update (< 1).
 % param.reweighting_sig (double)              
 %     Noise level (in wavelet space)
 %
@@ -168,6 +166,8 @@ function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
 %
 % Deprecated fields (adaptive espilon scheme)
 %
+% param.reweighting_alpha_ff (double)
+%     Multiplicative parameter update (< 1).
 % param.use_adapt_eps (bool)
 %     Flag to activate adaptive epsilon (note that there is no need to use 
 %     the adaptive strategy for experiments on synthetic data).
@@ -185,7 +185,7 @@ function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
 %     Bound on the relative change of the solution to trigger the update of
 %     the data constraints :cite:p:`Dabbech2018`.
 % param.adapt_eps_change_percentage (double)  
-%     Update parameter to update data constaints :cite:p:`Dabbech2018`.
+%     Update parameter to update data constraints :cite:p:`Dabbech2018`.
 %
 
 % ------------------------------------------------------------------------%
@@ -204,12 +204,14 @@ No = size(W{1}{1}, 1);
 % number of pixels
 [M, N] = size(At(zeros(No, 1)));
 
+% ! -- HOMOTOPY (deactivated)
 % check flag homotopy strategy
-if ~isfield(param, 'flag_homotopy')
-    flag_homotopy = false;
-else
-    flag_homotopy = param.flag_homotopy;
-end
+% if ~isfield(param, 'flag_homotopy')
+%     flag_homotopy = false;
+% else
+%     flag_homotopy = param.flag_homotopy;
+% end
+% ! --
 
 % Initializations
 init_flag = isfile(warsmtart_name);
@@ -218,7 +220,7 @@ if init_flag
     fprintf('Resume from file %s\n\n', warsmtart_name);
 end
 
-% ! -- TO BE CHECKED (primal initialization)
+% ! -- Primal initialization
 if init_flag
     xsol = init_m.xsol;
     pdfb_rel_var_low = param.pdfb_rel_var_low;
@@ -264,11 +266,12 @@ else
     fprintf('g initialized \n\n');
 end
 
-% ! -- TO BE CHECKED
 % Reweighting parameters
 sig = param.reweighting_sig;
 reweighting_alpha = param.reweighting_alpha;
-reweighting_alpha_ff = param.reweighting_alpha_ff;
+% ! -- HOMOTOPY parameter (deactivated)
+% reweighting_alpha_ff = param.reweighting_alpha_ff;
+% ! --
 
 if isfield(param, 'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
@@ -462,15 +465,6 @@ sigma22 = tau * sigma2;
 
 beta1 = param.gamma / sigma1;
 param.alph = alph;
-
-% % % % % AD!: mem doubled!! sub-optimal!!
-% % % % % Gt = cell(size(G));
-% % % % % for i = 1:c
-% % % % %     Gt{i} = cell(length(G{i}), 1);
-% % % % %     for j = 1:length(G{i})
-% % % % %         Gt{i}{j} = G{i}{j}';
-% % % % %     end
-% % % % % end
 
 A = afclean(A);
 At = afclean(At);
@@ -695,10 +689,10 @@ for t = t_start:max_iter
             upsilon = sig * reweighting_alpha;
             weights1{k} =  upsilon ./ (upsilon + d_val);
         end
-        % ! -- TO BE CHECKED
-        if flag_homotopy
-            reweighting_alpha = max(reweighting_alpha_ff * reweighting_alpha, 1);
-        end
+        % ! -- HOMOTOPY (deactivated)
+        % if flag_homotopy
+        %     reweighting_alpha = max(reweighting_alpha_ff * reweighting_alpha, 1);
+        % end
         % ! --
         param.reweighting_alpha = reweighting_alpha;
         param.init_reweight_step_count = reweight_step_count + 1;
