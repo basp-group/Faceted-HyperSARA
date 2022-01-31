@@ -117,6 +117,25 @@ Building the documentation
    
    conda env remove -n fhs-doc
 
+
+Pushing the documentation online
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Add a ``worktree`` from the ``master`` branch
+
+.. code-block:: bash
+
+   # make sure the folder html does not exist before running the command
+   git worktree add docs/build/html gh-pages
+   cd docs/build/html
+   git add .
+   git commit -m "Build documentation as of $(git log '--format=format:%H' master -1)"
+   git push origin gh-pages
+   # delete the worktree
+   cd ../
+   git worktree remove html
+
+
 Code layout
 ^^^^^^^^^^^
 

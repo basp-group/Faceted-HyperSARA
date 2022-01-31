@@ -4,21 +4,36 @@ channels:
   - conda-forge
   - anaconda
 dependencies:
+  - appdirs
   - ca-certificates
   - certifi
+  - cffi
+  - cfgv
+  - distlib
+  - filelock
+  - identify
   - libcxx
   - libffi
   - ncurses
+  - nodeenv
   - openssl
   - pip
+  - pre-commit
+  - pycparser
   - python
+  - python_abi
   - readline
   - setuptools
+  - six
   - sqlite
   - tk
+  - toml
   - tzdata
+  - ukkonen
+  - virtualenv
   - wheel
   - xz
+  - yaml
   - zlib
   - pip:
     - alabaster
@@ -42,7 +57,6 @@ dependencies:
     - pytz
     - pyyaml
     - requests
-    - six
     - snowballstemmer
     - sphinx
     - sphinx-rtd-theme

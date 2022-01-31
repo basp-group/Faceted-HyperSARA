@@ -100,6 +100,22 @@ If needed, you can delete the `conda` environment as follows
 conda env remove -n fhs-doc
 ```
 
+### Pushing the documentation online
+
+Add a `worktree` from the `master` branch
+
+```bash
+# make sure the folder html does not exist before running the command
+git worktree add docs/build/html gh-pages
+cd docs/build/html
+git add .
+git commit -m "Build documentation as of $(git log '--format=format:%H' master -1)"
+git push origin gh-pages
+# delete the worktree
+   cd ../
+   git worktree remove html
+```
+
 ### Matlab code formatting
 
 Make sure any pull request has been properly formatted with the [`miss_hit`](https://pypi.org/project/miss-hit/) package using the `miss_hit.cfg` file provided
