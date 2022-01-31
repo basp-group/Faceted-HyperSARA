@@ -6,18 +6,18 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
     varargin)
 % Implementation of the Faceted HyperSARA imaging algorithm.
 %
-% Implementation of the reweighting / PDFB algorithm underlying the 
-% Faceted HyperSARA imaging approach :cite:p:`Thouvenin2021`. At 
+% Implementation of the reweighting / PDFB algorithm underlying the
+% Faceted HyperSARA imaging approach :cite:p:`Thouvenin2021`. At
 % each iteration of the outer reweighting scheme, the PDFB solves a problem
 % of the form
 %
 % .. math::
 %
-%   \min_{X \in \mathbb{R}_+^{N \times L}} 
+%   \min_{X \in \mathbb{R}_+^{N \times L}}
 %   \sum_{q=1}^Q \big(
-%   \overline{\mu}_q \| D_q \overline{S}_q X \|_{\overline{\omega}_q, *} 
+%   \overline{\mu}_q \| D_q \overline{S}_q X \|_{\overline{\omega}_q, *}
 %   + \mu \|\Psi_q^\dagger S_q X \|_{\omega_q, 2,1} \big)
-%   + \sum_{\ell, b} \iota_{ \{\| y_{\ell, b} - \Phi_{\ell, b}(\cdot) \|_2 
+%   + \sum_{\ell, b} \iota_{ \{\| y_{\ell, b} - \Phi_{\ell, b}(\cdot) \|_2
 %   \leq \varepsilon_{\ell, b}\} } (x_\ell).
 %
 % Parameters
@@ -45,14 +45,14 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % K : int
 %     Number of data workers.
 % wavelet : cell of string
-%     List of wavelet basis (for the SARA prior). If the Dirac basis 
+%     List of wavelet basis (for the SARA prior). If the Dirac basis
 %     (``'self'``) is considered, it needs to appear in last position.
 % filter_length : int[:]
-%     Length of each wavelet filter considered for the SARA dictionary (0 
+%     Length of each wavelet filter considered for the SARA dictionary (0
 %     by convention for the Dirac basis).
 % nlevel : int
 %     Number of wavelet decomposition levels.
-% window_type : string (``"triangular"`` by default, ``"hamming"`` or 
+% window_type : string (``"triangular"`` by default, ``"hamming"`` or
 %     ``"pc"`` (piecewise-constant))
 %     Type of apodization window considered for the faceted nuclear norm
 %     prior.
@@ -79,7 +79,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % warmstart_name : string
 %     Name of a valid ``.mat`` file to initialize the solver (warm-start).
 % checkpoint_name : string
-%     Name defining the name for checkpoint files saved 
+%     Name defining the name for checkpoint files saved
 %     throughout the iterations.
 % flag_dimensionality_reduction : bool
 %     Flag to indicate data dimensiomality reduction is used.
@@ -88,7 +88,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % varargin{1} : double[:, :]
 %     Initial value for the primal variable [M*N, L].
 % varargin{2} : double[:, :]
-%     Ground truth wideband image (only when debugging synthetic 
+%     Ground truth wideband image (only when debugging synthetic
 %     data experiments) [M*N, L].
 %
 % Returns
@@ -99,12 +99,12 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % Important
 % ---------
 % - The `param` structure should contain the following fields.
-% 
-% param.verbose (string) 
+%
+% param.verbose (string)
 %     Print log or not
 %
 % param.nu0 (double)
-%     Norm of the splitting operator used to defined the faceted 
+%     Norm of the splitting operator used to defined the faceted
 %     low-rankness dual variable (identity for ``rectangular`` window, thus
 %     fixed to 1).
 % param.nu1 (double)
@@ -118,14 +118,14 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %
 % param.pdfb_min_iter (int)
 %     Minimum number of iterations (PDFB).
-% param.pdfb_max_iter (int)  
+% param.pdfb_max_iter (int)
 %     Maximum number of iterations (PDFB).
-% param.pdfb_rel_var (double)          
+% param.pdfb_rel_var (double)
 %     Relative variation tolerance (PDFB).
-% param.pdfb_fidelity_tolerance (double) 
+% param.pdfb_fidelity_tolerance (double)
 %     Tolerance to check data constraints are satisfied (PDFB).
 %
-% param.reweighting_max_iter (int) 
+% param.reweighting_max_iter (int)
 %     Maximum number of reweighting steps.
 % param.reweighting_min_iter (int)
 %     Minimum number of reweighting steps (to reach "noise" level).
@@ -133,16 +133,16 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %     Tolerance relative variation (reweighting).
 % param.reweighting_alpha (double)
 %     Starting reweighting parameter.
-% param.reweighting_sig (double)              
+% param.reweighting_sig (double)
 %     Noise level (in wavelet space)
-% param.reweighting_sig_bar (double)          
+% param.reweighting_sig_bar (double)
 %     Noise level (singular value space)
 %
 % param.elipse_proj_max_iter (int)
-%     Maximum number of iterations for the FB algo that implements the 
+%     Maximum number of iterations for the FB algo that implements the
 %     projection onto the ellipsoid.
 % param.elipse_proj_min_iter (int)
-%     Minimum number of iterations for the FB algo that implements the 
+%     Minimum number of iterations for the FB algo that implements the
 %     projection onto the ellipsoid.
 % parma.elipse_proj_eps (double)
 %     Stopping criterion for the projection.
@@ -156,10 +156,10 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %     Iteration index of the current reweighting step when the checkpoint
 %     file is written.
 % param.init_reweight_last_iter_step (int)
-%     Global iteration index (unrolled over all pdfb iterations performed 
+%     Global iteration index (unrolled over all pdfb iterations performed
 %     in the reweighting scheme) from which to restart the algorithm.
 % param.init_t_start (int)
-%     Global iteration index (unrolled over all pdfb iterations performed 
+%     Global iteration index (unrolled over all pdfb iterations performed
 %     in the reweighting scheme) from which to restart the algorithm
 %     (``param.init_t_start = param.init_reweight_last_iter_step + 1``).
 %
@@ -172,10 +172,10 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %     Iteration index of the current reweighting step when the checkpoint
 %     file is written.
 % param.init_reweight_last_iter_step (int)
-%     Global iteration index (unrolled over all pdfb iterations performed 
+%     Global iteration index (unrolled over all pdfb iterations performed
 %     in the reweighting scheme) from which to restart the algorithm.
 % param.init_t_start (int)
-%     Global iteration index (unrolled over all pdfb iterations performed 
+%     Global iteration index (unrolled over all pdfb iterations performed
 %     in the reweighting scheme) from which to restart the algorithm
 %     (``param.init_t_start = param.init_reweight_last_iter_step + 1``).
 %
@@ -188,7 +188,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %     Current state of the parameter structure (updated with auxiliary
 %     parameters describing the state of the solver when the checkpoint
 %     file has been written).
-% xsol (double[:, :])   
+% xsol (double[:, :])
 %     Current state of the image estimate [M*N, L].
 % res (double[:, :, :])
 %     Current state of the wideband residual image.
@@ -203,7 +203,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %     variables.
 % norm_res (cell of cell of double)
 %     Norm of the residual image (per channel per block).
-% v0 (cell of double[:])         
+% v0 (cell of double[:])
 %     Dual variables associated with the low-rankness prior {Q}.
 % v1 (cell of double[:, :])
 %     Dual variables associated with the sparsity prior {Q}.
@@ -230,7 +230,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % param.reweighting_alpha_ff (double)
 %     Multiplicative parameter update (< 1).
 % param.use_adapt_eps (bool)
-%     Flag to activate adaptive epsilon (note that there is no need to use 
+%     Flag to activate adaptive epsilon (note that there is no need to use
 %     the adaptive strategy for experiments on synthetic data).
 % param.adapt_eps_start (int)
 %     Minimum number of iterations before starting to adjust the data
@@ -239,13 +239,13 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %     Tolerance inside the :math:`\ell_2` ball (< 1).
 % param.adapt_eps_tol_out (double)
 %     Tolerance inside the :math:`\ell_2` ball (> 1).
-% param.adapt_eps_steps (int)         
-%     Minimum number of iterations between consecutive data constraint 
+% param.adapt_eps_steps (int)
+%     Minimum number of iterations between consecutive data constraint
 %     updates.
-% param.adapt_eps_rel_var (double) 
+% param.adapt_eps_rel_var (double)
 %     Bound on the relative change of the solution to trigger the update of
 %     the data constraints :cite:p:`Dabbech2018`.
-% param.adapt_eps_change_percentage (double)  
+% param.adapt_eps_change_percentage (double)
 %     Update parameter to update data constaints :cite:p:`Dabbech2018`.
 %
 
@@ -266,7 +266,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % ------------------------------------------------------------------------%
 %%
 % SPMD version: use spmd for all the priors, deal with the data fidelity
-% term in a  le place. Constant overlap for the nuclear norm assuming 
+% term in a  le place. Constant overlap for the nuclear norm assuming
 % overlap_size smaller than the smallest overlap for the sdwt2 (the other option
 % would also change the com cation process (borders and reduction
 % operation)). overlap_size power(2, nlevel)-1)*(max(filter_length(:)-1))
@@ -664,7 +664,7 @@ for t = t_start:max_iter
 
             % update primal variable
             tw = tic;
-            [xsol_q, xhat_q, rel_x_q, norm_x_q] = fhs_update_primal(xsol_q, g_q);  
+            [xsol_q, xhat_q, rel_x_q, norm_x_q] = fhs_update_primal(xsol_q, g_q);
             g_q = []; % mem reasons
             t_op = toc(tw);
 

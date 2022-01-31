@@ -2,7 +2,7 @@
 % experiment.
 %
 % This file calls the generic imaging pipeline
-% :mat:func:`experiments.main_real_data_exp` to reconstruct an image from 
+% :mat:func:`experiments.main_real_data_exp` to reconstruct an image from
 % the input dataset.
 %
 % Parameters
@@ -63,7 +63,7 @@
 %     Number of pixels along axis y in the reconstructed image.
 % param_global.im_pixelSize  : double
 %     Pixel-size in arcsec in the frequency domain. Set to ``[]`` to use
-%     the default computation (implemented in 
+%     the default computation (implemented in
 %     :mat:func:`experiments.main_real_data_exp`).
 % param_global.reg_flag_reweighting : bool
 %     Flag to activate the use of multiple reweighting steps.
@@ -77,11 +77,11 @@
 %     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
 % param_global.facet_Qx : int
 %     Number of spatial facets along spatial axis x. Will be reset
-%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or 
+%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or
 %     ``"hs"``.
 % param_global.facet_Qy : int
 %     Number of spatial facets along spatial axis y. Will be reset
-%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or 
+%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or
 %     ``"hs"``.
 % param_global.facet_overlap_fraction : array[double]
 %     Array containing the overlap fraction between consecutive facets along
@@ -130,8 +130,8 @@
 % - Data files: example of data filename: ``'data_ch_1.mat'``.
 %
 % - Any data file should contain the following variables : `maxProjBaseline`
-%   (double, maximum projection basline), `u` , `v`, `w` (arrays of 
-%   :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (vector of 
+%   (double, maximum projection basline), `u` , `v`, `w` (arrays of
+%   :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (vector of
 %   visibilities), `frequency` (associated frequency value).
 %
 % - Note that the data `y` are not whitened, uvw coordinates shoud be given

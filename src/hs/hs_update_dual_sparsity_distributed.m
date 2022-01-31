@@ -28,7 +28,7 @@ function [v1, g1] = hs_update_dual_sparsity_distributed(v1, Psit, Psi, ...
 %     Dual variable associated with the :math:`\ell_{2,1}` norm prior
 %     ``[s, L]``.
 % g1 : double[:, :, :]
-%     Auxiliary variable for the update of the primal variable 
+%     Auxiliary variable for the update of the primal variable
 %     ``[M, N, L]``.
 %
 

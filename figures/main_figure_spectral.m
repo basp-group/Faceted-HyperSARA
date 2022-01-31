@@ -1,4 +1,4 @@
-% Main script to generate the figures reported for the spectral faceting 
+% Main script to generate the figures reported for the spectral faceting
 % in :cite:p:`Thouvenin2021`.
 
 clc; clear all; close all;

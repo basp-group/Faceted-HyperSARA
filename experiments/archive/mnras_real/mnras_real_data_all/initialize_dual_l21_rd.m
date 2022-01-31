@@ -26,11 +26,11 @@ function [v1, weights1] = initialize_dual_l21_rd(x_overlap, ...
 %     v1 (array): dual variable associated with the l21-norm.
 %     weights1 (array): weigths ssociated with the l21-norm.
 %
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 % Code: P.-A. Thouvenin.
 % Last revised: [../../20..]
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %%
 
 % compute size of the dual variables and the weigths

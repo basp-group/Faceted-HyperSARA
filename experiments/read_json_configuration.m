@@ -83,7 +83,7 @@ function [param_global, param_solver, param_nufft, ...
 % param_blocking.use_manual_partitioning  (bool)
 %     Manual blocking.
 % param_blocking.use_manual_frequency_partitioning  (bool)
-%     Manual frequency blocking.     
+%     Manual frequency blocking.
 % param_precond.N  (int)
 %     Number of pixels in the image.
 % param_precond.Nox  (int)
@@ -97,10 +97,10 @@ function [param_global, param_solver, param_nufft, ...
 % dict.wavelet_level  (int)
 %     Depth of wavelet decomposition.
 % dict.wavelet_basis  (cell{:} of string)
-%     Name of the wavelet basis to be used (``"self"`` corresponding to the 
+%     Name of the wavelet basis to be used (``"self"`` corresponding to the
 %     Dirac basis).
 % dict.filter_length (int[:])
-%     Length of each wavelet filter considered for the SARA dictionary (0 
+%     Length of each wavelet filter considered for the SARA dictionary (0
 %     by convention for the Dirac basis).
 %
 

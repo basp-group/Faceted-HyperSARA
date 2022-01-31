@@ -1,7 +1,7 @@
-clc; clear all; close all
+clc; clear all; close all;
 format compact;
 
-addpath lib/faceted-wavelet-transform/src
+addpath lib/faceted-wavelet-transform/src;
 
 %% base characteristics
 nfacets = 0;
@@ -41,7 +41,7 @@ parpool(cirrus_cluster, numworkers);
 channels_groups = split_range(nchannel_groups, nchannels);
 nblocks_per_frequency_group = zeros(nchannel_groups, 1);
 for l = 1:nchannel_groups
-    nblocks_per_frequency_group(l) = sum(nblocks_per_channel(channels_groups(l, 1) : channels_groups(l, 2)));
+    nblocks_per_frequency_group(l) = sum(nblocks_per_channel(channels_groups(l, 1):channels_groups(l, 2)));
 end
 c0 = cumsum(nblocks_per_frequency_group);
 c1 = cumsum(nblocks_per_channel);
@@ -51,19 +51,19 @@ c1 = cumsum(nblocks_per_channel);
 spmd
     % on any data worker
     if labindex > nfacets
-        
+
         % id among all data workers
         data_id = labindex - nfacets;
         % frequency group
         frequency_group_id = find(cumsum(ncores_per_channel_group) >= data_id, 1, 'first'); % -1
         global_start_frequency = channels_groups(frequency_group_id, 1);
         % total number of channels in the frequency group
-        frequency_group_nchannels = channels_groups(frequency_group_id, 2) - channels_groups(frequency_group_id, 1) + 1; 
+        frequency_group_nchannels = channels_groups(frequency_group_id, 2) - channels_groups(frequency_group_id, 1) + 1;
         % frequency subgroup index (id among workers in the same frequency group)
         frequency_subgroup_id = data_id - sum(ncores_per_channel_group(1:frequency_group_id - 1));
         % -> ideally, should be 0 for cores handling only blocks from a channels ? (and 1 for the root of the frequency group)
         % frequency root workers are such that frequency_subgroup_id == 1
-        
+
         % list of frequencies handled locally (return empty if none is handled)
         % split evenly between workers in the group
         if frequency_group_nchannels >= ncores_per_channel_group(frequency_group_id)
@@ -86,18 +86,18 @@ spmd
                 local_nchannels = 0;
             end
         end
-        
+
         % total number of data blocks handled in the frequency group
-        nblocks_per_channel_frequency_group = nblocks_per_channel(channels_groups(frequency_group_id,1):channels_groups(frequency_group_id,2));
+        nblocks_per_channel_frequency_group = nblocks_per_channel(channels_groups(frequency_group_id, 1):channels_groups(frequency_group_id, 2));
         frequency_group_nblocks = sum(nblocks_per_channel_frequency_group); % = nblocks_per_frequency_group(frequency_group_id)
-        
+
         % unrolled index of the blocks to be handled on the current worker
         % ! there will never be more cores than blocks in a channel group
         % (this possibility needs to be ruled out, and trigger an error early)
         local_unrolled_block_ids = local_split_range(ncores_per_channel_group(frequency_group_id), frequency_group_nblocks, frequency_subgroup_id);
-        local_nblocks = local_unrolled_block_ids(2)-local_unrolled_block_ids(1)+1; % number of blocks handled on current worker
-        global_unrolled_block_ids = local_unrolled_block_ids + sum(nblocks_per_frequency_group(1:frequency_group_id-1));
-        
+        local_nblocks = local_unrolled_block_ids(2) - local_unrolled_block_ids(1) + 1; % number of blocks handled on current worker
+        global_unrolled_block_ids = local_unrolled_block_ids + sum(nblocks_per_frequency_group(1:frequency_group_id - 1));
+
         % associated frequency for each block (id within frequency subgroup)
         % ! problem here
 %         c = cumsum(nblocks_per_channel_frequency_group);
@@ -114,19 +114,18 @@ spmd
         blocks_within_frequency_id = zeros(local_nblocks, 1); % [local_nblocks, 1]
         for b = 1:local_nblocks
             blocks_global_frequency_id(b) = find(c1 >= global_unrolled_block_ids(1) + b - 1, 1, 'first'); % ok
-            
+
             % problems here
-            %blocks_channel_root_worker(b) = 
-            %blocks_channel_root_local_frequency_id(b) = % local frequency id on the core responsible for the channels
-            %blocks_within_frequency_id(b) = find(c >= blocks_channel_root_local_frequency_id(b), 1, 'first'); % problem here for now
-            
-            %blocks_local_frequency_id(b) = blocks_global_frequency_id(b) - (global_start_frequency + b - 1) + 1; % problem here
-            %blocks_within_frequency_id(b) = find(c >= blocks_local_frequency_id(b), 1, 'first'); % problem here
+            % blocks_channel_root_worker(b) =
+            % blocks_channel_root_local_frequency_id(b) = % local frequency id on the core responsible for the channels
+            % blocks_within_frequency_id(b) = find(c >= blocks_channel_root_local_frequency_id(b), 1, 'first'); % problem here for now
+
+            % blocks_local_frequency_id(b) = blocks_global_frequency_id(b) - (global_start_frequency + b - 1) + 1; % problem here
+            % blocks_within_frequency_id(b) = find(c >= blocks_local_frequency_id(b), 1, 'first'); % problem here
         end
-        
+
         % get id of the workers responsible for those channnels associated
         % with each block handled locally (in case blocks stored on a worker different from the
         % one responsible for the associated channel)
     end
 end
-

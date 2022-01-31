@@ -3,16 +3,16 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
     warmstart_name, checkpoint_name, flag_dimensionality_reduction, Sigma, varargin)
 % Implementation of the HyperSARA imaging algorithm.
 %
-% Implementation of the reweighting / PDFB algorithm underlying the 
-% HyperSARA imaging approach :cite:p:`Abdulaziz2019`. At each iteration of 
+% Implementation of the reweighting / PDFB algorithm underlying the
+% HyperSARA imaging approach :cite:p:`Abdulaziz2019`. At each iteration of
 % the outer reweighting scheme, the PDFB solves a problem of the form
 %
 % .. math::
 %
-%   \min_{X \in \mathbb{R}_+^{N \times L}} 
-%   \overline{\mu} \| X \|_{\overline{\omega}, *} 
-%   + \mu \|\Psi^\dagger X \|_{\omega, 2,1} + \sum_{\ell, b} 
-%   \iota_{ \{\| y_{\ell, b} - \Phi_{\ell, b}(\cdot) \|_2 
+%   \min_{X \in \mathbb{R}_+^{N \times L}}
+%   \overline{\mu} \| X \|_{\overline{\omega}, *}
+%   + \mu \|\Psi^\dagger X \|_{\omega, 2,1} + \sum_{\ell, b}
+%   \iota_{ \{\| y_{\ell, b} - \Phi_{\ell, b}(\cdot) \|_2
 %   \leq \varepsilon_{\ell, b}\} } (x_\ell).
 %
 % Parameters
@@ -36,7 +36,7 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 % K : int
 %     Number of data workers.
 % wavelet : cell of string
-%     List of wavelet basis (for the SARA prior). If the Dirac basis 
+%     List of wavelet basis (for the SARA prior). If the Dirac basis
 %     (``'self'``) is considered, it needs to appear in last position.
 % nlevel : int
 %     Number of wavelet decomposition levels.
@@ -55,7 +55,7 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 % warmstart_name : string
 %     Name of a valid ``.mat`` file to initialize the solver (warm-start).
 % checkpoint_name : string
-%     Name defining the name for checkpoint files saved 
+%     Name defining the name for checkpoint files saved
 %     throughout the iterations.
 % flag_dimensionality_reduction : bool
 %     Flag to indicate data dimensiomality reduction is used.
@@ -64,7 +64,7 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 % varargin{1} : double[:, :]
 %     Initial value for the primal variable [M*N, L].
 % varargin{2} : double[:, :]
-%     Ground truth wideband image (only when debugging synthetic 
+%     Ground truth wideband image (only when debugging synthetic
 %     data experiments) [M*N, L].
 %
 % Returns
@@ -76,12 +76,12 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 % Important
 % ---------
 % - The `param` structure should contain the following fields.
-% 
-% param.verbose (string) 
+%
+% param.verbose (string)
 %     Print log or not
 %
 % param.nu0 (double)
-%     Norm of the splitting operator used to defined the low-rankness dual 
+%     Norm of the splitting operator used to defined the low-rankness dual
 %     variable (identity, thus fixed to 1).
 % param.nu1 (double)
 %     Upper bound on the norm of the SARA operator :math:`\Psi^\dagger`.
@@ -94,14 +94,14 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 %
 % param.pdfb_min_iter (int)
 %     Minimum number of iterations (PDFB).
-% param.pdfb_max_iter (int)  
+% param.pdfb_max_iter (int)
 %     Maximum number of iterations (PDFB).
-% param.pdfb_rel_var (double)          
+% param.pdfb_rel_var (double)
 %     Relative variation tolerance (PDFB).
-% param.pdfb_fidelity_tolerance (double) 
+% param.pdfb_fidelity_tolerance (double)
 %     Tolerance to check data constraints are satisfied (PDFB).
 %
-% param.reweighting_max_iter (int) 
+% param.reweighting_max_iter (int)
 %     Maximum number of reweighting steps.
 % param.reweighting_min_iter (int)
 %     Minimum number of reweighting steps (to reach "noise" level).
@@ -109,16 +109,16 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 %     Tolerance relative variation (reweighting).
 % param.reweighting_alpha (double)
 %     Starting reweighting parameter.
-% param.reweighting_sig (double)              
+% param.reweighting_sig (double)
 %     Noise level (in wavelet space)
-% param.reweighting_sig_bar (double)          
+% param.reweighting_sig_bar (double)
 %     Noise level (singular value space)
 %
 % param.elipse_proj_max_iter (int)
-%     Maximum number of iterations for the FB algo that implements the 
+%     Maximum number of iterations for the FB algo that implements the
 %     projection onto the ellipsoid.
 % param.elipse_proj_min_iter (int)
-%     Minimum number of iterations for the FB algo that implements the 
+%     Minimum number of iterations for the FB algo that implements the
 %     projection onto the ellipsoid.
 % parma.elipse_proj_eps (double)
 %     Stopping criterion for the projection.
@@ -132,10 +132,10 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 %     Iteration index of the current reweighting step when the checkpoint
 %     file is written.
 % param.init_reweight_last_iter_step (int)
-%     Global iteration index (unrolled over all pdfb iterations performed 
+%     Global iteration index (unrolled over all pdfb iterations performed
 %     in the reweighting scheme) from which to restart the algorithm.
 % param.init_t_start (int)
-%     Global iteration index (unrolled over all pdfb iterations performed 
+%     Global iteration index (unrolled over all pdfb iterations performed
 %     in the reweighting scheme) from which to restart the algorithm
 %     (``param.init_t_start = param.init_reweight_last_iter_step + 1``).
 %
@@ -148,10 +148,10 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 %     Iteration index of the current reweighting step when the checkpoint
 %     file is written.
 % param.init_reweight_last_iter_step (int)
-%     Global iteration index (unrolled over all pdfb iterations performed 
+%     Global iteration index (unrolled over all pdfb iterations performed
 %     in the reweighting scheme) from which to restart the algorithm.
 % param.init_t_start (int)
-%     Global iteration index (unrolled over all pdfb iterations performed 
+%     Global iteration index (unrolled over all pdfb iterations performed
 %     in the reweighting scheme) from which to restart the algorithm
 %     (``param.init_t_start = param.init_reweight_last_iter_step + 1``).
 %
@@ -179,7 +179,7 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 %     variables.
 % norm_res (cell of cell of double)
 %     Norm of the residual image (per channel per block).
-% v0 (cell of double[:])         
+% v0 (cell of double[:])
 %     Dual variables associated with the low-rankness.
 % v1 (double[:, :])
 %     Dual variables associated with the sparsity prior.
@@ -210,7 +210,7 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 % param.reweighting_alpha_ff (double)
 %     Multiplicative parameter update (< 1).
 % param.use_adapt_eps (bool)
-%     Flag to activate adaptive epsilon (note that there is no need to use 
+%     Flag to activate adaptive epsilon (note that there is no need to use
 %     the adaptive strategy for experiments on synthetic data).
 % param.adapt_eps_start (int)
 %     Minimum number of iterations before starting to adjust the data
@@ -219,13 +219,13 @@ function xsol = hyperSARA(y, epsilon, A, At, pU, G, W, param, K, ...
 %     Tolerance inside the :math:`\ell_2` ball (< 1).
 % param.adapt_eps_tol_out (double)
 %     Tolerance inside the :math:`\ell_2` ball (> 1).
-% param.adapt_eps_steps (int)         
-%     Minimum number of iterations between consecutive data constraint 
+% param.adapt_eps_steps (int)
+%     Minimum number of iterations between consecutive data constraint
 %     updates.
-% param.adapt_eps_rel_var (double) 
+% param.adapt_eps_rel_var (double)
 %     Bound on the relative change of the solution to trigger the update of
 %     the data constraints :cite:p:`Dabbech2018`.
-% param.adapt_eps_change_percentage (double)  
+% param.adapt_eps_change_percentage (double)
 %     Update parameter to update data constaints :cite:p:`Dabbech2018`.
 %
 

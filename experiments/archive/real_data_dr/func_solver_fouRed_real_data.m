@@ -1,6 +1,6 @@
 function func_solver_fouRed_real_data(datadir, gamma0, gamma, ch, subInd, reduction_version, algo_version, realdatablocks, fouRed_gamma, fouRed_type, adapt_eps_flag, wterm, levelG, levelC, init_file_name, rw_alpha, rw_tot, lowRes)
 % Global imaging solver for DR real data
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 % Input:
 % > datadir: directory of data, string
 % > name: filename for savings, string

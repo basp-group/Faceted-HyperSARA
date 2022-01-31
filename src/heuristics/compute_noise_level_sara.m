@@ -1,7 +1,7 @@
 function sig = compute_noise_level_sara(std_noise, squared_operator_norm)
 % Estimate noise level in the SARA domain.
 %
-% Return an estimate of the noise standard deviation transferred 
+% Return an estimate of the noise standard deviation transferred
 % successively from the data to the image domain, then to the SARA domain.
 %
 % Parameters

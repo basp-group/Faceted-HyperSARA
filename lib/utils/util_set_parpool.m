@@ -1,21 +1,21 @@
 function cirrus_cluster = util_set_parpool(algo_version, ncores_data, Q, flag_cirrus)
-% [extended_summary]
-% 
-% Parameters
-% ----------
-% algo_version : [type]
-%     [description]
-% ncores_data : [type]
-%     [description]
-% Q : [type]
-%     [description]
-% flag_cirrus : [type]
-%     [description]
-% 
-% Returns
-% -------
-% [type]
-%     [description]
+    % [extended_summary]
+    %
+    % Parameters
+    % ----------
+    % algo_version : [type]
+    %     [description]
+    % ncores_data : [type]
+    %     [description]
+    % Q : [type]
+    %     [description]
+    % flag_cirrus : [type]
+    %     [description]
+    %
+    % Returns
+    % -------
+    % [type]
+    %     [description]
 
     switch algo_version
         case 'sara'
@@ -44,9 +44,9 @@ function cirrus_cluster = util_set_parpool(algo_version, ncores_data, Q, flag_ci
     % % start the matlabpool with maximum available workers
     % % control how many workers by setting ntasks in your sbatch script
     % parpool(cirrus_cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
-    dwtmode('zpd','nodisp');
+    dwtmode('zpd', 'nodisp');
     spmd
-        dwtmode('zpd','nodisp');
+        dwtmode('zpd', 'nodisp');
     end
 
 end

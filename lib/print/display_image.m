@@ -1,34 +1,34 @@
 function [f, h] = display_image(x, fig_size, shift_colorbar, clim, map_img, fontsize, bool_log, location)
-% Display the input image :math:`x`.
-%
-% Parameters
-% ----------
-% x : array
-%     Input image.
-% fig_size : array (int)
-%     Size of the figure (in pixels).
-% shift_colorbar : array
-%     Shift applied to the position of the colorbar.
-% clim : array
-%     Values associated to the limits of the colorbar.
-% map_img : array
-%     Colormap.
-% fontsize : int
-%     Size of the font.
-% bool_log : bool
-%     Flag to activate log scale for the displayed image.
-% location : string
-%     String specifynig the location of the colorbar within the figure.
-%
-% Returns
-% -------
-% f : handle
-%     Figure handle.
-% h : handle
-%     Colorbar handle.
-%
+    % Display the input image :math:`x`.
+    %
+    % Parameters
+    % ----------
+    % x : array
+    %     Input image.
+    % fig_size : array (int)
+    %     Size of the figure (in pixels).
+    % shift_colorbar : array
+    %     Shift applied to the position of the colorbar.
+    % clim : array
+    %     Values associated to the limits of the colorbar.
+    % map_img : array
+    %     Colormap.
+    % fontsize : int
+    %     Size of the font.
+    % bool_log : bool
+    %     Flag to activate log scale for the displayed image.
+    % location : string
+    %     String specifynig the location of the colorbar within the figure.
+    %
+    % Returns
+    % -------
+    % f : handle
+    %     Figure handle.
+    % h : handle
+    %     Colorbar handle.
+    %
 
-%%
+    %%
     f = figure('visible', 'on');
     % sets axes background
     set(gca, 'Color', 'none');

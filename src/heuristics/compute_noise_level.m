@@ -1,8 +1,8 @@
 function [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
     compute_noise_level(Ny, Nx, n_channels, std_noise, algo_version, ...
     Qx, Qy, overlap_size, squared_operator_norm)
-% Compute heuristic order of magnitude for the regularization parameters 
-% involved in SARA :cite:p:`Abdulaziz2019` or Faceted HyperSARA 
+% Compute heuristic order of magnitude for the regularization parameters
+% involved in SARA :cite:p:`Abdulaziz2019` or Faceted HyperSARA
 % :cite:p:`Thouvenin2021`.
 %
 % Parameters

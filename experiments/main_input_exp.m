@@ -2,7 +2,7 @@
 % experiment.
 %
 % This file calls the generic imaging pipeline
-% :mat:func:`experiments.main_real_data_exp` to reconstruct an image from 
+% :mat:func:`experiments.main_real_data_exp` to reconstruct an image from
 % the input dataset.
 %
 % Parameters
@@ -63,7 +63,7 @@
 %     Number of pixels along axis y in the reconstructed image.
 % param_global.im_pixelSize  : double
 %     Pixel-size in arcsec in the frequency domain. Set to ``[]`` to use
-%     the default computation (implemented in 
+%     the default computation (implemented in
 %     :mat:func:`experiments.main_real_data_exp`).
 % param_global.reg_flag_reweighting : bool
 %     Flag to activate the use of multiple reweighting steps.
@@ -77,11 +77,11 @@
 %     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
 % param_global.facet_Qx : int
 %     Number of spatial facets along spatial axis x. Will be reset
-%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or 
+%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or
 %     ``"hs"``.
 % param_global.facet_Qy : int
 %     Number of spatial facets along spatial axis y. Will be reset
-%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or 
+%     automaticallt to 1 if ``param_global.algo_version = "sara"`` or
 %     ``"hs"``.
 % param_global.facet_overlap_fraction : array[double]
 %     Array containing the overlap fraction between consecutive facets along
@@ -130,8 +130,8 @@
 % - Data files: example of data filename: ``'data_ch_1.mat'``.
 %
 % - Any data file should contain the following variables : `maxProjBaseline`
-%   (double, maximum projection basline), `u` , `v`, `w` (arrays of 
-%   :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (vector of 
+%   (double, maximum projection basline), `u` , `v`, `w` (arrays of
+%   :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (vector of
 %   visibilities), `frequency` (associated frequency value).
 %
 % - Note that the data `y` are not whitened, uvw coordinates shoud be given
@@ -139,7 +139,7 @@
 %   `maxProjBaseline` in units of the wavelength.
 %
 
-% 
+%
 % Deprecated fields%
 % param_global.generate_eps_nnls : bool
 %     Flag to activate the computation of the :math:`\ell_2` bounds.
@@ -160,13 +160,13 @@ cd(project_dir);
 % TODO: to be modified
 imagecubeName = 'CYGA';
 param_global.exp_type = 'test'; % ! only for debugging purposes
-datasetNames = {'CYGA-ConfigA','CYGA-ConfigC'}; % allowing for multiple datasets
+datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; % allowing for multiple datasets
 % data dir.
 data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
 % preproc dir.
 preproc_calib_dir = [data_dir, 'pre_processing_die/'];
- preproc_calib_dir=[data_dir,'pre_processing_dde/'];
+ preproc_calib_dir = [data_dir, 'pre_processing_dde/'];
 % name of json parameter file
 json_filename = "default_parameters.json";
 
@@ -217,8 +217,8 @@ param_global.measop_flag_dataReduction = 0;
 
 % image details, dims &  cellsize
 % TODO: to be modified
-param_global.im_Nx = 2560; 
-param_global.im_Ny = 1536; 
+param_global.im_Nx = 2560;
+param_global.im_Ny = 1536;
 param_global.im_pixelSize =  0.06; % pixelsize in asec
 param_global.algo_flag_computeOperatorNorm = true;
 
@@ -245,22 +245,22 @@ param_global.algo_version = 'sara'; % 'fhs', 'hs' or 'sara'
 % filenames and input
 % TODO: to be modified
 param_global.main_dir = main_dir;
- param_global.preproc_filename_dde = @(firstch,lastch) strcat(preproc_calib_dir,filesep,'ddes',filesep,'chs',num2str(firstch),'-',num2str(lastch),'_ddes.mat');
-%param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
-%param_global.preproc_filename_die = [];
+ param_global.preproc_filename_dde = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'ddes', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_ddes.mat');
+% param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
+% param_global.preproc_filename_die = [];
 %
-param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'l2bounds',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
+param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'l2bounds', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
 % param_global.preproc_filename_l2bounds = [];
 %
-param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'model_images',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
-%param_global.preproc_filename_model = [];
+param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'model_images', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
+% param_global.preproc_filename_model = [];
 
 % hardware
 param_global.hardware = 'local'; % 'cirrus' or 'local', add your own cluster & update 'util_set_parpool_dev.m' accordingly
 
 %% read and set configuration from .json file
 [param_global, param_solver, ...
-    param_nufft, param_precond, dict]= ...
+    param_nufft, param_precond, dict] = ...
     read_json_configuration(json_filename, param_global);
 
 %% ad; temp

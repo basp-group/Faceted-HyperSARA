@@ -1,16 +1,16 @@
 % Main script to generate the reference synthetic wideband image cubes
 % used in :cite:p:`Thouvenin2021`. Requires the
 % `S_DDE_MODEL.fits <https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits>`_
-% image file associated with :cite:p:`Dabbech2021`, which can be retrieved 
+% image file associated with :cite:p:`Dabbech2021`, which can be retrieved
 % as follows from a unix (MAC, Linux, Windows WSL or MinGw) terminal.
 %
 % .. code-block:: bash
-%    
-%    # if on MAC: 
+%
+%    # if on MAC:
 %    # brew install wget
 %    cd path/to/Faceted-Hyper-SARA
 %    mkdir data && cd data
-%    wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits     
+%    wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
 %
 
 clear;

@@ -1,19 +1,19 @@
 function out = util_antenna_based_block_sp_ar(u, ant2, param)
-% [extended_summary]
-% 
-% Parameters
-% ----------
-% u : [type]
-%     [description]
-% ant2 : [type]
-%     [description]
-% param : [type]
-%     [description]
-% 
-% Returns
-% -------
-% [type]
-%     [description]
+    % [extended_summary]
+    %
+    % Parameters
+    % ----------
+    % u : [type]
+    %     [description]
+    % ant2 : [type]
+    %     [description]
+    % param : [type]
+    %     [description]
+    %
+    % Returns
+    % -------
+    % [type]
+    %     [description]
 
     param.pos = [0 param.pos];
     out.partition = [];

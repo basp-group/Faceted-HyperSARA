@@ -2,7 +2,7 @@ function [v0, v1, weights0, weights1] = fhs_initialize_facet_dual(Ncoefs, ...
     dims_o, n_channels, nlevel)
 % Initialize dual variables (constant overlap).
 %
-% Initialize all the dual variables for a given facet (nuclear and 
+% Initialize all the dual variables for a given facet (nuclear and
 % :math:`\ell_{2, 1}` norms).
 %
 % Parameters

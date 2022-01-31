@@ -1,48 +1,48 @@
 function [field1, field2, tx, ty] = stationary_Gaussian_process(m, n, rho)
-% Draw a realization of a stationary random Gaussian field over an 
-% :math`m \times n` grid, following :cite:p:`Kroese2015`.
-% 
-% Parameters
-% ----------
-% m : int
-%     Image dimension (y axis).
-% n : int
-%     Image dimension (x axis).
-% rho : anonymous function
-%     Function handle, function of a matrix :math:`h` such that
-%     :math:`\text{cov}(X_t, Y_s) = \rho(t-s)` is the covariance of 
-%     a 2-dimensional stationary Gaussian field.
-% 
-% Returns
-% -------
-% field1, field2 : double[:, :]
-%     Two independent realization over the :math`m \times n` grid 
-%     considered.
-% tx, ty : double[:]
-%     Two vectors such that each field can be displayed using the command
-%     ``imagesc(tx, ty, field1)`` (idem for field2).
-%
-% Example
-% -------
-% .. code-block: matlab
-%
-%    % define covariance function
-%    rho=@(h)((1-h(1)^2/50^2-h(1)*h(2)/(15*50)-h(2)^2/15^2)...
-%              *exp(-(h(1)^2/50^2+h(2)^2/15^2))); 
-%    [field1, field2, tx, ty] = stationary_Gaussian_process(512,384,rho);
-%    imagesc(tx, ty, field1);
-%
-% Note
-% ----
-% - The size of covariance matrix is ``m^2*n^2``.
-% - By default, when the function is called without assigning the output,
-%   `field1` is drectly display using the ``imagesc`` MATLAB function.
-%
+    % Draw a realization of a stationary random Gaussian field over an
+    % :math`m \times n` grid, following :cite:p:`Kroese2015`.
+    %
+    % Parameters
+    % ----------
+    % m : int
+    %     Image dimension (y axis).
+    % n : int
+    %     Image dimension (x axis).
+    % rho : anonymous function
+    %     Function handle, function of a matrix :math:`h` such that
+    %     :math:`\text{cov}(X_t, Y_s) = \rho(t-s)` is the covariance of
+    %     a 2-dimensional stationary Gaussian field.
+    %
+    % Returns
+    % -------
+    % field1, field2 : double[:, :]
+    %     Two independent realization over the :math`m \times n` grid
+    %     considered.
+    % tx, ty : double[:]
+    %     Two vectors such that each field can be displayed using the command
+    %     ``imagesc(tx, ty, field1)`` (idem for field2).
+    %
+    % Example
+    % -------
+    % .. code-block: matlab
+    %
+    %    % define covariance function
+    %    rho=@(h)((1-h(1)^2/50^2-h(1)*h(2)/(15*50)-h(2)^2/15^2)...
+    %              *exp(-(h(1)^2/50^2+h(2)^2/15^2)));
+    %    [field1, field2, tx, ty] = stationary_Gaussian_process(512,384,rho);
+    %    imagesc(tx, ty, field1);
+    %
+    % Note
+    % ----
+    % - The size of covariance matrix is ``m^2*n^2``.
+    % - By default, when the function is called without assigning the output,
+    %   `field1` is drectly display using the ``imagesc`` MATLAB function.
+    %
 
-%% Reference:
-% Kroese, D. P., & Botev, Z. I. (2015). Spatial Process Simulation.
-% In Stochastic Geometry, Spatial Statistics and Random Fields(pp. 369-404)
-% Springer International Publishing, DOI: 10.1007/978-3-319-10064-7_12
+    %% Reference:
+    % Kroese, D. P., & Botev, Z. I. (2015). Spatial Process Simulation.
+    % In Stochastic Geometry, Spatial Statistics and Random Fields(pp. 369-404)
+    % Springer International Publishing, DOI: 10.1007/978-3-319-10064-7_12
 
     % create grid for field
     tx = 0:(n - 1);

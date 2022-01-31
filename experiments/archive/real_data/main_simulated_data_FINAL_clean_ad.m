@@ -53,8 +53,8 @@ if ~isfield(param_global, 'flag_solve_minimization'); param_global.flag_solve_mi
 if ~isfield(param_global, 'flag_load_temp_result');   param_global.flag_load_temp_result = 0; end
 if ~isfield(param_global, 'flag_plotFigures'); param_global.flag_plotFigures = 0;  end
 if ~isfield(param_global, 'flag_verbose'); param_global.flag_verbose = 0;  end
-%-------------------------------------------------------------------------%
-%-------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 % get flags
 doExtractRawData    = param_global.flag_extract_raw_data;
 doGenerateRealData  = param_global.flag_generate_real_data;

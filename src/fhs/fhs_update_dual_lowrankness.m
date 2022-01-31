@@ -9,7 +9,7 @@ function [v0, g0] = fhs_update_dual_lowrankness(v0, xhat, ...
 % Parameters
 % ----------
 % v0 : double[:]
-%     Dual variable associated with the nuclear norm prior 
+%     Dual variable associated with the nuclear norm prior
 %     ``[min(M*N, L), 1]``.
 % xhat : double[:, :, :]
 %     Auxiliary variable related to the wideband image ``[M, N, L]``.
@@ -23,10 +23,10 @@ function [v0, g0] = fhs_update_dual_lowrankness(v0, xhat, ...
 % Returns
 % -------
 % v0 : double[:, :]
-%     Dual variable associated with the nuclear norm prior 
+%     Dual variable associated with the nuclear norm prior
 %     ``[min(M*N, L), 1]``.
 % g0 : double[:, :, :]
-%     Auxiliary variable for the update of the primal variable 
+%     Auxiliary variable for the update of the primal variable
 %     ``[M, N, L]``.
 %
 

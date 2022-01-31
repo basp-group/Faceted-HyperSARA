@@ -47,7 +47,7 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
 % l2bounds (double)
 %     :math:`\ell_2` bounds to be used in the data fidelity constraints.
 % sigma_noise (double)
-%     Standard deviation of the additive white complex Gaussian noise 
+%     Standard deviation of the additive white complex Gaussian noise
 %     affecting the clean data `y0`.
 % u (double[:])
 %     :math:`u` coordinate, expressed in units of the wavelength.
@@ -71,13 +71,13 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
 % exp_type = 'test'; % 'spectral', 'spatial', 'test'
 % flag_generateCoverage = 0;
 % flag_dr = 0;
-% 
+%
 % % number of cores assigned to the data fidelity terms (groups of channels)
 % ncores_data = 2;
 % coverage_path = "data/vla_7.95h_dt10s.uvw256.mat" ; %"data/msSpecs.mat";
 % % "data/vla_7.95h_dt10s.uvw256.mat";
 % isnr = 50;
-% 
+%
 % superresolution_factor = 2;
 % flag_cirrus = false;
 % kernel = 'minmax:kb'; % 'kaiser' (for real data), 'minmax:tuned'
