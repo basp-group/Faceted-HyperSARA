@@ -112,8 +112,8 @@ git add .
 git commit -m "Build documentation as of $(git log '--format=format:%H' master -1)"
 git push origin gh-pages
 # delete the worktree
-   cd ../
-   git worktree remove html
+cd ../
+git worktree remove html
 ```
 
 ### Matlab code formatting
