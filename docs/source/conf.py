@@ -21,8 +21,8 @@ matlab_src_dir = os.path.abspath(os.path.join("..", ".."))
 # -- Project information -----------------------------------------------------
 
 project = "Faceted-Hyper-SARA"
-copyright = "2021, P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech"
-author = "P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech"
+copyright = "2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz"
+author = "P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz"
 
 # The full version, including alpha/beta/rc tags
 release = re.sub('^v', '', os.popen('git describe').read().strip())

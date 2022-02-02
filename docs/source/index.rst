@@ -17,6 +17,7 @@ HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA
    :caption: Installation & references
 
    setup
+   contributors
    biblio
 
 .. toctree::
@@ -26,7 +27,6 @@ HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA
    _src/src
    _lib/lib
    _experiments/experiments
-   figures
 
 .. note::
 

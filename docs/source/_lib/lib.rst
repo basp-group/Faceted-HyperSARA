@@ -9,5 +9,4 @@ Set of helper functions used in the full library.
 
    lib.generate_data
    lib.operators
-   lib.print
    lib.utils
