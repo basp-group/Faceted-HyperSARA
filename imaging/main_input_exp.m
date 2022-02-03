@@ -2,7 +2,7 @@
 % experiment.
 %
 % This file calls the generic imaging pipeline
-% :mat:func:`experiments.main_real_data_exp` to reconstruct an image from
+% :mat:func:`imaging.main_real_data_exp` to reconstruct an image from
 % the input dataset.
 %
 % Parameters
@@ -56,7 +56,7 @@
 %     Flag to trigger the computation of the norm of the measurement
 %     operator. If set to ``false``, MATLAB will look for a file where this
 %     quantity has been saved (save and computation step are triggered in
-%     :mat:func:`experiments.main_real_data_exp`).
+%     :mat:func:`imaging.main_real_data_exp`).
 % param_global.im_Nx  : int
 %     Number of pixels along axis x in the reconstructed image.
 % param_global.im_Ny : int
@@ -64,7 +64,7 @@
 % param_global.im_pixelSize  : double
 %     Pixel-size in arcsec in the frequency domain. Set to ``[]`` to use
 %     the default computation (implemented in
-%     :mat:func:`experiments.main_real_data_exp`).
+%     :mat:func:`imaging.main_real_data_exp`).
 % param_global.reg_flag_reweighting : bool
 %     Flag to activate the use of multiple reweighting steps.
 % param_global.reg_nReweights : int
@@ -153,7 +153,7 @@ clear; clc; close all;
 %% change paths if needed
 % TODO: to be modified
 main_dir = '..'; % '/Users/ad33/CodesScience/Faceted-Hyper-SARA/';
-project_dir = [main_dir, filesep, 'experiments'];
+project_dir = [main_dir, filesep, 'imaging'];
 cd(project_dir);
 
 %% src name & datasets

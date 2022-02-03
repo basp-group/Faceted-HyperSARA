@@ -19,7 +19,7 @@ Clone the current repository with all the submodules as follows
 Updating submodules (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-From an existing ``faceted-hyper-sara`` repository, issue the following commands
+From an existing ``Faceted-Hyper-SARA`` repository, issue the following commands
 
 .. code-block:: bash
 
@@ -44,14 +44,14 @@ Reconstructing an image cube from an MS-Table
    ``owlcat``, ``pyxis``, ``py-casacore``, ``tigger``, ``meqtrees-cattery``,
    ``meqtrees-timba``.
 
-2. (Optional) Make a copy of ``experiments/default_parameters.json``, and 
+2. (Optional) Make a copy of ``imaging/default_parameters.json``, and 
    update the main algorithm parameters specified in this file (all values are 
    set to default, reliable values).
 
-3. Configure :mat:scpt:`experiments.main_input_exp` following the instructions
+3. Configure :mat:scpt:`imaging.main_input_exp` following the instructions
    provided in the file.
 
-4. Run the :mat:scpt:`experiments.main_input_exp` with MATLAB.
+4. Run the :mat:scpt:`imaging.main_input_exp` with MATLAB.
 
 
 Testing the library with a synthetic dataset
@@ -65,15 +65,15 @@ To test the imaging pipeline with a synthetic data test.
 
 2. Generate one (or all) synthetic wideband image cube used in
    :cite:p:`Thouvenin2021` using the
-   :mat:scpt:`experiments.main_generate_cyga_cubes` script, following the
+   :mat:scpt:`imaging.main_generate_cyga_cubes` script, following the
    instructions.
 
 3. Generate a synthetic dataset using 
-   :mat:func:`experiments.main_generate_data`, and run the (properly
-   configured) :mat:scpt:`experiments.main_input_exp` script (see 
+   :mat:func:`imaging.main_generate_data`, and run the (properly
+   configured) :mat:scpt:`imaging.main_input_exp` script (see 
    :ref:`previous section<Reconstructing an image cube from an MS-Table>`).
 
-4. Configure :mat:scpt:`experiments.main_input_exp` following the instructions 
+4. Configure :mat:scpt:`imaging.main_input_exp` following the instructions 
    provided in the file.
 
 

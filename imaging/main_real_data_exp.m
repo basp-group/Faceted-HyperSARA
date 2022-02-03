@@ -23,7 +23,7 @@ function main_real_data_exp(image_name, datasetsNames, dataFilename, ...
 %     effective channel.
 % param_global: struct
 %     Global imaging pipeline parameters (see
-%     :mat:func:`experiments.main_input_exp`).
+%     :mat:func:`imaging.main_input_exp`).
 % param_global.algo_version : string (``"sara"``, ``"hs"`` or ``"fhs"``).
 %     Selected solver.
 % param_global.ncores_data : int
@@ -244,7 +244,7 @@ project_dir = param_global.main_dir;
 fprintf('\nMain project dir. is %s: ', project_dir);
 current_dir = pwd;
 if strcmp(project_dir, current_dir)
-    current_dir = [project_dir, 'experiments', filesep];
+    current_dir = [project_dir, 'imaging', filesep];
     cd(current_dir);
 end
 fprintf('\nCurrent dir. is  %s: ', current_dir);

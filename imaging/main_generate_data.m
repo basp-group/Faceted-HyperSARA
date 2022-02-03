@@ -3,7 +3,7 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
     flag_cirrus, flag_generateCoverage)
 % Generate a ``.mat`` synthetic dataset compatible with the requirements
 % from the imaging interface specified in
-% :file:`experiments.main_input_exp.m`
+% :file:`imaging.main_input_exp.m`
 %
 % Parameters
 % ----------
