@@ -31,6 +31,13 @@ To properly clone the project with the submodules, you may need to choose one of
 ```bash
 git clone --recurse-submodules https://github.com/basp-group-private/Faceted-Hyper-SARA.git
 ```
+If you are using an SSH key for github rather than a personal token, then you will need to clone the repository as follows instead:
+
+```bash
+git clone git@github.com:basp-group-private/Faceted-Hyper-SARA.git
+```
+
+You will then also need to update the local repository configuration to use this approach for the sub-modules and update the submodules separately as detailed below. If you have problems updating the submodule access configuration open a issue on this repository.
 
 - submodules update: updating from an existing `Faceted-Hyper-SARA` repository:
 
@@ -59,7 +66,7 @@ You can then execute the `experiments/sim_script_cyga_cubes.m` script to generat
 
 ## Configuration
 
-To reproduce the experiments (on CIRRUS), configure the `.csv` file contained in ..., and run the following
+To reproduce the experiments on the Cirrus HPC system ([https://www.cirrus.ac.uk](https://www.cirrus.ac.uk)), configure the `.csv` file contained in `imaging/spatial` or `imaging/spectral` as required and run the following
 
 ```bash
 cd path/to/Faceted-Hyper-SARA
@@ -68,6 +75,8 @@ module load anaconda/python3
 vi job_spatial.py
 python job_spatial.py
 ```
+Cirrus is configured with Matlab and python installed using the module system and uses the Slurm batch system. If your system is configured differently then the batch files (`run_simulation.slurm` in the `imaging/spatial` or `imaging/spectral` directories) will need to be altered to fit your system setup.
+
 
 To use the scripts reported in `figures`, make sure the [`Cubehelix`](...) package is installed.
 
