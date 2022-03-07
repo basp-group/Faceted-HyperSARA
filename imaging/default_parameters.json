@@ -50,9 +50,6 @@
             "measop_flag_wproj": false,
             "measop_wprojCEnergyL2": 0.9999,
             "measop_wprojGEnergyL2": 0.9999
-        },
-        "dataReduction": {
-            "measop_flag_dataReduction": false
         }
     }
 ]
