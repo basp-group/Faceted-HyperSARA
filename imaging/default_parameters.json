@@ -38,7 +38,7 @@
         "preconditioning": {
             "__comment": "Preconditioning parameters",
             "gen_uniform_weight_matrix": true,
-            "uniform_weight_sub_pixels": true
+            "uniform_weight_sub_pixels": 1
         },
         "sara": {
             "__comment": "SARA dictionary parameters (always specify Dirac basis ('self') in last position if ever used, filter length of Dirac set to 0 by convention)",

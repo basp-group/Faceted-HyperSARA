@@ -24,6 +24,7 @@ HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA
    :maxdepth: 2
    :caption: API
 
+   default
    _src/src
    _lib/lib
    _imaging/imaging

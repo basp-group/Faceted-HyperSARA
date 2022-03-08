@@ -1,11 +1,12 @@
 function imaging(image_name, datasetsNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...
     param_nufft, param_precond, dict)
-% Main script to run the faceted HyperSARA approach on real data.
+% Main function to run any algorithm from the SARA family, i.e., the SARA, 
+% HyperSARA or faceted HyperSARA approach.
 %
-% This script generates synthetic data and runs the SARA, HyperSARA or
+% This function runs the SARA, HyperSARA or
 % faceted HyperSARA approach to reconstruct an :math:`N \times L` wideband
-% image cube.
+% image cube using the configuration provided in :mat:scpt:`imaging.main_input_imaging`.
 %
 % Parameters
 % ----------
@@ -23,7 +24,7 @@ function imaging(image_name, datasetsNames, dataFilename, ...
 %     effective channel.
 % param_global: struct
 %     Global imaging pipeline parameters (see
-%     :mat:func:`imaging.main_input_exp`).
+%     :mat:func:`imaging.main_input_imaging`).
 % param_global.algo_version : string (``"sara"``, ``"hs"`` or ``"fhs"``).
 %     Selected solver.
 % param_global.ncores_data : int

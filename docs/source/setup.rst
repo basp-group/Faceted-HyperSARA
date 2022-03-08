@@ -46,12 +46,12 @@ Reconstructing an image cube from an MS-Table
 
 2. (Optional) Make a copy of ``imaging/default_parameters.json``, and 
    update the main algorithm parameters specified in this file (all values are 
-   set to default, reliable values).
+   set to default, reliable values). Documentation for all the parameters involved is given in the :doc:`default` page.
 
-3. Configure :mat:scpt:`imaging.main_input_exp` following the instructions
-   provided in the file.
+3. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
+   provided in the documentation and the file itself.
 
-4. Run the :mat:scpt:`imaging.main_input_exp` with MATLAB.
+4. Run :mat:scpt:`imaging.main_input_imaging` with MATLAB.
 
 
 Testing the library with a synthetic dataset
@@ -69,12 +69,16 @@ To test the imaging pipeline with a synthetic data test.
    instructions.
 
 3. Generate a synthetic dataset using 
-   :mat:func:`imaging.main_generate_data`, and run the (properly
-   configured) :mat:scpt:`imaging.main_input_exp` script (see 
-   :ref:`previous section<Reconstructing an image cube from an MS-Table>`).
+   :mat:func:`imaging.main_generate_data`.
 
-4. Configure :mat:scpt:`imaging.main_input_exp` following the instructions 
-   provided in the file.
+4. (Optional) Make a copy of ``imaging/default_parameters.json``, and 
+   update the main algorithm parameters specified in this file (all values are 
+   set to default, reliable values). Documentation for all the parameters involved is given in the :doc:`default` page.
+
+5. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
+   provided in the documentation and the file itself.
+
+6. Run :mat:scpt:`imaging.main_input_imaging` with MATLAB.
 
 
 Contributing
