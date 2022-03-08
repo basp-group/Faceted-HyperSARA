@@ -29,6 +29,10 @@ From an existing ``Faceted-Hyper-SARA`` repository, issue the following commands
    git submodule update --init --recursive # update the content of the submodules
    git submodule update --remote --merge # fetch and merge latest state of the submodule
 
+.. warning::
+
+   Note that a simple ``pull`` instruction from the ``Faceted-Hyper-SARA`` repository does not update the submodules if the version on which it relies has been modified. If this is the case, update the submodules with the ``git submodule``instructions provided above.
+
 
 Getting started
 ---------------
@@ -49,7 +53,7 @@ Reconstructing an image cube from an MS-Table
    set to default, reliable values). Documentation for all the parameters involved is given in the :doc:`default` page.
 
 3. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
-   provided in the documentation and the file itself.
+   provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction ``% TODO: to be adjusted by the user``.
 
 4. Run :mat:scpt:`imaging.main_input_imaging` with MATLAB.
 
@@ -76,7 +80,7 @@ To test the imaging pipeline with a synthetic data test.
    set to default, reliable values). Documentation for all the parameters involved is given in the :doc:`default` page.
 
 5. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
-   provided in the documentation and the file itself.
+   provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction ``% TODO: to be adjusted by the user``.
 
 6. Run :mat:scpt:`imaging.main_input_imaging` with MATLAB.
 

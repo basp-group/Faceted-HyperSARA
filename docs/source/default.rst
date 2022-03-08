@@ -27,7 +27,7 @@ The parameters listed below, defined in the ``imaging/default_parameters.json`` 
 
 Default values can be bypassed by providing the name of a new ``.json`` file to the :mat:scpt:`imaging.main_input_imaging` configuration script (see the variable ``json_filename`` in l. 136). Note that all the fields specified in ``imaging/default_parameters.json`` are required to be able to run the imaging pipeline.
 
-.. admonition:: Reweighting scheme
+.. admonition:: Reweighting scheme :cite:p:`Candes2009`
 
     flag_reweighting : true
         Flag indicating whether the reweighting scheme is activated or not.
@@ -77,7 +77,7 @@ Default values can be bypassed by providing the name of a new ``.json`` file to 
         Name of the selected NUFFT interpolation kernel. Possible options include ``kaiser``, ``minmax:kb`` and ``minmax:tuned``. See associated documentation of the `lib.operators.op_nufft function <https://basp-group.github.io/RI-measurement-operator/_lib/lib.operators.html#lib.operators.op_nufft>`_ from the measurement-operator module.
 
 
-.. admonition:: Preconditioning :cite:p:`Onose2017` (instrumental in PDFB)
+.. admonition:: Preconditioning (instrumental in PDFB) :cite:p:`Onose2017`
     
     gen_uniform_weight_matrix : true
         Flag to activate the generation of uniform weights (to be kept active)
@@ -87,7 +87,7 @@ Default values can be bypassed by providing the name of a new ``.json`` file to 
     See associated documentation of the `lib.utils.util_gen_preconditioning_matrix function <https://basp-group.github.io/RI-measurement-operator/_lib/lib.utils.html#lib.utils.util_gen_preconditioning_matrix>`_ from the measurement-operator module.
 
 
-.. admonition:: Ellipsoid projection :cite:p:`Onose2017` (instrumental in PDFB)
+.. admonition:: Ellipsoid projection (instrumental in PDFB) :cite:p:`Onose2017`
 
     min_iter : 1
         Minimum number of iterations.
@@ -99,7 +99,7 @@ Default values can be bypassed by providing the name of a new ``.json`` file to 
     See associated documentation of the `lib.utils.solver_proj_elipse_fb <https://basp-group.github.io/RI-measurement-operator/_lib/lib.utils.html#lib.utils.solver_proj_elipse_fb>`_ from the measurement-operator module.
 
 
-.. admonition:: Wavelet dictionary (SARA by default)
+.. admonition:: Wavelet dictionary (SARA dictionary by default) :cite:p:`Carrillo2012`
 
     basis : ["db1", "db2", "db3", "db4", "db5", "db6", "db7", "db8", "self"]
         Name of the wavelet dictionaries considered ("self" corresponding to the Dirac basis). By default, contains the list of wavelets defining the SARA dictionary :cite:p:`Carrillo2012`. Whenever used, the Dirac basis needs to be specified in last.
@@ -111,11 +111,11 @@ Default values can be bypassed by providing the name of a new ``.json`` file to 
     See associated documentation in the `SARA-dictionary <https://basp-group.github.io/SARA-dictionary/index.html>`_ module.
 
 
-.. admonition:: :math:`w`-projection parameters
+.. admonition:: :math:`w`-projection parameters :cite:p:`Dabbech2018`
 
     measop_flag_wproj : false
         Flag to activate :math:`w`-correction.
     measop_wprojCEnergyL2 : 0.9999
-        TBD
+        Sparsification levels for the :math:`w` kernel, to be selected in the interval :math:`[0.99, 1]`. 
     measop_wprojGEnergyL2 : 0.9999
-        TBD
+        Sparsification levels for convolution kernels involved in the degridding matrix :math:`G` after :math:`w`-correction. To be selected in the interval :math:`[0.99, 1]`.

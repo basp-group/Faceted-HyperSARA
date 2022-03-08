@@ -139,6 +139,11 @@
 %   `maxProjBaseline` in units of the wavelength.
 %
 
+%% Documentation
+%
+% For more details about the different parameters to be configured, see the
+% online documentation: https://basp-group.github.io/Faceted-Hyper-SARA/default.html .
+
 % TODO give Matlab config file for a cluster (intead of just providing CIRRUS)
 % TODO (keep empty parameter for non-used variables)
 clear; clc; close all;
@@ -217,22 +222,22 @@ param_global.algo_flag_computeOperatorNorm = true;
 % faceting params: note that if interleaving is active, one subcube is
 % imaged at a time: Qc=1 by default.
 % TODO: to be adjusted by the user
-param_global.facet_Qx = 1; % dimFacet1
-param_global.facet_Qy = 1; % dimFacet2
+param_global.facet_Qx = 1; % number of spatial facets along axis x (only used in Faceted HyperSARA)
+param_global.facet_Qy = 1; % number of spatial facets along axis y (only used in Faceted HyperSARA)
 param_global.facet_overlap_fraction = [0.5, 0.5];
 
 % reg params
 % TODO: to be adjusted by the user
-param_global.reg_gam = 1; % l21 reg param
-param_global.reg_gam_bar = 1; % nuclear norm reg param
+param_global.reg_gam = 1; % additional scaling factor for sparsity 
+% regularization (using heuristics described in Thouvenin2021)
+param_global.reg_gam_bar = 1; % additional scaling factor for low-rankness regularization (using heuristics described in Thouvenin2021). Only active 
+% for HyperSARA and Faceted HyperSARA.
 param_global.reg_flag_reweighting = true;
 param_global.reg_nReweights = 5;
-% param_global.reg_flag_homotopy = false; % not compulsory to be defined here..
-% param_global.generate_eps_nnls = false;
 
 % algo & parallelisation params
 % TODO: to be adjusted by the user
-param_global.algo_version = 'fhs'; % 'fhs', 'hs' or 'sara'
+param_global.algo_version = 'fhs'; % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
 
 % filenames and input
 % TODO: to be adjusted by the user
