@@ -144,25 +144,30 @@
 % For more details about the different parameters to be configured, see the
 % online documentation: https://basp-group.github.io/Faceted-Hyper-SARA/default.html .
 
+clear; clc; close all;
+
+%% Parameters to be specified
 % TODO give Matlab config file for a cluster (intead of just providing CIRRUS)
 % TODO (keep empty parameter for non-used variables)
-clear; clc; close all;
-%% change paths if needed
-% TODO: to be adjusted by the user
-main_dir = '..'; % '/Users/ad33/CodesScience/Faceted-Hyper-SARA/';
+
+% change paths if needed
+% TODO: to be adjusted by the user if required (keep current setting by default)
+main_dir = '..';
 project_dir = [main_dir, filesep, 'imaging'];
 cd(project_dir);
 
-%% src name & datasets
+% src name & datasets
 % TODO: to be adjusted by the user
 imagecubeName = 'cygASband_Cube_256_512';
 param_global.exp_type = 'test'; % ! only for debugging purposes
 datasetNames = {'test'}; % allowing for multiple datasets, empty cell if a single dataset
-% data dir.
+
+% data directory
+% TODO: to be adjusted by the user
 data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
 % preproc dir.
-preproc_calib_dir = [data_dir, 'pre_processing_die/'];
+preproc_calib_dir = [data_dir, 'pre_processing_die/']; % set to [] if not used 
 % preproc_calib_dir = [data_dir,'pre_processing_dde/'];
 % name of json parameter file
 json_filename = "default_parameters.json";
@@ -173,6 +178,7 @@ json_filename = "default_parameters.json";
 % wavelength (i.e. normalised with the wavelength) and 'maxProjBaseline' (maximum projected baseline) is in
 % units of the wavelength
 % ! Note the path for .mat files (dataset nametag used)
+% TODO: to be adjusted by the user
 dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, filesep, 'data_ch_', num2str(ch), '.mat');
 
 %% channels organisation
@@ -193,7 +199,8 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 % > nChannelsPerImage = 16;
 
 % TODO: to be adjusted by the user
-idChannels2Image = [1:2]; % ids of the 'physical' channels to be imaged
+idChannels2Image = [1:2]; % ids of the 'physical' channels to be imaged, 
+% e.g., [1:2] for channel range from 1 to 2
 nChannelsPerImage = 1; % number of consecutive channels to be concatenated into each effective channel
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % channels re-structured into effective channels
@@ -205,18 +212,20 @@ for iEff = 1:nEffChans2Image
     fprintf('\nEffective channel ID %d: physical channels involved: %d - %d\n', iEff, effChans2Image{iEff}(1), effChans2Image{iEff}(end));
 end
 
-%% running one subcube at a time
+% running one subcube at a time
 % TODO: to be adjusted by the user
 subcubeInd = 0; % id of subcube if spectral interleaving is active, 0 if inactive
 
 % measurement op. params
-param_global.measop_flag_dataReduction = 0;
+% TODO: to be adjusted by the user
+param_global.measop_flag_dataReduction = 0; % 1 if feature used, 0 otherwise
 
 % image details, dims &  cellsize
 % TODO: to be adjusted by the user
 param_global.im_Nx = 512; % 2560;
 param_global.im_Ny = 256; % 1536;
-param_global.im_pixelSize = []; % 0.06; % pixelsize in asec, use [] to use the default value set from the uv-coverage
+param_global.im_pixelSize = []; % 0.06; % pixelsize in asec, use [] to use
+% the default value set from the uv-coverage
 param_global.algo_flag_computeOperatorNorm = true;
 
 % faceting params: note that if interleaving is active, one subcube is
@@ -229,9 +238,10 @@ param_global.facet_overlap_fraction = [0.5, 0.5];
 % reg params
 % TODO: to be adjusted by the user
 param_global.reg_gam = 1; % additional scaling factor for sparsity 
-% regularization (using heuristics described in Thouvenin2021)
+% regularization (using heuristics described in Thouvenin2021). Set 
+% parameter to 1 by default.
 param_global.reg_gam_bar = 1; % additional scaling factor for low-rankness regularization (using heuristics described in Thouvenin2021). Only active 
-% for HyperSARA and Faceted HyperSARA.
+% for HyperSARA and Faceted HyperSARA. Set parameter to 1 by default.
 param_global.reg_flag_reweighting = true;
 param_global.reg_nReweights = 5;
 
@@ -240,7 +250,7 @@ param_global.reg_nReweights = 5;
 param_global.algo_version = 'fhs'; % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
 
 % filenames and input
-% TODO: to be adjusted by the user
+% TODO: to be adjusted by the user (set path to [] whenever it is not used)
 param_global.main_dir = main_dir;
 % param_global.preproc_filename_dde = @(firstch,lastch) strcat(preproc_calib_dir,filesep,'ddes',filesep,'chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
 % param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
@@ -254,7 +264,9 @@ param_global.preproc_filename_l2bounds = [];
 param_global.preproc_filename_model = [];
 
 % hardware
-param_global.hardware = 'local'; % 'cirrus' or 'local', add your own cluster & update 'util_set_parpool_dev.m' accordingly
+% TODO: to be adjusted by the user
+param_global.hardware = 'local'; % 'cirrus' or 'local'. If required, add 
+% your own cluster by updating the 'util_set_parpool_dev.m' file accordingly.
 
 %% read and set configuration from .json file
 [param_global, param_solver, ...
