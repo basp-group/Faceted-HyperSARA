@@ -1,6 +1,6 @@
 # Requirements
-Casacore https://github.com/casacore/casacore
-Meqtrees https://github.com/ratt-ru/meqtrees/wiki/Installation
+1. Casacore https://github.com/casacore/casacore
+2. Meqtrees https://github.com/ratt-ru/meqtrees/wiki/Installation
 
 # General notes
 1. Output .mat files contain the following fields:
