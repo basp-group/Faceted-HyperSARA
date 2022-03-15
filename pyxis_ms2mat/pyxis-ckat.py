@@ -5,7 +5,6 @@ import json
 import math
 import os
 import time
-
 import im
 import im.argo
 import im.lwimager
@@ -29,12 +28,12 @@ C = 299792458
 
 
 def getdata_ms_concat_bandwidth(
-    msf_bandwidth1="$MSBW1",
-    msf_bandwidth2="$MSBW2",
+    msf_bandwidth1="$MSLOW",
+    msf_bandwidth2="$MSHIGH",
     freqFirst="$CHF",
     freqLast="$CHL",
     srcid="$FIELDID",
-    mstag="$OUTPUT",
+    mstag="$OUT",
 ):
 
     msname1 = II("%s" % msf_bandwidth1)
@@ -64,7 +63,7 @@ def getdata_ms_concat_bandwidth(
 
 
 def get_data_ms(
-    msf="$MS", mstag="$OUTPUT", freqFirst="$CHF", freqLast="$CHL", srcid="$FIELDID"
+    msf="$MS", mstag="$OUT", freqFirst="$CHF", freqLast="$CHL", srcid="$FIELDID"
 ):
     msname = II("%s" % msf)
     mstag = II("%s" % mstag)
@@ -83,48 +82,43 @@ def get_data_ms(
 
 
 def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
-
-    msname = II("%s" % msname)
-    data_parent = "./data"
-    info("Data .mat files will be saved in %s" % data_parent)
-    x.sh("mkdir -p  %s" % data_parent)
-    x.sh("mkdir -p  %s/%s" % (data_parent, mstag))
-
-    path_data = "%s/%s/" % (data_parent, mstag)
-    x.sh("mkdir -p  %s" % path_data)
-
+    
+    data_parent_dir = "./data"
+    x.sh("mkdir -p  %s" % data_parent_dir)
+    data_dir = "%s/%s" % (data_parent_dir, mstag)
+    x.sh("mkdir -p  %s" % (data_dir))
+    info("Data .mat files will be saved in %s" %data_dir)
+    
+    msname = II("%s" %msname)
     info(msname)
     tab = ms.ms(msname, write=False)
-    info("columns are", *(tab.colnames()))
+    info("MS table columns:", *(tab.colnames()))
 
-    spwtab = ms.ms(msname, subtable="SPECTRAL_WINDOW")
-    freq0 = spwtab.getcol("CHAN_FREQ")[ms.SPWID, freqFirst]
-    # get the first freq
+    spwtab = ms.ms(msname, subtable="SPECTRAL_WINDOW")    
+    bandwidth = spwtab.getcol("CHAN_WIDTH")[ms.SPWID, 0]
     freqStepVect = spwtab.getcol("CHAN_WIDTH")
     freqsVect = spwtab.getcol("CHAN_FREQ")
-    nspw = len(freqsVect[0, :])
-    nSpw = len(freqsVect[:, 1])
-    if nSpw > 1:
-        info("more than one spectral window detected.")
-    if nSpw == 1:
-        info(
-            "First physical channel %s, last physical channel %s"
-            % (freqFirst, freqLast)
-        )
-    else:
-        info("First SPW %s, last  SPW %s" % (freqFirst, freqLast))
+    spw_numch = spwtab.getcol("NUM_CHAN")
+    #info("Spectral window subtable columns: ", *(spwtab.colnames()))
+    #info("Number of channels in each spectral window %s"%spw_numch)      
 
-    bandwidth = spwtab.getcol("CHAN_WIDTH")[ms.SPWID, 0]
+    nSpw = len(spw_numch)
+    nChperSpw = spw_numch[0]
+    
+    if nSpw > 1:     
+        info("%s spectral window detected, composed of %s channels each"%(nSpw,nChperSpw))
+    else:
+        info("%s spectral window, composed of %s channels" %(nSpw,nChperSpw))    
     spwtab.close()
+
     # load remaining specs
+    field = tab.getcol("FIELD_ID")
+    srcrows = field == srcid
+    field = field[srcrows]
     uvw = tab.getcol("UVW")
     nmeas = len(uvw[:, 0])
     info("Number of measurements per channel %s" % nmeas)
-
-    field = tab.getcol("FIELD_ID")
-    srcrows = field == srcid
-    # get src data
-    field = field[srcrows]
+    uvw = uvw[srcrows, :]
     data_id = tab.getcol("DATA_DESC_ID")
     data_id = data_id[srcrows]
     ant1 = tab.getcol("ANTENNA1")
@@ -139,44 +133,41 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
     integrationTimeVect = integrationTimeVect[srcrows]
     dt = tab.getcol("EXPOSURE", 0, 1)[0]
     dtf = (tab.getcol("TIME", tab.nrows() - 1, 1) - tab.getcol("TIME", 0, 1))[0]
-    npts = len(ant1)
-    info(
-        "Number of measurements per channel associated with the src of interest: %s"
-        % npts
-    )
-    uvw = uvw[srcrows, :]
-    # load flags
     flag_row = tab.getcol("FLAG_ROW")
     flag_row = flag_row == False
     flag_row = flag_row[srcrows]
     flag_row = flag_row.transpose()
     flag_row = flag_row.astype(float)  # flag_row==False
-    flagAll = tab.getcol("FLAG")
-    flagAll = flagAll == False
-    flagAll = flagAll.astype(float)
-    flagAll = flagAll[srcrows, :, :]
-    flag_doneAll = flagAll[:, :, 0] + flagAll[:, :, 3]
+    npts = len(flag_row)
+    info( "Number of measurements per channel associated with the src of interest: %s" %npts)
 
-    flagAll = []
     # load data
     try:
         data_full = tab.getcol("CORRECTED_DATA")
     except:
         data_full = tab.getcol("DATA")
-        info("CORRECTED_DATA not found --> will use DATA ")
+        info("CORRECTED_DATA not found, reading DATA instead ")
+        
     data_full = data_full[srcrows, :, :]
     data_size = data_full.shape
     ncorr = data_size[2]
-    info("%s available correlations" % ncorr)
+    if ncorr == 4:
+        info("All four correlations are available")
+    else:
+        info("%s correlations available, Stokes I assumed" %ncorr)
+        
     data_corr_1 = data_full[:, :, 0]
     data_corr_4 = data_full[:, :, ncorr - 1]
     data_full = []
 
-    if ncorr == 4:
-        info("All correlations are available")
-    else:
-        info("Only Stokes I corr are available")
+    # load remaining flags
+    flagAll = tab.getcol("FLAG")
+    flagAll = flagAll == False
+    flagAll = flagAll.astype(float)
+    flagAll = flagAll[srcrows, :, :]
+    flagAll = flagAll[:, :, 0] + flagAll[:, :, ncorr - 1]
 
+    
     # load weights
     isavail_weight_spectrum = 0
     try:
@@ -237,91 +228,87 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
         # data = (data_corr_1[:,ifreq] +data_corr_4[:,ifreq])*0.5
         weightI = w1 + w4
         # flag
-        flag = flag_row + flag_doneAll[:, ifreq] + np.absolute(data)
+        flag = flag_row + flagAll[:, ifreq] + np.absolute(data)
         flag = flag != 0  # np.array(flag0,dtype=bool);
         # save data
         info("Reading data and writing file..Freq %s" % (ifreq))
 
         if nSpw > 1:
-            for ich in range(0, nSpw):
-                rows_slice = data_id == ich
-                data_slice = data[rows_slice]
-                weightI_slice = weightI[rows_slice]
+            for iSpw in range(0, nSpw):
+                frequency = freqsVect[iSpw, ifreq]
+                info("Spectral window %s, current freq id %s: %s MHz"%( iSpw, ifreq,frequency))
+                rows_slice = data_id == iSpw
                 flag_slice = flag[rows_slice]
+                #data
+                y = data[rows_slice]
+                y = y[flag_slice]
+                #1/sigma
+                nW = weightI[rows_slice]
+                nW = np.sqrt(nW[flag_slice])
+                #imaging weights if available               
                 try:
-                    wimagI_slice = wimagI[rows_slice]
+                    nWimag = wimagI[rows_slice]
                     info("Imaging weights available")
+                    nWimag =np.sqrt(nWimag[flag_slice])
                 except:
-                    wimagI_slice = []
-                frequency = freqsVect[ich, ifreq]
-                info(
-                    "Current freq %s of spectral window %s: %s MHz"
-                    % (ifreq, ich, frequency)
-                )
+                    nWimag= []
+                #uvw in units of the wavelength
                 uvw_slice = uvw[rows_slice] / (C / frequency)
-                u = uvw_slice[:, 0]
-                v = uvw_slice[:, 1]
-                w = uvw_slice[:, 2]
+                u = uvw_slice[flag_slice, 0]
+                v = uvw_slice[flag_slice, 1]
+                w = uvw_slice[flag_slice, 2]
                 uvw_slice = []
-                flag_slice = flag[rows_slice]
-                y = data_slice[flag_slice]
-                data_slice = []
-                u = u[flag_slice]
-                info(u.shape)
-                v = v[flag_slice]
-                w = w[flag_slice]
+                #max projected baseline (needed for pixelsize)
                 maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2))
-                nW = np.sqrt(weightI_slice[flag_slice])
-                try:
-                    wimag = np.sqrt(wimagI_slice[flag_slice])
-                except:
-                    wimag = []
-                fileid = 1 + fileid0 + (ich * 16) + ifreq
-                # fileid0+1;
-                dataFileName = "%s/data_ch_%s.mat" % (path_data, fileid)
+
+                fileid = 1 + fileid0 + (iSpw * nChperSpw) + ifreq
+                dataFileName = "%s/data_ch_%s.mat" % (data_dir, fileid)
                 info("Channel id: %d. File saved at %s" % (fileid, dataFileName))
                 sio.savemat(
                     dataFileName,
                     {
-                        "maxProjBaseline": maxProjBaseline,
-                        "u": u,
-                        "v": v,
-                        "w": w,
-                        "y": y,
-                        "nW": nW,
-                        "nWimag": wimag,
-                        "frequency": frequency,
+                        "frequency": frequency,                      
+                        "y": y,# data (Stokes I)
+                        "u": u,# u coordinate (in units of the wavelength)
+                        "v": v,# u coordinate (in units of the wavelength)
+                        "w": w,# u coordinate (in units of the wavelength)                       
+                        "nW": nW,# 1/sigma
+                        "nWimag": nWimag, #imaging weights if available (Briggs or uniform) 
+                        "maxProjBaseline": maxProjBaseline,#max projected baseline                         
                     },
                 )
+                
 
         else:
-            frequency = freqsVect[ifreq]
-            y = data[flag]
-            data = []
-            u = uvw[flag, 0]
-            v = uvw[flag, 1]
-            w = uvw[flag, 2]
-            uvw = []
-            nW = np.sqrt(weightI[flag])
-            wimagI = np.sqrt(wimagI[flag])
-            maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2))
-            dataFileName = "%s/data_ch_%s.mat" % (path_data, ifreq + 1)
+            # applying flags 
+            frequency = freqsVect[0,ifreq]
+            y = data[flag] ;  
+            u = uvw[flag, 0]; 
+            v = uvw[flag, 1]; 
+            w = uvw[flag, 2];       
+            nW = np.sqrt(weightI[flag]) 
+            nWimag = np.sqrt(wimagI[flag])
+            maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2)) 
+            
+            info("Spw 0, current freq id %s: %s MHz"%(ifreq, frequency))
+            
+            dataFileName = "%s/data_ch_%s.mat" % (data_dir, ifreq + 1)
             info("Channel id: %d. File saved at %s" % (ifreq + 1, dataFileName))
             sio.savemat(
                 dataFileName,
                 {
-                    "maxProjBaseline": maxProjBaseline,
-                    "u": u,
-                    "v": v,
-                    "w": w,
-                    "y": y,
-                    "nW": nW,
-                    "nWimag": wimag,
                     "frequency": frequency,
+                    "y": y,# data (Stokes I)
+                    "u": u,# u coordinate (in units of the wavelength)
+                    "v": v, # v coordinate (in units of the wavelength)
+                    "w": w, # w coordinate  (in units of the wavelength)              
+                    "nW": nW, # 1/sigma
+                    "nWimag": nWimag,  #imaging weights if available (Briggs or uniform)         
+                    "maxProjBaseline": maxProjBaseline,#max projected baseline 
                 },
             )
             fileid = ifreq + 1
-            info("Current freq %s" % ifreq)
+            
 
     tab.close()
     fileid0 = fileid
