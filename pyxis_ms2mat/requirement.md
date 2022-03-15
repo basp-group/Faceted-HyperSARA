@@ -1,8 +1,8 @@
-Requirements:
+*Requirements:
 Casacore https://github.com/casacore/casacore
 Meqtrees https://github.com/ratt-ru/meqtrees/wiki/Installation
 
-General notes:
+*General notes:
 1. Output .mat files contain the following fields:
 "frequency": frequency, # channel frequency in MHz                      
 "y": y,# data (Stokes I)
@@ -15,7 +15,7 @@ General notes:
 
 2. Functions in pyxis_ckat.py are examples. Users are encouraged to tailor the functions if their measurement set is organised differently.
 
-Examples:
+*Examples:
 1. Single measurement set (MS)
 Extracting data from the channels indexed from  0 to 12 of the source with field ID 0.
 Data will be saved in the directory "./data/mysource_name/"
