@@ -3,7 +3,7 @@
 2. Meqtrees https://github.com/ratt-ru/meqtrees/wiki/Installation
 
 # General notes
-1. Data extraction is performed using `pyxis`. The task should be performed in the folder containing `pyxis_ckat.py`.
+1. Data extraction is performed using `pyxis`. The task should be performed in the folder containing the python script `pyxis_ckat.py`.
 2. The user must provide the name/path to the measurement set. The remaining optional inputs are:
 ```bash
 "OUT" # nametag of the source of interest, it will define the directory of the extracted data, default OUT=""
@@ -22,7 +22,7 @@
 "nWimag" # imaging weights if available (Briggs or uniform), empty otherwise
 "maxProjBaseline" # max projected baseline (in units of the wavelength)
 ```
-4. Channels' indices and hence their associated filenames are incremented by 1 for MATLAB indexing purposes.
+4. Channels' indices and their associated filenames are incremented by 1 for MATLAB indexing purposes.
 5. Functions in `pyxis_ckat.py` are examples. The user is encouraged to tailor these functions if the measurement set is organised differently.
 6. In case of multiple spectral windows, the user is encouraged to use the  `split` fonctionality in CASA to image specific spectral windows and extract the data from the resulting subset measurement set.
 
