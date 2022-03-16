@@ -45,8 +45,7 @@ Reconstructing an image cube from an MS-Table
    ``pyxis_ms2mat/pyxis-ckat.py`` to extract the data in the form of a 
    collection of ``.mat`` (an example is provided in
    ``pyxis_ms2mat/job_example_slurm``). This requires the follownig libraries: 
-   ``owlcat``, ``pyxis``, ``py-casacore``, ``tigger``, ``meqtrees-cattery``,
-   ``meqtrees-timba``.
+   ``casacore`` and ``meqtrees``.
 
 2. (Optional) Make a copy of ``imaging/default_parameters.json``, and 
    update the main algorithm parameters specified in this file (all values are 
