@@ -50,8 +50,8 @@
 %     returning the name of a file containing a model image to be used to
 %     initialize the reconstruction algorithm. If not used, to be set to
 %     ``[]``.
-% param_global.measop_flag_dataReduction : bool
-%     Flag to activate data reduction.
+% param_global.measop_flag_visibility_gridding : bool
+%     Flag to activate data dimensionality reduction via visbility gridding.
 % param_global.algo_flag_computeOperatorNorm : bool
 %     Flag to trigger the computation of the norm of the measurement
 %     operator. If set to ``false``, MATLAB will look for a file where this
@@ -218,7 +218,7 @@ subcubeInd = 0; % id of subcube if spectral interleaving is active, 0 if inactiv
 
 % measurement op. params
 % TODO: to be adjusted by the user
-param_global.measop_flag_dataReduction = 0; % 1 if feature used, 0 otherwise
+param_global.measop_flag_visibility_gridding = 0; % 1 if active, 0 otherwise: activating visibility gridding to reduce data dimensionality
 
 % image details, dims &  cellsize
 % TODO: to be adjusted by the user
