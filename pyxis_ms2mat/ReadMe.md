@@ -58,7 +58,7 @@ Data sets will be saved in seperate directories.
  .
  /data/mysource_nametagn/
 ```
-To combine the data sets during imaging, the user should provide the nametags of the different sets in a cell as input.
+To combine the data sets during imaging, the user should provide the nametags of the different sets in a cell as input in `imaging/main_input_imaging.m`
 ```bash
 datasetNames = {'mysource_nametag1', 'mysource_nametag2',..,'mysource_nametagn'};
 ```
