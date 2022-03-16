@@ -77,3 +77,7 @@ To combine the data sets during imaging, the user should provide the nametags of
 ```bash
 datasetNames = {'mysource_nametag1', 'mysource_nametag2',..,'mysource_nametagn'};
 ```
+If no nametag is provided during data extraction, the user should set `datasetNames` as
+```bash
+datasetNames = {''};
+```
