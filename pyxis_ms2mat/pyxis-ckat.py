@@ -98,7 +98,6 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
     x.sh("mkdir -p  %s" % (data_dir))
     info("Data .mat files will be saved in %s" %data_dir)
     
-    #msname = II("%s" %msname)
     info(msname)
     tab = ms.ms(msname, write=False)
     info("MS table columns:", *(tab.colnames()))
@@ -122,15 +121,11 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
     
     if not freqFirst :
            freqFirst =0;
-           info("First channel ID  is not provided, first channel extracted ID=%s"%freqFirst)
+           info("First channel ID  is not provided or set to 0. First channel extracted ID=%s"%freqFirst)
     if not freqLast : 
            freqLast = nChperSpw-1;
-           info("Highest channel ID  is not provided, last channel extracted ID=%s" %freqLast)
+           info("Highest channel ID  is not provided. Last channel extracted ID=%s" %freqLast)
            
-           
-   
-                  
-
     # load remaining specs
     field = tab.getcol("FIELD_ID")
     srcrows = field == srcid
