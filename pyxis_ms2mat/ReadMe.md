@@ -4,7 +4,7 @@
 
 # General notes
 1. Data extraction is performed using `pyxis`. The task should be performed in `./pyxis_ms2mat` which contains the python script `pyxis_ckat.py`.
-2. The user must provide the name/path to the measurement set. The remaining optional inputs are:
+2. The user must provide the name/path to the measurement set. The following inputs are optional:
 ```bash
 "OUT" # nametag of the source of interest, it will define the directory of the extracted data, default OUT=""
 "FIELDID" # field ID of the source of interest, default FIELDID=0
