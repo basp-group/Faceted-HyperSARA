@@ -32,6 +32,8 @@ $FIELDID # default FIELDID=0 : field ID of the source of interest,
 $FIRSTCH # default FIRSTCH=0 : ID of the first channnel to be extracted, 
 $LASTCH # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
 ```
+**Note:** In `./Faceted-Hyper-SARA/imaging/main_input_imaging.m`, the user should set  the name of the image cube to be reconstructed `srcName` to the value of `$SRCNAME`
+
 From the terminal launch:
 ```bash
 pyxis MS=myms.ms  SRCNAME=cyga FIRSTCH=0  LASTCH=3 FIELDID=0 getdata_ms
