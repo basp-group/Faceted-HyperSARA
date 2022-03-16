@@ -75,7 +75,7 @@ Data sets will be saved in separate directories.
 ```
 To combine the data sets during imaging, the user should provide the nametags of the different sets in a cell as input in `imaging/main_input_imaging.m`
 ```bash
-datasetNames = {'mysource_nametag1', 'mysource_nametag2',..,'mysource_nametagn'};
+datasetNames = {'mysource_nametag1', 'mysource_nametag2','mysource_nametagn'};
 ```
 If no nametag is provided during data extraction, the user should set `datasetNames` as
 ```bash
