@@ -18,7 +18,7 @@
 "u"  # u coordinate (in units of the wavelength)
 "v"  # v coordinate (in units of the wavelength)
 "w"  # w coordinate (in units of the wavelength)                       
-"nW"  # 1/sigma = sqrt(weights)
+"nW"  # sqrt(weights), alternatively 1/sigma
 "nWimag" # imaging weights if available (Briggs or uniform), empty otherwise
 "maxProjBaseline" # max projected baseline (in units of the wavelength)
 ```
