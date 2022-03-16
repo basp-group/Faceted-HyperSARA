@@ -71,8 +71,8 @@ function imaging(image_name, datasetsNames, dataFilename, ...
 %     Flag triggering the computation of the (preconditioned) operator norm.
 % param_global.algo_flag_solveMinimization : bool
 %     Flag triggering the solver (SARA, HS or FHS).
-% param_global.algo_flag_dataReduction : bool
-%     Flag to activate Data reduction features in the definition of the
+% param_global.measop_flag_visibility_gridding : bool
+%     Flag to activate Data reduction features (visibility gridding) in the definition of the
 %     measurement operator.
 % cirrus:
 %     hardware: Specify whether the solver runs on cirrus or not (for the
@@ -152,7 +152,7 @@ if ~isfield(param_global, 'algo_flag_computeOperatorNorm'); param_global.algo_fl
 if ~isfield(param_global, 'algo_ncores_data'); param_global.algo_ncores_data = numel(effChans2Image);  end
 
 % Measurement operator
-if ~isfield(param_global, 'measop_flag_dataReduction'); param_global.measop_flag_dataReduction = 0; end
+if ~isfield(param_global, 'measop_flag_dataReduction'); param_global.measop_flag_visibility_gridding = 0; end
 if ~isfield(param_global, 'measop_flag_wproj'); param_global.measop_flag_wproj = []; end
 if param_global.measop_flag_wproj
     if ~isfield(param_global, 'measop_wprojCEnergyL2'); param_global.measop_wprojCEnergyL2 = 1 - 1e-4; end
@@ -208,7 +208,7 @@ if flag_reweighting
     % flag_homotopy = param_global.reg_flag_homotopy;
 end
 % Meas. op.
-flag_dataReduction = param_global.measop_flag_dataReduction; % data reduction
+flag_dataReduction = param_global.measop_flag_visibility_gridding; % data reduction
 param_wproj.do = param_global.measop_flag_wproj; % w projection
 if isempty(param_global.measop_flag_wproj)
     param_wproj.do = 0;
