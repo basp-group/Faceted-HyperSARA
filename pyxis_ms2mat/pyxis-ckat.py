@@ -28,23 +28,37 @@ C = 299792458
 
 
 def getdata_ms_concat_bandwidth(
-    msf_bandwidth1="$MSLOW",
-    msf_bandwidth2="$MSHIGH",
-    freqFirst="$CHF",
-    freqLast="$CHL",
+    msf_lowbandwidth="$MSLOW",
+    msf_highbandwidth="$MSHIGH",
+    srcname="$SRCNAME",
     srcid="$FIELDID",
-    mstag="$OUT",
+    mstag="$MSTAG",
+    freqFirst="$FIRSTCH",
+    freqLast="$LASTCH",
 ):
 
-    msname1 = II("%s" % msf_bandwidth1)
-    msname2 = II("%s" % msf_bandwidth2)
+    msname1 = II("%s" % msf_lowbandwidth)
+    msname2 = II("%s" % msf_highbandwidth)
+    srcname = II("%s" % srcname)
     mstag = II("%s" % mstag)
-    freqFirst = int(II("%s" % freqFirst))
-    freqLast = int(II("%s" % freqLast))
-    srcid = int(II("%s" % srcid))
-    fileid0 = 0
+    try:
+       freqFirst = int(II("%s" % freqFirst))
+    except:
+       freqFirst =0;
+    try:
+       freqLast = int(II("%s" % freqLast))
+    except: 
+       freqLast =[];
+    try:
+        srcid = int(II("%s" % srcid))
+    except:
+        srcid =0;
+        
+        
+    fileid0 = 0 # channel ID counter
     fileidMid = getdata(
         msname=msname1,
+        srcname=srcname,
         mstag=mstag,
         freqFirst=freqFirst,
         freqLast=freqLast,
@@ -53,6 +67,7 @@ def getdata_ms_concat_bandwidth(
     )
     fileidEnd = getdata(
         msname=msname2,
+        srcname=srcname,
         mstag=mstag,
         freqFirst=freqFirst,
         freqLast=freqLast,
@@ -62,9 +77,10 @@ def getdata_ms_concat_bandwidth(
     info(" %s files extracted." % fileidEnd)
 
 
-def getdata_ms( msf="$MS", mstag="$OUT", freqFirst="$CHF", freqLast="$CHL", srcid="$FIELDID"):
+def getdata_ms( msf="$MS", mstag="$MSTAG", freqFirst="$FIRSTCH", freqLast="$LASTCH", srcid="$FIELDID",srcname="$SRCNAME"):
     msname = II("%s" % msf)
     mstag = II("%s" % mstag)
+    srcname = II("%s" % srcname)
     try:
         freqFirst = int(II("%s" % freqFirst))
     except:
@@ -82,6 +98,7 @@ def getdata_ms( msf="$MS", mstag="$OUT", freqFirst="$CHF", freqLast="$CHL", srci
     fileid0 = 0
     fileidEnd = getdata(
         msname=msname,
+        srcname=srcname,
         mstag=mstag,
         freqFirst=freqFirst,
         freqLast=freqLast,
@@ -90,11 +107,13 @@ def getdata_ms( msf="$MS", mstag="$OUT", freqFirst="$CHF", freqLast="$CHL", srci
     )
 
 
-def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
-               
+def getdata(msname, mstag, freqFirst, freqLast, srcid, srcname, fileid0):
+    
     data_parent_dir = "../data"
     x.sh("mkdir -p  %s" % data_parent_dir)
-    data_dir = "%s/%s" % (data_parent_dir, mstag)
+    data_dir = "%s/%s"  % (data_parent_dir, srcname)
+    x.sh("mkdir -p  %s" % (data_dir))
+    data_dir = "%s/%s"  % (data_dir, mstag)
     x.sh("mkdir -p  %s" % (data_dir))
     info("Data .mat files will be saved in %s" %data_dir)
     
@@ -107,9 +126,7 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
     freqStepVect = spwtab.getcol("CHAN_WIDTH")
     freqsVect = spwtab.getcol("CHAN_FREQ")
     spw_numch = spwtab.getcol("NUM_CHAN")
-    #info("Spectral window subtable columns: ", *(spwtab.colnames()))
-    #info("Number of channels in each spectral window %s"%spw_numch)      
-
+    
     nSpw = len(spw_numch)
     nChperSpw = spw_numch[0]
     
