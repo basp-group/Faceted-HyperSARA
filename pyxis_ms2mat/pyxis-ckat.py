@@ -287,7 +287,10 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
             v = uvw[flag, 1]; 
             w = uvw[flag, 2];       
             nW = np.sqrt(weightI[flag]) 
-            nWimag = np.sqrt(wimagI[flag])
+            try:
+                nWimag = np.sqrt(wimagI[flag])
+            except:
+                nWimag =[]
             maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2)) 
             
             info("Spw 0, current freq id %s: %s MHz"%(ifreq, frequency))
