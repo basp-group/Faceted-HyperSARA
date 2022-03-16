@@ -32,7 +32,7 @@ pyxis MSLOW=mylowband_ms.ms MSHIGH=myhighband_ms.ms CHF=0 CHL=15 FIELDID=2 OUT=m
  ```
  Data will be saved in the directory `./data/mysource_nametag/`
 #### 3. Combine different measurment sets spanning the same frequency band, with same spectral window specs
-Extracting data from the channels indexed from  `0` to `15` of the source with field ID `2`, from **all** spectral windows.
+Extracting data from the channels indexed from  `0` to `15` of the source with field ID `0`, from **all** spectral windows.
 
  ```bash
 pyxis MS=myms_1.ms  OUT=mysource_nametag1 CHF=0  CHL=12 FIELDID=0 get_data_ms
