@@ -130,11 +130,11 @@
 % - Data files: example of data filename: ``'data_ch_1.mat'``.
 %
 % - Any data file should contain the following variables : `maxProjBaseline`
-%   (double, maximum projection basline), `u` , `v`, `w` (arrays of
-%   :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (vector of
+%   (double, maximum projected baseline), `u` , `v`, `w` (arrays of
+%   :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (complex vector of
 %   visibilities), `frequency` (associated frequency value).
 %
-% - Note that the data `y` are not whitened, uvw coordinates shoud be given
+% - Note that the data `y` are not whitened, uvw coordinates should be given
 %   in units of the wavelength (i.e. normalised with the wavelength) and
 %   `maxProjBaseline` in units of the wavelength.
 %
