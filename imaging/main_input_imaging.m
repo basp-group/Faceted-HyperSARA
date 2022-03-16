@@ -8,22 +8,22 @@
 % Parameters
 % ----------
 % srcName : string
-%     Name of the image cube to be reconstructed.
+%     Name of the image cube to be reconstructed as specified during data extraction.
 % datasetNames : cell of string
 %     Name of the different datasets used (e.g., if datasets associated with
-%     different acquisition configurations are used.
+%     different acquisition configurations are used), to be set to ``{''}`` if one data set is imaged or no nametag of the MS is given during data extraction.
 % json_filename : string
 %     Name of the input ``.json`` configuration file specifying the
 %     value of the algorithm parameters (PDFB, reweighting, ellipsoid,
 %     projection, preconditioning, ...).
 % dataFilename : anonymous function
 %     Function handle taking a channel index as an input, and returning the
-%     name of the associated data ``.mat`` file (one file per wavelength).
+%     name of the associated data ``.mat`` file (one file per wavelength), nomenclature adopted during data extraction .
 % idChannels2Image : array[int]
 %     Indices of the `physical` channels to be imaged.
 % nChannelsPerImage : int
 %     Number of consecutive channels to be concatenated into each effective
-%     channel (1 if no reduction is used).
+%     channel (1 if full spectral resolution is considered, i.e. number of output channels is equal to the number of input channels).
 % subcubeInd : int
 %     Index of the subcube to be reconstructed (if spectral faceting is
 %     used). To be set to ``0`` otherwise.
@@ -39,19 +39,19 @@
 % param_global.preproc_filename_die : anonymous function
 %     Function handle, taking the index of the first and last channel, and
 %     returning a string corresponding to the name of a file containing
-%     DIE calibration constants. If not used, to be set to ``[]``.
+%     DIE calibration constants. If not used, must be set to ``[]``.
 % param_global.preproc_filename_l2bounds : anonymous function
 %     Function handle, taking the index of the first and last channel, and
 %     returning a string corresponding to the name of a file
-%     containing pre-computed :math:`\ell_2` bounds. If not used, to be set
+%     containing pre-computed :math:`\ell_2` bounds. If not used, must be set
 %     to ``[]``.
 % param_global.preproc_filename_model : anonymous function
 %     Function handle, taking the index of the first and last channel, and
 %     returning the name of a file containing a model image to be used to
-%     initialize the reconstruction algorithm. If not used, to be set to
+%     initialize the reconstruction algorithm. If not used, must be set to
 %     ``[]``.
 % param_global.measop_flag_visibility_gridding : bool
-%     Flag to activate visibility gridding (data dimensionality reduction).
+%     Flag to activate visibility gridding for data dimensionality reduction.
 % param_global.algo_flag_computeOperatorNorm : bool
 %     Flag to trigger the computation of the norm of the measurement
 %     operator. If set to ``false``, MATLAB will look for a file where this
@@ -136,7 +136,7 @@
 %
 % - Note that the data `y` are not whitened, uvw coordinates should be given
 %   in units of the wavelength (i.e. normalised with the wavelength) and
-%   `maxProjBaseline` in units of the wavelength.
+%   `maxProjBaseline` is also in units of the wavelength.
 %
 
 %% Documentation
@@ -158,8 +158,8 @@ cd(project_dir);
 
 % src name & datasets
 % TODO: to be adjusted by the user
-srcName = 'CYGA'; % specified during data extraction
-datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; % allowing for multiple datasets, leave empty if no nametags of the measurement set is specified during data extraction
+srcName = 'CYGA'; % as specified during data extraction
+datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; % allowing for multiple datasets, set to  {''} if no nametag of the measurement set is specified during data extraction
 
 % data directory
 % TODO: to be adjusted by the user
