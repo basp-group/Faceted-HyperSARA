@@ -14,8 +14,9 @@
 "nWimag" # imaging weights if available (Briggs or uniform), empty otherwise
 "maxProjBaseline" # max projected baseline (in units of the wavelength)
  ```
-2. Functions in `pyxis_ckat.py` are examples. The user is encouraged to tailor these functions if the measurement set is organised differently.
-3. Extracted .mat files are saved in `./data/`.
+2. Channels indices are incremented by 1 in the .mat files and their associated filenames for MATLAB indexing purposes.
+3. Functions in `pyxis_ckat.py` are examples. The user is encouraged to tailor these functions if the measurement set is organised differently.
+4. Extracted .mat files are saved in `./data/`.
 5. In case of multiple spectral windows, the user is encouraged to use the  `split` fonctionality in CASA to image specific spectral windows and extract the data from the resulting subset measurement set.
 # Examples
 #### 1. Single measurement set (MS)
