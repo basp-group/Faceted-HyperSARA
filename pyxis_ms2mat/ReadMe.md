@@ -3,14 +3,15 @@
 2. Meqtrees https://github.com/ratt-ru/meqtrees/wiki/Installation
 
 # General notes
-1. The user must provide the name/path to the measurement set. The remaining optional inputs are:
+1. Data extraction is performed using `pyxis`. The task should be performed in the folder containing `pyxis_ckat.py`.
+2. The user must provide the name/path to the measurement set. The remaining optional inputs are:
 ```bash
 "OUT" # nametag of the source of interest, it will define the directory of the extracted data, default OUT=""
 "FIELDID" # field ID of the source of interest, default FIELDID=0
 "CHF" # ID of the first channnel to be extracted, default CHF=0
 "CHL" # ID of the last channnel to be extracted, default  CHL=NUM_CHAN.
 ```
-2. Extracted .mat files are saved in `../data/`. The files contain the following fields:
+3. Extracted .mat files are saved in `../data/`. The files contain the following fields:
 ```bash
 "frequency" # channel frequency                       
 "y"  # data (Stokes I)
@@ -21,14 +22,14 @@
 "nWimag" # imaging weights if available (Briggs or uniform), empty otherwise
 "maxProjBaseline" # max projected baseline (in units of the wavelength)
 ```
-3. Channels' indices and hence their associated filenames are incremented by 1 for MATLAB indexing purposes.
-4. Functions in `pyxis_ckat.py` are examples. The user is encouraged to tailor these functions if the measurement set is organised differently.
-5. In case of multiple spectral windows, the user is encouraged to use the  `split` fonctionality in CASA to image specific spectral windows and extract the data from the resulting subset measurement set.
+4. Channels' indices and hence their associated filenames are incremented by 1 for MATLAB indexing purposes.
+5. Functions in `pyxis_ckat.py` are examples. The user is encouraged to tailor these functions if the measurement set is organised differently.
+6. In case of multiple spectral windows, the user is encouraged to use the  `split` fonctionality in CASA to image specific spectral windows and extract the data from the resulting subset measurement set.
 
 # Examples
 #### 1. Single measurement set (MS)
 
-Extracting data from the channels indexed from  `0` to `12` of the source with field ID `0`.
+Extracting data from the channels indexed from  `0` to `12` of the source with field ID `0`, from **all** spectral windows.
 ```bash
 pyxis MS=myms.ms  OUT=mysource_nametag CHF=0  CHL=12 FIELDID=0 getdata_ms
 ```
