@@ -7,7 +7,7 @@
 %
 % Parameters
 % ----------
-% imagecubeName : string
+% srcName : string
 %     Name of the image cube to be reconstructed.
 % datasetNames : cell of string
 %     Name of the different datasets used (e.g., if datasets associated with
@@ -158,13 +158,13 @@ cd(project_dir);
 
 % src name & datasets
 % TODO: to be adjusted by the user
-imagecubeName = 'cygASband_Cube_256_512';
+srcName = 'cygASband_Cube_256_512';
 param_global.exp_type = 'test'; % ! only for debugging purposes
 datasetNames = {'test'}; % allowing for multiple datasets, empty cell if a single dataset
 
 % data directory
 % TODO: to be adjusted by the user
-data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
+data_dir = [main_dir, filesep, 'data', filesep, srcName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
 % preproc dir.
 preproc_calib_dir = [data_dir, 'pre_processing_die/']; % set to [] if not used 
@@ -327,6 +327,6 @@ param_global.hardware = 'local'; % 'cirrus' or 'local'. If required, add
 % x0 = reshape(x0, [N, nchans]);
 % ---
 
-imaging(imagecubeName, datasetNames, dataFilename, ...
+imaging(srcName, datasetNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...
     param_nufft, param_precond, dict);
