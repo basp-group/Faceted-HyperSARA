@@ -38,7 +38,7 @@ Data will be saved  as .mat files in the directory `../data/mysource_nametag/`. 
 ../data/mysource_nametag/data_ch_1.mat
 .
 .
-../data/mysource_nametag/data_ch_16.mat
+../data/mysource_nametag/data_ch_13.mat
 ```
 #### 2. Combine two measurement sets at two consecutive frequency bandwidths, with same spectral window specs
 Extracting data from the channels indexed from  `0` to `15` of the source with field ID `2`, from **all** spectral windows.
