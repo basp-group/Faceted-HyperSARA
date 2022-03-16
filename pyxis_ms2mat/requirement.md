@@ -32,7 +32,7 @@ Extracting data from the channels indexed from  `0` to `15` of the source with f
 pyxis MSLOW=mylowband_ms.ms MSHIGH=myhighband_ms.ms CHF=0 CHL=15 FIELDID=2 OUT=mysource_nametag getdata_ms_concat_bandwidth
  ```
  Data will be saved in the directory `./data/mysource_nametag/`
-#### 3. Combine different measurment sets spanning the same frequency band, with same spectral window specs
+#### 3. Combine different measurment sets spanning the same frequency bandwidth, with same spectral window specs
 Extracting data from the channels indexed from  `0` to `15` of the source with field ID `0`, from **all** spectral windows.
 
  ```bash
