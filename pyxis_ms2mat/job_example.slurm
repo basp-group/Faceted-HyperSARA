@@ -39,8 +39,8 @@ module load wsclean/2.10.1
 
 
 ## DATASET/CONFIG 1
-pyxis MSBW1=CYG-A-5-8M10S.MS MSBW2=CYG-A-7-8M10S.MS CHF=0 CHL=15 FIELDID=2 OUTPUT=CYGA-ConfigA getdata_ms_concat_bandwidth
+pyxis MSLOW=CYG-A-5-8M10S.MS MSHIGH=CYG-A-7-8M10S.MS CHF=0 CHL=15 FIELDID=2 OUT=CYGA-ConfigA getdata_ms_concat_bandwidth
 
 ## DATASET/CONFIG  2
-pyxis MSBW1=CYG-C-5-8M10S.MS MSBW2=CYG-C-7-8M10S.MS CHF=0 CHL=15 FIELDID=2 OUTPUT=CYGA-ConfigC getdata_ms_concat_bandwidth
+pyxis MSLOW=CYG-C-5-8M10S.MS MSHIGH=CYG-C-7-8M10S.MS CHF=0 CHL=15 FIELDID=2 OUT=CYGA-ConfigC getdata_ms_concat_bandwidth
 
