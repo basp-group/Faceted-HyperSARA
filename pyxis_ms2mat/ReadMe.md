@@ -48,10 +48,12 @@ pyxis MSLOW=mylowband_ms.ms MSHIGH=myhighband_ms.ms CHF=0 CHL=15 FIELDID=2 OUT=m
 Data will be saved as .mat files in the directory `../data/mysource_nametag/`.
 In the case of a single spectral window, the outcome is as follows
 ```bash
-../data/mysource_nametag/data_ch_1.mat
+../data/mysource_nametag/data_ch_1.mat  % channel 1 from mylowband_ms.ms
 .
+../data/mysource_nametag/data_ch_16.mat % channel 16 from mylowband_ms.ms
+../data/mysource_nametag/data_ch_17.mat % channel 1 from myhighband_ms.ms
 .
-../data/mysource_nametag/data_ch_32.mat
+../data/mysource_nametag/data_ch_32.mat % channel 16 from myhighband_ms.ms
 ```
 #### 3. Combine different measurment sets spanning the same frequency bandwidth, with same spectral window specs
 Extracting data from the channels indexed from  `0` to `15` of the source with field ID `0`, from **all** spectral windows.
