@@ -62,14 +62,23 @@ def getdata_ms_concat_bandwidth(
     info(" %s files extracted." % fileidEnd)
 
 
-def get_data_ms(
-    msf="$MS", mstag="$OUT", freqFirst="$CHF", freqLast="$CHL", srcid="$FIELDID"
-):
+def getdata_ms( msf="$MS", mstag="$OUT", freqFirst="$CHF", freqLast="$CHL", srcid="$FIELDID"):
     msname = II("%s" % msf)
     mstag = II("%s" % mstag)
-    freqFirst = int(II("%s" % freqFirst))
-    freqLast = int(II("%s" % freqLast))
-    srcid = int(II("%s" % srcid))
+    try:
+        freqFirst = int(II("%s" % freqFirst))
+    except:
+        freqFirst = []
+    try:
+        freqLast = int(II("%s" % freqLast))
+    except:
+        freqLast =[]
+    try:
+        srcid = int(II("%s" % srcid))
+    except: 
+        srcid =0
+        info("Field ID is not provided, data of field ID 0 will be extracted")
+        
     fileid0 = 0
     fileidEnd = getdata(
         msname=msname,
@@ -82,14 +91,14 @@ def get_data_ms(
 
 
 def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
-    
+               
     data_parent_dir = "./data"
     x.sh("mkdir -p  %s" % data_parent_dir)
     data_dir = "%s/%s" % (data_parent_dir, mstag)
     x.sh("mkdir -p  %s" % (data_dir))
     info("Data .mat files will be saved in %s" %data_dir)
     
-    msname = II("%s" %msname)
+    #msname = II("%s" %msname)
     info(msname)
     tab = ms.ms(msname, write=False)
     info("MS table columns:", *(tab.colnames()))
@@ -110,6 +119,17 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
     else:
         info("%s spectral window, composed of %s channels" %(nSpw,nChperSpw))    
     spwtab.close()
+    
+    if not freqFirst :
+           freqFirst =0;
+           info("First channel ID  is not provided, first channel extracted ID=%s"%freqFirst)
+    if not freqLast : 
+           freqLast = nChperSpw-1;
+           info("Highest channel ID  is not provided, last channel extracted ID=%s" %freqLast)
+           
+           
+   
+                  
 
     # load remaining specs
     field = tab.getcol("FIELD_ID")
@@ -121,18 +141,18 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
     uvw = uvw[srcrows, :]
     data_id = tab.getcol("DATA_DESC_ID")
     data_id = data_id[srcrows]
-    ant1 = tab.getcol("ANTENNA1")
-    ant1 = ant1[srcrows]
-    ant2 = tab.getcol("ANTENNA2")
-    ant2 = ant2[srcrows]
-    time = tab.getcol("TIME")
-    time = time[srcrows]
-    scantab = tab.getcol("SCAN_NUMBER")
-    scantab = scantab[srcrows]
-    integrationTimeVect = tab.getcol("EXPOSURE")
-    integrationTimeVect = integrationTimeVect[srcrows]
-    dt = tab.getcol("EXPOSURE", 0, 1)[0]
-    dtf = (tab.getcol("TIME", tab.nrows() - 1, 1) - tab.getcol("TIME", 0, 1))[0]
+    #ant1 = tab.getcol("ANTENNA1")
+    #ant1 = ant1[srcrows]
+    #ant2 = tab.getcol("ANTENNA2")
+    #ant2 = ant2[srcrows]
+    #time = tab.getcol("TIME")
+    #time = time[srcrows]
+    #scantab = tab.getcol("SCAN_NUMBER")
+    #scantab = scantab[srcrows]
+    #integrationTimeVect = tab.getcol("EXPOSURE")
+    #integrationTimeVect = integrationTimeVect[srcrows]
+    #dt = tab.getcol("EXPOSURE", 0, 1)[0]
+    #dtf = (tab.getcol("TIME", tab.nrows() - 1, 1) - tab.getcol("TIME", 0, 1))[0]
     flag_row = tab.getcol("FLAG_ROW")
     flag_row = flag_row == False
     flag_row = flag_row[srcrows]
@@ -236,7 +256,7 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
         if nSpw > 1:
             for iSpw in range(0, nSpw):
                 frequency = freqsVect[iSpw, ifreq]
-                info("Spectral window %s, current freq id %s: %s MHz"%( iSpw, ifreq,frequency))
+                #info("Spectral window %s, current freq id %s: %s MHz"%( iSpw, ifreq,frequency/1e6))
                 rows_slice = data_id == iSpw
                 flag_slice = flag[rows_slice]
                 #data
@@ -248,7 +268,6 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
                 #imaging weights if available               
                 try:
                     nWimag = wimagI[rows_slice]
-                    info("Imaging weights available")
                     nWimag =np.sqrt(nWimag[flag_slice])
                 except:
                     nWimag= []
@@ -263,7 +282,7 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
 
                 fileid = 1 + fileid0 + (iSpw * nChperSpw) + ifreq
                 dataFileName = "%s/data_ch_%s.mat" % (data_dir, fileid)
-                info("Channel id: %d. File saved at %s" % (fileid, dataFileName))
+                #info("Channel id: %d. File saved at %s" % (fileid, dataFileName))
                 sio.savemat(
                     dataFileName,
                     {
@@ -277,6 +296,8 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
                         "maxProjBaseline": maxProjBaseline,#max projected baseline                         
                     },
                 )
+              
+                info("Spectral window %s, current channel id %s: %s MHz. File saved at %s"%(iSpw,ifreq, frequency/1e6,dataFileName))
                 
 
         else:
@@ -293,10 +314,7 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
                 nWimag =[]
             maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2)) 
             
-            info("Spw 0, current freq id %s: %s MHz"%(ifreq, frequency))
-            
             dataFileName = "%s/data_ch_%s.mat" % (data_dir, ifreq + 1)
-            info("Channel id: %d. File saved at %s" % (ifreq + 1, dataFileName))
             sio.savemat(
                 dataFileName,
                 {
@@ -310,6 +328,9 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
                     "maxProjBaseline": maxProjBaseline,#max projected baseline 
                 },
             )
+            
+            info("Spw 0, current channel id %s: %s MHz. File saved at %s"%(ifreq, frequency/1e6,dataFileName))
+
             fileid = ifreq + 1
             
 
