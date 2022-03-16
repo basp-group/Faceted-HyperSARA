@@ -92,7 +92,7 @@ def getdata_ms( msf="$MS", mstag="$OUT", freqFirst="$CHF", freqLast="$CHL", srci
 
 def getdata(msname, mstag, freqFirst, freqLast, srcid, fileid0):
                
-    data_parent_dir = "./data"
+    data_parent_dir = "../data"
     x.sh("mkdir -p  %s" % data_parent_dir)
     data_dir = "%s/%s" % (data_parent_dir, mstag)
     x.sh("mkdir -p  %s" % (data_dir))
