@@ -46,6 +46,8 @@ Extracting data from the channels indexed from  `0` to `15` of the source with f
 ```bash
 pyxis MS=myms1.ms  OUT=mysource_nametag1 CHF=0  CHL=12 FIELDID=0 getdata_ms
 pyxis MS=myms2.ms  OUT=mysource_nametag2 CHF=0  CHL=12 FIELDID=0 getdata_ms
+.
+.
 pyxis MS=mymsn.ms  OUT=mysource_nametagn CHF=0  CHL=12 FIELDID=0 getdata_ms
 ```
 Data sets will be saved in seperate directories. 
@@ -58,5 +60,5 @@ Data sets will be saved in seperate directories.
 ```
 To combine the data sets during imaging, the user should provide the nametags of the different sets in a cell as input.
 ```bash
-datasetNames = {'mysource_nametag1', 'mysource_nametag2',..,{mysource_nametagn}};
+datasetNames = {'mysource_nametag1', 'mysource_nametag2',..,'mysource_nametagn'};
 ```
