@@ -48,4 +48,15 @@ pyxis MS=myms1.ms  OUT=mysource_nametag1 CHF=0  CHL=12 FIELDID=0 getdata_ms
 pyxis MS=myms2.ms  OUT=mysource_nametag2 CHF=0  CHL=12 FIELDID=0 getdata_ms
 pyxis MS=mymsn.ms  OUT=mysource_nametagn CHF=0  CHL=12 FIELDID=0 getdata_ms
 ```
- Data sets will be saved in seperate directories. To combine the data sets during imaging, the user should provide the nametags of the different sets in a cell as input.
+Data sets will be saved in seperate directories. 
+```bash
+ /data/mysource_nametag1/
+ /data/mysource_nametag2/
+ .
+ .
+ /data/mysource_nametagn/
+```
+To combine the data sets during imaging, the user should provide the nametags of the different sets in a cell as input.
+```bash
+datasetNames = {'mysource_nametag1', 'mysource_nametag2',..,{mysource_nametagn}};
+```
