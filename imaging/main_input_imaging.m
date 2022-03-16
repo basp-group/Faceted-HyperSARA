@@ -7,7 +7,7 @@
 %
 % Parameters
 % ----------
-% imagecubeName : string
+% srcName : string
 %     Name of the image cube to be reconstructed.
 % datasetNames : cell of string
 %     Name of the different datasets used (e.g., if datasets associated with
@@ -50,8 +50,8 @@
 %     returning the name of a file containing a model image to be used to
 %     initialize the reconstruction algorithm. If not used, to be set to
 %     ``[]``.
-% param_global.measop_flag_dataReduction : bool
-%     Flag to activate data reduction.
+% param_global.measop_flag_visibility_gridding : bool
+%     Flag to activate visibility gridding (data dimensionality reduction).
 % param_global.algo_flag_computeOperatorNorm : bool
 %     Flag to trigger the computation of the norm of the measurement
 %     operator. If set to ``false``, MATLAB will look for a file where this
@@ -158,12 +158,12 @@ cd(project_dir);
 
 % src name & datasets
 % TODO: to be adjusted by the user
-imagecubeName = 'CYGA';
-datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; % allowing for multiple datasets
+srcName = 'CYGA';
+datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; % allowing for multiple datasets, leave empty if single dataset
 
 % data directory
 % TODO: to be adjusted by the user
-data_dir = [main_dir, filesep, 'data', filesep, imagecubeName, filesep];
+data_dir = [main_dir, filesep, 'data', filesep, srcName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
 % preproc dir.
 % preproc_calib_dir = [data_dir, 'pre_processing_die/'];
@@ -198,11 +198,13 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 % > nChannelsPerImage = 16;
 
 % TODO: to be adjusted by the user
-idChannels2Image = 289; % ids of the 'physical' channels to be imaged, 
-% e.g., [1:2] for channel range from 1 to 2
-nChannelsPerImage = 1; % number of consecutive channels to be concatenated into each effective channel
+idChannels2Image = 289; % ids of the 'physical' channels to be imaged, e.g., [1:2] for channel range from 1 to 2
+nChannelsPerImage = 1; % number of consecutive channels to be combined into each effective channel
 
-nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % channels re-structured into effective channels
+nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % effective channels: number of images in the estimate model cube
+% It must be equal to 1 for 'sara' and >1 for 'fhs'
+
+%re-arranging channels indices based on idChannels2Image, nChannelsPerImage and nEffChans2Image
 effChans2Image = cell(nEffChans2Image, 1);
 for iEff = 1:nEffChans2Image
     if iEff < nEffChans2Image; effChans2Image{iEff} = idChannels2Image((iEff - 1) * nChannelsPerImage + 1:iEff * nChannelsPerImage);
@@ -217,7 +219,7 @@ subcubeInd = 0; % id of subcube if spectral interleaving is active, 0 if inactiv
 
 % measurement op. params
 % TODO: to be adjusted by the user
-param_global.measop_flag_dataReduction = 0; % 1 if feature used, 0 otherwise
+param_global.measop_flag_visibility_gridding = 0; % 1 if feature used, 0 otherwise
 
 % image details, dims &  cellsize
 % TODO: to be adjusted by the user
@@ -272,6 +274,6 @@ param_global.hardware = 'local'; % 'cirrus' or 'local'. If required, add
     read_json_configuration(json_filename, param_global);
 
 %% run main job
-imaging(imagecubeName, datasetNames, dataFilename, ...
+imaging(srcName, datasetNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...
     param_nufft, param_precond, dict);
