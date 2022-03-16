@@ -24,7 +24,7 @@
 ```
 4. Channels' indices and their associated filenames are incremented by 1 for MATLAB indexing purposes.
 5. Functions in `pyxis_ckat.py` are examples. The user is encouraged to tailor these functions if the measurement set is organised differently.
-6. In case of multiple spectral windows, the user is encouraged to use the  `split` fonctionality in CASA to image specific spectral windows and extract the data from the resulting subset measurement set.
+6. In case of multiple spectral windows, the user is encouraged to use the  `split` fonctionality in CASA to image specific spectral windows and extract the data from the resulting measurement subset.
 
 # Examples
 #### 1. Single measurement set (MS)
