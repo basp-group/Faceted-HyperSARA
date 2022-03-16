@@ -26,11 +26,11 @@ Extracting data from the channels indexed from  `0` to `3` of the source with fi
 
 The user must provide the name/path to the measurement set `$MS`. The following inputs are optional.
 ```bash
-"SRCNAME" # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
-"MSTAG" # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
-"FIELDID" # default FIELDID=0 : field ID of the source of interest, 
-"FIRSTCH" # default FIRSTCH=0 : ID of the first channnel to be extracted, 
-"LASTCH" # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
+$SRCNAME # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
+$MSTAG # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
+$FIELDID # default FIELDID=0 : field ID of the source of interest, 
+$FIRSTCH # default FIRSTCH=0 : ID of the first channnel to be extracted, 
+$LASTCH # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
 ```
 From the terminal launch:
 ```bash
@@ -40,24 +40,24 @@ pyxis MS=myms.ms  SRCNAME=cyga FIRSTCH=0  LASTCH=3 FIELDID=0 getdata_ms
 Data will be saved as .mat files in the directory `../data/cyga/`. In the case of a single spectral window, the outcome is as follows
 ```bash
 ../data/cyga/data_ch_1.mat
-.
-.
+../data/cyga/data_ch_2.mat
+../data/cyga/data_ch_3.mat
 ../data/cyga/data_ch_4.mat
 ```
-In `imaging/main_input_imaging.m`, if the data set nametag (`$MSTAG`) was not provided during data extraction, as in the example above, the user should set `datasetNames` as
+**Note:** In `./Faceted-Hyper-SARA/imaging/main_input_imaging.m`, if the data set nametag (`$MSTAG`) was not provided during data extraction, as in the example above, the user should set `datasetNames` as
 ```bash
 datasetNames = {''};
 ```
 #### 2. Combine two measurement sets at two consecutive frequency bandwidths, with same spectral window specs
 Extracting data from the channels indexed from  `0` to `15` of the source with field ID `2`, from **all** spectral windows.
 
-The user must provide the name/path to the two measurement sets `$MSLOW` and `$MSHIGH`. The following inputs are optional.
+The user must provide the name/path to the two measurement sets `$MSLOW`  and `$MSHIGH` associated with the low frequency band and high frequency band meaurement sets, respectively. The following inputs are optional.
 ```bash
-"SRCNAME" # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
-"MSTAG" # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
-"FIELDID" # default FIELDID=0 : field ID of the source of interest, 
-"FIRSTCH" # default FIRSTCH=0 : ID of the first channnel to be extracted, 
-"LASTCH" # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
+$SRCNAME # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
+$MSTAG # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
+$FIELDID # default FIELDID=0 : field ID of the source of interest, 
+$FIRSTCH # default FIRSTCH=0 : ID of the first channnel to be extracted, 
+$LASTCH # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
 ```
 From the terminal launch:
 ```bash
@@ -67,12 +67,12 @@ Data will be saved as .mat files in the directory `../data/cyga/`.
 
 In the case of a single spectral window, the outcome is as follows
 ```bash
-../data/cyga/data_ch_1.mat  % channel 1 from mylowband_ms.ms
+../data/cyga/data_ch_1.mat  % channel 1 from mylowbandms.ms
 .
-../data/cyga/data_ch_16.mat % channel 16 from mylowband_ms.ms
-../data/cyga/data_ch_17.mat % channel 1 from myhighband_ms.ms
+../data/cyga/data_ch_16.mat % channel 16 from mylowbandms.ms
+../data/cyga/data_ch_17.mat % channel 1 from myhighbandms.ms
 .
-../data/cyga/data_ch_32.mat % channel 16 from myhighband_ms.ms
+../data/cyga/data_ch_32.mat % channel 16 from myhighbandms.ms
 ```
 #### 3. Combine different measurment sets spanning the same frequency bandwidth, with same spectral window specs
 Extracting data from the channels indexed from  `0` to `15` of the source with field ID `0`, from **all** spectral windows.
@@ -88,7 +88,7 @@ Data sets will be saved in the sub-directories.
  ../data/cyga/dataset2/
  ../data/cyga/datasetn/
 ```
-In `imaging/main_input_imaging.m`, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.
+**Note:** In `./Faceted-Hyper-SARA/imaging/main_input_imaging.m`, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.
 ```bash
 datasetNames = {'dataset1', 'dataset2','datasetn'};
 ```
