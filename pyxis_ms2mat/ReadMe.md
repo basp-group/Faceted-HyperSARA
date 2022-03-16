@@ -37,7 +37,7 @@ From the terminal launch:
 pyxis MS=myms.ms  SRCNAME=cyga FIRSTCH=0  LASTCH=3 FIELDID=0 getdata_ms
 ```
 
-Data will be saved as .mat files in the directory `../data/mysource_nametag/`. In the case of a single spectral window, the outcome is as follows
+Data will be saved as .mat files in the directory `../data/cyga/`. In the case of a single spectral window, the outcome is as follows
 ```bash
 ../data/cyga/data_ch_1.mat
 .
