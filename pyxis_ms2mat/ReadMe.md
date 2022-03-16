@@ -3,15 +3,15 @@
 2. Meqtrees https://github.com/ratt-ru/meqtrees/wiki/Installation
 
 # General notes
-1. Data extraction is performed using `pyxis`. The task should be performed in `./pyxis_ms2mat` which contains the python script `pyxis_ckat.py`.
-2. The user must provide the name/path to the measurement set. The following inputs are optional:
+1. Data extraction is performed using `pyxis`. The task should be performed in `./Faceted-Hyper-SARA/pyxis_ms2mat` which contains the python script `pyxis_ckat.py`.
+2. The user must provide the name/path to the measurement set. The following inputs are optional
 ```bash
 "OUT" # nametag of the source of interest, it will define the directory of the extracted data, default OUT=""
 "FIELDID" # field ID of the source of interest, default FIELDID=0
 "CHF" # ID of the first channnel to be extracted, default CHF=0
 "CHL" # ID of the last channnel to be extracted, default  CHL=NUM_CHAN.
 ```
-3. Extracted .mat files are saved in `../data/`. The files contain the following fields:
+3. Extracted .mat files are saved in `../data/`. The files contain the following fields
 ```bash
 "frequency" # channel frequency                       
 "y"  # data (Stokes I)
