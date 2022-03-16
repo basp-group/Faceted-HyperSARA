@@ -21,7 +21,7 @@
 "nWimag" # imaging weights if available (Briggs or uniform), empty otherwise
 "maxProjBaseline" # max projected baseline (in units of the wavelength)
 ```
-3. Channels indices and hence their associated filenames are incremented by 1 for MATLAB indexing purposes.
+3. Channels' indices and hence their associated filenames are incremented by 1 for MATLAB indexing purposes.
 4. Functions in `pyxis_ckat.py` are examples. The user is encouraged to tailor these functions if the measurement set is organised differently.
 5. In case of multiple spectral windows, the user is encouraged to use the  `split` fonctionality in CASA to image specific spectral windows and extract the data from the resulting subset measurement set.
 
@@ -50,7 +50,7 @@ pyxis MS=myms2.ms  OUT=mysource_nametag2 CHF=0  CHL=12 FIELDID=0 getdata_ms
 .
 pyxis MS=mymsn.ms  OUT=mysource_nametagn CHF=0  CHL=12 FIELDID=0 getdata_ms
 ```
-Data sets will be saved in seperate directories. 
+Data sets will be saved in separate directories. 
 ```bash
  /data/mysource_nametag1/
  /data/mysource_nametag2/
