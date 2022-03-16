@@ -3,7 +3,7 @@
 2. Meqtrees https://github.com/ratt-ru/meqtrees/wiki/Installation
 
 # General notes
-1. The user must provide the name/path to the measurement set. The remaining optional input are:
+1. The user must provide the name/path to the measurement set. The remaining optional inputs are:
 ```bash
 "OUT" # nametag of the source of interest, it will define the directory of the extracted data, default OUT=""
 "FIELDID" # field ID of the source of interest, default FIELDID=0
@@ -30,7 +30,7 @@
 
 Extracting data from the channels indexed from  `0` to `12` of the source with field ID `0`.
 ```bash
-pyxis MS=myms.ms  OUT=mysource_nametag CHF=0  CHL=12 FIELDID=0 get_data_ms
+pyxis MS=myms.ms  OUT=mysource_nametag CHF=0  CHL=12 FIELDID=0 getdata_ms
 ```
 Data will be saved in the directory `./data/mysource_nametag/`.
 
