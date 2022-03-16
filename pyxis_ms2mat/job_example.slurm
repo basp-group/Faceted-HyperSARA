@@ -39,8 +39,8 @@ module load wsclean/2.10.1
 
 
 ## DATASETS: VLA configuration A at two frequency bands
-pyxis MSLOW=CYG-A-5-8M10S.MS MSHIGH=CYG-A-7-8M10S.MS CHF=0 CHL=15 FIELDID=2 OUT=CYGA-ConfigA getdata_ms_concat_bandwidth
+pyxis MSLOW=CYG-A-5-8M10S.MS MSHIGH=CYG-A-7-8M10S.MS FRISTCH=0 LASTCH=15 FIELDID=2 SRCNAME=CYGA MSTAG=CYGA-ConfigA getdata_ms_concat_bandwidth
 
 ## DATASETS: VLA configuration C at two frequency bands
-pyxis MSLOW=CYG-C-5-8M10S.MS MSHIGH=CYG-C-7-8M10S.MS CHF=0 CHL=15 FIELDID=2 OUT=CYGA-ConfigC getdata_ms_concat_bandwidth
+pyxis MSLOW=CYG-C-5-8M10S.MS MSHIGH=CYG-C-7-8M10S.MS FRISTCH=0 LASTCH=15 FIELDID=2 SRCNAME=CYGA MSTAG=CYGA-ConfigC getdata_ms_concat_bandwidth
 
