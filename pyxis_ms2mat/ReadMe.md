@@ -3,7 +3,7 @@
 2. Meqtrees https://github.com/ratt-ru/meqtrees/wiki/Installation
 
 # General notes
-1. Data extraction is performed using `pyxis`. The task should be performed in the folder containing the python script `pyxis_ckat.py`.
+1. Data extraction is performed using `pyxis`. The task should be performed in `./pyxis_ms2mat` which contains the python script `pyxis_ckat.py`.
 2. The user must provide the name/path to the measurement set. The remaining optional inputs are:
 ```bash
 "OUT" # nametag of the source of interest, it will define the directory of the extracted data, default OUT=""
