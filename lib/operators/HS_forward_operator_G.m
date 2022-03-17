@@ -14,9 +14,9 @@ function y = HS_forward_operator_G(x, G, W, A, flag_dr, Sigma)
     % A : anonymous function
     %     Weighted FFT involved in the NUFFT.
     % flag_dr : bool
-    %     Flag indicating whether data dimensionality reduction is considered.
+    %     Flag indicating whether data dimensionality reduction  via visibility gridding is considered.
     % Sigma : cell of cell of double[:]
-    %     Dimensionality reduction matrix.
+    %     Weighting matrix involved in data dimensionality reduction via visibility gridding.
     %
     % Returns
     % -------

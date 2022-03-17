@@ -17,9 +17,9 @@ function y = HS_forward_operator_precond_G(x, G, W, A, aW, flag_dr, Sigma)
     %     Diagonal preconditioning matrices (encoded as vector, for each
     %     channel and data block within a channel).
     % flag_dr : bool
-    %     Flag indicating whether data dimensionality reduction is considered.
+    %     Flag indicating whether data dimensionality reduction via visibility gridding is considered.
     % Sigma : cell of cell of double[:]
-    %     Weighting matrix involved in data dimensionality reduction.
+    %     Weighting matrix involved in data dimensionality reduction via visibility gridding.
     %
     % Returns
     % -------
