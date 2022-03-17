@@ -50,7 +50,7 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
     %     Lambda function to compute the adjoint of ``A``.
     % H : cell
     %     Cell containing the holographic matrix for each
-    %     channel, and each data block within a channel.
+    %     channel, and each data block within a channel. H is lower-triangular matrix to optimise memory requirements.
     % W : cell
     %     Cell containing the selection vector for each channel, and
     %     data block within a channel.
@@ -58,7 +58,7 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
     %     Cell containing the preconditioning vectors for each channel, and
     %     data block within a channel.
     % Sigma: cell
-    %     Cell containing the weighting matrix involved in data dimensionality reduction via visibility gridding.
+    %     Cell containing the diagonal weighting matrix involved in data dimensionality reduction via visibility gridding.
     % data: cell
     %     Cell containing the reduced data vectors which corresponds to the gridded visibilities. 
     % noise: cell   
