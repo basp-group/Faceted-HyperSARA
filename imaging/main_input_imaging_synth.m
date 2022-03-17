@@ -70,9 +70,10 @@
 %     Flag to activate the use of multiple reweighting steps.
 % param_global.reg_nReweights : int
 %     Maximum number of reweighting steps.
-% param_global.hardware : string
-%     String to specify the hardware configuration for the parallelization.
-%     Possible values are ``"cirrus"`` or ``"local"``.
+% param_global.parcluster : string
+%     String the name of the parcluster profile. By default ``"local"`` profile
+%     is used. The user should set it to the name of the slurm parcluster
+%     profile created on his/her HPC machine if prefered. 
 % param_global.algo_version : string
 %     Name of the imaging approach used. Possible values are ``"fhs"``
 %     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
@@ -253,21 +254,20 @@ param_global.algo_version = 'fhs'; % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA)
 % filenames and input
 % TODO: to be adjusted by the user (set path to [] whenever it is not used)
 param_global.main_dir = main_dir;
-% param_global.preproc_filename_dde = @(firstch,lastch) strcat(preproc_calib_dir,filesep,'ddes',filesep,'chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
-% param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
 param_global.preproc_filename_dde = [];
 param_global.preproc_filename_die = [];
-%
-% param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'l2bounds',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
 param_global.preproc_filename_l2bounds = [];
-%
-% param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'model_images',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
 param_global.preproc_filename_model = [];
+% param_global.preproc_filename_dde = @(firstch,lastch) strcat(preproc_calib_dir,filesep,'ddes',filesep,'chs',num2str(firstch),'-',num2str(lastch),'_dies.mat');
+% param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
+% param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'l2bounds',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
+% param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'model_images',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
 
-% hardware
+
+% Parcluster profile 
 % TODO: to be adjusted by the user
-param_global.hardware = 'local'; % 'cirrus' or 'local'. If required, add 
-% your own cluster by updating the 'util_set_parpool_dev.m' file accordingly.
+param_global.parcluster = 'local'; % name of the parcluster profile to use.  If required, add 
+% the name of  your own slurm parcluster profile 
 
 %% read and set configuration from .json file
 [param_global, param_solver, ...

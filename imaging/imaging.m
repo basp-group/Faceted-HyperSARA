@@ -74,7 +74,8 @@ function imaging(image_name, datasetsNames, dataFilename, ...
 % param_global.measop_flag_visibility_gridding : bool
 %     Flag to activate Data dimensionality reduction features (visibility gridding) in the
 %     definition of the measurement operator :cite:p:`Kartik2017`.
-%
+% param_global.parcluster : string 
+%     
 % Note
 % ----
 % - Example:
@@ -169,8 +170,11 @@ if ~isfield(param_global, 'preproc_filename_dde'); param_global.preproc_filename
 % Output filenames
 if ~isfield(param_global, 'exp_type'); param_global.exp_type = '';  end %  AD: maybe remove?
 
-% Hardware
-hpc = param_global.hardware;
+% name of the parallel parcluster profile
+if ~isfield(param_global, 'parcluster'); param_global.parcluster = 'local';
+end 
+
+
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% get params
@@ -233,6 +237,8 @@ elseif ~isempty(param_preproc.filename_dde)
     flag_calib.dde = 1;
 end
 
+% parcluster
+parcluster = param_global.parcluster;
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% Paths
@@ -434,10 +440,10 @@ param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
 %% setup parpool
 try delete(gcp('nocreate'));
 end
-if strcmp(algo_version, 'sara')
-    hpc = 'local';
-end
-cirrus_cluster = util_set_parpool_dev(algo_version, ncores_data, Qx * Qy, strcmp(hpc, 'cirrus'));
+% % if strcmp(algo_version, 'sara')
+% %     parcluster = 'local';
+% % end
+hpc_cluster = util_set_parpool(algo_version, ncores_data, Qx * Qy, ~strcmp(parcluster, 'local'));
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% Setup measurement operator and load data

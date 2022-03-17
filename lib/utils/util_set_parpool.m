@@ -1,20 +1,20 @@
-function cirrus_cluster = util_set_parpool(algo_version, ncores_data, Q, flag_cirrus)
-    % [extended_summary]
+function hpc_cluster = util_set_parpool(algo_version, ncores_data, Q, parcluster_name)
+    % function to launch parpool before the solver.
     %
     % Parameters
     % ----------
-    % algo_version : [type]
-    %     [description]
-    % ncores_data : [type]
-    %     [description]
-    % Q : [type]
-    %     [description]
-    % flag_cirrus : [type]
-    %     [description]
+    % algo_version : [string]
+    %      Solver used, 'fhs', 'hs', or 'sara'
+    % ncores_data : [int]
+    %     number of data workers
+    % Q : [int]
+    %     number of facet workers
+    % parcluster_name : [string]
+    %     name of the parcluster profile to use, default "local"
     %
     % Returns
     % -------
-    % [type]
+    % hpc_cluster
     %     [description]
 
     switch algo_version
@@ -28,22 +28,25 @@ function cirrus_cluster = util_set_parpool(algo_version, ncores_data, Q, flag_ci
             numworkers = Q + ncores_data;
     end
 
-    cirrus_cluster = parcluster('local');
-    cirrus_cluster.NumWorkers = numworkers;
-    cirrus_cluster.NumThreads = 1;
-    ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
-    if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
-        exit(1);
+    hpc_cluster = parcluster(parcluster_name); 
+    hpc_cluster.NumWorkers = numworkers;
+    hpc_cluster.NumThreads = 1;
+  
+    % create temp. dir. if slurm parcluster profile is used
+    if ~strcmp(parcluster_name,'local')
+        
+        tempdir = [pwd,filesep,'tmp_files',filesep];
+        mkdir(tempdir)
+        try tempdir=[tempdir, getenv('SLURM_JOB_ID')];
+        end
+        mkdir(tempdir)
+        hpc_cluster.JobStorageLocation = tempdir;
     end
-    % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-    if flag_cirrus
-        cirrus_cluster.JobStorageLocation = strcat('/lustre/home/sc004/', getenv('USER'), '/', getenv('SLURM_JOB_ID'));
-    end
-    % maxNumCompThreads(param.num_workers);
-    parpool(cirrus_cluster, numworkers);
-    % % start the matlabpool with maximum available workers
-    % % control how many workers by setting ntasks in your sbatch script
-    % parpool(cirrus_cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
+   
+    % % start the matlabpool with the requested workers
+    parpool(hpc_cluster, numworkers);
+    
+    % wavelet 
     dwtmode('zpd', 'nodisp');
     spmd
         dwtmode('zpd', 'nodisp');

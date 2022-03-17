@@ -70,9 +70,10 @@
 %     Flag to activate the use of multiple reweighting steps.
 % param_global.reg_nReweights : int
 %     Maximum number of reweighting steps.
-% param_global.hardware : string
-%     String to specify the hardware configuration for the parallelization.
-%     Possible values are ``"cirrus"`` or ``"local"``.
+% param_global.parcluster : string
+%     String the name of the parallel parcluster profile. By default ``"local"`` profile
+%     is used. The user should set it to the name of the slurm parcluster
+%     profile created on his/her HPC machine, if prefered. 
 % param_global.algo_version : string
 %     Name of the imaging approach used. Possible values are ``"fhs"``
 %     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
@@ -264,10 +265,11 @@ param_global.preproc_filename_model = [];% !  should be commented if not used
 % param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'model_images', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
 
 
-% hardware
+% Parallel parcluster profile 
 % TODO: to be adjusted by the user
-param_global.hardware = 'local'; % 'cirrus' or 'local'. If required, add 
-% your own parcluster details by updating the './util_set_parpool_dev.m' file accordingly.
+param_global.parcluster = 'local'; % name of the parallel parcluster profile to use.
+% to be adjusted if running on a HPC and a slurm parcluster profile will be used. 
+
 
 %% read and set configuration from .json file
 [param_global, param_solver, ...
