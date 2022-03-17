@@ -5,6 +5,8 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
     %
     % Parameters
     % ----------
+    % y : Cell
+    %    Cell containing the data vectors (Stokes I).
     % u : array (vector)
     %     `u` coordinate.
     % v : array (vector)
@@ -13,8 +15,12 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
     %     `w` coordinate.
     % param_precond : struct
     %     Structure to configure the preconditioning matrices.
-    % param_blocking : struct
-    %     Structure to configure data blocking.
+    % param_wproj: struct
+    %     Structure to configure `w`-projection.
+    % preproc_dr_residuals: cell
+    %     Cell containing the residual visibility vectors from a calibration pre-processing step, assumed as noise vectors.
+    % ddes: cell
+    %      Cell containing DDE calibration kernels in the Fourier step from a pre-processing step to be incorporated in the measurement operator.
     % nchans : int
     %     Number of channels.
     % Nx : int
@@ -39,8 +45,8 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
     %     in the emasurement operator.
     % At : lambda function
     %     Lambda function to compute the adjoint of ``A``.
-    % G : cell
-    %     Cell containing the trimmed-down interpolation kernels for each
+    % H : cell
+    %     Cell containing the holographic matrix for each
     %     channel, and each data block within a channel.
     % W : cell
     %     Cell containing the selection vector for each channel, and
@@ -48,8 +54,13 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
     % aWw : cell
     %     Cell containing the preconditioning vectors for each channel, and
     %     data block within a channel.
+    % Sigma: cell
+    %     Cell containing the weighting matrix involved in data dimensionality reduction via visibility gridding.
+    % data: cell
+    %     Cell containing the reduced data vectors which corresponds to the gridded visibilities. 
+    % noise: cell   
+    %     Cell containing reduced residual visibility vector if available from a pre-processing calibration step, assumed to be the gridded noise.
     %
-
     %%
     % check if data pre-processing exist
     % ddes
@@ -84,7 +95,6 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
         aW{i}{1} = 1; % no precond ...
 
         res_data =  [];
-
         % measurement operator initialization
         H{i}{1} = sparse(prod(param_nufft.No), prod(param_nufft.No));
 
