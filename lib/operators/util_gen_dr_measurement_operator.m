@@ -5,22 +5,25 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
     %
     % Parameters
     % ----------
-    % y : Cell
+    % y : cell
     %    Cell containing the data vectors (Stokes I).
-    % u : array (vector)
+    % u : cell
     %     `u` coordinate.
-    % v : array (vector)
+    % v : cell
     %     `v` coordinate.
-    % w : array (vector)
+    % w : cell
     %     `w` coordinate.
+    % nW: cell 
+    %     Weights to apply natural weighting.
     % param_precond : struct
     %     Structure to configure the preconditioning matrices.
     % param_wproj: struct
     %     Structure to configure `w`-projection.
     % preproc_dr_residuals: cell
     %     Cell containing the residual visibility vectors from a calibration pre-processing step, assumed as noise vectors.
-    % ddes: cell
-    %      Cell containing DDE calibration kernels in the Fourier step from a pre-processing step to be incorporated in the measurement operator.
+    % ddes: cell array
+    %     Cell containing DDE calibration kernels in the spatial Fourier domain
+    %     from a pre-processing step to be incorporated in the measurement operator.
     % nchans : int
     %     Number of channels.
     % Nx : int
