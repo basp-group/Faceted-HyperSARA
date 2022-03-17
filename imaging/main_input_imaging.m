@@ -52,7 +52,7 @@
 % param_global.preproc_filename_model : anonymous function
 %     Function handle, taking the index of the first and last channel, and
 %     returning the name of a file containing a model image to be used to
-%     initialize the reconstruction algorithm. If not used, must be set to
+%     initialize the reconstruction algorithm. If not used, should be set to
 %     ``[]``.
 % param_global.measop_flag_visibility_gridding : bool
 %     Flag to activate visibility gridding for data dimensionality reduction
@@ -71,28 +71,28 @@
 %     the default computation, that is 2x the resolution of the
 %     observation.
 % param_global.reg_flag_reweighting : bool
-%     Flag to activate the use of multiple reweighting steps.
+%     Flag to activate the re-weighting procedure.
 % param_global.reg_nReweights : int
 %     Maximum number of reweighting steps.
 % param_global.parcluster : string
 %     String the name of the parallel parcluster profile. By default ``"local"`` profile
 %     is used. The user should set it to the name of the slurm parcluster
 %     profile created on his/her HPC machine, if prefered. 
-% param_global.algo_version : string
+% param_global.algo_solver : string
 %     Name of the imaging approach used. Possible values are ``"fhs"``
 %     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
 % param_global.facet_Qx : int
 %     Number of spatial facets along spatial axis x. Will be reset
-%     automatically to 1 if ``param_global.algo_version = "sara"`` or
+%     automatically to 1 if ``param_global.algo_solver = "sara"`` or
 %     ``"hs"``.
 % param_global.facet_Qy : int
 %     Number of spatial facets along spatial axis y. Will be reset
-%     automatically to 1 if ``param_global.algo_version = "sara"`` or
+%     automatically to 1 if ``param_global.algo_solver = "sara"`` or
 %     ``"hs"``.
 % param_global.facet_overlap_fraction : array[double]
 %     Array containing the overlap fraction between consecutive facets along
 %     each axis (y and x) for the faceted low-rankness prior. Will be reset
-%     automatically to ``[0, 0]`` if ``param_global.algo_version = "sara"``
+%     automatically to ``[0, 0]`` if ``param_global.algo_solver = "sara"``
 %     or ``"hs"``. Besides, each entry of
 %     ``param_global.facet_overlap_fraction`` is reset to 0 the
 %     number of facet along the corresponding dimension is equal to 1
@@ -133,14 +133,13 @@
 %
 % Warning
 % -------
-% - Data files: example of data filename: ``'data_ch_1.mat'``.
-%
-% - Any data file should contain the following variables : `maxProjBaseline`
+% - Data files (example: ``'data_ch_1.mat'``) are expected to contain the following variables : `maxProjBaseline`
 %   (double, maximum projected baseline), `u` , `v`, `w` (arrays of
 %   :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (complex vector of
 %   visibilities, Stokes I), `frequency` (associated frequency value).
 %
-% - Note that the data `y` are not whitened, `maxProjBaseline` and uvw coordinates should be given
+% - Note that the data `y`  are not whitened. 
+%   The variables `maxProjBaseline` and the `uvw` coordinates should be 
 %   in units of the wavelength (i.e. normalised by the associated wavelength).
 %
 
@@ -255,7 +254,7 @@ param_global.reg_nReweights = 5;
 
 % algo & parallelisation params
 % TODO: to be adjusted by the user
-param_global.algo_version = 'fhs'; % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
+param_global.algo_solver = 'fhs'; % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
 
 % filenames and input
 param_global.main_dir = main_dir;
