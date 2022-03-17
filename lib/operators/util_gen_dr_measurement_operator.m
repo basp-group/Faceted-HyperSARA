@@ -1,10 +1,7 @@
 function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
                                                                                nchans, Nx, Ny, param_nufft, param_wproj, preproc_dr_residuals, ddes)
-    % Build the measurement operator for a given uv-coverage at pre-defined
-    % frequencies.
-    %
-    % Build the measurement operator for a given uv-coverage at pre-defined
-    % frequencies.
+    % Build the measurement operator incorporating visibility gridding for a given uv-coverage at pre-defined
+    % frequencies. 
     %
     % Parameters
     % ----------
