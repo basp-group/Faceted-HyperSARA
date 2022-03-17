@@ -111,7 +111,7 @@ Default values can be bypassed by providing the name of a new ``.json`` file to 
     See associated documentation in the `SARA-dictionary <https://basp-group.github.io/SARA-dictionary/index.html>`_ module.
 
 
-.. admonition:: :math:`w`-projection parameters :cite:p:`Dabbech2018`
+.. admonition:: :math:`w`-projection parameters :cite:p:`Dabbech2017`
 
     measop_flag_wproj : false
         Flag to activate :math:`w`-correction.

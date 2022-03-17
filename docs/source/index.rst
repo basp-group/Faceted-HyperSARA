@@ -7,7 +7,7 @@ HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA
 :cite:p:`Thouvenin2021`). The proposed implementation enables
 
 - data dimensionality reduction via visibility gridding :cite:p:`Kartik2017`;
-- correction of the :math:`w`-term via :math:`w`-projection :cite:p:`Dabbech2018`;
+- correction of the :math:`w`-term via :math:`w`-projection :cite:p:`Dabbech2017`;
 - incorporation of available compact Fourier models of the direction dependent effects (DDEs) in the measurement operator :cite:p:`Dabbech2021`.
 
 ``Faceted-Hyper-SARA`` relies on two auxiliary submodules:

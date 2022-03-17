@@ -109,6 +109,7 @@
 %
 % .. code-block:: matlab
 %
+%    %% Set the input and output channels IDs
 %    %% option 1: provide a cell array containing the ids of the channels
 %    % to be concatenated for each effective channel.
 %    % example a: two effective channels, containing two "physical"
