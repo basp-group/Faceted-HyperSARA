@@ -26,11 +26,11 @@ Extracting data from the channels indexed from  `0` to `3` of the source with fi
 
 The user must provide the name/path to the measurement set `$MS`. The following inputs are optional.
 ```bash
-$SRCNAME # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
-$MSTAG # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
-$FIELDID # default FIELDID=0 : field ID of the source of interest, 
-$FIRSTCH # default FIRSTCH=0 : ID of the first channnel to be extracted, 
-$LASTCH # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
+$SRCNAME  # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
+$MSTAG    # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
+$FIELDID  # default FIELDID=0 : field ID of the source of interest, 
+$FIRSTCH  # default FIRSTCH=0 : ID of the first channnel to be extracted, 
+$LASTCH   # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
 ```
 **Note:** In `./Faceted-Hyper-SARA/imaging/main_input_imaging.m`, the user should set  the name of the image cube to be reconstructed `srcName` to the value of `$SRCNAME`
 
@@ -55,11 +55,11 @@ Extracting data from the channels indexed from  `0` to `15` of the source with f
 
 The user must provide the name/path to the two measurement sets `$MSLOW`  and `$MSHIGH` associated with the low frequency band and high frequency band meaurement sets, respectively. The following inputs are optional.
 ```bash
-$SRCNAME # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
-$MSTAG # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
-$FIELDID # default FIELDID=0 : field ID of the source of interest, 
-$FIRSTCH # default FIRSTCH=0 : ID of the first channnel to be extracted, 
-$LASTCH # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
+$SRCNAME  # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
+$MSTAG    # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
+$FIELDID  # default FIELDID=0 : field ID of the source of interest, 
+$FIRSTCH  # default FIRSTCH=0 : ID of the first channnel to be extracted, 
+$LASTCH   # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
 ```
 From the terminal launch:
 ```bash
