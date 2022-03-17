@@ -25,7 +25,7 @@ function imaging(image_name, datasetsNames, dataFilename, ...
 % param_global: struct
 %     Global imaging pipeline parameters (see
 %     :mat:func:`imaging.main_input_imaging`).
-% param_global.algo_version : string (``"sara"``, ``"hs"`` or ``"fhs"``).
+% param_global.algo_solver : string (``"sara"``, ``"hs"`` or ``"fhs"``).
 %     Selected solver.
 % param_global.ncores_data : int
 %     Number of cores handlig the data fidelity terms (data cores). For
@@ -51,7 +51,7 @@ function imaging(image_name, datasetsNames, dataFilename, ...
 %     Fraction of the total size of a facet overlapping with a neighbour
 %     facet along each axis (y and x) for the faceted low-rankness prior.
 %     Will be reset automatically to ``[0, 0]`` if
-%     ``param_global.algo_version = "sara"``
+%     ``param_global.algo_solver = "sara"``
 %     or ``"hs"``. Besides, each entry of
 %     ``param_global.facet_overlap_fraction`` is reset to 0 the
 %     number of facet along the corresponding dimension is equal to 1
@@ -143,7 +143,7 @@ end
 % end
 
 % Algo
-if ~isfield(param_global, 'algo_version'); param_global.algo_version = 'fhs'; end
+if ~isfield(param_global, 'algo_solver'); param_global.algo_solver = 'fhs'; end
 if ~isfield(param_global, 'algo_flag_solveMinimization'); param_global.algo_flag_solveMinimization = 1; end
 if ~isfield(param_global, 'algo_flag_computeOperatorNorm'); param_global.algo_flag_computeOperatorNorm = 1; end
 if ~isfield(param_global, 'algo_ncores_data'); param_global.algo_ncores_data = numel(effChans2Image);  end
@@ -216,7 +216,7 @@ end
 param_wproj.CEnergyL2 = param_global.measop_wprojCEnergyL2; % w projection
 param_wproj.GEnergyL2 = param_global.measop_wprojGEnergyL2; % w projection
 % Algo
-algo_version = param_global.algo_version;
+algo_solver = param_global.algo_solver;
 ncores_data = param_global.algo_ncores_data;
 flag_computeOperatorNorm = param_global.algo_flag_computeOperatorNorm;
 flag_solveMinimization =  param_global.algo_flag_solveMinimization;
@@ -264,17 +264,17 @@ addpath([project_dir, filesep, 'src', filesep, 'heuristics', filesep]);
 %
 addpath([current_dir, filesep, 'real_data']); % AD: will be ommited later
 %
-if strcmp(algo_version, 'sara')
+if strcmp(algo_solver, 'sara')
     addpath([project_dir, filesep, 'src', filesep, 'sara']);
-elseif strcmp(algo_version, 'hs')
+elseif strcmp(algo_solver, 'hs')
     addpath([project_dir, filesep, 'src', filesep, 'hs', filesep]);
-elseif strcmp(algo_version, 'fhs')
+elseif strcmp(algo_solver, 'fhs')
     addpath([project_dir, filesep, 'src', filesep, 'fhs', filesep]);
 end
 % setting paths to results and reference image cube
 results_path = fullfile('results', image_name);
 mkdir(results_path);
-auxiliary_path = fullfile(results_path, algo_version);
+auxiliary_path = fullfile(results_path, algo_solver);
 mkdir(auxiliary_path);
 fprintf('\nINFO: results will be saved in: \n %s .\n', auxiliary_path);
 % -------------------------------------------------------------------------%
@@ -283,10 +283,10 @@ fprintf('\nINFO: results will be saved in: \n %s .\n', auxiliary_path);
 disp('Imaging configuration');
 disp(['Source name: ', image_name]);
 disp(['Image cube size: ', num2str(Ny), ' x ', num2str(Nx), ' x ', num2str(numel(effChans2Image))]);
-disp(['Algorithm version: ', algo_version]);
+disp(['Algorithm version: ', algo_solver]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
 disp(['Number of spectral facets Qc : ', num2str(Qc)]);
-if ~strcmp(algo_version, 'sara')
+if ~strcmp(algo_solver, 'sara')
     disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), ', ')]);
 end
 % -------------------------------------------------------------------------%
@@ -315,7 +315,7 @@ halfSpatialBandwidth = (180 / pi) * 3600 / (pixelSize) / 2;
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% image cube initialisation: load if available otherwise set to 0
-switch algo_version
+switch algo_solver
     case 'sara'
         xinit = zeros(Ny, Nx);
         if ~isempty(param_preproc.filename_model)
@@ -389,7 +389,7 @@ end
 % -------------------------------------------------------------------------%
 %% Auxiliary function needed to select the appropriate workers
 % (only needed for 'hs' and 'fhs' algorithms)
-switch algo_version
+switch algo_solver
     case 'sara'
         data_worker_id = @(k) k;
     case 'hs'
@@ -397,17 +397,17 @@ switch algo_version
     case 'fhs'
         data_worker_id = @(k) k + Qx * Qy;
     otherwise
-        error('Undefined algo_version (available options: ''sara'',''hs'',''fhs'')');
+        error('Undefined algo_solver (available options: ''sara'',''hs'',''fhs'')');
 end
 %% Get faceting parameter (spectral + spatial)
 % fix faceting parameters in case these are not consistent with the
 % selected algorithm
-if strcmp(algo_version, 'sara')
+if strcmp(algo_solver, 'sara')
     window_type = 'none';
     Qc = 1; % nEffectiveChans;
     Qx = 1;
     Qy = 1;
-elseif strcmp(algo_version, 'hs')
+elseif strcmp(algo_solver, 'hs')
     window_type = 'none';
     Qx = 1;
     Qy = 1;
@@ -416,11 +416,11 @@ Q = Qx * Qy;
 
 % convert fraction of overlap between consecutive facets into a number of pixels
 overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
-if ~strcmp(algo_version, 'sara')
+if ~strcmp(algo_solver, 'sara')
     fprintf('\nINFO: faceting: number of pixels in overlap: [%s]\n', strjoin(strsplit(num2str(overlap_size))));
 end
 % index of channels from the subcube to be handled on each data worker
-if strcmp(algo_version, 'sara')
+if strcmp(algo_solver, 'sara')
     % for SARA, parallelization is only active over the different wavelet
     % dictionaries composing the SARA prior
     ncores = numel(dict.basis);
@@ -440,14 +440,14 @@ param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
 %% setup parpool
 try delete(gcp('nocreate'));
 end
-% % if strcmp(algo_version, 'sara')
+% % if strcmp(algo_solver, 'sara')
 % %     parcluster = 'local';
 % % end
-hpc_cluster = util_set_parpool(algo_version, ncores_data, Qx * Qy, ~strcmp(parcluster, 'local'));
+hpc_cluster = util_set_parpool(algo_solver, ncores_data, Qx * Qy, ~strcmp(parcluster, 'local'));
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% Setup measurement operator and load data
-switch algo_version
+switch algo_solver
     case 'sara'
         for iEffCh = 1:nEffectiveChans
 
@@ -568,7 +568,7 @@ switch algo_version
         % create the measurement operator operator in parallel (depending on
         % the algorithm used)
         Sigma = Composite();
-        if strcmp(algo_version, 'hs')
+        if strcmp(algo_solver, 'hs')
             spmd
                 ddes = []; preproc_residuals = [];
                 local_fc = (freqRangeCores(labindex, 1):freqRangeCores(labindex, 2));
@@ -801,7 +801,7 @@ clear   param_wproj param_preproc  preproc_residuals;
 % only generatr data in 'hs' or 'fhs' configuration (otherwise, load the data)
 % datafile = matfile(fullfile(results_path,filename_l2bounds));
 fprintf('\nData loaded successfully.');
-switch algo_version
+switch algo_solver
     case 'sara'
         % ! to be verified
         % all the variables are stored on the main process for sara
@@ -820,11 +820,11 @@ end
 
 %% Compute operator norm
 subcube_channels = 1:nEffectiveChans;
-if strcmp(algo_version, 'sara')
+if strcmp(algo_solver, 'sara')
     if flag_computeOperatorNorm
         [Anorm, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 200, flag_dataReduction, Sigma); % AD: changed tolerance to 1e-6 instead of 1e-8
         save(fullfile(results_path, ...
-            strcat('Anorm_', algo_version, ...
+            strcat('Anorm_', algo_solver, ...
             '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
             '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), '.mat')), ...
             '-v7.3', 'Anorm', 'squared_operator_norm', 'rel_var', ...
@@ -832,7 +832,7 @@ if strcmp(algo_version, 'sara')
         clear rel_var;
     else
         load(fullfile(results_path, ...
-            strcat('Anorm_', algo_version, ...
+            strcat('Anorm_', algo_solver, ...
             '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
             '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), '.mat')), ...
             'Anorm', 'squared_operator_norm_precond', 'squared_operator_norm');
@@ -840,7 +840,7 @@ if strcmp(algo_version, 'sara')
 else
     if flag_computeOperatorNorm
         spmd
-            if labindex > Qx * Qy * strcmp(algo_version, 'fhs')
+            if labindex > Qx * Qy * strcmp(algo_solver, 'fhs')
                 [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200, flag_dataReduction, Sigma);
             end
         end
@@ -884,15 +884,15 @@ end
 fprintf('INFO: Convergence parameter (measurement operator''s norm squared): %e \n', Anorm);
 %% Setup name of results file
 
-if strcmp(algo_version, 'sara') % AD
+if strcmp(algo_solver, 'sara') % AD
     temp_results_name = @(nEffectiveChans) strcat(image_name, '_', ...
-        algo_version, '_', num2str(pixelSize), 'asec', ...
+        algo_solver, '_', num2str(pixelSize), 'asec', ...
         '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
         '_ind', num2str(subcubeInd), '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), ...
         '_g', num2str(gam), '_gb', num2str(gam_bar), '_');
 else
     temp_results_name = @(nEffectiveChans) strcat(image_name, '_', ...
-        algo_version, '_', num2str(pixelSize), 'asec', ...
+        algo_solver, '_', num2str(pixelSize), 'asec', ...
         '_Ny', num2str(Ny), '_Nx', num2str(Nx), '_L', num2str(nEffectiveChans), ...
         '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
         '_ind', num2str(subcubeInd), '_g', num2str(gam), '_gb', num2str(gam_bar), ...
@@ -906,7 +906,7 @@ warm_start = @(nEffectiveChans) strcat(temp_results_name(nEffectiveChans), '_rw'
 % compute sig and sig_bar (estimate of the "noise level" in "SVD" and
 % SARA space) involved in the reweighting scheme
 
-if strcmp(algo_version, 'sara')
+if strcmp(algo_solver, 'sara')
     % SARA dicionary (created out of the solver for SARA)
     dwtmode('zpd');
     [Psi1, Psit1] = op_p_sp_wlt_basis(dict.basis, dict.nlevel, Ny, Nx);
@@ -929,14 +929,14 @@ if strcmp(algo_version, 'sara')
     fprintf('Noise level: sig = %e\n', sig);
     fprintf('Additional multiplicative regularisation factor gam = %e\n', gam);
     fprintf('Regularization parameter mu = %e\n', mu);
-    fprintf('Algo: %s, alpha = %.4e, mu = %.4e, sig = %.4e\n', algo_version, gam, mu, sig);
+    fprintf('Algo: %s, alpha = %.4e, mu = %.4e, sig = %.4e\n', algo_solver, gam, mu, sig);
 end
 
-if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
+if strcmp(algo_solver, 'hs') || strcmp(algo_solver, 'fhs')
     % noise level / regularization parameter
     [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
         compute_noise_level(Ny, Nx, nEffectiveChans, global_sigma_noise(:), ...
-        algo_version, Qx, Qy, overlap_size, squared_operator_norm(:));
+        algo_solver, Qx, Qy, overlap_size, squared_operator_norm(:));
     % apply multiplicative factor for the regularization parameters (if needed)
     mu_bar = gam_bar * sig_bar;
     mu = gam * sig;
@@ -944,7 +944,7 @@ if strcmp(algo_version, 'hs') || strcmp(algo_version, 'fhs')
     fprintf('Noise levels: sig = %.4e, sig_bar = [%.4e, %.4e]\n', sig, min(sig_bar), max(sig_bar));
     fprintf('Additional multiplicative actors gam = %.4e, gam_bar = %.4e\n', gam, gam_bar);
     fprintf('Regularization parameters: mu = %.4e, mu_bar = %.4e\n', mu, mu_bar);
-    fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_version, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
+    fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_solver, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
 end
 
 % moved here for transprancy: define parameters for the solver
@@ -953,12 +953,12 @@ end
 % * general
 % estimate of the noise level in SARA space
 param_solver.reweighting_sig = sig;
-if ~strcmp(algo_version, 'sara');  param_solver.reweighting_sig_bar = sig_bar; % estimate of the noise level in "SVD" spaces
+if ~strcmp(algo_solver, 'sara');  param_solver.reweighting_sig_bar = sig_bar; % estimate of the noise level in "SVD" spaces
 end
 param_solver.nu0 = 1; % bound on the norm of the Identity operator
 param_solver.nu1 = 1; % bound on the norm of the operator Psi
 param_solver.nu2 = squared_operator_norm_precond; % upper bound on the norm of the measurement operator
-if ~strcmp(algo_version, 'sara'); param_solver.gamma0 = mu_bar; % regularization parameter nuclear norm
+if ~strcmp(algo_solver, 'sara'); param_solver.gamma0 = mu_bar; % regularization parameter nuclear norm
 end
 param_solver.gamma = mu; % regularization parameter l21-norm (soft th parameter) ! for SARA, take the value given as an input to the solver
 param_solver.cube_id = subcubeInd; % id of the cube to be reconstructed
@@ -973,7 +973,7 @@ name_checkpoint = fullfile(auxiliary_path, temp_results_name(nEffectiveChans));
 name_warmstart = fullfile(auxiliary_path, warm_start(nEffectiveChans));
 %% Solver
 if flag_solveMinimization
-    if strcmp(algo_version, 'sara')
+    if strcmp(algo_solver, 'sara')
         disp('SARA');
         disp('-----------------------------------------');
         % ! in this case, ncores_data corresponds
@@ -981,7 +981,7 @@ if flag_solveMinimization
         xsol = sara(y, epsilons, A, At, aW, G, W, Psi, Psit, ...
             param_solver, name_warmstart, name_checkpoint, gam, ...
             flag_dataReduction, Sigma, xinit);
-        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
+        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_solver, ...
             '_', num2str(pixelSize), 'asec', ...  % '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
             '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), ...
             '_gam', num2str(gam), ...
@@ -996,7 +996,7 @@ if flag_solveMinimization
 
         %
         xinit = reshape(xinit, ImageCubeDims);
-        switch algo_version
+        switch algo_solver
             case 'hs'
                 disp('HyperSARA');
                 disp('-----------------------------------------');
@@ -1019,7 +1019,7 @@ if flag_solveMinimization
                     xinit);
             otherwise; error('Unknown solver version.');
         end
-        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_version, ...
+        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_solver, ...
             '_', num2str(pixelSize), 'asec', ...
             '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
             '_ind', num2str(subcubeInd), ...

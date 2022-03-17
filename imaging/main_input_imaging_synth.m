@@ -74,21 +74,21 @@
 %     String the name of the parcluster profile. By default ``"local"`` profile
 %     is used. The user should set it to the name of the slurm parcluster
 %     profile created on his/her HPC machine if prefered. 
-% param_global.algo_version : string
+% param_global.algo_solver : string
 %     Name of the imaging approach used. Possible values are ``"fhs"``
 %     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
 % param_global.facet_Qx : int
 %     Number of spatial facets along spatial axis x. Will be reset
-%     automatically to 1 if ``param_global.algo_version = "sara"`` or
+%     automatically to 1 if ``param_global.algo_solver = "sara"`` or
 %     ``"hs"``.
 % param_global.facet_Qy : int
 %     Number of spatial facets along spatial axis y. Will be reset
-%     automatically to 1 if ``param_global.algo_version = "sara"`` or
+%     automatically to 1 if ``param_global.algo_solver = "sara"`` or
 %     ``"hs"``.
 % param_global.facet_overlap_fraction : array[double]
 %     Array containing the overlap fraction between consecutive facets along
 %     each axis (y and x) for the faceted low-rankness prior. Will be reset
-%     automatically to ``[0, 0]`` if ``param_global.algo_version = "sara"``
+%     automatically to ``[0, 0]`` if ``param_global.algo_solver = "sara"``
 %     or ``"hs"``. Besides, each entry of
 %     ``param_global.facet_overlap_fraction`` is reset to 0 the
 %     number of facet along the corresponding dimension is equal to 1
@@ -249,7 +249,7 @@ param_global.reg_nReweights = 5;
 
 % algo & parallelisation params
 % TODO: to be adjusted by the user
-param_global.algo_version = 'fhs'; % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
+param_global.algo_solver = 'fhs'; % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
 
 % filenames and input
 % TODO: to be adjusted by the user (set path to [] whenever it is not used)
@@ -310,7 +310,7 @@ param_global.parcluster = 'local'; % name of the parcluster profile to use.  If 
 % rowend      = info.PrimaryData.Size(1);
 % colend      = info.PrimaryData.Size(2);
 % sliceend    = info.PrimaryData.Size(3);
-% if strcmp(param_global.algo_version, 'sara')
+% if strcmp(param_global.algo_solver, 'sara')
 %     x0 = fitsread(reference_cube_path, 'primary', ...
 %         'Info', info, ...
 %         'PixelRegion', {[1 spatial_downsampling rowend], ...

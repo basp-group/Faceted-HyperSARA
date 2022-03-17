@@ -1,4 +1,4 @@
-function hpc_cluster = util_set_parpool(algo_version, ncores_data, Q, parcluster_name)
+function hpc_cluster = util_set_parpool(solver, ncores_data, Q, parcluster_name)
     % function to launch parpool before the solver.
     %
     % Parameters
@@ -17,7 +17,7 @@ function hpc_cluster = util_set_parpool(algo_version, ncores_data, Q, parcluster
     % hpc_cluster
     %     [description]
 
-    switch algo_version
+    switch solver
         case 'sara'
             numworkers = ncores_data;
         case 'hs'
