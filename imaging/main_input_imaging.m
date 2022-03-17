@@ -8,10 +8,13 @@
 % Parameters
 % ----------
 % srcName : string
-%     Name of the image cube to be reconstructed as specified during data extraction.
+%     Name of the target source to be reconstructed as specified during
+%     data extraction. It will be used for output files.
 % datasetNames : cell of string
-%     Name of the different datasets used (e.g., if datasets associated with
-%     different acquisition configurations are used), to be set to ``{''}`` if one data set is imaged or no nametag of the MS is given during data extraction.
+%     Name of the different datasets used (e.g.,
+%     different acquisition configurations, different observation times),
+%     to be set to ``{''}`` if one data set is imaged or no name tag of 
+%     the MS is given during data extraction.
 % json_filename : string
 %     Name of the input ``.json`` configuration file specifying the
 %     value of the algorithm parameters (PDFB, reweighting, ellipsoid,
@@ -33,9 +36,10 @@
 %     Directory where the input ``.mat`` data files are saved.
 % project_dir : string
 %     Directory of the experiment project.
-% preproc_calib_dir : anonymous function
-%     Name of the folder containing pre-estimated calibration kernels. If
-%     not used or not available, to be set to ``[]``
+% preproc_calib_dir : string
+%     Name of the folder containing results from a calibration
+%     pre-processing step. To be set to ``[]`` if not used or not
+%     available.
 % param_global.preproc_filename_die : anonymous function
 %     Function handle, taking the index of the first and last channel, and
 %     returning a string corresponding to the name of a file containing
@@ -63,9 +67,9 @@
 % param_global.im_Ny : int
 %     Number of pixels along axis y in the reconstructed image.
 % param_global.im_pixelSize  : double
-%     Pixel-size in arcsec in the frequency domain. Set to ``[]`` to use
-%     the default computation (implemented in
-%     :mat:func:`imaging.imaging`).
+%     Pixel-size in arcsec. Set to ``[]`` to use
+%     the default computation, that is 2x the resolution of the
+%     observation.
 % param_global.reg_flag_reweighting : bool
 %     Flag to activate the use of multiple reweighting steps.
 % param_global.reg_nReweights : int
@@ -134,7 +138,7 @@
 % - Any data file should contain the following variables : `maxProjBaseline`
 %   (double, maximum projected baseline), `u` , `v`, `w` (arrays of
 %   :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (complex vector of
-%   visibilities), `frequency` (associated frequency value).
+%   visibilities, Stokes I), `frequency` (associated frequency value).
 %
 % - Note that the data `y` are not whitened, `maxProjBaseline` and uvw coordinates should be given
 %   in units of the wavelength (i.e. normalised by the associated wavelength).
@@ -148,12 +152,11 @@
 clear; clc; close all;
 
 %% Parameters to be specified
-% TODO give Matlab config file for a cluster (intead of just providing CIRRUS)
 % TODO (keep empty parameter for non-used variables)
 
 % change paths if needed
 % TODO: to be adjusted by the user if required (keep current setting by default)
-main_dir = '..'; % Faceted-Hyper-SARA dir.
+main_dir = '.'; % Faceted-Hyper-SARA dir.
 project_dir = [main_dir, filesep, 'imaging'];
 cd(project_dir);
 
@@ -163,23 +166,27 @@ srcName = 'CYGA'; % as specified during data extraction
 datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; %  accomodating multiple datasets, 
 %set as specified in the data extraction step, {''} otherwise.
 
-% data directory
-% TODO: to be adjusted by the user
+% data directory (as expected from the data extraction step)
 data_dir = [main_dir, filesep, 'data', filesep, srcName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
-% preproc dir.
-preproc_calib_dir = [data_dir, 'pre_processing_dde/']; 
-% name of json parameter file
-json_filename = "default_parameters.json";
 
 % data files
-% example of data file: `./data/CYGA/CYGA-ConfigA/data_ch_1.mat` with fields
-% 'y', 'u','v','w', 'nW', 'frequency', 'maxProjBaseline'.
-% Note that data 'y' (Stokes I) are not whitened and that 'maxProjBaseline',
-% 'u','v', and 'w' coordinates are in units of the wavelength (i.e. normalised with the wavelength) 
-% ! Note the path for .mat files (dataset name tag used)
-% To be adjusted by the user if data paths during the data extraction step has been altered
+% example of data file: `./data/CYGA/CYGA-ConfigA/data_ch_1.mat` 
+% ! Note in the path for .mat files (dataset name tag used)
+% ! To be adjusted only if data paths during data extraction have been altered
 dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, filesep, 'data_ch_', num2str(ch), '.mat');
+
+
+% calibration preprocessing step directory
+% TODO: to be adjusted by the user (set path to [] whenever it is not used)
+preproc_calib_dir = [data_dir,filesep, 'pre_processing_calibration/']; 
+% check if directory of calibration results exists
+if exist(preproc_calib_dir, 'dir')
+    preproc_results_exist = 1;
+else,  preproc_results_exist = 0;
+end
+% name of json parameter file
+json_filename = "default_parameters.json";
 
 %% channels organisation
 %%%% option 1: provide a cell array containing the ids of the  channels to be concatenated for each effective channel.
@@ -229,7 +236,6 @@ param_global.measop_flag_visibility_gridding = 0; % 1 if active, 0 otherwise.
 param_global.im_Nx = 2560;
 param_global.im_Ny = 1536;
 param_global.im_pixelSize =  0.06; % pixelsize in asec, set to [] to use the default value set from the uv-coverage
-param_global.algo_flag_computeOperatorNorm = true;
 
 % faceting params: note that if interleaving is active, one subcube is
 % imaged at a time: Qc=1 by default.
@@ -252,25 +258,21 @@ param_global.reg_nReweights = 5;
 param_global.algo_version = 'fhs'; % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
 
 % filenames and input
-% TODO: to be adjusted by the user (set path to [] whenever it is not used)
 param_global.main_dir = main_dir;
-param_global.preproc_filename_die = []; % ! must be set to [] or commented if not used 
-param_global.preproc_filename_dde = []; % ! must be set to [] or commented if not used 
-param_global.preproc_filename_l2bounds = []; % ! must be set to [] or commented if not used 
-param_global.preproc_filename_model = [];% !  should be commented if not used
 
-% param_global.preproc_filename_dde = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'ddes', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_ddes.mat');
-% param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
-% param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'l2bounds', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
-% param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'model_images', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
+if preproc_results_exist
+    % TODO: to be adjusted by the user (set path to [] whenever it is not used)
+    param_global.preproc_filename_dde = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'ddes', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_ddes.mat');
+    param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
+    param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'l2bounds', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
+    param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'model_images', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
+end
 
 
 % Parallel parcluster profile 
 % TODO: to be adjusted by the user
 param_global.parcluster = 'local'; % name of the parallel parcluster profile to use.
 % to be adjusted if running on a HPC and a slurm parcluster profile will be used. 
-
-
 %% read and set configuration from .json file
 [param_global, param_solver, ...
     param_nufft, param_precond, dict] = ...
