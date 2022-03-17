@@ -72,8 +72,8 @@ function imaging(image_name, datasetsNames, dataFilename, ...
 % param_global.algo_flag_solveMinimization : bool
 %     Flag triggering the solver (SARA, HS or FHS).
 % param_global.measop_flag_visibility_gridding : bool
-%     Flag to activate Data reduction features (visibility gridding) in the definition of the
-%     measurement operator.
+%     Flag to activate Data reduction features (visibility gridding) in the
+%     definition of the measurement operator :cite:p:`Kartik2017`.
 % cirrus:
 %     hardware: Specify whether the solver runs on cirrus or not (for the
 %     creation of the parpool).

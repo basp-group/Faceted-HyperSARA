@@ -31,7 +31,8 @@ From an existing ``Faceted-Hyper-SARA`` repository, issue the following commands
 
 .. warning::
 
-   Note that a simple ``pull`` instruction from the ``Faceted-Hyper-SARA`` repository does not update the submodules if the version on which it relies has been modified. If this is the case, update the submodules with the ``git submodule``instructions provided above.
+   Note that a simple ``pull`` instruction from the ``Faceted-Hyper-SARA`` repository does not update the submodules if the version on which it relies has been modified. If this is the case, update the submodules with the instructions provided above.
+
 
 
 Getting started

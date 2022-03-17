@@ -51,7 +51,8 @@
 %     initialize the reconstruction algorithm. If not used, must be set to
 %     ``[]``.
 % param_global.measop_flag_visibility_gridding : bool
-%     Flag to activate visibility gridding for data dimensionality reduction.
+%     Flag to activate visibility gridding for data dimensionality reduction
+%     :cite:p:`Kartik2017`.
 % param_global.algo_flag_computeOperatorNorm : bool
 %     Flag to trigger the computation of the norm of the measurement
 %     operator. If set to ``false``, MATLAB will look for a file where this
