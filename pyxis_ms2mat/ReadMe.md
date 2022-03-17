@@ -77,7 +77,7 @@ In the case of a single spectral window, the outcome is as follows
 ../data/cyga/data_ch_32.mat % channel 16 from myhighbandms.ms
 ```
 #### 3. Combine different measurment sets spanning the same frequency bandwidth, with same spectral window specs
-Extracting data from the channels indexed from  `0` to `15` of the source with field ID `0`, from **all** spectral windows.
+Extracting data from the channels indexed from  `0` to `12` of the source with field ID `0`, from **all** spectral windows.
 From the terminal launch:
 ```bash
 pyxis MS=myms1.ms  SRCNAME=cyga MSTAG=dataset1 FIRSTCH=0  LASTCH=12 FIELDID=0 getdata_ms \
