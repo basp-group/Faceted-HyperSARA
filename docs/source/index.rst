@@ -6,9 +6,9 @@ algorithms from the "SARA" family (SARA :cite:p:`Carrillo2012,Onose2017`,
 HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA 
 :cite:p:`Thouvenin2021`). The proposed implementation can accommodate
 
-- visibility gridding :cite:p:`Kartik2017`;
-- :math:`w`-correction :cite:p:`Dabbech2018`;
-- a compact Fourier model for the direction dependent effects (DDEs) :cite:p:`Dabbech2021`.
+- data dimensionality reduction via visibility gridding :cite:p:`Kartik2017`;
+- :math:`w`-correction via `w`-projection :cite:p:`Dabbech2018`;
+- incorporation of available compact Fourier models of the direction dependent effects (DDEs) in the measurement operator :cite:p:`Dabbech2021`.
 
 ``Faceted-Hyper-SARA`` relies on two auxiliary submodules:
 
