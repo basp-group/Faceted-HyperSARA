@@ -8,20 +8,23 @@ function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
     %
     % Parameters
     % ----------
-    % u : array (vector)
+    % u : cell 
     %     `u` coordinate.
-    % v : array (vector)
+    % v : cell 
     %     `v` coordinate.
-    % w : array (vector)
+    % w : cell 
     %     `w` coordinate.
+    % nW: cell 
+    %     Weights to apply natural weighting.
     % param_precond : struct
     %     Structure to configure the preconditioning matrices.
-    % param_blocking : struct
-    %     Structure to configure data blocking.
     % param_nufft : struct
     %     Structure to configure NUFFT.
     % param_wproj : struct
     %     Structure to configure w-projection.
+    % ddes: cell array
+    %     Cell containing DDE calibration kernels in the spatial Fourier domain
+    %     step from a pre-processing step to be incorporated in the measurement operator.
     % nchans : Number of channels
     % Nx : int
     %     Image dimension (x-axis).
@@ -46,13 +49,13 @@ function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
     %     in the emasurement operator.
     % At : lambda function
     %     Lambda function to compute the adjoint of ``A``.
-    % G : cell
+    % G : cell 
     %     Cell containing the trimmed-down interpolation kernels for each
     %     channel, and each data block within a channel.
-    % W : cell
+    % W : cell 
     %     Cell containing the selection vector for each channel, and
     %     data block within a channel.
-    % aW : cell
+    % aW : cell 
     %     Cell containing the preconditioning vectors for each channel, and
     %     data block within a channel.
     %%
