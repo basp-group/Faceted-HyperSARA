@@ -45,8 +45,12 @@ Reconstructing an image cube from an MS-Table
 1. To reconstruct an image from an ``MS Table``, first use the Python script 
    ``pyxis_ms2mat/pyxis-ckat.py`` to extract the data in the form of a 
    collection of ``.mat`` (an example is provided in
+<<<<<<< Updated upstream
    ``pyxis_ms2mat/job_example_slurm``). This requires the follownig libraries: 
    ``casacore`` and ``meqtrees``.
+=======
+   ``pyxis_ms2mat/job_example_slurm``). This requires the `casacore <https://github.com/casacore/casacore>`_ and `meqtrees <https://github.com/ratt-ru/meqtrees/wiki/Installation>`_ libraries.
+>>>>>>> Stashed changes
 
 2. (Optional) Make a copy of ``imaging/default_parameters.json``, and 
    update the main algorithm parameters specified in this file (all values are 
