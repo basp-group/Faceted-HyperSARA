@@ -24,7 +24,7 @@ function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
     %     Structure to configure w-projection.
     % ddes: cell array
     %     Cell containing DDE calibration kernels in the spatial Fourier domain
-    %     step from a pre-processing step to be incorporated in the measurement operator.
+    %     from a pre-processing step to be incorporated in the measurement operator.
     % nchans : Number of channels
     % Nx : int
     %     Image dimension (x-axis).
