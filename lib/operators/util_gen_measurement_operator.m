@@ -15,7 +15,7 @@ function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
     % w : cell of cell of double[:] 
     %     `w` coordinate.
     % nW: cell 
-    %     Weights to apply natural weighting.
+    %     noise whitening vector for natural weighting.
     % param_precond : struct
     %     Structure to configure the preconditioning matrices.
     % param_nufft : struct

@@ -72,15 +72,11 @@ function imaging(image_name, datasetsNames, dataFilename, ...
 % param_global.algo_flag_solveMinimization : bool
 %     Flag triggering the solver (SARA, HS or FHS).
 % param_global.measop_flag_visibility_gridding : bool
-%     Flag to activate Data reduction features (visibility gridding) in the
+%     Flag to activate Data dimensionality reduction features (visibility gridding) in the
 %     definition of the measurement operator :cite:p:`Kartik2017`.
-% cirrus:
-%     hardware: Specify whether the solver runs on cirrus or not (for the
-%     creation of the parpool).
 %
 % Note
 % ----
-% - DR features still need to be implemented in the main script.
 % - Example:
 %
 % .. code-block:: matlab

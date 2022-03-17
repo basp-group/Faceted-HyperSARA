@@ -14,7 +14,7 @@ function [A, At, H, W, aW, Sigma, gridded_y, gridded_noise] = util_gen_dr_measur
     % w : cell of cell of double[:]
     %     `w` coordinate.
     % nW: cell of cell of double[:] 
-    %     Weights to apply natural weighting.
+    %     noise whitening vector for natural weighting.
     % param_precond : struct
     %     Structure to configure the preconditioning matrices.
     % param_wproj: struct

@@ -1,4 +1,4 @@
-function cirrus_cluster = util_set_parpool_dev(algo_version, ncores_data, Q, flag_cirrus)
+function hpc_cluster = util_set_parpool_dev(algo_version, ncores_data, Q, flag_hpc)
 
 switch algo_version
     case 'sara'
@@ -14,35 +14,34 @@ end
 try delete(gcp('nocreate'));
 end
 
-if flag_cirrus
-       fprintf('\nINFO: will open a cirrus parpool of size %d',numworkers)
-       cirrus_cluster = parcluster('mySlurmProfileSingleThread');  % parcluster('local');
-       cirrus_cluster.ResourceTemplate = '--export=ALL --ntasks=^N^ --cpus-per-task=^T^ --tasks-per-node=36 --account=ec110-guest  --time=06:00:00 --partition=standard --qos=standard';
-else,  cirrus_cluster = parcluster('local');
+if flag_hpc
+       fprintf('\nINFO: will open a parpool of size %d  using a slurm parcluster',numworkers)
+       hpc_cluster = parcluster('mySlurmProfileSingleThread'); % update the parcluster name
+       hpc_cluster.ResourceTemplate = '--export=ALL --ntasks=^N^ --cpus-per-task=^T^ --tasks-per-node=36 --account=ec110-guest  --time=06:00:00 --partition=standard --qos=standard';
+else,  hpc_cluster = parcluster('local');
 end
 
-cirrus_cluster.NumWorkers = numworkers;
-cirrus_cluster.NumThreads = 1;
-ncores = cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads;
-if cirrus_cluster.NumWorkers * cirrus_cluster.NumThreads > ncores
+hpc_cluster.NumWorkers = numworkers;
+hpc_cluster.NumThreads = 1;
+ncores = hpc_cluster.NumWorkers * hpc_cluster.NumThreads;
+if hpc_cluster.NumWorkers * hpc_cluster.NumThreads > ncores
     exit(1);
 end
 % explicitly set the JobStorageLocation to the temp directory that was created in your sbatch script
-if flag_cirrus
-    path = [strcat('/lustre/home/sc004/', getenv('USER'), '/matlab_fhs_jobs/')];
-    mkdir(path);
-    path_dummy = [path, getenv('SLURM_JOB_ID')];
-    mkdir(path_dummy);
-    cirrus_cluster.JobStorageLocation = path_dummy; % strcat('/lustre/home/sc004/', getenv('USER'),'/', getenv('SLURM_JOB_ID'));
+if flag_hpc
+    pathtemp = [pwd,filesep,'tmp_parpool',filesep];
+    mkdir(pathtemp);
+    pathtemp = [pathtemp, getenv('SLURM_JOB_ID')];
+    mkdir(pathtemp);
+    hpc_cluster.JobStorageLocation = pathtemp;
 end
 
-% maxNumCompThreads(param.num_workers);
 
-parpool(cirrus_cluster, numworkers);
+parpool(hpc_cluster, numworkers);
 
 % % start the matlabpool with maximum available workers
 % % control how many workers by setting ntasks in your sbatch script
-% parpool(cirrus_cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
+% parpool(hpc_cluster, str2num(getenv('SLURM_CPUS_ON_NODE')))
 dwtmode('zpd', 'nodisp');
 spmd
     dwtmode('zpd', 'nodisp');
