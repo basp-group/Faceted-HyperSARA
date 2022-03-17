@@ -19,7 +19,7 @@ function y = HS_forward_operator_precond_G(x, G, W, A, aW, flag_dr, Sigma)
     % flag_dr : bool
     %     Flag indicating whether data dimensionality reduction is considered.
     % Sigma : cell of cell of double[:]
-    %     Dimensionality reduction matrix.
+    %     Weighting matrix involved in data dimensionality reduction.
     %
     % Returns
     % -------
