@@ -84,7 +84,7 @@
             "measop_wprojGEnergyL2": 0.9999
         },
         "dataReduction": {
-            "measop_flag_dataReduction": false
+            "measop_flag_visibility_gridding": false
         }
     }
 ]

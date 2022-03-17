@@ -4,6 +4,11 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+# https://github.com/mcmtroffaes/sphinxcontrib-bibtex/blob/develop/test/roots/test-bibliography_style_label_1/conf.py
+from pybtex.style.formatting.unsrt import Style as UnsrtStyle
+from pybtex.style.labels import BaseLabelStyle
+from pybtex.plugin import register_plugin
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -73,8 +78,23 @@ exclude_patterns = [
 # .. https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html
 bibtex_bibfiles = ["strings_all_ref.bib", "biblio.bib"]
 bibtex_encoding = "utf-8-sig"
-bibtex_default_style = "alpha"
+bibtex_default_style = 'mystyle'
 # bibtex_reference_style =  # 'author_year'
+
+# a simple label style which uses the bibtex keys for labels
+class MyLabelStyle(BaseLabelStyle):
+
+    def format_labels(self, sorted_entries):
+        for entry in sorted_entries:
+            yield entry.key
+
+
+class MyStyle(UnsrtStyle):
+
+    default_label_style = MyLabelStyle
+
+
+register_plugin('pybtex.style.formatting', 'mystyle', MyStyle)
 
 
 # -- Options for HTML output -------------------------------------------------

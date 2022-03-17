@@ -54,7 +54,7 @@ Reconstructing an image cube from an MS-Table
 3. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
    provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction ``% TODO: to be adjusted by the user``.
 
-4. Run :mat:scpt:`imaging.main_input_imaging` with MATLAB.
+4. Run ``./imaging/main_input_imaging.m``` with MATLAB.
 
 
 Testing the library with a synthetic dataset

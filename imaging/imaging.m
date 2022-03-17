@@ -152,7 +152,7 @@ if ~isfield(param_global, 'algo_flag_computeOperatorNorm'); param_global.algo_fl
 if ~isfield(param_global, 'algo_ncores_data'); param_global.algo_ncores_data = numel(effChans2Image);  end
 
 % Measurement operator
-if ~isfield(param_global, 'measop_flag_dataReduction'); param_global.measop_flag_visibility_gridding = 0; end
+if ~isfield(param_global, 'measop_flag_visibility_gridding'); param_global.measop_flag_visibility_gridding = 0; end
 if ~isfield(param_global, 'measop_flag_wproj'); param_global.measop_flag_wproj = []; end
 if param_global.measop_flag_wproj
     if ~isfield(param_global, 'measop_wprojCEnergyL2'); param_global.measop_wprojCEnergyL2 = 1 - 1e-4; end
