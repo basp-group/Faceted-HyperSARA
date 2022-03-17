@@ -8,11 +8,11 @@ function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
     %
     % Parameters
     % ----------
-    % u : cell 
+    % u : cell of cell of double[:] 
     %     `u` coordinate.
-    % v : cell 
+    % v : cell of cell of double[:] 
     %     `v` coordinate.
-    % w : cell 
+    % w : cell of cell of double[:] 
     %     `w` coordinate.
     % nW: cell 
     %     Weights to apply natural weighting.
@@ -49,13 +49,13 @@ function [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
     %     in the emasurement operator.
     % At : lambda function
     %     Lambda function to compute the adjoint of ``A``.
-    % G : cell 
+    % G : cell of cell of complex[:] 
     %     Cell containing the trimmed-down interpolation kernels for each
     %     channel, and each data block within a channel.
-    % W : cell 
+    % W : cell of cell of double[:] 
     %     Cell containing the selection vector for each channel, and
     %     data block within a channel.
-    % aW : cell 
+    % aW : cell of cell of double[:] 
     %     Cell containing the preconditioning vectors for each channel, and
     %     data block within a channel.
     %%

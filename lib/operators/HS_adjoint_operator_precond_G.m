@@ -22,8 +22,8 @@ function x = HS_adjoint_operator_precond_G(y, G, W, At, aW, N, M, flag_dr, Sigma
     %     Spatial dimension of the wideband image (x axis).
     % flag_dr : bool
     %     Flag indicating whether data dimensionality reduction via visibility gridding is considered.
-    % Sigma : cell of cell of double[:]
-    %     Weighting matrix involved in data dimensionality reduction via visibility gridding.
+    % Sigma : cell of cell of double
+    %     Weighting vector involved in data dimensionality reduction via visibility gridding.
     %
     % Returns
     % -------

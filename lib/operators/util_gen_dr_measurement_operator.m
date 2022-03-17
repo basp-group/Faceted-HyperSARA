@@ -1,26 +1,27 @@
-function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
+function [A, At, H, W, aW, Sigma, gridded_y, gridded_noise] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
                                                                                nchans, Nx, Ny, param_nufft, param_wproj, preproc_dr_residuals, ddes)
-    % Build the measurement operator incorporating visibility gridding for a given uv-coverage at pre-defined
-    % frequencies. 
+    % Build the measurement operator incorporating visibility gridding 
+    % for a given uv-coverage at pre-defined frequencies. 
     %
     % Parameters
     % ----------
-    % y : cell
+    % y : cell of cell of complex[:]
     %    Cell containing the data vectors (Stokes I).
-    % u : cell
+    % u : cell of cell of double[:]
     %     `u` coordinate.
-    % v : cell
+    % v : cell of cell of double[:]
     %     `v` coordinate.
-    % w : cell
+    % w : cell of cell of double[:]
     %     `w` coordinate.
-    % nW: cell 
+    % nW: cell of cell of double[:] 
     %     Weights to apply natural weighting.
     % param_precond : struct
     %     Structure to configure the preconditioning matrices.
     % param_wproj: struct
     %     Structure to configure `w`-projection.
     % preproc_dr_residuals: cell
-    %     Cell containing the residual visibility vectors from a calibration pre-processing step, assumed as noise vectors.
+    %     Cell containing the residual visibility vectors from a calibration 
+    %     pre-processing step, assumed as noise vectors.
     % ddes: cell array
     %     Cell containing DDE calibration kernels in the spatial Fourier domain
     %     from a pre-processing step to be incorporated in the measurement operator.
@@ -48,21 +49,24 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
     %     in the emasurement operator.
     % At : lambda function
     %     Lambda function to compute the adjoint of ``A``.
-    % H : cell
-    %     Cell containing the holographic matrix for each
-    %     channel, and each data block within a channel. H is lower-triangular matrix to optimise memory requirements.
-    % W : cell
+    % H : cell of cell of complex[:]
+    %     Cell containing the holographic matrix for each channel, and 
+    %     each data block within a channel. H is a lower-triangular 
+    %     matrix to optimise memory requirements.
+    % W : cell of cell of double[:]
     %     Cell containing the selection vector for each channel, and
     %     data block within a channel.
-    % aWw : cell
+    % aWw : cell of cell of double[:]
     %     Cell containing the preconditioning vectors for each channel, and
     %     data block within a channel.
-    % Sigma: cell
+    % Sigma: cell of cell of double
     %     Cell containing the diagonal weighting matrix involved in data dimensionality reduction via visibility gridding.
-    % data: cell
+    % gridded_y: cell of cell of complex[:]
     %     Cell containing the reduced data vectors which corresponds to the gridded visibilities. 
-    % noise: cell   
-    %     Cell containing reduced residual visibility vector if available from a pre-processing calibration step, assumed to be the gridded noise.
+    % gridded_noise: struct  
+    %     struct containing estimated l2bounds and  noise std, from
+    %     gridding residual visibilities obtained during a pre-processing
+    %     calibration step.
     %
     %%
     % check if data pre-processing exist
@@ -86,8 +90,8 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
     W = cell(nchans, 1);
     aW = cell(nchans, 1);
     Sigma = cell(nchans, 1);
-    data = cell(nchans, 1);
-    noise = [];
+    gridded_y = cell(nchans, 1);
+    gridded_noise = [];
 
     % get Fourier operators
     [A, At] = op_p_nufft_wproj_dde(param_nufft);
@@ -123,9 +127,9 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
 
             %% grid data
             if j == 1
-                data{i}{1} = G_curr * y{i}{j};
+                gridded_y{i}{1} = G_curr * y{i}{j};
             else
-                data{i}{1} =  data{i}{1}  + G_curr * y{i}{j};
+                gridded_y{i}{1} =  gridded_y{i}{1}  + G_curr * y{i}{j};
             end
 
             %% update H
@@ -143,13 +147,13 @@ function [A, At, H, W, aW, Sigma, data, noise] = util_gen_dr_measurement_operato
         Sigma{i}{1} = 1 ./ sqrt(diagH(W{i}{1}));
 
         %% apply Sigma to data
-        data{i}{1} = data{i}{1}(W{i}{1}) .* Sigma{i}{1};
+        gridded_y{i}{1} = gridded_y{i}{1}(W{i}{1}) .* Sigma{i}{1};
 
         %% get noise stats when available residual data
         if ~isempty(res_data)
             res_data(W{i}{1}) =  res_data(W{i}{1}) .*  Sigma{i}{1}; % apply Sigma to residual data
-            noise.l2bounds{i}{1} = norm(res_data(W{i}{1}));
-            noise.sigma{i} = std(nonzeros([real(res_data); imag(res_data)]));
+            gridded_noise.l2bounds{i}{1} = norm(res_data(W{i}{1}));
+            gridded_noise.sigma{i} = std(nonzeros([real(res_data); imag(res_data)]));
         end
         clear res_data;
 
