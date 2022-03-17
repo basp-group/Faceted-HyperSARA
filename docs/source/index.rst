@@ -7,7 +7,7 @@ HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA
 :cite:p:`Thouvenin2021`). The proposed implementation can accommodate
 
 - visibility gridding :cite:p:`Kartik2017`;
-- math:`w`-correction :cite:p:`Dabbech2018`;
+- :math:`w`-correction :cite:p:`Dabbech2018`;
 - a compact Fourier model for the direction dependent effects (DDEs) :cite:p:`Dabbech2021`.
 
 ``Faceted-Hyper-SARA`` relies on two auxiliary submodules:
