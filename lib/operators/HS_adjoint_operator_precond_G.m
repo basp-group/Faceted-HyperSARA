@@ -23,7 +23,7 @@ function x = HS_adjoint_operator_precond_G(y, G, W, At, aW, N, M, flag_dr, Sigma
     % flag_dr : bool
     %     Flag indicating whether data dimensionality reduction is considered.
     % Sigma : cell of cell of double[:]
-    %     Dimensionality reduction matrix.
+    %     Weighting matrix involved in data dimensionality reduction.
     %
     % Returns
     % -------
