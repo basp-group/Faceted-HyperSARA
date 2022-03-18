@@ -32,6 +32,7 @@ HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA
    _src/src
    _lib/lib
    _imaging/imaging
+   .. _pyxis_ms2mat/pyxis_ms2mat
 
 .. note::
 

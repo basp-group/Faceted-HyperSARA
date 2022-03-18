@@ -60,7 +60,7 @@ Reconstructing an image cube from an MS-Table
 Testing the library with a synthetic dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To test the imaging pipeline with a synthetic data test.
+To test the imaging pipeline with a synthetic data test similar to the one considered in :cite:p:`Thouvenin2021`, follow the instructions below.
 
 1. Retrieve the 
    `S_DDE_MODEL.fits <https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits>`_ image file associated with :cite:p:`Dabbech2021`.
