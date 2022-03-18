@@ -257,7 +257,7 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
     flagAll = tab.getcol("FLAG")
     flagAll = flagAll.astype(float)
     flagAll = flagAll[srcrows, :, :]
-    flagAll = flagAll[:, :, 0] + flagAll[:, :, ncorr - 1] + flag_row
+    flagAll = flagAll[:, :, 0] + flagAll[:, :, ncorr - 1] 
 
     
     # load weights
@@ -321,7 +321,7 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
         weightI = w1 + w4
         # flag
         dataflag = (np.absolute(data) ==False)
-        flag = (dataflag.astype(float)+flagAll[:, ifreq])
+        flag = (dataflag.astype(float)+flagAll[:, ifreq] + flag_row)
         dataflag =[];
         flag = (flag==False) 
 
