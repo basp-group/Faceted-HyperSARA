@@ -320,9 +320,10 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
         # data = (data_corr_1[:,ifreq] +data_corr_4[:,ifreq])*0.5
         weightI = w1 + w4
         # flag
-        dataflag = (np.absolute(data) == False)
-        flag = ((flagAll[:, ifreq])==False) + dataflag 
+        dataflag = (np.absolute(data) ==False)
+        flag = (dataflag.astype(float)+flagAll[:, ifreq])
         dataflag =[];
+        flag = (flag==False) 
 
         # save data
         info("Reading data and writing file..Freq %s" % (ifreq))
