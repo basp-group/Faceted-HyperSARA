@@ -1,5 +1,5 @@
 ## Rodrigues compatibale simulation pipeline
-## sphesihle makhathini [sphemakh@gmail.com]
+## Script based on a template provided by Sphesihle Makhathini [sphemakh@gmail.com]
 
 import json
 import math
