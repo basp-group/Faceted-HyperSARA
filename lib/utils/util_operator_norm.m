@@ -1,4 +1,5 @@
-function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, tol, max_iter, flag_dr, Sigma)
+function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm(...
+    G, W, A, At, aW, Ny, Nx, tol, max_iter, flag_visibility_gridding, Sigma)
     % [extended_summary]
     %
     % Parameters
@@ -21,7 +22,7 @@ function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, 
     %     [description]
     % max_iter : [type]
     %     [description]
-    % flag_dr : [type]
+    % flag_visibility_gridding : [type]
     %     [description]
     % Sigma : [type]
     %     [description]
@@ -32,7 +33,7 @@ function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, 
     %     [description]
 
     if nargin < 10
-        flag_dr = 0;
+        flag_visibility_gridding = 0;
         Sigma = [];
     end
     nchans = numel(G);
@@ -40,8 +41,8 @@ function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, 
     rel_var_precond = zeros(nchans, 1);
 
     for l = 1:nchans
-        F = afclean(@(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l), flag_dr, Sigma));
-        Ft = afclean(@(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx, flag_dr, Sigma));
+        F = afclean(@(x) HS_forward_operator_precond_G(x, G(l), W(l), A, aW(l), flag_visibility_gridding, Sigma));
+        Ft = afclean(@(y) HS_adjoint_operator_precond_G(y, G(l), W(l), At, aW(l), Ny, Nx, flag_visibility_gridding, Sigma));
         [squared_precond_operator_norm(l), rel_var_precond(l)] = op_norm(F, Ft, [Ny, Nx], tol, max_iter, 0);
     end
 
@@ -54,8 +55,8 @@ function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, 
     squared_operator_norm = zeros(nchans, 1);
     rel_var = zeros(nchans, 1);
     for l = 1:nchans
-        F = afclean(@(x) HS_forward_operator_G(x, G(l), W(l), A, flag_dr, Sigma));
-        Ft = afclean(@(y) HS_adjoint_operator_G(y, G(l), W(l), At, Ny, Nx, flag_dr, Sigma));
+        F = afclean(@(x) HS_forward_operator_G(x, G(l), W(l), A, flag_visibility_gridding, Sigma));
+        Ft = afclean(@(y) HS_adjoint_operator_G(y, G(l), W(l), At, Ny, Nx, flag_visibility_gridding, Sigma));
         [squared_operator_norm(l), ~] = op_norm(F, Ft, [Ny, Nx], tol, max_iter, 0);
     end
 

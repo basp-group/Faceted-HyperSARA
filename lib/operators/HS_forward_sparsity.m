@@ -5,7 +5,7 @@ function x = HS_forward_sparsity(x_wave, Psi, n, m)
     % Parameters
     % ----------
     % x_wave : double[:, :]
-    %     Wavelet coefficients in the SARA domain [b, L].
+    %     Wavelet coefficients in the SARA sparsity domain [b, L].
     % Psi : anonymous function
     %     Function handle representing the serial implementation of the adjoint
     %     SARA dictionary.
