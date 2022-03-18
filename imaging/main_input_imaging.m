@@ -77,7 +77,7 @@
 % param_global.reg_gam : double
 %     Additional multiplicative factor affecting the joint average sparsity
 %     regularization term in ``"fhs"`` and ``"hs"``. Additional 
-%     multiplicative factor affecting the joint average sparsity
+%     multiplicative factor affecting the average sparsity
 %     regularization term in ``"sara"``.
 % param_global.reg_gam_bar : double
 %    Additional multiplicative factor affecting  low-rankness prior 
