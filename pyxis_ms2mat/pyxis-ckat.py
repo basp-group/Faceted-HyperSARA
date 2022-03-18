@@ -36,6 +36,27 @@ def getdata_ms_concat_bandwidth(
     freqFirst="$FIRSTCH",
     freqLast="$LASTCH",
 ):
+    """_summary_
+
+    _extended_summary_
+
+    Parameters
+    ----------
+    msf_lowbandwidth : str, optional
+        _description_, by default ""
+    msf_highbandwidth : str, optional
+        _description_, by default ""
+    srcname : str, optional
+        _description_, by default ""
+    srcid : str, optional
+        _description_, by default ""
+    mstag : str, optional
+        _description_, by default ""
+    freqFirst : str, optional
+        _description_, by default ""
+    freqLast : str, optional
+        _description_, by default ""
+    """    
 
     msname1 = II("%s" % msf_lowbandwidth)
     msname2 = II("%s" % msf_highbandwidth)
@@ -44,15 +65,15 @@ def getdata_ms_concat_bandwidth(
     try:
        freqFirst = int(II("%s" % freqFirst))
     except:
-       freqFirst =0;
+       freqFirst =0
     try:
        freqLast = int(II("%s" % freqLast))
     except: 
-       freqLast =[];
+       freqLast =[]
     try:
         srcid = int(II("%s" % srcid))
     except:
-        srcid =0;
+        srcid =0
         
         
     fileid0 = 0 # channel ID counter
@@ -78,6 +99,26 @@ def getdata_ms_concat_bandwidth(
 
 
 def getdata_ms( msf="$MS", mstag="$MSTAG", freqFirst="$FIRSTCH", freqLast="$LASTCH", srcid="$FIELDID",srcname="$SRCNAME"):
+    """_summary_
+
+    _extended_summary_
+
+    Parameters
+    ----------
+    msf : str, optional
+        _description_, by default ""
+    mstag : str, optional
+        _description_, by default ""
+    freqFirst : str, optional
+        _description_, by default ""
+    freqLast : str, optional
+        _description_, by default ""
+    srcid : str, optional
+        _description_, by default ""
+    srcname : str, optional
+        _description_, by default ""
+    """    
+    
     msname = II("%s" % msf)
     mstag = II("%s" % mstag)
     srcname = II("%s" % srcname)
@@ -108,6 +149,32 @@ def getdata_ms( msf="$MS", mstag="$MSTAG", freqFirst="$FIRSTCH", freqLast="$LAST
 
 
 def getdata(msname, mstag, freqFirst, freqLast, srcid, srcname, fileid0):
+    """_summary_
+
+    _extended_summary_
+
+    Parameters
+    ----------
+    msname : string
+        _description_
+    mstag : string
+        _description_
+    freqFirst : int
+        _description_
+    freqLast : int
+        _description_
+    srcid : _type_
+        _description_
+    srcname : _type_
+        _description_
+    fileid0 : _type_
+        _description_
+
+    Returns
+    -------
+    _type_
+        _description_
+    """    
     
     data_parent_dir = "../data"
     x.sh("mkdir -p  %s" % data_parent_dir)
@@ -137,10 +204,10 @@ def getdata(msname, mstag, freqFirst, freqLast, srcid, srcname, fileid0):
     spwtab.close()
     
     if not freqFirst :
-           freqFirst =0;
+           freqFirst =0
            info("First channel ID  is not provided or set to 0. First channel extracted ID=%s"%freqFirst)
     if not freqLast : 
-           freqLast = nChperSpw-1;
+           freqLast = nChperSpw-1
            info("Highest channel ID  is not provided. Last channel extracted ID=%s" %freqLast)
            
     # load remaining specs
