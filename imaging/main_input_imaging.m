@@ -30,9 +30,6 @@
 %     Cell array containing the ids of the input (physical) channels to be
 %     concatenated for each output (effective) channel. Set automatically if
 %     `idChannels2Image` and `nChannelsPerImage` are provided.
-% subcubeInd : int
-%     Index of the subcube to be reconstructed (if spectral faceting is
-%     used). To be set to ``0`` otherwise.
 % main_dir : string
 %     Directory of the Faceted-HyperSARA repository.
 % data_dir : string
@@ -63,17 +60,20 @@
 %     Name of the imaging approach used. Possible values are ``"fhs"``
 %     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
 % param_global.facet_Qx : int
-%     Number of spatial facets along spatial axis x. Active Only in
+%     Number of spatial facets along spatial axis x. Active only in
 %     ``"fhs"``.
 % param_global.facet_Qy : int
-%     Number of spatial facets along spatial axis y. Active Only in
+%     Number of spatial facets along spatial axis y. Active only in
 %     ``"fhs"``.
 % param_global.facet_overlap_fraction : double[2]
 %     Fraction of the total size of facet overlapping with a neighbouring
 %     facet along each axis (y and x) for the faceted low-rankness prior. 
-%     Active Only in ``"fhs"``. Will be reset
+%     Active only in ``"fhs"``. Will be reset
 %     automatically to ``[0, 0]`` if the spatial faceting is not active in ``"fhs"``
 %     along at least one dimension (i.e., ``param_global.facet_Qy = 1`` and/or ``param_global.facet_Qx = 1``).
+% param_global.facet_subcubeInd : int
+%     Index of the subcube to be reconstructed (if spectral faceting is
+%     used). To be set to ``0`` otherwise.
 % param_global.reg_gam : double
 %     Additional multiplicative factor affecting the joint average sparsity
 %     regularization term in ``"fhs"`` and ``"hs"``. Additional 
@@ -81,7 +81,7 @@
 %     regularization term in ``"sara"``.
 % param_global.reg_gam_bar : double
 %    Additional multiplicative factor affecting  low-rankness prior 
-%    regularization parameter. Active Only in ``"fhs"`` and ``"hs"``.
+%    regularization parameter. Active only in ``"fhs"`` and ``"hs"``.
 % param_global.reg_flag_reweighting : bool
 %     Flag to activate the re-weighting procedure. Default set to
 %     ``true``.
@@ -167,48 +167,49 @@
 % online documentation: https://basp-group.github.io/Faceted-Hyper-SARA/default.html .
 
 clear; clc; close all;
-
+%%------------------------------------------------------------------------
 %% Parameters to be specified
-% TODO (keep empty parameter for non-used variables)
+%/ TODO (keep empty parameter for non-used variables)
 
-% target source & datasets names as specified during data extraction
-% TODO: to be adjusted by the user
+%% target source & datasets names as specified during data extraction
+%/ TODO: to be adjusted by the user
 srcName = 'CYGA'; % as specified during data extraction
 datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; %  accomodating multiple datasets, 
 %set as specified in the data extraction step, {''} otherwise.
 
 
+%% Paths
 % Main path of the Faceted-Hyper-SARA repository
-% TODO: to be adjusted by the user if required (keep current setting by default)
-main_dir = '.'; % Faceted-Hyper-SARA dir.
+%/ TODO: to be adjusted by the user if required.
+% Keep current setting by default
+main_dir = pwd; 
 
 % Imaging experiment directory
 imaging_dir = [main_dir, filesep, 'imaging'];
 cd(imaging_dir);
 
-% data directory (as expected from the data extraction step)
+% data directory, as expected from the data extraction step
 data_dir = [main_dir, filesep, 'data', filesep, srcName, filesep];
 fprintf('\nINFO: data are expected to be saved at %s\n', data_dir);
 
 % data files
-% example of data file: `./data/CYGA/CYGA-ConfigA/data_ch_1.mat` 
-% ! Note in the path for .mat files (dataset name tag used)
 % ! To be adjusted only if data paths during data extraction have been altered
+% example of a data file: `./data/CYGA/CYGA-ConfigA/data_ch_1.mat` 
+% ! Note in the path for .mat files, dataset name tag used.
 dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, filesep, 'data_ch_', num2str(ch), '.mat');
 
-
-% calibration preprocessing step directory
-% TODO: to be adjusted by the user (set path to [] whenever it is not used)
+% calibration preprocessing directory
+% ! set path to [] whenever it is not used
 preproc_calib_dir = [data_dir,filesep, 'pre_processing_calibration/']; 
 % check if directory of calibration results exists
 if exist(preproc_calib_dir, 'dir')
     preproc_results_exist = 1;
 else,  preproc_results_exist = 0;
 end
-% name of json parameter file
+%% json parameter file
 json_filename = "default_parameters.json";
 
-%% channels organisation
+%% channel organisation
 %%%% option 1: provide a cell array containing the ids of the  channels to be concatenated for each effective channel.
 % example a: two effective channels, containing two 'physical' channels each
 % > effChans2Image={[1,2],[3,4]};
@@ -226,9 +227,9 @@ json_filename = "default_parameters.json";
 % > idChannels2Image = [1:272 289:320 337:512];
 % > nChannelsPerImage = 16;
 
-% TODO: to be adjusted by the user
-idChannels2Image = [1:256]; % ids of the 'physical' channels to be imaged, e.g., [1:256] for channel range from 1 to 256
-nChannelsPerImage = 16; % number of consecutive channels to be combined into each effective channel
+%/ TODO: to be adjusted by the user
+idChannels2Image = [1:256]; % ids of the physical (input) channels to be imaged, e.g., [1:256] for channel range from 1 to 256
+nChannelsPerImage = 16; % number of consecutive channels to be combined into each effective (output) channel.
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % ouput effective channels: number of images in the estimate model cube
 % !must be equal to 1 for 'sara' and greater than 1 for 'fhs'
@@ -242,63 +243,66 @@ for iEff = 1:nEffChans2Image
     fprintf('\nINFO:Effective channel ID %d: physical channels involved: %d - %d', iEff, effChans2Image{iEff}(1), effChans2Image{iEff}(end));
 end
 
-% running one subcube at a time
-% TODO: to be adjusted by the user
-subcubeInd = 0; % id of subcube if spectral interleaving is active, 0 if inactive
+%% running one subcube at a time
+%/ TODO: to be adjusted by the user
 
-% measurement operator features
-% TODO: to be adjusted by the user
-% activating visibility gridding to reduce data dimensionality
+
+%% measurement operator features
+%/ TODO: to be adjusted by the user
+% activating visibility gridding for data dimensionality reduction
 param_global.measop_flag_visibility_gridding = 0; % 1 if active, 0 otherwise. 
 
-% image details, dims &  cellsize
-% TODO: to be adjusted by the user
+%% image details, dims &  cellsize
+%/ TODO: to be adjusted by the user
 param_global.im_Nx = 2560;
 param_global.im_Ny = 1536;
 param_global.im_pixelSize =  0.06; % pixelsize in asec, set to [] to use the default value set from the uv-coverage
 
-% faceting params: note that if interleaving is active, one subcube is
-% imaged at a time: Qc=1 by default.
-% TODO: to be adjusted by the user
+%% faceting params:
+%  note that if spectral faceting is active, one subcube is imaged at a time Qc=1 by default.
+%/ TODO: to be adjusted by the user
 param_global.facet_Qx = 5; % number of spatial facets along axis x (only used in Faceted HyperSARA)
 param_global.facet_Qy = 3; % number of spatial facets along axis y (only used in Faceted HyperSARA)
 param_global.facet_overlap_fraction = [0.1, 0.1];
-
-% reg params
-% TODO: to be adjusted by the user
+param_global.facet_subcubeInd = 0; %id of subcube to image if spectral faceting is active, 0 otherwise
+%% regularisation params
+%/ TODO: to be adjusted by the user
 param_global.reg_gam = 0.33; % additional scaling factor for sparsity 
 % regularization (using heuristics described in Thouvenin2021). Set parameter to 1 by default.
-param_global.reg_gam_bar = 0.33; % additional scaling factor for low-rankness regularization (using heuristics described in Thouvenin2021). Active Only 
+param_global.reg_gam_bar = 0.33; % additional scaling factor for low-rankness regularization (using heuristics described in Thouvenin2021). Active only 
 % for HyperSARA and Faceted HyperSARA. Set parameter to 1 by default.
 param_global.reg_flag_reweighting = true;
 param_global.reg_nReweights = 5;
 
-% algo & parallelisation params
-% TODO: to be adjusted by the user
-param_global.algo_solver = 'fhs'; % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
+%% algo & parallelisation params
+%/ TODO: to be adjusted by the user: 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
+param_global.algo_solver = 'fhs'; 
 
-% filenames and input
+%% filenames and input 
 param_global.main_dir = main_dir;
-
-if preproc_results_exist
-    % TODO: to be adjusted by the user (set path to [] whenever it is not used)
-    param_global.preproc_filename_dde = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'ddes', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_ddes.mat');
-    param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
+if preproc_results_exist 
+    %/ TODO: to be adjusted by the user 
+    % ! set path to [] whenever it is not used
     param_global.preproc_filename_l2bounds = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'l2bounds', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_l2bounds.mat');
     param_global.preproc_filename_model = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'model_images', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_model_image.fits');
+    param_global.preproc_filename_dde = @(firstch, lastch) strcat(preproc_calib_dir, filesep, 'ddes', filesep, 'chs', num2str(firstch), '-', num2str(lastch), '_ddes.mat');
+    param_global.preproc_filename_die = @(firstch, lastch) strcat(preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
 end
 
 
-% Parallel parcluster profile 
-% TODO: to be adjusted by the user
-param_global.parcluster = 'local'; % name of the parallel parcluster profile to use.
-% to be adjusted if running on a HPC and a slurm parcluster profile will be used. 
+%% Parallel parcluster profile 
+%/ TODO: to be adjusted by the user
+% name of the parallel parcluster profile to use. To be adjusted if running on a HPC 
+% and a slurm parcluster profile will be used. 
+param_global.parcluster = 'local'; 
+
+%------------------------------------------------------------------------
 %% read and set configuration from .json file
 [param_global, param_solver, ...
     param_nufft, param_precond, dict] = ...
     read_json_configuration(json_filename, param_global);
-
-%% run main job
+%%------------------------------------------------------------------------
+%% run  imaging job
 imaging(srcName, datasetNames, dataFilename, ...
-    subcubeInd, effChans2Image, param_solver, param_global, ...
+  effChans2Image, param_solver, param_global, ...
     param_nufft, param_precond, dict);

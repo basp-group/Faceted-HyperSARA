@@ -1,5 +1,5 @@
 function imaging(srcName, datasetsNames, dataFilename, ...
-    subcubeInd, effChans2Image, param_solver, param_global, ...
+     effChans2Image, param_solver, param_global, ...
     param_nufft, param_precond, dict)
 % Main function to run any algorithm from the SARA family using the
 % configuration provided in :mat:scpt:`imaging.main_input_imaging`.
@@ -22,9 +22,6 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 % effChans2Image: cell array
 %     Cell array containing the ids of the physical (input) channels to be
 %     concatenated for each effective (output) channel.
-% subcubeInd : int
-%     Index of the spectral facet to be reconstructed (set to -1 or 0 to
-%     deactivate spectral faceting).
 % param_global: struct
 %     Global imaging pipeline parameters (see
 %     :mat:func:`imaging.main_input_imaging`).
@@ -41,29 +38,26 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 %     definition of the measurement operator.
 % param_global.algo_solver : string (``"sara"``, ``"hs"`` or ``"fhs"``).
 %     Selected solver.
+% param_global.facet_subcubeInd: int
+%     Index of the spectral facet to be reconstructed (set to -1 or 0 to
+%     deactivate spectral faceting).
+% param_global.facet_Qc : int
+%     Number of spectral facets. Active only in ``"fhs"``.
 % param_global.facet_Qx : int
-%     Number of spatial facets along spatial axis x. Active Only in
+%     Number of spatial facets along spatial axis x. Active only in
 %     ``"fhs"``.
 % param_global.facet_Qy : int
-%     Number of spatial facets along spatial axis y. Active Only in
+%     Number of spatial facets along spatial axis y. Active only in
 %     ``"fhs"``.
 % param_global.facet_overlap_fraction : double[2]
 %     Fraction of the total size of facet overlapping with a neighbouring
 %     facet along each axis (y and x) for the faceted low-rankness prior. 
-%     Active Only in ``"fhs"``. Will be reset
+%     Active only in ``"fhs"``. Will be reset
 %     automatically to ``[0, 0]`` if the spatial faceting is not active in ``"fhs"``
 %     along at least one dimension(i.e., ``param_global.facet_Qy = 1`` and/or ``param_global.facet_Qx = 1``).
-% param_global.facet_Qc : int
-%     Number of spectral facets. Active Only in ``"fhs"``.
 % param_global.facet_window_type : string (``"triangular"``, ``"hamming"`` or ``"pc"`` (piecewise-constant))
 %     Type of apodization window considered for the faceted nuclear norm
-%     prior. Active Only in ``"fhs"``.
-% param_global.facet_overlap_fraction : double[2]
-%     Fraction of the total size of facet overlapping with a neighbouring
-%     facet along each axis (y and x) for the faceted low-rankness prior. 
-%     Active Only if adopted solver is ``"fhs"``. Will be reset
-%     automatically to ``[0, 0]`` if the spatial faceting is not active along at least one dimension
-%     (i.e., ``param_global.facet_Qy = 1`` and/or ``param_global.facet_Qx = 1``).
+%     prior. Active only in ``"fhs"``.
 % param_global.reg_gam : double
 %     Additional multiplicative factor affecting the joint average sparsity
 %     regularization term in ``"fhs"`` and ``"hs"``. Additional 
@@ -71,7 +65,7 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 %     regularization term in ``"sara"``.
 % param_global.reg_gam_bar : double
 %    Additional multiplicative factor affecting  low-rankness prior 
-%    regularization parameter. Active Only in ``"fhs"`` and ``"hs"``.
+%    regularization parameter. Active only in ``"fhs"`` and ``"hs"``.
 % param_global.reg_flag_reweight : int
 %     Flag to activate re-weighting.
 % param_global.reg_nReweights : int
@@ -153,11 +147,15 @@ if ~isfield(param_global, 'im_Ny');  param_global.im_Ny = 2048; end
 if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
 
 % Prior: wideband facet related
+if ~isfield(param_global, 'facet_subcubeInd');  param_global.facet_subcubeInd = 0; end
 if ~isfield(param_global, 'facet_Qx');  param_global.facet_Qx =  floor(param_global.facet_Nx / 256); end
 if ~isfield(param_global, 'facet_Qy');  param_global.facet_Qy =  floor(param_global.facet_Ny / 256); end
 if ~isfield(param_global, 'facet_Qc'); param_global.facet_Qc = 1; end
 if ~isfield(param_global, 'facet_window_type'); param_global.facet_window_type = 'triangular'; end
 if ~isfield(param_global, 'facet_overlap_fraction'); param_global.facet_overlap_fraction = [0.1, 0.1]; end
+
+
+
 % Prior: sparsity dict.
 if ~isfield(dict, 'nlevel'); dict.nlevel = 4;  end
 if ~isfield(dict, 'basis'); dict.basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};  end
@@ -165,6 +163,8 @@ if ~isfield(dict, 'basis'); dict.basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db
 if ~isfield(param_global, 'reg_gam'); param_global.reg_gam = 1;  end
 if ~isfield(param_global, 'reg_gam_bar'); param_global.reg_gam_bar = 1;  end
 if ~isfield(param_global, 'reg_flag_reweighting'); param_global.reg_flag_reweighting = 1; end
+
+
 if param_global.reg_flag_reweighting &&  ~isfield(param_global, 'reg_nReweights')
     param_global.reg_nReweights = 5;
 end
@@ -233,6 +233,7 @@ switch imResolution
         fprintf('\nINFO: pixelsize: %f arcsec.\n', pixelSize);
 end
 % Prior: wideband facet related
+subcubeInd = param_global.facet_subcubeInd;
 Qx = param_global.facet_Qx;
 Qy = param_global.facet_Qy;
 Qc = param_global.facet_Qc;

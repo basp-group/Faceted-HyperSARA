@@ -24,9 +24,6 @@
 % nChannelsPerImage : int
 %     Number of consecutive channels to be concatenated into each effective
 %     channel (1 if no reduction is used).
-% subcubeInd : int
-%     Index of the subcube to be reconstructed (if spectral faceting is
-%     used). To be set to ``0`` otherwise.
 % main_dir : string
 %     Directory of the Faceted-HyperSARA repository.
 % data_dir : string
@@ -94,6 +91,9 @@
 %     number of facet along the corresponding dimension is equal to 1
 %     (i.e., ``param_global.facet_Qy = 1`` and/or
 %     ``param_global.facet_Qx = 1``).
+% param_global.facet_subcubeInd : int
+%     Index of the subcube to be reconstructed (if spectral faceting is
+%     used). To be set to ``0`` otherwise.
 % param_global.reg_gam : double
 %     Average joint sparsity prior regularization parameter.
 % param_global.reg_gam_bar : double
@@ -214,9 +214,7 @@ for iEff = 1:nEffChans2Image
     fprintf('\nEffective channel ID %d: physical channels involved: %d - %d\n', iEff, effChans2Image{iEff}(1), effChans2Image{iEff}(end));
 end
 
-% running one subcube at a time
-% TODO: to be adjusted by the user
-subcubeInd = 0; % id of subcube if spectral interleaving is active, 0 if inactive
+
 
 % measurement op. params
 % TODO: to be adjusted by the user
@@ -236,6 +234,7 @@ param_global.algo_flag_computeOperatorNorm = true;
 param_global.facet_Qx = 1; % number of spatial facets along axis x (only used in Faceted HyperSARA)
 param_global.facet_Qy = 1; % number of spatial facets along axis y (only used in Faceted HyperSARA)
 param_global.facet_overlap_fraction = [0.5, 0.5];
+param_global.facet_subcubeInd =0 ;% id of subcube if spectral interleaving is active, 0 if inactive
 
 % reg params
 % TODO: to be adjusted by the user
@@ -329,5 +328,5 @@ param_global.parcluster = 'local'; % name of the parcluster profile to use.  If 
 % ---
 
 imaging(srcName, datasetNames, dataFilename, ...
-    subcubeInd, effChans2Image, param_solver, param_global, ...
+     effChans2Image, param_solver, param_global, ...
     param_nufft, param_precond, dict);
