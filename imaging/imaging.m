@@ -248,7 +248,7 @@ if flag_reweighting
     % flag_homotopy = param_global.reg_flag_homotopy;
 end
 % Meas. op.
-flag_dataReduction = param_global.measop_flag_visibility_gridding; % data reduction
+flag_visibility_gridding = param_global.measop_flag_visibility_gridding; % data reduction
 param_wproj.do = param_global.measop_flag_wproj; % w projection
 if isempty(param_global.measop_flag_wproj)
     param_wproj.do = 0;
@@ -390,7 +390,7 @@ else
     fprintf('\nLoading estimates of the l2-bounds ...');
     for iEffCh = 1:nEffectiveChans
         l2EffChansloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'sigmac', 'l2bounds');
-        if ~flag_dataReduction
+        if ~flag_visibility_gridding
             for iCh = 1:numel(effChans2Image{iEffCh})
                 for idSet = 1:nDataSets
                     try % get bounds
@@ -412,7 +412,7 @@ else
         end
         if ~flag_l2bounds_compute
             try % get noise std
-                if ~flag_dataReduction
+                if ~flag_visibility_gridding
                     global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac);
                 else;  global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac.gridded);
                 end
@@ -496,7 +496,7 @@ switch algo_solver
                 ddeloaded = load(param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DDEs');
             end
             %% if data reduction and residual data available, load them
-            if flag_dataReduction
+            if flag_visibility_gridding
                 try
                     DR_residualdataloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'RESIDUAL_DATA');
                 catch ; flag_l2bounds_compute = 1;
@@ -528,7 +528,7 @@ switch algo_solver
                         ddes{iEffCh, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                         ddeloaded.DDEs{idSet, iCh} = [];
                     end
-                    if flag_dataReduction
+                    if flag_visibility_gridding
                         % if residual data are available, use them to get
                         % l2 bounds.
                         try preproc_residuals{iEffCh, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
@@ -566,7 +566,7 @@ switch algo_solver
             else; ddes = [];
             end
 
-            if flag_dataReduction
+            if flag_visibility_gridding
                 % if residual data are available
                 if exist('preproc_residuals', 'var')
                     preproc_residuals{iEffCh, 1} = vertcat(preproc_residuals{iEffCh, 1}{:});
@@ -575,8 +575,11 @@ switch algo_solver
             end
         end
 
-        if flag_dataReduction
-            % (DR) one data block & one channel
+        if flag_visibility_gridding
+            % one data block & one channel after visibility gridding
+            % ! `G` is the holographic matrix
+            % get the reduced data vector `y` and the weighting
+            % matrix `Sigma` involved in visibility gridding
             [A, At, G, W, aW, Sigma, y, noise] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
                 1, Nx, Ny, param_nufft, param_wproj, preproc_residuals, ddes);
             % (DR) get the computed l2 bounds from the continuous residual
@@ -595,12 +598,6 @@ switch algo_solver
             Sigma = [];
         end
         clear u v w nW ddes;
-        dirac = sparse(Ny * 0.5 + 1, Nx * 0.5 + 1, 1, Ny, Nx);
-        for l = 1:numel(G)
-            F = HS_forward_operator_G(full(dirac), G(l), W(l), A, flag_dataReduction, Sigma);
-            psf_peak = max(max(HS_adjoint_operator_G(F, G(l), W(l), At, Ny, Nx, flag_dataReduction, Sigma)));
-            fprintf('\nINFO: peak of PSF (for residual normalisation): %f', psf_peak);
-        end
 
     otherwise % 'hs' or 'fhs'
         % create the measurement operator operator in parallel (depending on
@@ -619,7 +616,7 @@ switch algo_solver
                         ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
                     end
                     %% if data reduction and residual data available, load them
-                    if flag_dataReduction
+                    if flag_visibility_gridding
                         try
                             DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
                         catch ; flag_l2bounds_compute = 1;
@@ -650,7 +647,7 @@ switch algo_solver
                                 ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                                 ddeloaded.DDEs{idSet, iCh} = [];
                             end
-                            if flag_dataReduction
+                            if flag_visibility_gridding
                                 % if residual data are available, use them to get
                                 % l2 bounds.
                                 try preproc_residuals{ifc, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
@@ -688,7 +685,7 @@ switch algo_solver
                     else; ddes = [];
                     end
 
-                    if flag_dataReduction
+                    if flag_visibility_gridding
                         try preproc_residuals{ifc, 1} = vertcat(preproc_residuals{ifc, 1}{:});
                             preproc_residuals{ifc, 1} = preproc_residuals{ifc, 1}(:);
                         catch ; preproc_residuals = [];
@@ -696,24 +693,20 @@ switch algo_solver
                     end
                 end
 
-                if flag_dataReduction
-                    % ! define Sigma (weight matrix involved in DR)
-                    % ! define G as the holographic matrix
-                    fprintf('\nCompute the holographic matrix H .. \n');
+                if flag_visibility_gridding
+                    % one data block & one channel after visibility gridding
+                    % ! `G` is the holographic matrix
+                    % get the reduced data vector `y` and the weighting
+                    % matrix `Sigma` involved in visibility gridding
+                    fprintf('\nCompute the holographic matrix  .. ');
                     [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
                          numel(local_fc), Nx, Ny, param_nufft, param_wproj, preproc_residuals, ddes);
                 else
-                    % ! ideally, simplify irt nufft interface to do so
+                    % ! `G` is the degridding matrix
                     [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
                          numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, ddes);
                     Sigma = [];
                 end;   u = []; v = []; w = []; nW = []; ddes = [];
-                dirac = sparse(Ny * 0.5 + 1, Nx * 0.5 + 1, 1, Ny, Nx);
-                for l = 1:numel(G)
-                    F = HS_forward_operator_G(full(dirac), G(l), W(l), A, flag_dataReduction, Sigma);
-                    psf_peak = max(max(HS_adjoint_operator_G(F, G(l), W(l), At, Ny, Nx, flag_dataReduction, Sigma)));
-                    fprintf('\nLab %d: INFO: peak of PSF (for residual normalisation): %f', labindex, psf_peak);
-                end
             end
         else
             Sigma = Composite();
@@ -731,7 +724,7 @@ switch algo_solver
                             ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
                         end
                         %% if data reduction and residual data available, load them
-                        if flag_dataReduction
+                        if flag_visibility_gridding
                             try
                                 DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
                             catch ; flag_l2bounds_compute = 1;
@@ -762,7 +755,7 @@ switch algo_solver
                                     ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                                     ddeloaded.DDEs{idSet, iCh} = [];
                                 end
-                                if flag_dataReduction
+                                if flag_visibility_gridding
                                     % if residual data are available, use them to get
                                     % l2 bounds.
                                     try preproc_residuals{ifc, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
@@ -800,7 +793,7 @@ switch algo_solver
                         else; ddes = [];
                         end
 
-                        if flag_dataReduction
+                        if flag_visibility_gridding
                             try preproc_residuals{ifc, 1} = vertcat(preproc_residuals{ifc, 1}{:});
                                 preproc_residuals{ifc, 1} = preproc_residuals{ifc, 1}(:);
                             catch ; preproc_residuals = [];
@@ -808,25 +801,20 @@ switch algo_solver
                         end
                     end
 
-                    if flag_dataReduction
-                        % ! define Sigma (weight matrix involved in DR)
-                        % ! define G as the holographic matrix
-                        fprintf('\nCompute the holographic matrix H ..\n');
+                    if flag_visibility_gridding
+                        % one data block & one channel after visibility gridding
+                        % ! `G` is the holographic matrix
+                        % get the reduced data vector `y` and the weighting
+                        % matrix `Sigma` involved in visibility gridding
+                        fprintf('\nCompute the holographic matrix  ..');
                         [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
                             numel(local_fc), Nx, Ny, param_nufft, param_wproj,  preproc_residuals, ddes);
                     else
-                        % ! ideally, simplify irt nufft interface to do so
+                        % ! `G` is the degridding matrix
                         [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
                             numel(local_fc), Nx, Ny, param_nufft, param_wproj,  param_precond, ddes);
                         Sigma = [];
                     end; u = []; v = []; w = []; nW = []; ddes = [];
-
-                    dirac = sparse(Ny * 0.5 + 1, Nx * 0.5 + 1, 1, Ny, Nx);
-                    for l = 1:numel(G)
-                        F = HS_forward_operator_G(full(dirac), G(l), W(l), A, flag_dataReduction, Sigma);
-                        psf_peak = max(max(HS_adjoint_operator_G(F, G(l), W(l), At, Ny, Nx, flag_dataReduction, Sigma)));
-                        fprintf('\nLab %d: INFO: peak of PSF (for residual normalisation): %f', labindex, psf_peak);
-                    end
                 end
             end
         end; clear local_fc  u v w nW dataSpWinloaded ddes;
@@ -834,11 +822,9 @@ switch algo_solver
 end
 % Free memory
 clear   param_wproj param_preproc  preproc_residuals;
-
-%% load l2 bounds (generate only full spectral dataset)
-% only generatr data in 'hs' or 'fhs' configuration (otherwise, load the data)
-% datafile = matfile(fullfile(results_path,filename_l2bounds));
 fprintf('\nData loaded successfully.');
+%% load l2 bounds (generate only full spectral dataset)
+
 switch algo_solver
     case 'sara'
         % ! to be verified
@@ -860,7 +846,9 @@ end
 subcube_channels = 1:nEffectiveChans;
 if strcmp(algo_solver, 'sara')
     if flag_computeOperatorNorm
-        [Anorm, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 200, flag_dataReduction, Sigma); % AD: changed tolerance to 1e-6 instead of 1e-8
+        fprintf('\nINFO: computing operator''s spectral norm .. ')
+        tic
+        [Anorm, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 200, flag_visibility_gridding, Sigma); % AD: changed tolerance to 1e-6 instead of 1e-8
         save(fullfile(results_path, ...
             strcat('Anorm_', algo_solver, ...
             '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
@@ -868,6 +856,7 @@ if strcmp(algo_solver, 'sara')
             '-v7.3', 'Anorm', 'squared_operator_norm', 'rel_var', ...
             'squared_operator_norm_precond', 'rel_var_precond');
         clear rel_var;
+        fprintf('done in %d sec.\n',floor(toc))
     else
         load(fullfile(results_path, ...
             strcat('Anorm_', algo_solver, ...
@@ -877,9 +866,11 @@ if strcmp(algo_solver, 'sara')
     end
 else
     if flag_computeOperatorNorm
+        fprintf('\nINFO: computing operator''s spectral norm .. ')
+        tic
         spmd
             if labindex > Qx * Qy * strcmp(algo_solver, 'fhs')
-                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200, flag_dataReduction, Sigma);
+                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200, flag_visibility_gridding, Sigma);
             end
         end
         % save operator norm from the different subcubes into a single .mat
@@ -907,6 +898,7 @@ else
         squared_operator_norm =   opnormfile.squared_operator_norm(subcube_channels, 1);
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(subcube_channels, 1);
 
+        fprintf('done in %d sec.\n',floor(toc))
     else
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
             '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
@@ -991,19 +983,19 @@ end
 % * general
 % estimate of the noise level in SARA space
 param_solver.reweighting_sig = sig;
-if ~strcmp(algo_solver, 'sara');  param_solver.reweighting_sig_bar = sig_bar; % estimate of the noise level in "SVD" spaces
+if ~strcmp(algo_solver, 'sara')
+    param_solver.reweighting_sig_bar = sig_bar; % estimate of the noise level in "SVD" spaces
 end
 param_solver.nu0 = 1; % bound on the norm of the Identity operator
 param_solver.nu1 = 1; % bound on the norm of the operator Psi
 param_solver.nu2 = squared_operator_norm_precond; % upper bound on the norm of the measurement operator
-if ~strcmp(algo_solver, 'sara'); param_solver.gamma0 = mu_bar; % regularization parameter nuclear norm
+if ~strcmp(algo_solver, 'sara')
+    param_solver.gamma0 = mu_bar; % regularization parameter nuclear norm
 end
 param_solver.gamma = mu; % regularization parameter l21-norm (soft th parameter) ! for SARA, take the value given as an input to the solver
 param_solver.cube_id = subcubeInd; % id of the cube to be reconstructed
 param_solver.backup_frequency = 1; % PA: checkpoint frequency! AD :????
-% try param_solver.flag_homotopy = flag_homotopy; % flag homotopy strategy
-% catch; param_solver.flag_homotopy = 0;
-% end
+
 param_solver.alph = gam;
 param_solver.alph_bar = gam_bar;
 % temp filenames
@@ -1018,7 +1010,7 @@ if flag_solveMinimization
         % ! to the number of workers for the wavelet transform (9 maximum)
         xsol = sara(y, epsilons, A, At, aW, G, W, Psi, Psit, ...
             param_solver, name_warmstart, name_checkpoint, gam, ...
-            flag_dataReduction, Sigma, xinit);
+            flag_visibility_gridding, Sigma, xinit);
         fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', srcName, '_', algo_solver, ...
             '_', num2str(pixelSize), 'asec', ...  % '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
             '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), ...
@@ -1042,7 +1034,7 @@ if flag_solveMinimization
                     A, At, aW, G, W, param_solver, ...
                     ncores_data, dict.basis, dict.nlevel, channel_chunks, ...
                     nEffectiveChans, Ny, Nx, param_nufft.oy, param_nufft.ox, ...
-                    name_warmstart, name_checkpoint, flag_dataReduction, Sigma, ...
+                    name_warmstart, name_checkpoint, flag_visibility_gridding, Sigma, ...
                     xinit);
             case 'fhs'
                 disp('Faceted HyperSARA');
@@ -1053,7 +1045,7 @@ if flag_solveMinimization
                     dict.basis, dict.filter_length, dict.nlevel, window_type, ...
                     channel_chunks, nEffectiveChans, overlap_size, gam, gam_bar, ...
                     Ny, Nx, param_nufft.oy, param_nufft.ox, ...
-                    name_warmstart, name_checkpoint, flag_dataReduction, Sigma, ...
+                    name_warmstart, name_checkpoint, flag_visibility_gridding, Sigma, ...
                     xinit);
             otherwise; error('Unknown solver version.');
         end
