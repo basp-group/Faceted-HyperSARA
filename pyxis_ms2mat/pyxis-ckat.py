@@ -47,7 +47,7 @@ def getdata_ms_concat_bandwidth(
     msf_highbandwidth : str, required
         Path to the high frequency band MS.
     srcname : str, optional
-        Name of the target source, by default ""..
+        Name of the target source, by default "".
     srcid : str, optional
         Field id of the target source, by default 0.
     mstag : str, optional
@@ -77,6 +77,7 @@ def getdata_ms_concat_bandwidth(
         
         
     fileid0 = 0 # channel ID counter
+    # extract data from the first MS (low frequency band)
     fileidMid = getdata(
         msname=msname1,
         srcname=srcname,
@@ -86,6 +87,9 @@ def getdata_ms_concat_bandwidth(
         srcid=srcid,
         fileid0=fileid0,
     )
+
+    # extract data from the second MS (low frequency band)
+    # Note that `fileidMid` needed for indexing the frequency channels of the second MS
     fileidEnd = getdata(
         msname=msname2,
         srcname=srcname,
