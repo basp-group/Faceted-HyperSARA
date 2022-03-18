@@ -302,8 +302,6 @@ addpath([project_dir, filesep, 'lib', filesep, 'faceted-wavelet-transform', file
 addpath([project_dir, filesep, 'src']);
 addpath([project_dir, filesep, 'src', filesep, 'heuristics', filesep]);
 %
-addpath([current_dir, filesep, 'real_data']); % AD: will be ommited later
-%
 if strcmp(algo_solver, 'sara')
     addpath([project_dir, filesep, 'src', filesep, 'sara']);
 elseif strcmp(algo_solver, 'hs')
