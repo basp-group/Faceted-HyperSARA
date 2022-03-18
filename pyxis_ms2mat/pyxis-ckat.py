@@ -88,7 +88,7 @@ def getdata_ms_concat_bandwidth(
         fileid0=fileid0,
     )
 
-    # extract data from the second MS (low frequency band)
+    # extract data from the second MS (high frequency band)
     # Note that `fileidMid` needed for indexing the frequency channels of the second MS
     fileidEnd = getdata(
         msname=msname2,
