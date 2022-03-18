@@ -1,7 +1,7 @@
 Module pyxisMs2mat.pyxisCkat
 ============================
 
-Helper functions to ...
+Helper functions to extract useful data from an ``MS Table`` into a set a ``.mat`` file.
 
 .. automodule:: pyxisMs2mat.pyxisCkat
     :members:
