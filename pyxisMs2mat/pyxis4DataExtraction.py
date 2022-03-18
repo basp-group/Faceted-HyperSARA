@@ -36,9 +36,9 @@ def getdata_ms_concat_bandwidth(
     freqFirst="$FIRSTCH",
     freqLast="$LASTCH",
 ):
-    """_summary_
+    """ Pyxis function to be used from the command line to extract data resulting from the combination of two MSs spanning two different frequency bands.
+    Both MSs are expected to have the same specs of their spectral windows
 
-    _extended_summary_
 
     Parameters
     ----------
@@ -103,7 +103,8 @@ def getdata_ms_concat_bandwidth(
 
 
 def getdata_ms( msf="$MS",srcname="$SRCNAME", mstag="$MSTAG",srcid="$FIELDID", freqFirst="$FIRSTCH", freqLast="$LASTCH"):
-    """_summary_
+    """Pyxis function to be used from the command line to extract data from a single MS. 
+    Data from all available spectral windows will be extracted.
 
     _extended_summary_
 
@@ -156,9 +157,7 @@ def getdata_ms( msf="$MS",srcname="$SRCNAME", mstag="$MSTAG",srcid="$FIELDID", f
 
 
 def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
-    """_summary_
-
-    _extended_summary_
+    """Python function to access the MS and extract relevant data into a .mat file.
 
     Parameters
     ----------
