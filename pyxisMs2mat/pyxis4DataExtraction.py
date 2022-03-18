@@ -226,23 +226,11 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
     uvw = uvw[srcrows, :]
     data_id = tab.getcol("DATA_DESC_ID")
     data_id = data_id[srcrows]
-    #ant1 = tab.getcol("ANTENNA1")
-    #ant1 = ant1[srcrows]
-    #ant2 = tab.getcol("ANTENNA2")
-    #ant2 = ant2[srcrows]
-    #time = tab.getcol("TIME")
-    #time = time[srcrows]
-    #scantab = tab.getcol("SCAN_NUMBER")
-    #scantab = scantab[srcrows]
-    #integrationTimeVect = tab.getcol("EXPOSURE")
-    #integrationTimeVect = integrationTimeVect[srcrows]
-    #dt = tab.getcol("EXPOSURE", 0, 1)[0]
-    #dtf = (tab.getcol("TIME", tab.nrows() - 1, 1) - tab.getcol("TIME", 0, 1))[0]
+   
     flag_row = tab.getcol("FLAG_ROW")
-    flag_row = flag_row == False
     flag_row = flag_row[srcrows]
     flag_row = flag_row.transpose()
-    flag_row = flag_row.astype(float)  # flag_row==False
+    flag_row = flag_row.astype(float)  
     npts = len(flag_row)
     info( "Number of measurements per channel associated with the src of interest: %s" %npts)
 
@@ -267,7 +255,6 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
 
     # load remaining flags
     flagAll = tab.getcol("FLAG")
-    flagAll = flagAll == False
     flagAll = flagAll.astype(float)
     flagAll = flagAll[srcrows, :, :]
     flagAll = flagAll[:, :, 0] + flagAll[:, :, ncorr - 1]
@@ -334,7 +321,7 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
         weightI = w1 + w4
         # flag
         flag = flag_row + flagAll[:, ifreq] + np.absolute(data)
-        flag = flag != 0  # np.array(flag0,dtype=bool);
+        flag = flag == 0  # np.array(flag0,dtype=bool);
         # save data
         info("Reading data and writing file..Freq %s" % (ifreq))
 
