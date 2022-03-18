@@ -7,7 +7,7 @@ Set of helper functions to extract useful data from a ``MS Table`` into a set a 
    :maxdepth: 2
    :caption: List of modules
 
-   pyxisMs2mat.pyxisCkat
+   pyxisMs2mat.pyxis4DataExtraction
 
 
 Description of file format...
