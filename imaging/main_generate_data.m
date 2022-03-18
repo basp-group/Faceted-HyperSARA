@@ -51,12 +51,10 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
 %     affecting the clean data `y0`.
 % u (double[:])
 %     :math:`u` coordinate, expressed in units of the wavelength.
-%     (``speed_of_light / frequency``).
 % v (double[:])
 %     :math:`v` coordinate, expressed in units of the wavelength.
 % w (double[:])
-%     :math:`w` component, expressed in units of the wavelength
-%     (``speed_of_light / frequency``) (?).
+%     :math:`w` component, expressed in units of the wavelength.
 % frequency (double)
 %     Acquisition frequency (in Hz).
 % maxProjBaseline (double)
