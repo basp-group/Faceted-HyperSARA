@@ -1,7 +1,7 @@
 pyxisMs2mat package
 ===================
 
-Set of helper functions to extract useful data from a ``MS Table`` into a set a ``.mat`` files compatible with the interface of this library.
+Set of helper functions to extract useful data from a ``MS Table`` into a set a ``.mat`` file compatible with the interface of this library.
 
 .. toctree::
    :maxdepth: 2
