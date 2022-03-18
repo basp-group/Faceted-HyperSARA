@@ -182,7 +182,7 @@ datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; %  accomodating multiple datase
 % Main path of the Faceted-Hyper-SARA repository
 %/ TODO: to be adjusted by the user if required.
 % Keep current setting by default
-main_dir = pwd; 
+main_dir = ['..',filesep]; 
 
 % Imaging experiment directory
 imaging_dir = [main_dir, filesep, 'imaging'];
