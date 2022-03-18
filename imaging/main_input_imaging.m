@@ -36,12 +36,12 @@
 % main_dir : string
 %     Directory of the Faceted-HyperSARA repository.
 % data_dir : string
-%     Directory of the input ``.mat`` data files. ``./Faceted-HyperSARA/data/``.
+%     Directory of the input ``.mat`` data files. Default ``./Faceted-HyperSARA/data/``.
 % imaging_dir : string
 %     Directory of the imaging experiment. Default
 %     ``./Faceted-HyperSARA/imaging``.
 % preproc_calib_dir : string
-%     Sub-directory in `data_dir`  containing results from a calibration
+%     Sub-directory in `data_dir`  containing files from a calibration
 %     pre-processing step. To be set to ``[]`` if not used or not
 %     available.
 % json_filename : string
@@ -55,7 +55,7 @@
 % param_global.im_pixelSize  : double
 %     Pixel-size in arcsec. Set to ``[]`` to use
 %     the default value corresponding to 2 times the resolution of the
-%     observation (given by the longest baseline).
+%     observation (given by the longest baseline at the highest frequency).
 % param_global.measop_flag_visibility_gridding : bool
 %     Flag to activate visibility gridding for data dimensionality
 %     reduction.
@@ -121,7 +121,7 @@
 %
 % .. code-block:: matlab
 %
-%    %% Set the input (physical) and output (effective) channels IDs
+%    %% Examples to set the input (physical) and output (effective) channels IDs
 %    %% Option 1: provide  `effChans2Image` a cell array containing the ids
 %    % of the physical channels to be concatenated for each effective channel.
 %    % example a: two effective channels, containing two physical

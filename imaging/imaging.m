@@ -31,7 +31,7 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 % param_global.im_pixelSize  : double
 %     Pixel-size in arcsec. Set to ``[]`` to use
 %     the default value corresponding to 2 times the resolution of the
-%     observation (given by the longest baseline).
+%     observation (given by the longest baseline at the highest frequency).
 % param_global.im_Nx : int
 %     Image dimension (x axis, dimension 2).
 % param_global.im_Ny : int
@@ -114,7 +114,7 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 
 % Note
 % ----
-% - Example:
+% - Examples to set the input (physical) and output (effective) channels IDs:
 %
 % .. code-block:: matlab
 %
