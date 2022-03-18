@@ -65,8 +65,10 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 %     automatically to ``[0, 0]`` if the spatial faceting is not active along at least one dimension
 %     (i.e., ``param_global.facet_Qy = 1`` and/or ``param_global.facet_Qx = 1``).
 % param_global.reg_gam : double
-%     Additional multiplicative factor affecting the average sparsity
-%     regularization term in ``sara"``.
+%     Additional multiplicative factor affecting the joint average sparsity
+%     regularization term in ``"fhs"`` and ``"hs"``. Additional 
+%     multiplicative factor affecting the joint average sparsity
+%     regularization term in ``"sara"``.
 % param_global.reg_gam_bar : double
 %    Additional multiplicative factor affecting  low-rankness prior 
 %    regularization parameter. Active Only in ``"fhs"`` and ``"hs"``.
