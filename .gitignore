@@ -279,4 +279,4 @@ data/vla_7.95h_dt10s.uvw.mat
 *.mat
 *.fits
 data/W28_512.fits
-pyxis_ms2mat/log-emeerkatsims.txt
+pyxisMs2mat/log-emeerkatsims.txt

@@ -17,11 +17,10 @@ from pybtex.plugin import register_plugin
 #
 import os
 import re
-# import sys
+import sys
 
 # sys.path.insert(0, os.path.abspath('.'))
-# sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
-matlab_src_dir = os.path.abspath(os.path.join("..", ".."))
+sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 
 # -- Project information -----------------------------------------------------
 
@@ -41,8 +40,8 @@ version = release
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinxcontrib.matlab",  # support for Matlab
     "sphinx.ext.autodoc",
+    "sphinxcontrib.matlab",  # support for Matlab
     "sphinx.ext.coverage",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
@@ -73,6 +72,11 @@ exclude_patterns = [
     "lib/faceted-wavelet-transform",
     "lib/measurement-operator",
 ]
+matlab_src_dir = os.path.abspath(os.path.join("..", ".."))
+# primary_domain = "mat"
+print("matlab_src_dir: {}".format(matlab_src_dir))
+
+autodoc_mock_imports = ["im", "imager", "lsm", "mqt", "ms", "numpy", "pyfits", "pyrap", "Pyxis", "scipy", "Tigger", "astropy", "casacore", "time"]
 
 # Bibliography
 # .. https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html
@@ -139,5 +143,3 @@ napoleon_use_rtype = True
 napoleon_preprocess_types = False
 napoleon_type_aliases = None
 napoleon_attr_annotations = True
-
-# primary_domain = "mat"
