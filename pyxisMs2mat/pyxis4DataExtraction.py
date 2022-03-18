@@ -226,6 +226,7 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
     uvw = uvw[srcrows, :]
     data_id = tab.getcol("DATA_DESC_ID")
     data_id = data_id[srcrows]
+    # flag row (common across channels)
     flag_row = tab.getcol("FLAG_ROW")
     flag_row = flag_row[srcrows]
     flag_row = flag_row.transpose()
