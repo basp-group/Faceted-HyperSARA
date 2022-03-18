@@ -226,25 +226,12 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
     uvw = uvw[srcrows, :]
     data_id = tab.getcol("DATA_DESC_ID")
     data_id = data_id[srcrows]
-    #ant1 = tab.getcol("ANTENNA1")
-    #ant1 = ant1[srcrows]
-    #ant2 = tab.getcol("ANTENNA2")
-    #ant2 = ant2[srcrows]
-    #time = tab.getcol("TIME")
-    #time = time[srcrows]
-    #scantab = tab.getcol("SCAN_NUMBER")
-    #scantab = scantab[srcrows]
-    #integrationTimeVect = tab.getcol("EXPOSURE")
-    #integrationTimeVect = integrationTimeVect[srcrows]
-    #dt = tab.getcol("EXPOSURE", 0, 1)[0]
-    #dtf = (tab.getcol("TIME", tab.nrows() - 1, 1) - tab.getcol("TIME", 0, 1))[0]
     flag_row = tab.getcol("FLAG_ROW")
-    flag_row = flag_row == False
     flag_row = flag_row[srcrows]
     flag_row = flag_row.transpose()
-    flag_row = flag_row.astype(float)  # flag_row==False
+    flag_row = flag_row.astype(float)  
     npts = len(flag_row)
-    info( "Number of measurements per channel associated with the src of interest: %s" %npts)
+    info( "Number of measurements per channel associated with the target source: %s" %npts)
 
     # load data
     try:
@@ -267,10 +254,9 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
 
     # load remaining flags
     flagAll = tab.getcol("FLAG")
-    flagAll = flagAll == False
     flagAll = flagAll.astype(float)
     flagAll = flagAll[srcrows, :, :]
-    flagAll = flagAll[:, :, 0] + flagAll[:, :, ncorr - 1]
+    flagAll = flagAll[:, :, 0] + flagAll[:, :, ncorr - 1] + flag_row
 
     
     # load weights
@@ -333,8 +319,10 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
         # data = (data_corr_1[:,ifreq] +data_corr_4[:,ifreq])*0.5
         weightI = w1 + w4
         # flag
-        flag = flag_row + flagAll[:, ifreq] + np.absolute(data)
-        flag = flag != 0  # np.array(flag0,dtype=bool);
+        dataflag = (np.absolute(data) == False)
+        flag = ((flagAll[:, ifreq])==False) + dataflag 
+        dataflag =[];
+
         # save data
         info("Reading data and writing file..Freq %s" % (ifreq))
 
@@ -363,8 +351,10 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
                 w = uvw_slice[flag_slice, 2]
                 uvw_slice = []
                 #max projected baseline (needed for pixelsize)
-                maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2))
-
+                try:
+                    maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2))
+                except:
+                    maxProjBaseline =0;
                 fileid = 1 + fileid0 + (iSpw * nChperSpw) + ifreq
                 dataFileName = "%s/data_ch_%s.mat" % (data_dir, fileid)
                 #info("Channel id: %d. File saved at %s" % (fileid, dataFileName))
@@ -381,8 +371,8 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
                         "maxProjBaseline": maxProjBaseline,#max projected baseline                         
                     },
                 )
-              
-                info("Spectral window %s, current channel id %s: %s MHz. File saved at %s"%(iSpw,ifreq, frequency/1e6,dataFileName))
+                npts=len(u)
+                info("Spectral window %s, current channel id %s: %s MHz (%s data pts). File saved at %s"%(iSpw,ifreq, frequency/1e6,npts,dataFileName))
                 
 
         else:
@@ -397,7 +387,11 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
                 nWimag = np.sqrt(wimagI[flag])
             except:
                 nWimag =[]
-            maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2)) 
+
+            try:
+                maxProjBaseline = np.sqrt(max(u ** 2 + v ** 2))
+            except:
+                maxProjBaseline =0;    
             
             dataFileName = "%s/data_ch_%s.mat" % (data_dir, ifreq + 1)
             sio.savemat(
@@ -413,8 +407,8 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
                     "maxProjBaseline": maxProjBaseline,#max projected baseline 
                 },
             )
-            
-            info("Spw 0, current channel id %s: %s MHz. File saved at %s"%(ifreq, frequency/1e6,dataFileName))
+            npts = len(u) 
+            info("Spw 0, current channel id %s: %s MHz (%s data pts). File saved at %s"%(ifreq, frequency/1e6,npts,dataFileName))
 
             fileid = ifreq + 1
             
