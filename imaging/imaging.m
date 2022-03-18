@@ -310,7 +310,7 @@ elseif strcmp(algo_solver, 'fhs')
     addpath([project_dir, filesep, 'src', filesep, 'fhs', filesep]);
 end
 % setting paths to results and reference image cube
-results_path = fullfile('results', srcName);
+results_path = fullfile(project_dir,'results', srcName);
 mkdir(results_path);
 auxiliary_path = fullfile(results_path, algo_solver);
 mkdir(auxiliary_path);
