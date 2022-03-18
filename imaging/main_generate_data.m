@@ -1,6 +1,6 @@
-function main_generate_data(json_filename, image_name, ncores_data, ...
-    coverage_path, exp_type, superresolution_factor, isnr, flag_dr, ...
-    flag_cirrus, flag_generateCoverage)
+function main_generate_data(json_filename, srcName, ncores_data, ...
+    coverage_path, exp_type, superresolution_factor, isnr, flag_visibility_gridding, ...
+    parcluster, flag_generateCoverage)
 % Generate a ``.mat`` synthetic dataset compatible with the requirements
 % from the imaging interface specified in
 % :mat:scpt:`imaging.main_input_imaging`.
@@ -11,7 +11,7 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
 %     Name of the input ``.json`` configuration file specifying the
 %     value of the algorithm parameters (PDFB, reweighting, ellipsoid,
 %     projection, preconditioning, ...).
-% image_name : string
+% srcName : string
 %     Name of the image cube to be reconstructed.
 % ncores_data : int
 %     Number of CPU cores allocated to the data generation process.
@@ -27,10 +27,11 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
 %     default, twice the nominal resolution of the instrument).
 % isnr : double
 %     Input SNR of the generated data.
-% flag_dr : bool
-%     Flag to activate dimensionality reduction (not active at the moment).
-% flag_cirrus : bool
-%     Flag specifying whether the simulation runs on cirrus or not.
+% flag_visibility_gridding : bool
+%     Flag to activate dimensionality reduction via visibility gridding (not active at the moment).
+% parcluster : string
+%     Name of the parcluster profile used to launch parpool, default
+%     ``"local"``.
 % flag_generateCoverage : bool
 %     Flag to generate a custom coverage. Otherwise, load a pre-defined
 %     coverage file.
@@ -64,11 +65,11 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
 %
 
 % %% Debug parameters
-% image_name = 'cygASband_Cube_256_512'; %'cygASband_Cube_H'; %'W28_512';
+% srcName = 'cygASband_Cube_256_512'; %'cygASband_Cube_H'; %'W28_512';
 % json_filename = 'default_parameters.json';
 % exp_type = 'test'; % 'spectral', 'spatial', 'test'
 % flag_generateCoverage = 0;
-% flag_dr = 0;
+% flag_visibility_gridding = 0;
 %
 % % number of cores assigned to the data fidelity terms (groups of channels)
 % ncores_data = 2;
@@ -77,7 +78,7 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
 % isnr = 50;
 %
 % superresolution_factor = 2;
-% flag_cirrus = false;
+% parcluster = 'local';
 % kernel = 'minmax:kb'; % 'kaiser' (for real data), 'minmax:tuned'
 
 %%
@@ -85,7 +86,7 @@ function main_generate_data(json_filename, image_name, ncores_data, ...
 format compact;
 
 disp('Synthetic data generation');
-disp(['Reference image: ', image_name]);
+disp(['Reference image: ', srcName]);
 disp(['Input SNR: ', num2str(isnr)]);
 
 addpath ../lib/operators/;
@@ -101,7 +102,7 @@ speed_of_light = 299792458;
 
 % setting paths to results and reference image cube
 data_path = '../data';
-results_path = fullfile(data_path, image_name, exp_type);
+results_path = fullfile(data_path, srcName, exp_type);
 mkdir(data_path);
 mkdir(results_path);
 
@@ -111,24 +112,24 @@ mkdir(results_path);
 % ! the full image cube
 switch exp_type
     case "spatial"
-        image_name = 'cygASband_Cube_1024_2048_20';
+        srcName = 'cygASband_Cube_1024_2048_20';
         spectral_downsampling = 1;
         spatial_downsampling = 1;
     case "spectral"
-        image_name = 'cygASband_Cube_256_512_100';
+        srcName = 'cygASband_Cube_256_512_100';
         spectral_downsampling = 1;
         spatial_downsampling = 1;
     case "test"
-        image_name = 'cygASband_Cube_512_1024_20';
+        srcName = 'cygASband_Cube_512_1024_20';
         spectral_downsampling = 10;
         spatial_downsampling = 2;
     case "local_test"
-        image_name = 'cygASband_Cube_256_512_100';
+        srcName = 'cygASband_Cube_256_512_100';
         spectral_downsampling = 25;
         spatial_downsampling = 1;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
     case "old_local_test"
-        image_name = 'cubeW28';
+        srcName = 'cubeW28';
         spectral_downsampling = 20;
         spatial_downsampling = 4;
         coverage_path = "data/vla_7.95h_dt10s.uvw256.mat";
@@ -136,7 +137,7 @@ switch exp_type
         error("Unknown experiment type");
 end
 
-reference_cube_path = fullfile(data_path, strcat(image_name, '.fits'));
+reference_cube_path = fullfile(data_path, strcat(srcName, '.fits'));
 info        = fitsinfo(reference_cube_path);
 rowend      = info.PrimaryData.Size(1);
 colend      = info.PrimaryData.Size(2);
@@ -183,7 +184,7 @@ fmax = frequencies(end);
 
 %% Setup name of data file
 data_name_function = @(nchannels) strcat('y_', ...
-    exp_type, '_', image_name, '_srf=', num2str(superresolution_factor), ...
+    exp_type, '_', srcName, '_srf=', num2str(superresolution_factor), ...
     '_Ny=', num2str(Ny), '_Nx=', num2str(Nx), '_L=', num2str(nchannels), ...
     '_snr=', num2str(isnr), '.mat');
 
@@ -252,7 +253,7 @@ end
 
 %% Setup parpool
 delete(gcp('nocreate'));
-cirrus_cluster = util_set_parpool('hs', ncores_data, 1, flag_cirrus);
+cirrus_cluster = util_set_parpool('hs', ncores_data, 1, parcluster);
 
 %% Setup measurement operator and visibilities
 % create the measurement operator operator in parallel (depending on
@@ -269,7 +270,7 @@ param_l2_ball.sigma_ball = 2;
 
 spmd
     local_fc = frequencies(rg_c(labindex, 1):rg_c(labindex, 2));
-    if flag_dr
+    if flag_visibility_gridding
         % ! define Sigma (weight matrix involved in DR)
         % ! define G as the holographic matrix
     else
