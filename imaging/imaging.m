@@ -483,7 +483,7 @@ end
 % % if strcmp(algo_solver, 'sara')
 % %     parcluster = 'local';
 % % end
-hpc_cluster = util_set_parpool(algo_solver, ncores_data, Qx * Qy, ~strcmp(parcluster, 'local'));
+hpc_cluster = util_set_parpool(algo_solver, ncores_data, Qx * Qy, parcluster);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% Setup measurement operator and load data
