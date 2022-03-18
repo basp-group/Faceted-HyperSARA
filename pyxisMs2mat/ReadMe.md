@@ -4,7 +4,7 @@
 2. Meqtrees https://github.com/ratt-ru/meqtrees/wiki/Installation
 
 # General notes
-1. Data extraction is performed using `pyxis`. The task should be performed in `./Faceted-Hyper-SARA/pyxis_ms2mat` which contains the python script `pyxis_ckat.py`.
+1. Data extraction is performed using `pyxis`. The task should be performed in `./Faceted-Hyper-SARA/pyxisMs2mat` which contains the python script `pyxis4DataExtraction.py`.
 2. Extracted .mat files are saved in `../data/`. The files contain the following fields
 ```bash
 "frequency" # channel frequency                       
