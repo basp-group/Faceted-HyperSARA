@@ -42,20 +42,20 @@ def getdata_ms_concat_bandwidth(
 
     Parameters
     ----------
-    msf_lowbandwidth : str, optional
-        _description_, by default ""
-    msf_highbandwidth : str, optional
-        _description_, by default ""
+    msf_lowbandwidth : str, required
+        Path to the low frequency band MS.
+    msf_highbandwidth : str, required
+        Path to the high frequency band MS.
     srcname : str, optional
-        _description_, by default ""
+        Name of the target source, by default ""..
     srcid : str, optional
-        _description_, by default ""
+        Field id of the target source, by default 0.
     mstag : str, optional
-        _description_, by default ""
+        Name tag of the MS (required if multiple MSs), by default "".
     freqFirst : str, optional
-        _description_, by default ""
+        Index of the first channel frequency to extract from each spectral window, by default 0.
     freqLast : str, optional
-        _description_, by default ""
+         Index of the last channel frequency to extract from each spectral window, by default last channel frequency available in the MS.
     """    
 
     msname1 = II("%s" % msf_lowbandwidth)
@@ -98,30 +98,33 @@ def getdata_ms_concat_bandwidth(
     info(" %s files extracted." % fileidEnd)
 
 
-def getdata_ms( msf="$MS", mstag="$MSTAG", freqFirst="$FIRSTCH", freqLast="$LASTCH", srcid="$FIELDID",srcname="$SRCNAME"):
+def getdata_ms( msf="$MS",srcname="$SRCNAME", mstag="$MSTAG",srcid="$FIELDID", freqFirst="$FIRSTCH", freqLast="$LASTCH"):
     """_summary_
 
     _extended_summary_
 
     Parameters
     ----------
-    msf : str, optional
-        _description_, by default ""
-    mstag : str, optional
-        _description_, by default ""
-    freqFirst : str, optional
-        _description_, by default ""
-    freqLast : str, optional
-        _description_, by default ""
-    srcid : str, optional
-        _description_, by default ""
+
+    msf : str, required
+        Path to the MS.
     srcname : str, optional
-        _description_, by default ""
+        Name of the target source, by default "".
+    mstag : str, optional
+        Name tag of the MS (required if multiple MSs), by default "".
+    srcid : str, optional
+        Field id of the target source, by default 0.
+    freqFirst : str, optional
+        Index of the first channel frequency to extract from each spectral window, by default 0.
+    freqLast : str, optional
+        Index of the last channel frequency to extract from each spectral window, by default last channel frequency available in the MS.
+    
     """    
     
     msname = II("%s" % msf)
-    mstag = II("%s" % mstag)
     srcname = II("%s" % srcname)
+    mstag = II("%s" % mstag)
+    
     try:
         freqFirst = int(II("%s" % freqFirst))
     except:
@@ -148,32 +151,34 @@ def getdata_ms( msf="$MS", mstag="$MSTAG", freqFirst="$FIRSTCH", freqLast="$LAST
     )
 
 
-def getdata(msname, mstag, freqFirst, freqLast, srcid, srcname, fileid0):
+def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
     """_summary_
 
     _extended_summary_
 
     Parameters
     ----------
+
     msname : string
-        _description_
-    mstag : string
-        _description_
+        Path to the MS.
+    srcname : string
+        Name of the target source.
+    mstag : str
+        Name tag of the MS (required if multiple MSs), by default "".
     freqFirst : int
-        _description_
+        Index of the first channel frequency to extract from each spectral window, by default 0.
     freqLast : int
-        _description_
-    srcid : _type_
-        _description_
-    srcname : _type_
-        _description_
-    fileid0 : _type_
-        _description_
+        Index of the last channel frequency to extract from each spectral window, by default last channel frequency available in the MS.
+    srcid : int
+        Field id of the target source.
+    
+    fileid0 :int
+        ID of the last frequency channel if MSs of multiple frequency bandwidths are provided.
 
     Returns
     -------
-    _type_
-        _description_
+    int
+        ID of the last frequency channel if MSs of multiple frequency bandwidths are provided.
     """    
     
     data_parent_dir = "../data"
