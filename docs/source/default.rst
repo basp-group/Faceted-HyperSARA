@@ -1,5 +1,3 @@
-.. _default:
-
 Default parameters
 ==================
 
