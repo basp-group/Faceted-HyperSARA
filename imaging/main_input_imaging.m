@@ -9,140 +9,155 @@
 % ----------
 % srcName : string
 %     Name of the target source to be reconstructed as specified during
-%     data extraction. It will be used for output files.
+%     data extraction, used to get the data and generate output files.
 % datasetNames : cell of string
-%     Name of the different datasets used (e.g.,
-%     different acquisition configurations, different observation times),
+%     Name of the different datasets used (e.g., in the cases of
+%     different acquisition configurations or different observation times),
 %     to be set to ``{''}`` if one data set is imaged or no name tag of 
 %     the MS is given during data extraction.
-% json_filename : string
-%     Name of the input ``.json`` configuration file specifying the
-%     value of the algorithm parameters (PDFB, reweighting, ellipsoid,
-%     projection, preconditioning, ...).
 % dataFilename : anonymous function
 %     Function handle taking a channel index as an input, and returning the
-%     name of the associated data ``.mat`` file (one file per wavelength), nomenclature adopted during data extraction .
+%     name of the associated data ``.mat`` file (one file per frequency channel)
+%     following the nomenclature adopted during data extraction. Do not
+%     modify unless the nomenclature has been altered.
 % idChannels2Image : array[int]
-%     Indices of the `physical` channels to be imaged.
+%     Indices of the  input (`physical`) channels to be imaged.
 % nChannelsPerImage : int
-%     Number of consecutive channels to be concatenated into each effective
-%     channel (1 if full spectral resolution is considered, i.e. number of output channels is equal to the number of input channels).
+%     Number of consecutive channels to be concatenated into each  output
+%     (effective) channel (set to `1` if full spectral resolution is considered, i.e. number of
+%     output channels is equal to the number of input channels).
+% effChans2Image: cell array
+%     Cell array containing the ids of the input (physical) channels to be
+%     concatenated for each output (effective) channel. Set automatically if
+%     `idChannels2Image` and `nChannelsPerImage` are provided.
 % subcubeInd : int
 %     Index of the subcube to be reconstructed (if spectral faceting is
 %     used). To be set to ``0`` otherwise.
 % main_dir : string
 %     Directory of the Faceted-HyperSARA repository.
 % data_dir : string
-%     Directory where the input ``.mat`` data files are saved.
-% project_dir : string
-%     Directory of the experiment project.
+%     Directory of the input ``.mat`` data files. ``./Faceted-HyperSARA/data/``.
+% imaging_dir : string
+%     Directory of the imaging experiment. Default
+%     ``./Faceted-HyperSARA/imaging``.
 % preproc_calib_dir : string
-%     Name of the folder containing results from a calibration
+%     Sub-directory in `data_dir`  containing results from a calibration
 %     pre-processing step. To be set to ``[]`` if not used or not
 %     available.
-% param_global.preproc_filename_die : anonymous function
-%     Function handle, taking the index of the first and last channel, and
-%     returning a string corresponding to the name of a file containing
-%     DIE calibration constants. If not used, must be set to ``[]``.
-% param_global.preproc_filename_l2bounds : anonymous function
-%     Function handle, taking the index of the first and last channel, and
-%     returning a string corresponding to the name of a file
-%     containing pre-computed :math:`\ell_2` bounds. If not used, must be set
-%     to ``[]``.
-% param_global.preproc_filename_model : anonymous function
-%     Function handle, taking the index of the first and last channel, and
-%     returning the name of a file containing a model image to be used to
-%     initialize the reconstruction algorithm. If not used, should be set to
-%     ``[]``.
-% param_global.measop_flag_visibility_gridding : bool
-%     Flag to activate visibility gridding for data dimensionality reduction
-%     :cite:p:`Kartik2017`.
-% param_global.algo_flag_computeOperatorNorm : bool
-%     Flag to trigger the computation of the norm of the measurement
-%     operator. If set to ``false``, MATLAB will look for a file where this
-%     quantity has been saved (save and computation step are triggered in
-%     :mat:func:`imaging.imaging`).
+% json_filename : string
+%     Name of the input ``.json`` configuration file specifying the
+%     value of the algorithm parameters (PDFB, reweighting, ellipsoid,
+%     projection, preconditioning, ...).
 % param_global.im_Nx  : int
 %     Number of pixels along axis x in the reconstructed image.
 % param_global.im_Ny : int
 %     Number of pixels along axis y in the reconstructed image.
 % param_global.im_pixelSize  : double
 %     Pixel-size in arcsec. Set to ``[]`` to use
-%     the default computation, that is 2x the resolution of the
-%     observation.
-% param_global.reg_flag_reweighting : bool
-%     Flag to activate the re-weighting procedure.
-% param_global.reg_nReweights : int
-%     Maximum number of reweighting steps.
-% param_global.parcluster : string
-%     String the name of the parallel parcluster profile. By default ``"local"`` profile
-%     is used. The user should set it to the name of the slurm parcluster
-%     profile created on his/her HPC machine, if prefered. 
+%     the default value corresponding to 2 times the resolution of the
+%     observation (given by the longest baseline).
+% param_global.measop_flag_visibility_gridding : bool
+%     Flag to activate visibility gridding for data dimensionality
+%     reduction.
 % param_global.algo_solver : string
 %     Name of the imaging approach used. Possible values are ``"fhs"``
 %     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
 % param_global.facet_Qx : int
-%     Number of spatial facets along spatial axis x. Will be reset
-%     automatically to 1 if ``param_global.algo_solver = "sara"`` or
-%     ``"hs"``.
+%     Number of spatial facets along spatial axis x. Active Only in
+%     ``"fhs"``.
 % param_global.facet_Qy : int
-%     Number of spatial facets along spatial axis y. Will be reset
-%     automatically to 1 if ``param_global.algo_solver = "sara"`` or
-%     ``"hs"``.
-% param_global.facet_overlap_fraction : array[double]
-%     Array containing the overlap fraction between consecutive facets along
-%     each axis (y and x) for the faceted low-rankness prior. Will be reset
-%     automatically to ``[0, 0]`` if ``param_global.algo_solver = "sara"``
-%     or ``"hs"``. Besides, each entry of
-%     ``param_global.facet_overlap_fraction`` is reset to 0 the
-%     number of facet along the corresponding dimension is equal to 1
-%     (i.e., ``param_global.facet_Qy = 1`` and/or
-%     ``param_global.facet_Qx = 1``).
+%     Number of spatial facets along spatial axis y. Active Only in
+%     ``"fhs"``.
+% param_global.facet_overlap_fraction : double[2]
+%     Fraction of the total size of facet overlapping with a neighbouring
+%     facet along each axis (y and x) for the faceted low-rankness prior. 
+%     Active Only in ``"fhs"``. Will be reset
+%     automatically to ``[0, 0]`` if the spatial faceting is not active in ``"fhs"``
+%     along at least one dimension (i.e., ``param_global.facet_Qy = 1`` and/or ``param_global.facet_Qx = 1``).
 % param_global.reg_gam : double
-%     Average joint sparsity prior regularization parameter.
+%     Additional multiplicative factor affecting the average sparsity
+%     regularization term in ``sara"``.
 % param_global.reg_gam_bar : double
-%     Low-rankness prior regularization parameter (for HyperSARA and
-%     Faceted HyperSARA).
+%    Additional multiplicative factor affecting  low-rankness prior 
+%    regularization parameter. Active Only in ``"fhs"`` and ``"hs"``.
+% param_global.reg_flag_reweighting : bool
+%     Flag to activate the re-weighting procedure. Default set to
+%     ``true``.
+% param_global.reg_nReweights : int
+%     Maximum number of reweighting iterations.
+% param_global.algo_flag_computeOperatorNorm : bool
+%     Flag to trigger the computation of the norm of the measurement
+%     operator. Default set to ``true``. If set to ``false``,
+%     MATLAB will look for a file where this
+%     quantity has been saved (save and computation steps are triggered in
+%     :mat:func:`imaging.imaging`).
+% param_global.parcluster : string
+%     Name of the parallel parcluster profile to launch the parpool. By default ``"local"`` profile
+%     is used. The user should set it to the name of the slurm parcluster
+%     profile created on his/her HPC machine, if prefered. 
+% param_global.preproc_filename_l2bounds : anonymous function
+%     Function handle, taking the index of the first and last physical channels, and
+%     returning a string corresponding to the name of a file
+%     containing pre-computed :math:`\ell_2` bounds. If not used, must be set
+%     to ``[]``.
+% param_global.preproc_filename_model : anonymous function
+%     Function handle, taking the index of the first and last physical channels, and
+%     returning the name of a file containing a model image to be used to
+%     initialize the reconstruction algorithm. If not used, should be set to
+%     ``[]``.
+% param_global.preproc_filename_die : anonymous function
+%     Function handle, taking the index of the first and last physical channels, and
+%     returning a string corresponding to the name of a file containing
+%     DIE calibration constants. If not used, must be set to ``[]``.
+% param_global.preproc_filename_dde : anonymous function
+%     Function handle, taking the index of the first and last physical channels, and
+%     returning a string corresponding to the name of a file containing
+%     DDE calibration constants. If not used, must be set to ``[]``.
 %
 % Example
 % -------
 %
 % .. code-block:: matlab
 %
-%    %% Set the input and output channels IDs
-%    %% option 1: provide a cell array containing the ids of the channels
-%    % to be concatenated for each effective channel.
-%    % example a: two effective channels, containing two "physical"
+%    %% Set the input (physical) and output (effective) channels IDs
+%    %% Option 1: provide  `effChans2Image` a cell array containing the ids
+%    % of the physical channels to be concatenated for each effective channel.
+%    % example a: two effective channels, containing two physical
 %    % channels each
 %    effChans2Image = {[1,2], [3,4]};
 %
-%    % example b: one channel effective channel with one physical channel
+%    % example b: one effective channel with one physical channel
 %    effChans2Image = {[1]};
 %
 %
-%    %% option 2: provide all ids of channels nChannelsPerImage & number
-%    % of channel per effective channel nChannelsPerImage channel
-%    % example c: EXP 1: subcube 1 (first channel from each spectral
-%    % window (2 of  which are flagged).
+%    %% Option 2: provide all ids of physical channels `nChannelsPerImage` & number
+%    % of channel per effective channel `nChannelsPerImage`. The list of the ids
+%    % of the physical channels to be concatenated for each effective
+%    % channel `effChans2Image` will be created automatically.
+%    % example c:  subcube 1 (first channel from each spectral
+%    % window (in this example two spectral windows are flagged).
+%    % The number of output (effective) channels is equal to the number
+%    % of input (physical) channels
 %    idChannels2Image = [1:16:272, 289:16:320, 337:16:512];
 %    nChannelsPerImage = 1;
 %
 %    % example d: reduced imagecube containing 30 effective channels
-%    % each concatenating 16 physical channels
+%    % each combining 16 physical channels.
+%    % In this example the number of output (effective) channels is reduced to 30 from
+%    % 480 input (physical) channels.
 %    idChannels2Image = [1:272, 289:320, 337:512];
 %    nChannelsPerImage = 16;
 %
 % Warning
 % -------
-% - Data files (example: ``'data_ch_1.mat'``) are expected to contain the following variables : `maxProjBaseline`
-%   (double, maximum projected baseline), `u` , `v`, `w` (arrays of
-%   :math:`uvw`-coordinates), `nW` (noise whitening vector), `y` (complex vector of
-%   visibilities, Stokes I), `frequency` (associated frequency value).
+% - Data files (example: ``'data_ch_1.mat'``) are expected to contain the following variables : `y` (complex vector of
+%   visibilities, Stokes I), `u` , `v`, `w` (arrays of
+%   :math:`uvw`-coordinates),`maxProjBaseline`
+%   (double, maximum projected baseline), `nW` (noise whitening vector), `frequency` (associated frequency).
 %
 % - Note that the data `y`  are not whitened. 
-%   The variables `maxProjBaseline` and the `uvw` coordinates should be 
+%   The variables `maxProjBaseline` and the `uvw` coordinates are 
 %   in units of the wavelength (i.e. normalised by the associated wavelength).
-%
 
 %% Documentation
 %
@@ -154,17 +169,20 @@ clear; clc; close all;
 %% Parameters to be specified
 % TODO (keep empty parameter for non-used variables)
 
-% change paths if needed
-% TODO: to be adjusted by the user if required (keep current setting by default)
-main_dir = '.'; % Faceted-Hyper-SARA dir.
-project_dir = [main_dir, filesep, 'imaging'];
-cd(project_dir);
-
-% src name & datasets
+% target source & datasets names as specified during data extraction
 % TODO: to be adjusted by the user
 srcName = 'CYGA'; % as specified during data extraction
 datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; %  accomodating multiple datasets, 
 %set as specified in the data extraction step, {''} otherwise.
+
+
+% Main path of the Faceted-Hyper-SARA repository
+% TODO: to be adjusted by the user if required (keep current setting by default)
+main_dir = '.'; % Faceted-Hyper-SARA dir.
+
+% Imaging experiment directory
+imaging_dir = [main_dir, filesep, 'imaging'];
+cd(imaging_dir);
 
 % data directory (as expected from the data extraction step)
 data_dir = [main_dir, filesep, 'data', filesep, srcName, filesep];
@@ -248,7 +266,7 @@ param_global.facet_overlap_fraction = [0.1, 0.1];
 % TODO: to be adjusted by the user
 param_global.reg_gam = 0.33; % additional scaling factor for sparsity 
 % regularization (using heuristics described in Thouvenin2021). Set parameter to 1 by default.
-param_global.reg_gam_bar = 0.33; % additional scaling factor for low-rankness regularization (using heuristics described in Thouvenin2021). Only active 
+param_global.reg_gam_bar = 0.33; % additional scaling factor for low-rankness regularization (using heuristics described in Thouvenin2021). Active Only 
 % for HyperSARA and Faceted HyperSARA. Set parameter to 1 by default.
 param_global.reg_flag_reweighting = true;
 param_global.reg_nReweights = 5;

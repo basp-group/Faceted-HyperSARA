@@ -1,81 +1,115 @@
-function imaging(image_name, datasetsNames, dataFilename, ...
+function imaging(srcName, datasetsNames, dataFilename, ...
     subcubeInd, effChans2Image, param_solver, param_global, ...
     param_nufft, param_precond, dict)
-% Main function to run any algorithm from the SARA family, i.e., the SARA, 
-% HyperSARA or faceted HyperSARA approach.
-%
-% This function runs the SARA, HyperSARA or
-% faceted HyperSARA approach to reconstruct an :math:`N \times L` wideband
-% image cube using the configuration provided in :mat:scpt:`imaging.main_input_imaging`.
+% Main function to run any algorithm from the SARA family using the
+% configuration provided in :mat:scpt:`imaging.main_input_imaging`.
+% The approaches are Faceted HyperSARA, HyperSARA and SARA.
 %
 % Parameters
 % ----------
-% image_name : string
-%     Name of the reference synthetic image (from the ``data/`` folder).
+% srcName : string
+%     Name of the target source to be reconstructed as specified during
+%     data extraction, used to get the data and generate output files.
 % dataSetsNames: cell of string
-%     Names of the datasets to be imaged.
+%     Names of the different datasets used (e.g., in the cases of
+%     different acquisition configurations or different observation times),
+%     to be set to ``{''}`` if one data set is imaged or no name tag of 
+%     the MS is given during data extraction. 
 % dataFilenames: cell of string
-%     Name of the data set files.
-% subcube_ind : int
-%     Index of the spectral facet to be reconstructed (set to -1 or 0 to
-%     deactivate spectral faceting).  AD: is this  still the case ????
+%     Function handle taking a channel index as an input and returning the
+%     name of the associated data ``.mat`` file (one file per frequency channel),
+%     following the nomenclature adopted during data extraction .
 % effChans2Image: cell array
-%     Indices of the "physical" channels to be concatenated for each
-%     effective channel.
+%     Cell array containing the ids of the physical (input) channels to be
+%     concatenated for each effective (output) channel.
+% subcubeInd : int
+%     Index of the spectral facet to be reconstructed (set to -1 or 0 to
+%     deactivate spectral faceting).
 % param_global: struct
 %     Global imaging pipeline parameters (see
 %     :mat:func:`imaging.main_input_imaging`).
+% param_global.im_pixelSize  : double
+%     Pixel-size in arcsec. Set to ``[]`` to use
+%     the default value corresponding to 2 times the resolution of the
+%     observation (given by the longest baseline).
+% param_global.im_Nx : int
+%     Image dimension (x axis, dimension 2).
+% param_global.im_Ny : int
+%     Image dimension (y axis, dimension 1).
+% param_global.measop_flag_visibility_gridding : bool
+%     Flag to activate data dimensionality reduction via visibility gridding in the
+%     definition of the measurement operator.
 % param_global.algo_solver : string (``"sara"``, ``"hs"`` or ``"fhs"``).
 %     Selected solver.
+% param_global.facet_Qx : int
+%     Number of spatial facets along spatial axis x. Active Only in
+%     ``"fhs"``.
+% param_global.facet_Qy : int
+%     Number of spatial facets along spatial axis y. Active Only in
+%     ``"fhs"``.
+% param_global.facet_overlap_fraction : double[2]
+%     Fraction of the total size of facet overlapping with a neighbouring
+%     facet along each axis (y and x) for the faceted low-rankness prior. 
+%     Active Only in ``"fhs"``. Will be reset
+%     automatically to ``[0, 0]`` if the spatial faceting is not active in ``"fhs"``
+%     along at least one dimension(i.e., ``param_global.facet_Qy = 1`` and/or ``param_global.facet_Qx = 1``).
+% param_global.facet_Qc : int
+%     Number of spectral facets. Active Only in ``"fhs"``.
+% param_global.facet_window_type : string (``"triangular"``, ``"hamming"`` or ``"pc"`` (piecewise-constant))
+%     Type of apodization window considered for the faceted nuclear norm
+%     prior. Active Only in ``"fhs"``.
+% param_global.facet_overlap_fraction : double[2]
+%     Fraction of the total size of facet overlapping with a neighbouring
+%     facet along each axis (y and x) for the faceted low-rankness prior. 
+%     Active Only if adopted solver is ``"fhs"``. Will be reset
+%     automatically to ``[0, 0]`` if the spatial faceting is not active along at least one dimension
+%     (i.e., ``param_global.facet_Qy = 1`` and/or ``param_global.facet_Qx = 1``).
+% param_global.reg_gam : double
+%     Additional multiplicative factor affecting the average sparsity
+%     regularization term in ``sara"``.
+% param_global.reg_gam_bar : double
+%    Additional multiplicative factor affecting  low-rankness prior 
+%    regularization parameter. Active Only in ``"fhs"`` and ``"hs"``.
+% param_global.reg_flag_reweight : int
+%     Flag to activate re-weighting.
+% param_global.reg_nReweights : int
+%     Maximum number of reweighting steps.
+% param_global.algo_flag_computeOperatorNorm : bool
+%     Flag to trigger the computation of the norm of the (preconditionned) measurement
+%     operator. Default set to ``true``. If set to ``false``,
+%     MATLAB will look for a file where this
+%     quantity has been saved (save and computation steps are triggered in
+%     :mat:func:`imaging.imaging`).
+% param_global.algo_flag_solveMinimization : bool
+%     Flag triggering the solver (``"fhs"``, ``"hs"`` or ``"sara"``).
 % param_global.ncores_data : int
 %     Number of cores handlig the data fidelity terms (data cores). For
 %     Faceted HyperSARA, the total number of cores used
 %     is ``Qx*Qy + ncores_data + 1``. For SARA and HyperSARA, represents
 %     the number of cores used for the parallelization.
-% param_global.im_pixelSize : double
-%     pixel size in arcsec.
-% param_global.im_Nx : int
-%     Image dimension (x axis, dimension 2).
-% param_global.im_Ny : int
-%     Image dimension (y axis, dimension 1).
-% param_global.facet_Qx : int
-%     Number of spatial facets along axis 2 (axis x).
-% param_global.facet_Qy : int
-%     Number of spatial facets along axis 1 (axis y).
-% param_global.facet_Qc : int
-%     Number of spectral facets.
-% param_global.facet_window_type : string (``"triangular"``, ``"hamming"`` or ``"pc"`` (piecewise-constant))
-%     Type of apodization window considered for the faceted nuclear norm
-%     prior (FHS solver).
-% param_global.facet_overlap_fraction : double[2]
-%     Fraction of the total size of a facet overlapping with a neighbour
-%     facet along each axis (y and x) for the faceted low-rankness prior.
-%     Will be reset automatically to ``[0, 0]`` if
-%     ``param_global.algo_solver = "sara"``
-%     or ``"hs"``. Besides, each entry of
-%     ``param_global.facet_overlap_fraction`` is reset to 0 the
-%     number of facet along the corresponding dimension is equal to 1
-%     (i.e., ``param_global.facet_Qy = 1`` and/or
-%     ``param_global.facet_Qx = 1``).
-% param_global.reg_nReweights : int
-%     Maximum number of reweighting steps.
-% param_global.reg_gam : double
-%     Additional multiplicative factor affecting the joint-sparsity
-%     regularization term.
-% param_global.reg_gam_bar : double
-%     Additional multiplicative factor affecting the low-rankness
-%     regularization term.
-% param_global.reg_flag_reweight : int
-%     Flag to activate re-weighting.
-% param_global.algo_flag_computeOperatorNorm : bool
-%     Flag triggering the computation of the (preconditioned) operator norm.
-% param_global.algo_flag_solveMinimization : bool
-%     Flag triggering the solver (SARA, HS or FHS).
-% param_global.measop_flag_visibility_gridding : bool
-%     Flag to activate Data dimensionality reduction features (visibility gridding) in the
-%     definition of the measurement operator :cite:p:`Kartik2017`.
-% param_global.parcluster : string 
-%     
+% param_global.parcluster : string
+%     Name of the parallel parcluster profile to launch the parpool. By default ``"local"`` profile
+%     is used. The user should set it to the name of the slurm parcluster
+%     profile created on his/her HPC machine, if prefered. 
+% param_global.preproc_filename_l2bounds : anonymous function
+%     Function handle, taking the index of the first and last physical channels, and
+%     returning a string corresponding to the name of a file
+%     containing pre-computed :math:`\ell_2` bounds. If not used, must be set
+%     to ``[]``.
+% param_global.preproc_filename_model : anonymous function
+%     Function handle, taking the index of the first and last physical channels, and
+%     returning the name of a file containing a model image to be used to
+%     initialize the reconstruction algorithm. If not used, should be set to
+%     ``[]``.
+% param_global.preproc_filename_die : anonymous function
+%     Function handle, taking the index of the first and last physical channels, and
+%     returning a string corresponding to the name of a file containing
+%     DIE calibration constants. If not used, must be set to ``[]``.
+% param_global.preproc_filename_dde : anonymous function
+%     Function handle, taking the index of the first and last physical channels, and
+%     returning a string corresponding to the name of a file containing
+%     DDE calibration constants. If not used, must be set to ``[]``.
+
 % Note
 % ----
 % - Example:
@@ -133,7 +167,6 @@ if param_global.reg_flag_reweighting &&  ~isfield(param_global, 'reg_nReweights'
     param_global.reg_nReweights = 5;
 end
 % if ~isfield(param_global, 'reg_flag_homotopy'); param_global.reg_flag_homotopy = 0; end
-
 % Data blocks
 % if ~isfield(param_global, 'generate_eps_nnls'); param_global.generate_eps_nnls = false; end
 % if ~isfield(param_global, 'data_nDataBlk');  param_global.data_nDataBlk = []; end
@@ -143,13 +176,17 @@ end
 % end
 
 % Algo
-if ~isfield(param_global, 'algo_solver'); param_global.algo_solver = 'fhs'; end
-if ~isfield(param_global, 'algo_flag_solveMinimization'); param_global.algo_flag_solveMinimization = 1; end
-if ~isfield(param_global, 'algo_flag_computeOperatorNorm'); param_global.algo_flag_computeOperatorNorm = 1; end
+if ~isfield(param_global, 'algo_solver')
+    if numel(effChans2Image)>1,  param_global.algo_solver = 'fhs';
+    else, param_global.algo_solver = 'sara';
+    end
+end
+if ~isfield(param_global, 'algo_flag_solveMinimization'); param_global.algo_flag_solveMinimization = true; end
+if ~isfield(param_global, 'algo_flag_computeOperatorNorm'); param_global.algo_flag_computeOperatorNorm = true; end
 if ~isfield(param_global, 'algo_ncores_data'); param_global.algo_ncores_data = numel(effChans2Image);  end
 
 % Measurement operator
-if ~isfield(param_global, 'measop_flag_visibility_gridding'); param_global.measop_flag_visibility_gridding = 0; end
+if ~isfield(param_global, 'measop_flag_visibility_gridding'); param_global.measop_flag_visibility_gridding = false; end
 if ~isfield(param_global, 'measop_flag_wproj'); param_global.measop_flag_wproj = []; end
 if param_global.measop_flag_wproj
     if ~isfield(param_global, 'measop_wprojCEnergyL2'); param_global.measop_wprojCEnergyL2 = 1 - 1e-4; end
@@ -272,7 +309,7 @@ elseif strcmp(algo_solver, 'fhs')
     addpath([project_dir, filesep, 'src', filesep, 'fhs', filesep]);
 end
 % setting paths to results and reference image cube
-results_path = fullfile('results', image_name);
+results_path = fullfile('results', srcName);
 mkdir(results_path);
 auxiliary_path = fullfile(results_path, algo_solver);
 mkdir(auxiliary_path);
@@ -281,7 +318,7 @@ fprintf('\nINFO: results will be saved in: \n %s .\n', auxiliary_path);
 % -------------------------------------------------------------------------%
 %% info
 disp('Imaging configuration');
-disp(['Source name: ', image_name]);
+disp(['Source name: ', srcName]);
 disp(['Image cube size: ', num2str(Ny), ' x ', num2str(Nx), ' x ', num2str(numel(effChans2Image))]);
 disp(['Algorithm version: ', algo_solver]);
 disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
@@ -885,13 +922,13 @@ fprintf('INFO: Convergence parameter (measurement operator''s norm squared): %e 
 %% Setup name of results file
 
 if strcmp(algo_solver, 'sara') % AD
-    temp_results_name = @(nEffectiveChans) strcat(image_name, '_', ...
+    temp_results_name = @(nEffectiveChans) strcat(srcName, '_', ...
         algo_solver, '_', num2str(pixelSize), 'asec', ...
         '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
         '_ind', num2str(subcubeInd), '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), ...
         '_g', num2str(gam), '_gb', num2str(gam_bar), '_');
 else
-    temp_results_name = @(nEffectiveChans) strcat(image_name, '_', ...
+    temp_results_name = @(nEffectiveChans) strcat(srcName, '_', ...
         algo_solver, '_', num2str(pixelSize), 'asec', ...
         '_Ny', num2str(Ny), '_Nx', num2str(Nx), '_L', num2str(nEffectiveChans), ...
         '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
@@ -981,7 +1018,7 @@ if flag_solveMinimization
         xsol = sara(y, epsilons, A, At, aW, G, W, Psi, Psit, ...
             param_solver, name_warmstart, name_checkpoint, gam, ...
             flag_dataReduction, Sigma, xinit);
-        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_solver, ...
+        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', srcName, '_', algo_solver, ...
             '_', num2str(pixelSize), 'asec', ...  % '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
             '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), ...
             '_gam', num2str(gam), ...
@@ -1019,7 +1056,7 @@ if flag_solveMinimization
                     xinit);
             otherwise; error('Unknown solver version.');
         end
-        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', image_name, '_', algo_solver, ...
+        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', srcName, '_', algo_solver, ...
             '_', num2str(pixelSize), 'asec', ...
             '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
             '_ind', num2str(subcubeInd), ...
