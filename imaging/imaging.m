@@ -154,7 +154,7 @@ if ~isfield(param_global, 'facet_Qx')
 else
     facet_dim = floor(param_global.im_Nx / param_global.facet_Qx );
     if facet_dim < facet_dim_min
-        fprintf('\nWARNING: facet dimension is small, advised max. value:  param_global.facet_Qx=%d.', floor(param_global.im_Nx / facet_dim_min));
+        fprintf('\nWARNING: facet dimension is small, advised max. value: param_global.facet_Qx=%d ', floor(param_global.im_Nx / facet_dim_min));
     end
 end
 if ~isfield(param_global, 'facet_Qy') 
@@ -163,7 +163,7 @@ if ~isfield(param_global, 'facet_Qy')
 else
     facet_dim = floor(param_global.im_Ny / param_global.facet_Qy );
     if facet_dim < facet_dim_min
-        fprintf('\nWARNING: facet dimension is small, advised max. value: param_global.facet_Qy=%d.', floor(param_global.im_Ny / facet_dim_min));
+        fprintf('\nWARNING: facet dimension is small, advised max. value: param_global.facet_Qy=%d ', floor(param_global.im_Ny / facet_dim_min));
     end
 end
 if ~isfield(param_global, 'facet_Qc'); param_global.facet_Qc = 1; end
