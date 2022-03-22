@@ -287,9 +287,12 @@ param_global.reg_nReweights = 5;
 % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
 param_global.algo_solver = 'fhs'; 
 % if single output image, `sara` must be used
-if numel(effChans2Image) ==1
+if numel(effChans2Image) == 1
     fprintf('\nMonochromatic imaging: `SARA` approach is used for imaging.')
-%     param_global.algo_solver = 'sara';
+    param_global.algo_solver = 'sara';
+elseif strcmp(param_global.algo_solver,'sara') && numel(effChans2Image)> 1
+    fprintf('\nWideband imaging: `Faceted HyperSARA` approach is used for imaging.')
+    param_global.algo_solver = 'fhs';
 end
 %% filenames and input 
 param_global.main_dir = main_dir;
