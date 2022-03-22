@@ -149,17 +149,17 @@ if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
 
 % Prior: wideband facet related
 if ~isfield(param_global, 'facet_subcubeInd');  param_global.facet_subcubeInd = 0; end
-if ~isfield(param_global, 'facet_Qx');  param_global.facet_Qx =  floor(param_global.facet_Nx / facet_dim_min);
+if ~isfield(param_global, 'facet_Qx');  param_global.facet_Qx =  floor(param_global.im_Nx / facet_dim_min);
 else
-    facet_dim = floor(param_global.facet_Nx / param_global.facet_Qx );
+    facet_dim = floor(param_global.im_Nx / param_global.facet_Qx );
     if facet_dim < facet_dim_min
-        fprintf('\nWARNING: facet dimension is small, advised max. value:  param_global.facet_Qx=%d.', floor(param_global.facet_Nx / facet_dim_min));
+        fprintf('\nWARNING: facet dimension is small, advised max. value:  param_global.facet_Qx=%d.', floor(param_global.im_Nx / facet_dim_min));
     end
 end
-if ~isfield(param_global, 'facet_Qy');  param_global.facet_Qy =  floor(param_global.facet_Ny / facet_dim_min);
-    facet_dim = floor(param_global.facet_Ny / param_global.facet_Qy );
+if ~isfield(param_global, 'facet_Qy');  param_global.facet_Qy =  floor(param_global.im_Ny / facet_dim_min);
+    facet_dim = floor(param_global.im_Ny / param_global.facet_Qy );
     if facet_dim < facet_dim_min
-        fprintf('\nWARNING: facet dimension is small, advised max. value: param_global.facet_Qy=%d.', floor(param_global.facet_Ny / facet_dim_min));
+        fprintf('\nWARNING: facet dimension is small, advised max. value: param_global.facet_Qy=%d.', floor(param_global.im_Ny / facet_dim_min));
     end
 end
 if ~isfield(param_global, 'facet_Qc'); param_global.facet_Qc = 1; end
@@ -876,14 +876,28 @@ switch algo_solver
                 end
             end
         end; clear local_fc  u v w nW dataSpWinloaded ddes;
-
 end
 % Free memory
-clear   param_wproj param_preproc  preproc_residuals;
+clear  param_wproj param_preproc  preproc_residuals;
    
 fprintf('\nData loaded successfully.');
 
-clear dirty;
+subcube_channels = 1:nEffectiveChans;
+if strcmp(algo_solver, 'sara')
+    dirty_file= fullfile(results_path, ...
+        strcat('dirty_', algo_solver, ...
+        '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
+        '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), '.fits'));
+    fitswrite(dirty,dirty_file)
+else
+    for k = 1:ncores_data
+        dirty_file = fullfile(results_path, strcat('dirty_', ...
+            '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
+            '_L', num2str(nEffectiveChans),'_', num2str(k),'.fits'));
+        dirty_tmp = dirty{data_worker_id(k)};
+        fitswrite(dirty_tmp,dirty_file)
+    end
+end
 
 %% load l2 bounds (generate only full spectral dataset)
 
