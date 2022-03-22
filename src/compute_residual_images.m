@@ -38,6 +38,7 @@ function residual_image = compute_residual_images(x, y, A, At, ...
 
 n_channels = size(x, 3);
 residual_image = zeros(size(x));
+dirac = sparse(size(x, 1)*0.5 +1, size(x, 2)*0.5 +1 ,1,size(x, 1),size(x, 2));
 
 if flag_visibility_gridding % H  =G' +G; and H' = H ; G is  a lower tril matrix
     for i = 1:n_channels
