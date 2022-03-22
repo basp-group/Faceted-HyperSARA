@@ -149,14 +149,18 @@ if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
 
 % Prior: wideband facet related
 if ~isfield(param_global, 'facet_subcubeInd');  param_global.facet_subcubeInd = 0; end
-if ~isfield(param_global, 'facet_Qx');  param_global.facet_Qx =  floor(param_global.im_Nx / facet_dim_min);
+if ~isfield(param_global, 'facet_Qx')
+    param_global.facet_Qx =  floor(param_global.im_Nx / facet_dim_min);
 else
     facet_dim = floor(param_global.im_Nx / param_global.facet_Qx );
     if facet_dim < facet_dim_min
         fprintf('\nWARNING: facet dimension is small, advised max. value:  param_global.facet_Qx=%d.', floor(param_global.im_Nx / facet_dim_min));
     end
 end
-if ~isfield(param_global, 'facet_Qy');  param_global.facet_Qy =  floor(param_global.im_Ny / facet_dim_min);
+if ~isfield(param_global, 'facet_Qy') 
+    param_global.facet_Qy =  floor(param_global.im_Ny / facet_dim_min);
+    
+else
     facet_dim = floor(param_global.im_Ny / param_global.facet_Qy );
     if facet_dim < facet_dim_min
         fprintf('\nWARNING: facet dimension is small, advised max. value: param_global.facet_Qy=%d.', floor(param_global.im_Ny / facet_dim_min));
