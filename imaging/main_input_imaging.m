@@ -203,9 +203,10 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 
 % calibration preprocessing directory
 % ! set path to [] whenever it is not used
-preproc_calib_dir = [data_dir,filesep, 'pre_processing_calibration/']; 
+calib_type ='die'; % replace by 'dde' if it is the case, or keep empty ''
+preproc_calib_dir = [data_dir,filesep, 'pre_processing_', calib_type,filesep]; 
 % check if directory of calibration results exists
-if exist(preproc_calib_dir, 'dir')
+if ~isempty(calib_type)
     preproc_results_exist = 1;
 else,  preproc_results_exist = 0;
 end
@@ -231,7 +232,7 @@ json_filename = "default_parameters.json";
 % > nChannelsPerImage = 16;
 
 %/ TODO: to be adjusted by the user
-idChannels2Image = [1:256]; % ids of the physical (input) channels to be imaged, e.g., [1:256] for channel range from 1 to 256
+idChannels2Image = [1:32]; % ids of the physical (input) channels to be imaged, e.g., [1:256] for channel range from 1 to 256
 nChannelsPerImage = 16; % number of consecutive channels to be combined into each effective (output) channel.
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % ouput effective channels: number of images in the estimate model cube
@@ -249,7 +250,7 @@ end
 %% measurement operator features
 %/ TODO: to be adjusted by the user
 % activating visibility gridding for data dimensionality reduction
-param_global.measop_flag_visibility_gridding = 0; % 1 if active, 0 otherwise. 
+param_global.measop_flag_visibility_gridding = 1; % 1 if active, 0 otherwise. 
 
 %% image details, dims &  cellsize
 %/ TODO: to be adjusted by the user
@@ -300,11 +301,11 @@ if preproc_results_exist
         preproc_calib_dir, filesep, 'model_images', filesep, 'chs', num2str(firstch),...
         '-', num2str(lastch), '_model_image.fits');
     % ! dde calib OR die calib
-    % param_global.preproc_filename_die = @(firstch, lastch) strcat(...
-    %preproc_calib_dir, filesep,'dies',filesep,'chs', num2str(firstch), '-', num2str(lastch), '_dies.mat');
-    param_global.preproc_filename_dde = @(firstch, lastch) strcat(...
-        preproc_calib_dir, filesep, 'ddes', filesep, 'chs', num2str(firstch),...
-        '-', num2str(lastch), '_ddes.mat');
+    expr=['param_global.preproc_filename_',calib_type,...
+        ' = @(firstch, lastch) strcat(preproc_calib_dir, filesep,''',calib_type,...
+        ''',filesep,''chs'', num2str(firstch), ''-'', num2str(lastch), ''_',calib_type,'.mat'');'];
+    eval(expr);
+
 end
 
 
