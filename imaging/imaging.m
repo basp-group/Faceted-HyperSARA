@@ -149,7 +149,7 @@ if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
 
 % Prior: sparsity dict.
 if ~isfield(dict, 'nlevel'); dict.nlevel = 4;  end
-if ~isfield(dict, 'basis'); 
+if ~isfield(dict, 'basis')
     dict.basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};  
     dict.filter_length = [2, 4, 6, 8, 10, 12, 14, 16, 0];
 end
@@ -178,6 +178,7 @@ end
 if ~isfield(param_global, 'facet_Qc'); param_global.facet_Qc = 1; end
 if ~isfield(param_global, 'facet_window_type'); param_global.facet_window_type = 'triangular'; end
 if ~isfield(param_global, 'facet_overlap_fraction'); param_global.facet_overlap_fraction = [0.2, 0.2]; end
+
 
 % Prior: reg params
 if ~isfield(param_global, 'reg_gam'); param_global.reg_gam = 1;  end
@@ -562,6 +563,8 @@ switch algo_solver
                         % dde calib
                         ddes{iEffCh, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                         ddeloaded.DDEs{idSet, iCh} = [];
+                    else
+                        ddes =[];
                     end
                     if flag_visibility_gridding
                         % if residual data are available, use them to get
@@ -595,10 +598,9 @@ switch algo_solver
             y{iEffCh, 1} =  y{iEffCh, 1}(:);
             l2bounds{iEffCh, 1} = l2bounds{iEffCh, 1}(:);
 
-            if flag_calib.dde
+            if flag_calib.dde && ~isempty(ddes)
                 ddes{iEffCh, 1} = vertcat(ddes{iEffCh, 1}{:});
                 ddes{iEffCh, 1} =  ddes{iEffCh, 1}(:);
-            else; ddes = [];
             end
 
             if flag_visibility_gridding
@@ -696,6 +698,8 @@ switch algo_solver
                                 % if dde calib, get ddes
                                 ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                                 ddeloaded.DDEs{idSet, iCh} = [];
+                            else 
+                                ddes =[];
                             end
                             if flag_visibility_gridding
                                 % if residual data are available, use them to get
@@ -729,10 +733,9 @@ switch algo_solver
                     y{ifc, 1} =  y{ifc, 1}(:);
                     l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
 
-                    if flag_calib.dde
+                    if flag_calib.dde && ~isempty(ddes)
                         ddes{ifc, 1} = vertcat(ddes{ifc, 1}{:});
                         ddes{ifc, 1} = ddes{ifc, 1}(:);
-                    else; ddes = [];
                     end
 
                     if flag_visibility_gridding
@@ -818,6 +821,8 @@ switch algo_solver
                                     % if dde calib, get ddes
                                     ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                                     ddeloaded.DDEs{idSet, iCh} = [];
+                                else
+                                    ddes =[];
                                 end
                                 if flag_visibility_gridding
                                     % if residual data are available, use them to get
@@ -851,10 +856,9 @@ switch algo_solver
                         y{ifc, 1} =  y{ifc, 1}(:);
                         l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
 
-                        if flag_calib.dde 
+                        if flag_calib.dde && ~isempty(ddes)
                             ddes{ifc, 1} = vertcat(ddes{ifc, 1}{:});
                             ddes{ifc, 1} = ddes{ifc, 1}(:);
-                        else; ddes = [];
                         end
 
                         if flag_visibility_gridding
