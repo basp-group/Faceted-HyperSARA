@@ -163,7 +163,7 @@ else
     nfacets_max = sdwt2_test_nfacets(param_global.im_Nx, param_global.facet_Qx, dict.nlevel, max_filter_length);
     if nfacets_max < param_global.facet_Qx
         param_global.facet_Qx = nfacets_max;
-        fprintf('\nWARNING: facet dimension is small, max. admissible value used: param_global.facet_Qx=%d ', param_global.facet_Qx);
+        fprintf('\nWARNING: facet dimension is too small, max. admissible value used: param_global.facet_Qx=%d ', param_global.facet_Qx);
     end
 end
 if ~isfield(param_global, 'facet_Qy')
@@ -172,7 +172,7 @@ else
     nfacets_max = sdwt2_test_nfacets(param_global.im_Ny, param_global.facet_Qy, dict.nlevel, max_filter_length);
     if nfacets_max < param_global.facet_Qy
         param_global.facet_Qy = nfacets_max;
-        fprintf('\nWARNING: facet dimension is small, max. admissible value used: param_global.facet_Qy=%d ', param_global.facet_Qy);
+        fprintf('\nWARNING: facet dimension is too small, max. admissible value used: param_global.facet_Qy=%d ', param_global.facet_Qy);
     end
 end
 if ~isfield(param_global, 'facet_Qc'); param_global.facet_Qc = 1; end
