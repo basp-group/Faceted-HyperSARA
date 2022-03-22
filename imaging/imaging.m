@@ -155,7 +155,7 @@ if ~isfield(dict, 'basis')
 end
 
 % Prior: wideband facet related
-max_filter_length = max(dic.filter_length(:));
+max_filter_length = max(dict.filter_length(:));
 if ~isfield(param_global, 'facet_subcubeInd');  param_global.facet_subcubeInd = 0; end
 if ~isfield(param_global, 'facet_Qx')
     param_global.facet_Qx = sdwt2_max_nfacets(param_global.im_Nx, ndict.level, max_filter_length);
@@ -290,6 +290,7 @@ param_preproc.done = (~isempty(param_preproc.filename_l2bounds)) * ~isempty(para
 filename_l2bounds = param_global.preproc_filename_l2bounds; % available l2bounds
 flag_calib.die = 0;
 flag_calib.dde = 0;
+ddes = [];
 if ~isempty(param_preproc.filename_die)
     flag_calib.die = 1;
 elseif ~isempty(param_preproc.filename_dde)
@@ -427,7 +428,8 @@ else
             else
                 try  l2bounds{iEffCh}{1}{1} =  l2EffChansloaded.l2bounds.gridded; % one single block assumed if reduced data
                     fprintf('\nINFO: l2 bounds loaded successfully.\n');
-                catch ; fprintf('\nWARNING: l2 bounds not found. \nChi squared distribution is assumed to determine the l2 bounds.\n');
+                catch
+                    fprintf('\nWARNING: l2 bounds not found. \nChi squared distribution is assumed to determine the l2 bounds.\n');
                     flag_l2bounds_compute = 1;
                 end
             end
@@ -530,6 +532,7 @@ switch algo_solver
                     fprintf('\nWARNING: DDEs file not found: %s ',tmpfile);
                     ddeloaded = [];
                 end
+            else,  ddes = [];
             end
             %% if data reduction and residual data available, load them
             if flag_visibility_gridding
@@ -544,9 +547,9 @@ switch algo_solver
                     frequency = dataloaded.frequency;
                     % u v  are in units of the wavelength and will be
                     % normalised between [-pi,pi] for the NUFFT
-                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;
+                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi   / halfSpatialBandwidth ;
                     dataloaded.u = [];
-                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;
+                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi  / halfSpatialBandwidth;
                     dataloaded.v = [];
                     w{iEffCh, 1}{iCh}{idSet} = double(dataloaded.w(:));
                     dataloaded.w = [];
