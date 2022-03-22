@@ -679,11 +679,11 @@ switch algo_solver
                             y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{ifc, 1}{iCh}{idSet}; % data whitening
                             dataloaded.y = [];
                             % Output of the pre-processing step if any
-                            if flag_calib.die
+                            if flag_calib.die && ~isempty(dieloaded)
                                 % if die calib, correct data
                                 y{ifc, 1}{iCh}{idSet} = y{ifc, 1}{iCh}{idSet} ./ dieloaded.DIEs{idSet, iCh};
                                 dieloaded.DIEs{idSet, iCh} = [];
-                            elseif flag_calib.dde
+                            elseif flag_calib.dde  && ~isempty(ddeloaded)
                                 % if dde calib, get ddes
                                 ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                                 ddeloaded.DDEs{idSet, iCh} = [];
@@ -801,11 +801,11 @@ switch algo_solver
                                 y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{ifc, 1}{iCh}{idSet}; % data whitening
                                 dataloaded.y = [];
                                 % Output of the pre-processing step if any
-                                if flag_calib.die
+                                if flag_calib.die && ~isempty(dieloaded)
                                     % if die calib, correct data
                                     y{ifc, 1}{iCh}{idSet} = y{ifc, 1}{iCh}{idSet} ./ dieloaded.DIEs{idSet, iCh};
                                     dieloaded.DIEs{idSet, iCh} = [];
-                                elseif flag_calib.dde
+                                elseif flag_calib.dde && ~isempty(ddeloaded)
                                     % if dde calib, get ddes
                                     ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                                     ddeloaded.DDEs{idSet, iCh} = [];
@@ -842,7 +842,7 @@ switch algo_solver
                         y{ifc, 1} =  y{ifc, 1}(:);
                         l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
 
-                        if flag_calib.dde
+                        if flag_calib.dde 
                             ddes{ifc, 1} = vertcat(ddes{ifc, 1}{:});
                             ddes{ifc, 1} = ddes{ifc, 1}(:);
                         else; ddes = [];
@@ -879,26 +879,28 @@ switch algo_solver
 end
 % Free memory
 clear  param_wproj param_preproc  preproc_residuals;
-   
+  
 fprintf('\nData loaded successfully.');
-
-subcube_channels = 1:nEffectiveChans;
-if strcmp(algo_solver, 'sara')
-    dirty_file= fullfile(results_path, ...
-        strcat('dirty_', algo_solver, ...
-        '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
-        '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), '.fits'));
-    fitswrite(dirty,dirty_file)
-else
-    for k = 1:ncores_data
-        dirty_file = fullfile(results_path, strcat('dirty_', ...
+try
+    subcube_channels = 1:nEffectiveChans;
+    if strcmp(algo_solver, 'sara')
+        dirty_file= fullfile(results_path, ...
+            strcat('dirty_', algo_solver, ...
             '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
-            '_L', num2str(nEffectiveChans),'_', num2str(k),'.fits'));
-        dirty_tmp = dirty{data_worker_id(k)};
-        fitswrite(dirty_tmp,dirty_file)
+            '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), '.fits'));
+        fitswrite(dirty,dirty_file)
+    else
+        for k = 1:ncores_data
+            dirty_file = fullfile(results_path, strcat('dirty_', ...
+                '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
+                '_ch', num2str(k),'.fits'));
+            dirty_tmp = dirty{data_worker_id(k)};
+            fitswrite(dirty_tmp,dirty_file)
+        end
     end
+    fprintf('\nDirty images saved.')
+catch, fprintf('\nWARNING: error encountered when saving dirty images.');
 end
-
 %% load l2 bounds (generate only full spectral dataset)
 
 switch algo_solver
