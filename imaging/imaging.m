@@ -147,33 +147,38 @@ if ~isfield(param_global, 'im_Nx');  param_global.im_Nx = 2048; end
 if ~isfield(param_global, 'im_Ny');  param_global.im_Ny = 2048; end
 if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
 
+% Prior: sparsity dict.
+if ~isfield(dict, 'nlevel'); dict.nlevel = 4;  end
+if ~isfield(dict, 'basis'); 
+    dict.basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};  
+    dict.filter_length = [2, 4, 6, 8, 10, 12, 14, 16, 0];
+end
+
 % Prior: wideband facet related
+max_filter_length = max(dic.filter_length(:));
 if ~isfield(param_global, 'facet_subcubeInd');  param_global.facet_subcubeInd = 0; end
 if ~isfield(param_global, 'facet_Qx')
-    param_global.facet_Qx =  floor(param_global.im_Nx / facet_dim_min);
+    param_global.facet_Qx = sdwt2_max_nfacets(param_global.im_Nx, ndict.level, max_filter_length);
 else
-    facet_dim = floor(param_global.im_Nx / param_global.facet_Qx );
-    if facet_dim < facet_dim_min
-        fprintf('\nWARNING: facet dimension is small, advised max. value: param_global.facet_Qx=%d ', floor(param_global.im_Nx / facet_dim_min));
+    nfacets_max = sdwt2_test_nfacets(param_global.im_Nx, param_global.facet_Qx, dict.nlevel, max_filter_length);
+    if nfacets_max < param_global.facet_Qx
+        param_global.facet_Qx = nfacets_max;
+        fprintf('\nWARNING: facet dimension is small, max. admissible value used: param_global.facet_Qx=%d ', param_global.facet_Qx);
     end
 end
-if ~isfield(param_global, 'facet_Qy') 
-    param_global.facet_Qy =  floor(param_global.im_Ny / facet_dim_min);
-    
+if ~isfield(param_global, 'facet_Qy')
+    param_global.facet_Qy = sdwt2_max_nfacets(param_global.im_Ny, ndict.level, max_filter_length);
 else
-    facet_dim = floor(param_global.im_Ny / param_global.facet_Qy );
-    if facet_dim < facet_dim_min
-        fprintf('\nWARNING: facet dimension is small, advised max. value: param_global.facet_Qy=%d ', floor(param_global.im_Ny / facet_dim_min));
+    nfacets_max = sdwt2_test_nfacets(param_global.im_Ny, param_global.facet_Qy, dict.nlevel, max_filter_length);
+    if nfacets_max < param_global.facet_Qy
+        param_global.facet_Qy = nfacets_max;
+        fprintf('\nWARNING: facet dimension is small, max. admissible value used: param_global.facet_Qy=%d ', param_global.facet_Qy);
     end
 end
 if ~isfield(param_global, 'facet_Qc'); param_global.facet_Qc = 1; end
 if ~isfield(param_global, 'facet_window_type'); param_global.facet_window_type = 'triangular'; end
 if ~isfield(param_global, 'facet_overlap_fraction'); param_global.facet_overlap_fraction = [0.2, 0.2]; end
 
-
-% Prior: sparsity dict.
-if ~isfield(dict, 'nlevel'); dict.nlevel = 4;  end
-if ~isfield(dict, 'basis'); dict.basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};  end
 % Prior: reg params
 if ~isfield(param_global, 'reg_gam'); param_global.reg_gam = 1;  end
 if ~isfield(param_global, 'reg_gam_bar'); param_global.reg_gam_bar = 1;  end
