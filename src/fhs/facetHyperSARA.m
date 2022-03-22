@@ -829,6 +829,11 @@ for t = t_start:max_iter
 
     %% Reweighting (in parallel)
     if pdfb_converged
+        % update xsol
+        for q = 1:Q
+            xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = xsol_q{q};
+        end
+        
         % Evaluate relative variation for the reweighting scheme
         spmd
             if labindex <= Qp.Value
@@ -859,8 +864,6 @@ for t = t_start:max_iter
 
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count + 1, rel_x_reweighting, reweighting_alpha);
 
-        whos;
-
         xsol_node = Composite();
         for iLab = Q + 1:numel(xsol_q)
             xsol_node{iLab} = xsol(:, :, spectral_chunk{iLab - Q});
@@ -887,7 +890,9 @@ for t = t_start:max_iter
             else
                 % compute residual image on the data nodes
                 % res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex - Qp.Value}), y, A, At, G, W, flag_dimensionality_reduction, Sigma);
-                res_ = compute_residual_images(xsol_node, y, A, At, G, W, flag_dimensionality_reduction, Sigma); xsol_node = []; % mem reasons
+                nnz(xsol_node)
+                res_ = compute_residual_images(xsol_node, y, A, At, G, W, flag_dimensionality_reduction, Sigma); 
+                xsol_node = []; % mem reasons
                 fprintf('\nResidual computed');
             end
         end; clear xsol_node;
@@ -920,9 +925,8 @@ for t = t_start:max_iter
                 xlast_reweight_q = xsol_q;
             end
         end
-
-        % update xsol
-
+        
+        
         % retrieve value of the priors
         l21 = 0;
         nuclear = 0;
@@ -934,9 +938,7 @@ for t = t_start:max_iter
 
         if flag_synth_data
             % get xsol back from the workers
-            for q = 1:Q
-                xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = xsol_q{q};
-            end
+            
             sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
             SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));
             psnrh = zeros(n_channels, 1);
@@ -971,9 +973,11 @@ for t = t_start:max_iter
                 m.v1(q, 1) = v1_(q);
                 m.weights0(q, 1) = weights0_(q);
                 m.weights1(q, 1) = weights1_(q);
-                m.xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = xsol_q{q};
-                m.g(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = g_q{q};
+%                 m.xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = xsol_q{q};
+                m.g(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2),:) = g_q{q};
             end
+            m.xsol= xsol ;%xsol_q{q};
+
             % data nodes
             for k = 1:K
                 m.res(:, :, spectral_chunk{k}) = res_{Q + k};

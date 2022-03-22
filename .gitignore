@@ -280,3 +280,5 @@ data/vla_7.95h_dt10s.uvw.mat
 *.fits
 data/W28_512.fits
 pyxisMs2mat/log-emeerkatsims.txt
+imaging/cyga_main_input_imaging.m
+imaging/default_parameters.json
