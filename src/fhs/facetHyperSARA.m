@@ -859,7 +859,7 @@ for t = t_start:max_iter
 
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count + 1, rel_x_reweighting, reweighting_alpha);
 
-        whos;
+       
 
         xsol_node = Composite();
         for iLab = Q + 1:numel(xsol_q)
