@@ -97,7 +97,6 @@ else
             u2 = G{i}{j}' * (y{i}{j} - G{i}{j} * Fx(W{i}{j}));
             r(W{i}{j}) = r(W{i}{j}) + u2; u2 = [];
         end; clear Fx u2;
-        residual_image(:, :, i) = real(At(r));
         % normalise residual image
         residual_image(:, :, i) = residual_image(:, :, i)./(max(max(real(At(r)))));
         clear r;
