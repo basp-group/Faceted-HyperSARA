@@ -138,7 +138,8 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 % ------------------------------------------------------------------------%
 %% constant
 speed_of_light = 299792458;
-
+facet_dim_min  = 256;
+default_superresolution = 2;
 %% check input params : @PA in light of the new structure of params, many of these fields will be deleted I guess ..
 % Image resolution & dimensions
 % ! parameters and default values (keep only what is required)
@@ -148,12 +149,22 @@ if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
 
 % Prior: wideband facet related
 if ~isfield(param_global, 'facet_subcubeInd');  param_global.facet_subcubeInd = 0; end
-if ~isfield(param_global, 'facet_Qx');  param_global.facet_Qx =  floor(param_global.facet_Nx / 256); end
-if ~isfield(param_global, 'facet_Qy');  param_global.facet_Qy =  floor(param_global.facet_Ny / 256); end
+if ~isfield(param_global, 'facet_Qx');  param_global.facet_Qx =  floor(param_global.facet_Nx / facet_dim_min);
+else
+    facet_dim = floor(param_global.facet_Nx / param_global.facet_Qx );
+    if facet_dim < facet_dim_min
+        fprintf('\nWARNING: facet dimension is small, advised max. value:  param_global.facet_Qx=%d.', floor(param_global.facet_Nx / facet_dim_min));
+    end
+end
+if ~isfield(param_global, 'facet_Qy');  param_global.facet_Qy =  floor(param_global.facet_Ny / facet_dim_min);
+    facet_dim = floor(param_global.facet_Ny / param_global.facet_Qy );
+    if facet_dim < facet_dim_min
+        fprintf('\nWARNING: facet dimension is small, advised max. value: param_global.facet_Qy=%d.', floor(param_global.facet_Ny / facet_dim_min));
+    end
+end
 if ~isfield(param_global, 'facet_Qc'); param_global.facet_Qc = 1; end
 if ~isfield(param_global, 'facet_window_type'); param_global.facet_window_type = 'triangular'; end
-if ~isfield(param_global, 'facet_overlap_fraction'); param_global.facet_overlap_fraction = [0.1, 0.1]; end
-
+if ~isfield(param_global, 'facet_overlap_fraction'); param_global.facet_overlap_fraction = [0.2, 0.2]; end
 
 
 % Prior: sparsity dict.
@@ -245,9 +256,8 @@ gam_bar =  param_global.reg_gam_bar;
 flag_reweighting = param_global.reg_flag_reweighting;
 if flag_reweighting
     reg_nReweights = param_global.reg_nReweights;
-    % flag_homotopy = param_global.reg_flag_homotopy;
 end
-% Meas. op.
+% Measurement operator settings
 flag_visibility_gridding = param_global.measop_flag_visibility_gridding; % data reduction
 param_wproj.do = param_global.measop_flag_wproj; % w projection
 if isempty(param_global.measop_flag_wproj)
@@ -268,7 +278,6 @@ param_preproc.filename_model = param_global.preproc_filename_model;
 param_preproc.subcube = subcubeInd;
 param_preproc.done = (~isempty(param_preproc.filename_l2bounds)) * ~isempty(param_preproc.filename_model) * (~isempty(param_preproc.filename_die) || ~isempty(param_preproc.filename_dde));
 filename_l2bounds = param_global.preproc_filename_l2bounds; % available l2bounds
-
 flag_calib.die = 0;
 flag_calib.dde = 0;
 if ~isempty(param_preproc.filename_die)
@@ -346,8 +355,8 @@ if strcmp(imResolution, 'nominal')
         end
     end; clear dataloaded;
     spatialBandwidth = 2 * maxProjBaseline;
-    pixelSize = (180 / pi) * 3600 / (2 * spatialBandwidth);
-    fprintf('\nINFO: the pixelsize is set to %f arcsec, that is 2x nominal resolution at the highest freq.', pixelSize);
+    pixelSize = (180 / pi) * 3600 / (default_superresolution * spatialBandwidth);
+    fprintf('\nINFO: default pixelsize: %f arcsec, that is %d x nominal resolution at the highest freq.', default_superresolution,pixelSize);
 end
 halfSpatialBandwidth = (180 / pi) * 3600 / (pixelSize) / 2;
 % -------------------------------------------------------------------------%
@@ -389,37 +398,44 @@ if isempty(filename_l2bounds)
 else
     fprintf('\nLoading estimates of the l2-bounds ...');
     for iEffCh = 1:nEffectiveChans
-        l2EffChansloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'sigmac', 'l2bounds');
-        if ~flag_visibility_gridding
-            for iCh = 1:numel(effChans2Image{iEffCh})
-                for idSet = 1:nDataSets
-                    try % get bounds
-                        l2bounds{iEffCh}{iCh}{idSet} = l2EffChansloaded.l2bounds{idSet, iCh};
-                        flag_l2bounds_compute = 0;
-                        fprintf('\nINFO: l2 bounds loaded successfully.');
-                    catch
-                        fprintf('\nWARNING: l2 bounds not found. \nChi squared distribution is assumed to determine the l2 bounds.');
-                        flag_l2bounds_compute = 1;
+        tmpfile=filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end));
+        if isfile(tmpfile)
+            l2EffChansloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'sigmac', 'l2bounds');
+            if ~flag_visibility_gridding
+                for iCh = 1:numel(effChans2Image{iEffCh})
+                    for idSet = 1:nDataSets
+                        try % get bounds
+                            l2bounds{iEffCh}{iCh}{idSet} = l2EffChansloaded.l2bounds{idSet, iCh};
+                            flag_l2bounds_compute = 0;
+                            fprintf('\nINFO: l2 bounds loaded successfully.');
+                        catch
+                            fprintf('\nWARNING: l2 bounds not found. \nChi squared distribution is assumed to determine the l2 bounds.');
+                            flag_l2bounds_compute = 1;
+                        end
                     end
                 end
+            else
+                try  l2bounds{iEffCh}{1}{1} =  l2EffChansloaded.l2bounds.gridded; % one single block assumed if reduced data
+                    fprintf('\nINFO: l2 bounds loaded successfully.\n');
+                catch ; fprintf('\nWARNING: l2 bounds not found. \nChi squared distribution is assumed to determine the l2 bounds.\n');
+                    flag_l2bounds_compute = 1;
+                end
+            end
+            if ~flag_l2bounds_compute
+                try % get noise std
+                    if ~flag_visibility_gridding
+                        global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac);
+                    else;  global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac.gridded);
+                    end
+                catch ;  global_sigma_noise(iEffCh, 1) = 1;
+                    flag_l2bounds_compute = 1; % assuming a chi squared dist.
+                    fprintf('\nWARNING: global sigma noise not found, will assume white data.\n');
+                end
+                
             end
         else
-            try  l2bounds{iEffCh}{1}{1} =  l2EffChansloaded.l2bounds.gridded; % one single block assumed if reduced data
-                fprintf('\nINFO: l2 bounds loaded successfully.\n');
-            catch ; fprintf('\nWARNING: l2 bounds not found. \nChi squared distribution is assumed to determine the l2 bounds.\n');
-                flag_l2bounds_compute = 1;
-            end
-        end
-        if ~flag_l2bounds_compute
-            try % get noise std
-                if ~flag_visibility_gridding
-                    global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac);
-                else;  global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac.gridded);
-                end
-            catch ;  global_sigma_noise(iEffCh, 1) = 1;
-                flag_l2bounds_compute = 1; % assuming a chi squared dist.
-                fprintf('\nWARNING: global sigma noise not found, will assume white data.\n');
-            end
+            fprintf('\nWarning: l2 bounds file not found: %s ',tmpfile);
+            flag_l2bounds_compute = 1;
         end
     end
 end
@@ -478,9 +494,7 @@ param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
 %% setup parpool
 try delete(gcp('nocreate'));
 end
-% % if strcmp(algo_solver, 'sara')
-% %     parcluster = 'local';
-% % end
+
 hpc_cluster = util_set_parpool(algo_solver, ncores_data, Qx * Qy, parcluster);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
@@ -491,9 +505,21 @@ switch algo_solver
 
             %% if die/dde calib, get dies/ddes
             if flag_calib.die
-                dieloaded = load(param_preproc.filename_die(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DIEs');
+                tmpfile = param_preproc.filename_die(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end));
+                if isfile(tmpfile)
+                    dieloaded = load(param_preproc.filename_die(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DIEs');
+                else
+                    fprintf('\nWarning: DIEs file not found: %s ',tmpfile);
+                    dieloaded = [];
+                end
             elseif flag_calib.dde
-                ddeloaded = load(param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DDEs');
+                tmpfile = param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end));
+                if isfile(tmpfile)
+                    ddeloaded = load(param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DDEs');
+                else
+                    fprintf('\nWarning: DDEs file not found: %s ',tmpfile);
+                    ddeloaded = [];
+                end
             end
             %% if data reduction and residual data available, load them
             if flag_visibility_gridding
@@ -519,11 +545,11 @@ switch algo_solver
                     y{iEffCh, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{iEffCh, 1}{iCh}{idSet}; % data whitening
                     dataloaded.y = [];
 
-                    if flag_calib.die
+                    if flag_calib.die && ~isempty(dieloaded)
                         % if die calib, correct data
                         y{iEffCh, 1}{iCh}{idSet} = y{iEffCh, 1}{iCh}{idSet} ./ dieloaded.DIEs{idSet, iCh};
                         dieloaded.DIEs{idSet, iCh} = [];
-                    elseif flag_calib.dde
+                    elseif flag_calib.dde && ~isempty(ddeloaded)
                         % dde calib
                         ddes{iEffCh, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                         ddeloaded.DDEs{idSet, iCh} = [];
@@ -598,6 +624,8 @@ switch algo_solver
             Sigma = [];
         end
         clear u v w nW ddes;
+        dirty = compute_residual_images(zeros(Ny,Nx), y, A, At, ...
+                         G, W, flag_visibility_gridding, Sigma);
 
     otherwise % 'hs' or 'fhs'
         % create the measurement operator operator in parallel (depending on
@@ -609,12 +637,25 @@ switch algo_solver
                 local_fc = (freqRangeCores(labindex, 1):freqRangeCores(labindex, 2));
                 effChans2Image_lab = (effChans2Image(local_fc));
                 for ifc  = 1:numel(local_fc)
-                    %% if die/ddes calib, get dies/ddes
+                    %% if die/ddes calib, get dies/ddes                    
                     if flag_calib.die
-                        dieloaded = load(param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DIEs');
+                        tmpfile =param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end));
+                        if isfile(tmpfile)
+                            dieloaded = load(param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DIEs');
+                        else
+                            fprintf('\nWarning: DIEs file not found: %s ',tmpfile);
+                            dieloaded = [];
+                        end
                     elseif flag_calib.dde
-                        ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
+                        tmpfile =param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end));
+                        if isfile(tmpfile)
+                            ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
+                        else
+                            fprintf('\nWarning: DDEs file not found: %s ',tmpfile);
+                            ddeloaded = [];
+                        end
                     end
+                    
                     %% if data reduction and residual data available, load them
                     if flag_visibility_gridding
                         try
@@ -707,6 +748,8 @@ switch algo_solver
                          numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, ddes);
                     Sigma = [];
                 end;   u = []; v = []; w = []; nW = []; ddes = [];
+                dirty = compute_residual_images(squeeze(zeros(Ny,Nx,numel(y))), y, A, At, ...
+                                                G, W, flag_visibility_gridding, Sigma);
             end
         else
             Sigma = Composite();
@@ -719,10 +762,22 @@ switch algo_solver
                     for ifc  = 1:numel(local_fc)
                         %% if die/ddes calib, get dies/ddes
                         if flag_calib.die
-                            dieloaded = load(param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DIEs');
+                            tmpfile =param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end));
+                            if isfile(tmpfile)
+                                dieloaded = load(param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DIEs');
+                            else
+                                fprintf('\nWarning: DIEs file not found: %s ',tmpfile);
+                                dieloaded = [];
+                            end
                         elseif flag_calib.dde
-                            ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
-                        end
+                            tmpfile =param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end));
+                            if isfile(tmpfile)
+                                ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
+                            else
+                                fprintf('\nWarning: DDEs file not found: %s ',tmpfile);
+                                ddeloaded = [];
+                            end
+                        end                        
                         %% if data reduction and residual data available, load them
                         if flag_visibility_gridding
                             try
@@ -815,6 +870,9 @@ switch algo_solver
                             numel(local_fc), Nx, Ny, param_nufft, param_wproj,  param_precond, ddes);
                         Sigma = [];
                     end; u = []; v = []; w = []; nW = []; ddes = [];
+                    
+                    dirty = compute_residual_images(squeeze(zeros(Ny,Nx,numel(y))), y, A, At, ...
+                                                G, W, flag_visibility_gridding, Sigma);
                 end
             end
         end; clear local_fc  u v w nW dataSpWinloaded ddes;
@@ -822,7 +880,11 @@ switch algo_solver
 end
 % Free memory
 clear   param_wproj param_preproc  preproc_residuals;
+   
 fprintf('\nData loaded successfully.');
+
+clear dirty;
+
 %% load l2 bounds (generate only full spectral dataset)
 
 switch algo_solver
