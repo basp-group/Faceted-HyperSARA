@@ -75,13 +75,13 @@
 %     Name of the imaging approach used. Possible values are ``"fhs"``
 %     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
 % param_global.facet_Qx : int
-%     Number of spatial facets along spatial axis x. Will be reset
-%     automatically to 1 if ``param_global.algo_solver = "sara"`` or
-%     ``"hs"``.
+%     Number of spatial facets along spatial axis x. Active only in
+%     ``"fhs"``. If the field is not specified, the maximum possible
+%     number of facets will the selected along the y axis.
 % param_global.facet_Qy : int
-%     Number of spatial facets along spatial axis y. Will be reset
-%     automatically to 1 if ``param_global.algo_solver = "sara"`` or
-%     ``"hs"``.
+%     Number of spatial facets along spatial axis y. Active only in
+%     ``"fhs"``. If the field is not specified, the maximum possible
+%     number of facets will the selected along the y axis.
 % param_global.facet_overlap_fraction : array[double]
 %     Array containing the overlap fraction between consecutive facets along
 %     each axis (y and x) for the faceted low-rankness prior. Will be reset
