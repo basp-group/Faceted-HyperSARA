@@ -232,8 +232,8 @@ json_filename = "default_parameters.json";
 % > nChannelsPerImage = 16;
 
 %/ TODO: to be adjusted by the user
-idChannels2Image = [1:32]; % ids of the physical (input) channels to be imaged, e.g., [1:256] for channel range from 1 to 256
-nChannelsPerImage = 16; % number of consecutive channels to be combined into each effective (output) channel.
+idChannels2Image = [1:2]; % ids of the physical (input) channels to be imaged, e.g., [1:256] for channel range from 1 to 256
+nChannelsPerImage = 1; % number of consecutive channels to be combined into each effective (output) channel.
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % ouput effective channels: number of images in the estimate model cube
 % !must be equal to 1 for 'sara' and greater than 1 for 'fhs'
@@ -263,8 +263,8 @@ param_global.im_pixelSize =  0.06; % pixelsize in asec, set to [] to use
 %% faceting params:
 %  note that if spectral faceting is active, one subcube (i.e. spectral facet) is imaged at a time Qc=1 by default.
 %/ TODO: to be adjusted by the user
-param_global.facet_Qx = 5; % num. of spatial facets along axis x (only used in Faceted HyperSARA)
-param_global.facet_Qy = 3; % num. of spatial facets along axis y (only used in Faceted HyperSARA)
+param_global.facet_Qx = 1;5; % num. of spatial facets along axis x (only used in Faceted HyperSARA)
+param_global.facet_Qy = 1;3; % num. of spatial facets along axis y (only used in Faceted HyperSARA)
 param_global.facet_overlap_fraction = [0.2, 0.2]; % (only used in Faceted HyperSARA)
 
 param_global.facet_subcubeInd = 0; % id of subcube to image if spectral faceting is active, 0 otherwise
@@ -283,11 +283,11 @@ param_global.reg_nReweights = 5;
 %% algo & parallelisation params
 %/ TODO: to be adjusted by the user:
 % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
-param_global.algo_solver = 'fhs'; 
+param_global.algo_solver = 'hs'; 
 % if single output image, `sara` must be used
 if numel(effChans2Image) ==1
     fprintf('\nMonochromatic imaging: `SARA` approach is used for imaging.')
-    param_global.algo_solver = 'sara';
+%     param_global.algo_solver = 'sara';
 end
 %% filenames and input 
 param_global.main_dir = main_dir;

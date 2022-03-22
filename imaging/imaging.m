@@ -514,7 +514,7 @@ hpc_cluster = util_set_parpool(algo_solver, ncores_data, Qx * Qy, parcluster);
 switch algo_solver
     case 'sara'
         for iEffCh = 1:nEffectiveChans
-
+            ddes = [];
             %% if die/dde calib, get dies/ddes
             if flag_calib.die
                 tmpfile = param_preproc.filename_die(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end));
@@ -532,7 +532,6 @@ switch algo_solver
                     fprintf('\nWARNING: DDEs file not found: %s ',tmpfile);
                     ddeloaded = [];
                 end
-            else,  ddes = [];
             end
             %% if data reduction and residual data available, load them
             if flag_visibility_gridding
@@ -547,9 +546,9 @@ switch algo_solver
                     frequency = dataloaded.frequency;
                     % u v  are in units of the wavelength and will be
                     % normalised between [-pi,pi] for the NUFFT
-                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi   / halfSpatialBandwidth ;
+                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth ;
                     dataloaded.u = [];
-                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi  / halfSpatialBandwidth;
+                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:))* pi / halfSpatialBandwidth;
                     dataloaded.v = [];
                     w{iEffCh, 1}{iCh}{idSet} = double(dataloaded.w(:));
                     dataloaded.w = [];
@@ -566,8 +565,6 @@ switch algo_solver
                         % dde calib
                         ddes{iEffCh, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                         ddeloaded.DDEs{idSet, iCh} = [];
-                    else
-                        ddes =[];
                     end
                     if flag_visibility_gridding
                         % if residual data are available, use them to get
@@ -580,25 +577,19 @@ switch algo_solver
                     %% Compute l2bounds if not found
                     if flag_l2bounds_compute
                         global_sigma_noise(iEffCh, 1) = 1;
-                        nmeas_curr = numel(y{iEffCh, 1}{iCh}{idSet});
-                        l2bounds{iEffCh, 1}{iCh}{idSet} =  sqrt(nmeas_curr + 2 * sqrt(nmeas_curr));
+                        tmp_nmeas = numel(y{iEffCh, 1}{iCh}{idSet});
+                        l2bounds{iEffCh, 1}{iCh}{idSet} =  sqrt(tmp_nmeas + 2 * sqrt(tmp_nmeas));
                     end
                 end
             end
 
-            %% re-structure data: collapse cells
-            u{iEffCh, 1} = vertcat(u{iEffCh, 1}{:});
-            v{iEffCh, 1} = vertcat(v{iEffCh, 1}{:});
-            w{iEffCh, 1} = vertcat(w{iEffCh, 1}{:});
-            nW{iEffCh, 1} = vertcat(nW{iEffCh, 1}{:});
-            y{iEffCh, 1} = vertcat(y{iEffCh, 1}{:});
+            %% re-structure data; collapse cells
+            u{iEffCh, 1} = vertcat(u{iEffCh, 1}{:}); u{iEffCh, 1} = u{iEffCh, 1}(:);
+            v{iEffCh, 1} = vertcat(v{iEffCh, 1}{:}); v{iEffCh, 1} = v{iEffCh, 1}(:);
+            w{iEffCh, 1} = vertcat(w{iEffCh, 1}{:}); w{iEffCh, 1} = w{iEffCh, 1}(:);
+            nW{iEffCh, 1} = vertcat(nW{iEffCh, 1}{:}); nW{iEffCh, 1} = nW{iEffCh, 1}(:);
+            y{iEffCh, 1} = vertcat(y{iEffCh, 1}{:}); y{iEffCh, 1} =  y{iEffCh, 1}(:);
             l2bounds{iEffCh, 1} = vertcat(l2bounds{iEffCh, 1}{:});
-
-            u{iEffCh, 1} = u{iEffCh, 1}(:);
-            v{iEffCh, 1} = v{iEffCh, 1}(:);
-            w{iEffCh, 1} = w{iEffCh, 1}(:);
-            nW{iEffCh, 1} = nW{iEffCh, 1}(:);
-            y{iEffCh, 1} =  y{iEffCh, 1}(:);
             l2bounds{iEffCh, 1} = l2bounds{iEffCh, 1}(:);
 
             if flag_calib.dde && ~isempty(ddes)
@@ -616,7 +607,7 @@ switch algo_solver
         end
 
         if flag_visibility_gridding
-            % one data block & one channel after visibility gridding
+            % one data block & one channel after visibility gridding (DR)
             % ! `G` is the holographic matrix
             % get the reduced data vector `y` and the weighting
             % matrix `Sigma` involved in visibility gridding
@@ -681,10 +672,11 @@ switch algo_solver
                         for idSet = 1:nDataSets
                             %% load data
                             dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w', 'nW', 'y', 'frequency');
+                            frequency = dataloaded.frequency;
                             % u v  are in units of the wavelength and will be normalised between [-pi,pi] for the NUFFT
                             u{ifc, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;
                             dataloaded.u = [];
-                            v{ifc, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;
+                            v{ifc, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi/ halfSpatialBandwidth;
                             dataloaded.v = [];
                             w{ifc, 1}{iCh}{idSet} = double(dataloaded.w(:));
                             dataloaded.w = [];
@@ -701,8 +693,6 @@ switch algo_solver
                                 % if dde calib, get ddes
                                 ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                                 ddeloaded.DDEs{idSet, iCh} = [];
-                            else 
-                                ddes =[];
                             end
                             if flag_visibility_gridding
                                 % if residual data are available, use them to get
@@ -716,24 +706,18 @@ switch algo_solver
                             %% Compute l2bounds if not found
                             if flag_l2bounds_compute
                                 global_sigma_noise_cmpst = 1;
-                                nmeas_curr = numel(y{ifc, 1}{iCh}{idSet});
-                                l2bounds{ifc, 1}{iCh}{idSet} =  sqrt(nmeas_curr + 2 * sqrt(nmeas_curr));
+                                tmp_nmeas = numel(y{ifc, 1}{iCh}{idSet});
+                                l2bounds{ifc, 1}{iCh}{idSet} =  sqrt(tmp_nmeas + 2 * sqrt(tmp_nmeas));
                             end
                         end
                     end
-                    %% re-structure data: collapse cells
-                    u{ifc, 1} = vertcat(u{ifc, 1}{:});
-                    v{ifc, 1} = vertcat(v{ifc, 1}{:});
-                    w{ifc, 1} = vertcat(w{ifc, 1}{:});
-                    nW{ifc, 1} = vertcat(nW{ifc, 1}{:});
-                    y{ifc, 1} = vertcat(y{ifc, 1}{:});
-                    l2bounds{ifc, 1} = vertcat(l2bounds{ifc, 1}{:});
-                    %
-                    u{ifc, 1} = u{ifc, 1}(:);
-                    v{ifc, 1} = v{ifc, 1}(:);
-                    w{ifc, 1} = w{ifc, 1}(:);
-                    nW{ifc, 1} = nW{ifc, 1}(:);
-                    y{ifc, 1} =  y{ifc, 1}(:);
+                    %% re-structure data; collapse cells
+                    u{ifc, 1} = vertcat(u{ifc, 1}{:}); u{ifc, 1} = u{ifc, 1}(:);
+                    v{ifc, 1} = vertcat(v{ifc, 1}{:}); v{ifc, 1} = v{ifc, 1}(:);
+                    w{ifc, 1} = vertcat(w{ifc, 1}{:}); w{ifc, 1} = w{ifc, 1}(:);
+                    nW{ifc, 1} = vertcat(nW{ifc, 1}{:}); nW{ifc, 1} = nW{ifc, 1}(:);
+                    y{ifc, 1} = vertcat(y{ifc, 1}{:});   y{ifc, 1} =  y{ifc, 1}(:);
+                    l2bounds{ifc, 1} = vertcat(l2bounds{ifc, 1}{:});  
                     l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
 
                     if flag_calib.dde && ~isempty(ddes)
@@ -804,6 +788,7 @@ switch algo_solver
                             for idSet = 1:nDataSets
                                 %% load data
                                 dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w', 'nW', 'y', 'frequency');
+                                frequency = dataloaded.frequency;
                                 % u v  are in units of the wavelength and will be normalised between [-pi,pi] for the NUFFT
                                 u{ifc, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;
                                 dataloaded.u = [];
@@ -824,8 +809,6 @@ switch algo_solver
                                     % if dde calib, get ddes
                                     ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
                                     ddeloaded.DDEs{idSet, iCh} = [];
-                                else
-                                    ddes =[];
                                 end
                                 if flag_visibility_gridding
                                     % if residual data are available, use them to get
@@ -839,25 +822,20 @@ switch algo_solver
                                 %% Compute l2bounds if not found
                                 if flag_l2bounds_compute
                                     global_sigma_noise_cmpst = 1;
-                                    nmeas_curr = numel(y{ifc, 1}{iCh}{idSet});
-                                    l2bounds{ifc, 1}{iCh}{idSet} =  sqrt(nmeas_curr + 2 * sqrt(nmeas_curr));
+                                    tmp_nmeas = numel(y{ifc, 1}{iCh}{idSet});
+                                    l2bounds{ifc, 1}{iCh}{idSet} =  sqrt(tmp_nmeas + 2 * sqrt(tmp_nmeas));
                                 end
                             end
                         end
-                        %% re-structure data: collapse cells
-                        u{ifc, 1} = vertcat(u{ifc, 1}{:});
-                        v{ifc, 1} = vertcat(v{ifc, 1}{:});
-                        w{ifc, 1} = vertcat(w{ifc, 1}{:});
-                        nW{ifc, 1} = vertcat(nW{ifc, 1}{:});
-                        y{ifc, 1} = vertcat(y{ifc, 1}{:});
+                        %% re-structure data; collapse cells
+                        u{ifc, 1} = vertcat(u{ifc, 1}{:}); u{ifc, 1} = u{ifc, 1}(:);
+                        v{ifc, 1} = vertcat(v{ifc, 1}{:}); v{ifc, 1} = v{ifc, 1}(:);
+                        w{ifc, 1} = vertcat(w{ifc, 1}{:}); w{ifc, 1} = w{ifc, 1}(:);
+                        nW{ifc, 1} = vertcat(nW{ifc, 1}{:}); nW{ifc, 1} = nW{ifc, 1}(:);
+                        y{ifc, 1} = vertcat(y{ifc, 1}{:}); y{ifc, 1} =  y{ifc, 1}(:);
                         l2bounds{ifc, 1} = vertcat(l2bounds{ifc, 1}{:});
-                        %
-                        u{ifc, 1} = u{ifc, 1}(:);
-                        v{ifc, 1} = v{ifc, 1}(:);
-                        w{ifc, 1} = w{ifc, 1}(:);
-                        nW{ifc, 1} = nW{ifc, 1}(:);
-                        y{ifc, 1} =  y{ifc, 1}(:);
                         l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
+                        
 
                         if flag_calib.dde && ~isempty(ddes)
                             ddes{ifc, 1} = vertcat(ddes{ifc, 1}{:});
@@ -907,7 +885,7 @@ try
         fitswrite(dirty,dirty_file)
     else
         for k = 1:ncores_data
-            dirty_file = fullfile(results_path, strcat('dirty_', ...
+            dirty_file = fullfile(results_path, strcat('dirty_',algo_solver, ...
                 '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
                 '_ch', num2str(k),'.fits'));
             dirty_tmp = dirty{data_worker_id(k)};
