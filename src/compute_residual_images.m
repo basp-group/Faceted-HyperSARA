@@ -64,7 +64,7 @@ if flag_visibility_gridding % H  =G' +G; and H' = H ; G is  a lower tril matrix
         for j = 1:length(G{i})
             if istril(G{i}{j})
              FxSlice = Fx(W{i}{j});
-             res_f = Sigma{i}{j} .* (y{i}{j} - (Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})'))); FxSlice = [];
+             res_f = Sigma{i}{j} .* ((Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})'))); FxSlice = [];
                  u2 = (res_f' *  G{i}{j})'  +  G{i}{j} *  res_f; res_f = [];
         else
              u2 = G{i}{j}' * (Sigma{i}{j} .*  (y{i}{j} - (Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})))));
@@ -94,7 +94,7 @@ else
         r = zeros(numel(Fx), 1);
         for j = 1:length(G{i})
             % res_f = y{i}{j} - G{i}{j} * Fx(W{i}{j});
-            u2 = G{i}{j}' * (y{i}{j} - G{i}{j} * Fx(W{i}{j}));
+            u2 = G{i}{j}' * (G{i}{j} * Fx(W{i}{j}));
             r(W{i}{j}) = r(W{i}{j}) + u2; u2 = [];
         end; clear Fx u2;
         % normalise residual image
