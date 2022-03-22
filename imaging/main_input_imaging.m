@@ -38,6 +38,9 @@
 % imaging_dir : string
 %     Directory of the imaging experiment. Default
 %     ``./Faceted-HyperSARA/imaging``.
+% calib_type: string
+%     calibration type: `dde`, `die` or `[]` if no results from a calib
+%     pre-processing step.
 % preproc_calib_dir : string
 %     Sub-directory in `data_dir`  containing files from a calibration
 %     pre-processing step. To be set to ``[]`` if not used or not
@@ -203,11 +206,10 @@ dataFilename = @(idSet, ch) strcat(data_dir, filesep, datasetNames{idSet}, files
 
 % calibration preprocessing directory
 % ! set path to [] whenever it is not used
-calib_type ='die'; % replace by 'dde' if it is the case, or keep empty ''
-preproc_calib_dir = [data_dir,filesep, 'pre_processing_', calib_type,filesep]; 
-% check if directory of calibration results exists
+calib_type = []; %'die', 'dde', '';  pre-processing calibration step
 if ~isempty(calib_type)
     preproc_results_exist = 1;
+    preproc_calib_dir = [data_dir,filesep, 'pre_processing_', calib_type,filesep]; 
 else,  preproc_results_exist = 0;
 end
 %% json parameter file
@@ -263,8 +265,8 @@ param_global.im_pixelSize =  0.06; % pixelsize in asec, set to [] to use
 %% faceting params:
 %  note that if spectral faceting is active, one subcube (i.e. spectral facet) is imaged at a time Qc=1 by default.
 %/ TODO: to be adjusted by the user
-param_global.facet_Qx = 1;5; % num. of spatial facets along axis x (only used in Faceted HyperSARA)
-param_global.facet_Qy = 1;3; % num. of spatial facets along axis y (only used in Faceted HyperSARA)
+param_global.facet_Qx = 5; % num. of spatial facets along axis x (only used in Faceted HyperSARA)
+param_global.facet_Qy = 3; % num. of spatial facets along axis y (only used in Faceted HyperSARA)
 param_global.facet_overlap_fraction = [0.2, 0.2]; % (only used in Faceted HyperSARA)
 
 param_global.facet_subcubeInd = 0; % id of subcube to image if spectral faceting is active, 0 otherwise
@@ -283,11 +285,11 @@ param_global.reg_nReweights = 5;
 %% algo & parallelisation params
 %/ TODO: to be adjusted by the user:
 % 'fhs' (Faceted HyperSARA), 'hs' (HyperSARA) or 'sara' (SARA approach)
-param_global.algo_solver = 'hs'; 
+param_global.algo_solver = 'fhs'; 
 % if single output image, `sara` must be used
 if numel(effChans2Image) ==1
     fprintf('\nMonochromatic imaging: `SARA` approach is used for imaging.')
-    param_global.algo_solver = 'sara';
+%     param_global.algo_solver = 'sara';
 end
 %% filenames and input 
 param_global.main_dir = main_dir;
