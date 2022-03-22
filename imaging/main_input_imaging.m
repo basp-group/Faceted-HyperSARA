@@ -232,8 +232,8 @@ json_filename = "default_parameters.json";
 % > nChannelsPerImage = 16;
 
 %/ TODO: to be adjusted by the user
-idChannels2Image = [1:2]; % ids of the physical (input) channels to be imaged, e.g., [1:256] for channel range from 1 to 256
-nChannelsPerImage = 1; % number of consecutive channels to be combined into each effective (output) channel.
+idChannels2Image = [1:256]; % ids of the physical (input) channels to be imaged, e.g., [1:256] for channel range from 1 to 256
+nChannelsPerImage = 16; % number of consecutive channels to be combined into each effective (output) channel.
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % ouput effective channels: number of images in the estimate model cube
 % !must be equal to 1 for 'sara' and greater than 1 for 'fhs'
@@ -287,7 +287,7 @@ param_global.algo_solver = 'hs';
 % if single output image, `sara` must be used
 if numel(effChans2Image) ==1
     fprintf('\nMonochromatic imaging: `SARA` approach is used for imaging.')
-%     param_global.algo_solver = 'sara';
+    param_global.algo_solver = 'sara';
 end
 %% filenames and input 
 param_global.main_dir = main_dir;
