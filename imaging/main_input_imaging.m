@@ -24,8 +24,9 @@
 %     Indices of the  input (`physical`) channels to be imaged.
 % nChannelsPerImage : int
 %     Number of consecutive channels to be concatenated into each  output
-%     (effective) channel (set to `1` if full spectral resolution is considered, i.e. number of
-%     output channels is equal to the number of input channels).
+%     (effective) channel (set to `1` if full spectral resolution is 
+%     considered, i.e. number of output channels is equal to the number of 
+%     input channels).
 % effChans2Image: cell array
 %     Cell array containing the ids of the input (physical) channels to be
 %     concatenated for each output (effective) channel. Set automatically if
@@ -61,10 +62,12 @@
 %     (Faceted-HyperSARA), ``"hs"`` (HyperSARA) and ``"sara"`` (SARA).
 % param_global.facet_Qx : int
 %     Number of spatial facets along spatial axis x. Active only in
-%     ``"fhs"``.
+%     ``"fhs"``. If the field is not specified, the maximum possible
+%     number of facets will the selected along the y axis.
 % param_global.facet_Qy : int
 %     Number of spatial facets along spatial axis y. Active only in
-%     ``"fhs"``.
+%     ``"fhs"``. If the field is not specified, the maximum possible
+%     number of facets will the selected along the y axis.
 % param_global.facet_overlap_fraction : double[2]
 %     Fraction of the total size of facet overlapping with a neighbouring
 %     facet along each axis (y and x) for the faceted low-rankness prior. 
