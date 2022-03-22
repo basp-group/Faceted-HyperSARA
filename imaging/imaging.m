@@ -356,7 +356,7 @@ if strcmp(imResolution, 'nominal')
     end; clear dataloaded;
     spatialBandwidth = 2 * maxProjBaseline;
     pixelSize = (180 / pi) * 3600 / (default_superresolution * spatialBandwidth);
-    fprintf('\nINFO: default pixelsize: %f arcsec, that is %d x nominal resolution at the highest freq.', default_superresolution,pixelSize);
+    fprintf('\nINFO: default pixelsize: %f arcsec, that is %d x nominal resolution at the highest freq.',pixelSize, default_superresolution);
 end
 halfSpatialBandwidth = (180 / pi) * 3600 / (pixelSize) / 2;
 % -------------------------------------------------------------------------%
@@ -434,7 +434,7 @@ else
                 
             end
         else
-            fprintf('\nWarning: l2 bounds file not found: %s ',tmpfile);
+            fprintf('\nWARNING: l2 bounds file not found: %s ',tmpfile);
             flag_l2bounds_compute = 1;
         end
     end
@@ -509,7 +509,7 @@ switch algo_solver
                 if isfile(tmpfile)
                     dieloaded = load(param_preproc.filename_die(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DIEs');
                 else
-                    fprintf('\nWarning: DIEs file not found: %s ',tmpfile);
+                    fprintf('\nWARNING: DIEs file not found: %s ',tmpfile);
                     dieloaded = [];
                 end
             elseif flag_calib.dde
@@ -517,7 +517,7 @@ switch algo_solver
                 if isfile(tmpfile)
                     ddeloaded = load(param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DDEs');
                 else
-                    fprintf('\nWarning: DDEs file not found: %s ',tmpfile);
+                    fprintf('\nWARNING: DDEs file not found: %s ',tmpfile);
                     ddeloaded = [];
                 end
             end
@@ -643,7 +643,7 @@ switch algo_solver
                         if isfile(tmpfile)
                             dieloaded = load(param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DIEs');
                         else
-                            fprintf('\nWarning: DIEs file not found: %s ',tmpfile);
+                            fprintf('\nWARNING: DIEs file not found: %s ',tmpfile);
                             dieloaded = [];
                         end
                     elseif flag_calib.dde
@@ -651,7 +651,7 @@ switch algo_solver
                         if isfile(tmpfile)
                             ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
                         else
-                            fprintf('\nWarning: DDEs file not found: %s ',tmpfile);
+                            fprintf('\nWARNING: DDEs file not found: %s ',tmpfile);
                             ddeloaded = [];
                         end
                     end
@@ -766,7 +766,7 @@ switch algo_solver
                             if isfile(tmpfile)
                                 dieloaded = load(param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DIEs');
                             else
-                                fprintf('\nWarning: DIEs file not found: %s ',tmpfile);
+                                fprintf('\nWARNING: DIEs file not found: %s ',tmpfile);
                                 dieloaded = [];
                             end
                         elseif flag_calib.dde
@@ -774,7 +774,7 @@ switch algo_solver
                             if isfile(tmpfile)
                                 ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
                             else
-                                fprintf('\nWarning: DDEs file not found: %s ',tmpfile);
+                                fprintf('\nWARNING: DDEs file not found: %s ',tmpfile);
                                 ddeloaded = [];
                             end
                         end                        
