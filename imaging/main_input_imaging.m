@@ -166,6 +166,7 @@
 % - Note that the data `y`  are not whitened. 
 %   The variables `maxProjBaseline` and the `uvw` coordinates are 
 %   in units of the wavelength (i.e. normalised by the associated wavelength).
+%
 
 %% Documentation
 %
@@ -240,7 +241,7 @@ nChannelsPerImage = 16; % number of consecutive channels to be combined into eac
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % ouput effective channels: number of images in the estimate model cube
 % !must be equal to 1 for 'sara' and greater than 1 for 'fhs'
 
-%re-arranging channels indices based on idChannels2Image, nChannelsPerImage and nEffChans2Image
+% re-arranging channels indices based on idChannels2Image, nChannelsPerImage and nEffChans2Image
 effChans2Image = cell(nEffChans2Image, 1);
 for iEff = 1:nEffChans2Image
     if iEff < nEffChans2Image; effChans2Image{iEff} = idChannels2Image((iEff - 1) * nChannelsPerImage + 1:iEff * nChannelsPerImage);
@@ -252,7 +253,7 @@ end
 %% measurement operator features
 %/ TODO: to be adjusted by the user
 % activating visibility gridding for data dimensionality reduction
-param_global.measop_flag_visibility_gridding = 1; % 1 if active, 0 otherwise. 
+param_global.measop_flag_visibility_gridding = 1; % 1 if active, 0 otherwise.
 
 %% image details, dims &  cellsize
 %/ TODO: to be adjusted by the user
@@ -272,7 +273,7 @@ param_global.facet_overlap_fraction = [0.2, 0.2]; % (only used in Faceted HyperS
 param_global.facet_subcubeInd = 0; % id of subcube to image if spectral faceting is active, 0 otherwise
 %% regularisation params
 %/ TODO: to be adjusted by the user
-param_global.reg_gam = 0.33; % default 1,  additional scaling factor for 
+param_global.reg_gam = 0.33; % default 1, additional scaling factor for 
 % sparsity regularization (using heuristics described in Thouvenin2021).
 
 param_global.reg_gam_bar = 0.33; % default 1, additional scaling factor for 

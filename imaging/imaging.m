@@ -136,6 +136,43 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 
 % ------------------------------------------------------------------------%
 % ------------------------------------------------------------------------%
+%% Paths
+format compact;
+project_dir = param_global.main_dir;
+fprintf('\nMain project dir. is %s: ', project_dir);
+current_dir = pwd;
+if strcmp(project_dir, current_dir)
+    current_dir = [project_dir, 'imaging', filesep];
+    cd(current_dir);
+end
+fprintf('\nCurrent dir. is  %s: ', current_dir);
+% src & lib codes
+addpath([project_dir, filesep, 'lib', filesep, 'operators', filesep]);
+addpath([project_dir, filesep, 'lib', filesep, 'utils', filesep]);
+addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'nufft']);
+addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'lib', filesep, 'utils']);
+addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'lib', filesep, 'operators']);
+addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'lib', filesep, 'ddes_utils']);
+addpath([project_dir, filesep, 'lib', filesep, 'faceted-wavelet-transform', filesep, 'src']);
+addpath([project_dir, filesep, 'src']);
+addpath([project_dir, filesep, 'src', filesep, 'heuristics', filesep]);
+%
+algo_solver = param_global.algo_solver;
+if strcmp(algo_solver, 'sara')
+    addpath([project_dir, filesep, 'src', filesep, 'sara']);
+elseif strcmp(algo_solver, 'hs')
+    addpath([project_dir, filesep, 'src', filesep, 'hs', filesep]);
+elseif strcmp(algo_solver, 'fhs')
+    addpath([project_dir, filesep, 'src', filesep, 'fhs', filesep]);
+end
+% setting paths to results and reference image cube
+results_path = fullfile(project_dir,'results', srcName);
+mkdir(results_path);
+auxiliary_path = fullfile(results_path, algo_solver);
+mkdir(auxiliary_path);
+fprintf('\nINFO: results will be saved in: \n %s .\n', auxiliary_path);
+% -------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %% constant
 speed_of_light = 299792458;
 facet_dim_min  = 256;
@@ -276,7 +313,6 @@ end
 param_wproj.CEnergyL2 = param_global.measop_wprojCEnergyL2; % w projection
 param_wproj.GEnergyL2 = param_global.measop_wprojGEnergyL2; % w projection
 % Algo
-algo_solver = param_global.algo_solver;
 ncores_data = param_global.algo_ncores_data;
 flag_computeOperatorNorm = param_global.algo_flag_computeOperatorNorm;
 flag_solveMinimization =  param_global.algo_flag_solveMinimization;
@@ -299,42 +335,6 @@ end
 
 % parcluster
 parcluster = param_global.parcluster;
-% -------------------------------------------------------------------------%
-% -------------------------------------------------------------------------%
-%% Paths
-format compact;
-project_dir = param_global.main_dir;
-fprintf('\nMain project dir. is %s: ', project_dir);
-current_dir = pwd;
-if strcmp(project_dir, current_dir)
-    current_dir = [project_dir, 'imaging', filesep];
-    cd(current_dir);
-end
-fprintf('\nCurrent dir. is  %s: ', current_dir);
-% src & lib codes
-addpath([project_dir, filesep, 'lib', filesep, 'operators', filesep]);
-addpath([project_dir, filesep, 'lib', filesep, 'utils', filesep]);
-addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'nufft']);
-addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'lib', filesep, 'utils']);
-addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'lib', filesep, 'operators']);
-addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'lib', filesep, 'ddes_utils']);
-addpath([project_dir, filesep, 'lib', filesep, 'faceted-wavelet-transform', filesep, 'src']);
-addpath([project_dir, filesep, 'src']);
-addpath([project_dir, filesep, 'src', filesep, 'heuristics', filesep]);
-%
-if strcmp(algo_solver, 'sara')
-    addpath([project_dir, filesep, 'src', filesep, 'sara']);
-elseif strcmp(algo_solver, 'hs')
-    addpath([project_dir, filesep, 'src', filesep, 'hs', filesep]);
-elseif strcmp(algo_solver, 'fhs')
-    addpath([project_dir, filesep, 'src', filesep, 'fhs', filesep]);
-end
-% setting paths to results and reference image cube
-results_path = fullfile(project_dir,'results', srcName);
-mkdir(results_path);
-auxiliary_path = fullfile(results_path, algo_solver);
-mkdir(auxiliary_path);
-fprintf('\nINFO: results will be saved in: \n %s .\n', auxiliary_path);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% info
