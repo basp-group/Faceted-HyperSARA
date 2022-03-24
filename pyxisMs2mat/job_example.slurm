@@ -37,10 +37,15 @@ module load pyfits
 module load mpt
 module load wsclean/2.10.1
 
-
+#### Example 1: 4 MSs spanning 2 frequency bands and associated with 2 configurations of the VLA (data imaged in Thouvenin et al. 2022)
 ## DATASETS: VLA configuration A at two frequency bands
 pyxis MSLOW=CYG-A-5-8M10S.MS MSHIGH=CYG-A-7-8M10S.MS FRISTCH=0 LASTCH=15 FIELDID=2 SRCNAME=CYGA MSTAG=CYGA-ConfigA getdata_ms_concat_bandwidth
-
 ## DATASETS: VLA configuration C at two frequency bands
 pyxis MSLOW=CYG-C-5-8M10S.MS MSHIGH=CYG-C-7-8M10S.MS FRISTCH=0 LASTCH=15 FIELDID=2 SRCNAME=CYGA MSTAG=CYGA-ConfigC getdata_ms_concat_bandwidth
 
+#### Example 2: single MS 
+#pyxis MS=CYG-C-5-8M10S.MS FRISTCH=0 LASTCH=15 FIELDID=2 SRCNAME=CYGA  getdata_ms
+
+#### Example 3: 2 MSs spanning the same frequency band and associated with 2 configurations of the VLA
+#pyxis MS=CYG-C-5-8M10S.MS FRISTCH=0 LASTCH=15 FIELDID=2 SRCNAME=CYGA MSTAG=CYGA-ConfigC  getdata_ms
+#pyxis MS=CYG-A-5-8M10S.MS FRISTCH=0 LASTCH=15 FIELDID=2 SRCNAME=CYGA MSTAG=CYGA-ConfigA  getdata_ms
