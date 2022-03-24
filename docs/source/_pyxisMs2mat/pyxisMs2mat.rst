@@ -56,8 +56,8 @@ The user must provide the name/path to the measurement set ``$MS``. The followin
    $SRCNAME  # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
    $MSTAG    # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
    $FIELDID  # default FIELDID=0 : field ID of the source of interest, 
-   $FIRSTCH  # default FIRSTCH=0 : ID of the first channnel to be extracted, 
-   $LASTCH   # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
+   $FIRSTCH  # default FIRSTCH=0 : ID of the first channnel to be extracted from each spectral window, 
+   $LASTCH   # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted from each spectral window
 
 .. note::
 
@@ -100,8 +100,8 @@ The user must provide the name/path to the two measurement sets ``$MSLOW``  and 
    $SRCNAME  # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
    $MSTAG    # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
    $FIELDID  # default FIELDID=0 : field ID of the source of interest, 
-   $FIRSTCH  # default FIRSTCH=0 : ID of the first channnel to be extracted, 
-   $LASTCH   # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted
+   $FIRSTCH  # default FIRSTCH=0 : ID of the first channnel to be extracted from each spectral window, 
+   $LASTCH   # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted from each spectral window
 
 From the terminal, execute:
 
