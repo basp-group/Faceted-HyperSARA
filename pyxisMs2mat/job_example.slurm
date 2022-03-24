@@ -23,19 +23,21 @@
 
 #### load matlab module (setup environment)
 module unload anaconda
-module use /lustre/home/shared/sc004/software/modules
+module use /work/sc004/shared/software/modules
 module load fftw/3.3.8-intel19
 
 module load owlcat
+module load kittens
 module load pyxis/latest
 module load py-casacore
 module load tigger
 module load meqtrees-cattery
 module load meqtrees-timba
-export MEQTREES_CATTERY_PATH=/lustre/home/shared/sc004/software/meqtrees-cattery/1.7.0
-module load pyfits
+export MEQTREES_CATTERY_PATH=/work/sc004/shared/software/meqtrees-cattery/1.7.0
+module load astropy
 module load mpt
 module load wsclean/2.10.1
+
 
 #### Example 1: 4 MSs spanning 2 frequency bands and associated with 2 configurations of the VLA (data imaged in Thouvenin et al. 2022)
 ## DATASETS: VLA configuration A at two frequency bands
