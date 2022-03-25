@@ -53,7 +53,7 @@ Reconstructing an image cube from an MS-Table
 3. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
    provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction ``%/ TODO: to be adjusted by the user``.
 
-4. Run ``main_input_imaging.m`` from ``imaging/`` sub-directory with MATLAB.
+4. Run ``main_input_imaging.m`` from ``imaging/`` sub-directory with MATLAB. Results will be saved in the sub-directory ``results/``.
 
 
 Testing the library with a synthetic dataset
@@ -80,7 +80,7 @@ To test the imaging pipeline with a synthetic data test similar to the one consi
 5. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
    provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction ``% TODO: to be adjusted by the user``.
 
-6. Run ``main_input_imaging.m`` from ``imaging/`` sub-directory with MATLAB.
+6. Run ``main_input_imaging.m`` from ``imaging/`` sub-directory with MATLAB. Results will be saved in the sub-directory ``results/``.
 
 
 Contributing
