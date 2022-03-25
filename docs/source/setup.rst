@@ -46,6 +46,20 @@ Reconstructing an image cube from an MS-Table
    ``pyxisMs2mat/pyxis4DataExtraction.py``, that is to be launched from  the sub-directory ``pyxisMs2mat/``. The data will be extracted in the form of a 
    collection of ``.mat``. Instructions and examples are provided in the :doc:`_pyxisMs2mat/pyxisMs2mat` page (also available in the standalone ``pyxisMs2mat/ReadMe.md`` file). Data extraction requires the `casacore <https://github.com/casacore/casacore>`_ and `meqtrees <https://github.com/ratt-ru/meqtrees/wiki/Installation>`_ libraries.
 
+.. code-block:: matlab
+
+   %%  the data files contain the following fields. 
+   % Note that flagged data are already discarded.
+   "frequency"  % channel frequency                       
+   "y"  % data (Stokes I)
+   "u"  % u coordinate (in units of the wavelength)
+   "v"  % v coordinate (in units of the wavelength)
+   "w"  % w coordinate (in units of the wavelength)                       
+   "nW"  % sqrt(weights)
+   "nWimag" % imaging weights if available (Briggs or uniform), empty otherwise
+   "maxProjBaseline"  % max projected baseline (in units of the wavelength)
+
+
 2. (Optional) Make a copy of ``imaging/default_parameters.json``, and 
    update the main algorithm parameters specified in this file (all values are 
    set to default, reliable values). Documentation for all the parameters involved is given in the :doc:`default` page.
