@@ -90,7 +90,7 @@ function main_generate_data(json_filename, srcName, ncores_data, ...
 % %% Debug parameters
 % srcName = 'cygASband_Cube_256_512'; %'cygASband_Cube_H'; %'W28_512';
 % json_filename = 'default_parameters.json';
-% exp_type = 'local_test'; % 'spectral', 'spatial', 'test'
+% exp_type = 'test'; % 'spectral', 'spatial', 'test'
 % flag_generateCoverage = 0;
 % flag_visibility_gridding = 0;
 % 
@@ -144,15 +144,18 @@ switch exp_type
         spectral_downsampling = 1;
         spatial_downsampling = 1;
     case "test"
+        data_path = '../local/data';
         srcName = 'cygASband_Cube_512_1024_20';
         spectral_downsampling = 10;
         spatial_downsampling = 2;
     case "local_test"
+        data_path = '../local/data';
         srcName = 'cygASband_Cube_256_512_100';
         spectral_downsampling = 25;
         spatial_downsampling = 1;
         coverage_path = "../local/data/vla_7.95h_dt10s.uvw256.mat";
     case "old_local_test"
+        data_path = '../local/data';
         srcName = 'cubeW28';
         spectral_downsampling = 20;
         spatial_downsampling = 4;
