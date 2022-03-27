@@ -150,10 +150,10 @@ fprintf('\nCurrent dir. is  %s: ', current_dir);
 % src & lib codes
 addpath([project_dir, filesep, 'lib', filesep, 'operators', filesep]);
 addpath([project_dir, filesep, 'lib', filesep, 'utils', filesep]);
-addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'nufft']);
-addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'lib', filesep, 'utils']);
-addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'lib', filesep, 'operators']);
-addpath([project_dir, filesep, 'lib', filesep, 'measurement-operator', filesep, 'lib', filesep, 'ddes_utils']);
+addpath([project_dir, filesep, 'lib', filesep, 'RI-measurement-operator', filesep, 'nufft']);
+addpath([project_dir, filesep, 'lib', filesep, 'RI-measurement-operator', filesep, 'lib', filesep, 'utils']);
+addpath([project_dir, filesep, 'lib', filesep, 'RI-measurement-operator', filesep, 'lib', filesep, 'operators']);
+addpath([project_dir, filesep, 'lib', filesep, 'RI-measurement-operator', filesep, 'lib', filesep, 'ddes_utils']);
 addpath([project_dir, filesep, 'lib', filesep, 'faceted-wavelet-transform', filesep, 'src']);
 addpath([project_dir, filesep, 'src']);
 addpath([project_dir, filesep, 'src', filesep, 'heuristics', filesep]);

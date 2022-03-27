@@ -20,7 +20,7 @@ function func_extract_dr_cal_real_data(chInd, subInd, reduction_version, realdat
 addpath ../../lib/utils/;
 addpath ../../fouRed/;
 addpath ../../lib/operators;
-addpath ../../lib/measurement-operator/nufft;
+addpath ../../lib/RI-measurement-operator/nufft;
 
 fprintf('Channel number: %d\n', chInd);
 fprintf('Index number: %d\n', subInd);

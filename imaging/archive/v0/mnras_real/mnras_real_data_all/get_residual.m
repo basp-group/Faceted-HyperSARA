@@ -27,7 +27,7 @@ if abs(numel(mat_filenames) - numel(fits_filenames)) > 0
     error("get_residual:incorrectSize", "Error: the input cells `mat_filenames` and `fits_filenames` should have the same size.");
 end
 addpath ../lib/operators/;
-addpath ../lib/measurement-operator/nufft/;
+addpath ../lib/RI-measurement-operator/nufft/;
 addpath ../lib/utils/;
 addpath ../lib/faceted-wavelet-transform/src;
 addpath ../data/;

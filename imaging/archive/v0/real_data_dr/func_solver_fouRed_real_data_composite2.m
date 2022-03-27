@@ -35,7 +35,7 @@ function func_solver_fouRed_real_data_composite2(datadir, name, Qx, Qy, Qc2, gam
     addpath ../fouRed;
     addpath ../lib/;
     addpath ../lib/operators/;
-    addpath ../lib/measurement-operator/nufft/;
+    addpath ../lib/RI-measurement-operator/nufft/;
     addpath ../lib/utils/;
     addpath ../lib/faceted-wavelet-transform/src;
     addpath ../src_mnras/;

@@ -11,7 +11,7 @@ This repository contains Matlab codes associated with the wideband radio-interfe
 
 **Authors:** P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz.
 
-**Dependencies:** the present codes depend on the content of the [`RI-measurement-operator`](https://github.com/basp-group-private/measurement-operator) and [`SARA-dictionary`](https://github.com/basp-group-private/faceted-wavelet-transform) github repositories, loaded as github `submodule`s (see [installation](install) section). These modules contains codes associated with the following publications
+**Dependencies:** the present codes depend on the content of the [`RI-measurement-operator`](https://github.com/basp-group/RI-measurement-operator) and [`SARA-dictionary`](https://github.com/basp-group/faceted-wavelet-transform) github repositories, loaded as github `submodule`s (see [installation](install) section). These modules contains codes associated with the following publications
 
 > A. Dabbech, L. Wolz, L. Pratley, J. D. McEwen and Y. Wiaux, [The w-effect in interferometric imaging: from a fast sparse measurement operator to superresolution](http://dx.doi.org/10.1093/mnras/stx1775), *Mon. Not. Roy. Astron. Soc.*, 471(4):4300-4313, 2017.
 >
@@ -28,12 +28,12 @@ To properly clone the project with the submodules, you may need to choose one of
 - cloning the repository from scratch
 
 ```bash
-git clone --recurse-submodules https://github.com/basp-group-private/Faceted-Hyper-SARA.git
+git clone --recurse-submodules https://github.com/basp-group/Faceted-Hyper-SARA.git
 ```
 If you are using an SSH key for github rather than a personal token, then you will need to clone the repository as follows instead:
 
 ```bash
-git clone git@github.com:basp-group-private/Faceted-Hyper-SARA.git
+git clone git@github.com:basp-group/Faceted-Hyper-SARA.git
 ```
 
 You will then also need to update the local repository configuration to use this approach for the sub-modules and update the submodules separately as detailed below. If you have problems updating the submodule access configuration open a issue on this repository.

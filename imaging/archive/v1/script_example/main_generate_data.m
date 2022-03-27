@@ -29,10 +29,10 @@ seed = 0;
 % param_nufft.kernel = 'minmax:tuned'; % 'kaiser' (for real data), 'minmax:tuned'
 
 addpath ../../lib/operators/;
-addpath ../../lib/measurement-operator/nufft/;
-addpath ../../lib/measurement-operator/lib/operators/;
+addpath ../../lib/RI-measurement-operator/nufft/;
+addpath ../../lib/RI-measurement-operator/lib/operators/;
 addpath ../../lib/generate_data;
-addpath ../../lib/measurement-operator/lib/utils/;
+addpath ../../lib/RI-measurement-operator/lib/utils/;
 addpath ../../lib/faceted-wavelet-transform/src;
 addpath ../../lib/utils/;
 addpath ../../data/;

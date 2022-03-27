@@ -3,7 +3,7 @@ function func_compute_psf(ch, subInd, reduction_version, realdatablocks, fouRed_
 addpath ../fouRed;
 addpath ../lib/;
 addpath ../lib/operators/;
-addpath ../lib/measurement-operator/nufft/;
+addpath ../lib/RI-measurement-operator/nufft/;
 addpath ../lib/utils/;
 addpath ../lib/faceted-wavelet-transform/src;
 addpath ../src_mnras/;

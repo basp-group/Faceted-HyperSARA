@@ -72,7 +72,7 @@ Default values can be bypassed by providing the name of a new ``.json`` file to 
     Ky : 7
         Size of the NUFFT interpolation kernel along axis y.
     kernel : "minmax:tuned"
-        Name of the selected NUFFT interpolation kernel. Possible options include ``kaiser``, ``minmax:kb`` and ``minmax:tuned``. See associated documentation of the `lib.operators.op_nufft function <https://basp-group.github.io/RI-measurement-operator/_lib/lib.operators.html#lib.operators.op_nufft>`_ from the measurement-operator module.
+        Name of the selected NUFFT interpolation kernel. Possible options include ``kaiser``, ``minmax:kb`` and ``minmax:tuned``. See associated documentation of the `lib.operators.op_nufft function <https://basp-group.github.io/RI-measurement-operator/_lib/lib.operators.html#lib.operators.op_nufft>`_ from the RI-measurement-operator module.
 
 
 .. admonition:: Preconditioning (instrumental in PDFB) :cite:p:`Onose2017`
@@ -82,7 +82,7 @@ Default values can be bypassed by providing the name of a new ``.json`` file to 
     uniform_weight_sub_pixels : 1
         Parameter to consider sub-pixel weights in the uniform weighting scheme.
 
-    See associated documentation of the `lib.utils.util_gen_preconditioning_matrix function <https://basp-group.github.io/RI-measurement-operator/_lib/lib.utils.html#lib.utils.util_gen_preconditioning_matrix>`_ from the measurement-operator module.
+    See associated documentation of the `lib.utils.util_gen_preconditioning_matrix function <https://basp-group.github.io/RI-measurement-operator/_lib/lib.utils.html#lib.utils.util_gen_preconditioning_matrix>`_ from the RI-measurement-operator module.
 
 
 .. admonition:: Ellipsoid projection (instrumental in PDFB) :cite:p:`Onose2017`
@@ -94,7 +94,7 @@ Default values can be bypassed by providing the name of a new ``.json`` file to 
     eps : 1e-8
         Stopping criterion based on the relative variation of the objective function (associated with the projection problem).
 
-    See associated documentation of the `lib.utils.solver_proj_elipse_fb <https://basp-group.github.io/RI-measurement-operator/_lib/lib.utils.html#lib.utils.solver_proj_elipse_fb>`_ from the measurement-operator module.
+    See associated documentation of the `lib.utils.solver_proj_elipse_fb <https://basp-group.github.io/RI-measurement-operator/_lib/lib.utils.html#lib.utils.solver_proj_elipse_fb>`_ from the RI-measurement-operator module.
 
 
 .. admonition:: Wavelet dictionary (SARA dictionary by default) :cite:p:`Carrillo2012`

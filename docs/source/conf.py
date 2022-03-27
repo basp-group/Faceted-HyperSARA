@@ -70,7 +70,7 @@ exclude_patterns = [
     "Thumbs.db",
     ".DS_Store",
     "lib/faceted-wavelet-transform",
-    "lib/measurement-operator",
+    "lib/RI-measurement-operator",
 ]
 matlab_src_dir = os.path.abspath(os.path.join("..", ".."))
 # primary_domain = "mat"

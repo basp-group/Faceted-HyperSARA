@@ -12,8 +12,13 @@ HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA
 
 ``Faceted-Hyper-SARA`` relies on two auxiliary submodules:
 
-1. `measurement-operator <https://github.com/basp-group-private/measurement-operator>`_ for the implementation of the radio-interferometry measurement operator;
-2. `faceted-wavelet-transform <https://github.com/basp-group-private/faceted-wavelet-transform>`_ for the implementation of the priors.
+1. `RI-measurement-operator <https://github.com/basp-group/RI-measurement-operator>`_ for the implementation of the radio-interferometry measurement operator;
+2. `faceted-wavelet-transform <https://github.com/basp-group/faceted-wavelet-transform>`_ for the implementation of the priors.
+
+
+.. warning::
+
+   This project is still under active development.
 
 
 .. toctree::
@@ -33,11 +38,6 @@ HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA
    _lib/lib
    _imaging/imaging
    _pyxisMs2mat/pyxisMs2mat
-
-.. note::
-
-   - This project is under active development.
-
 
 
 Indices and tables

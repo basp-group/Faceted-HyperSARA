@@ -32,12 +32,12 @@
 %     concatenated for each output (effective) channel. Set automatically if
 %     `idChannels2Image` and `nChannelsPerImage` are provided.
 % main_dir : string
-%     Directory of the Faceted-HyperSARA repository.
+%     Directory of the Faceted-Hyper-SARA repository.
 % data_dir : string
-%     Directory of the input ``.mat`` data files. Default ``./Faceted-HyperSARA/data/``.
+%     Directory of the input ``.mat`` data files. Default ``./Faceted-Hyper-SARA/data/``.
 % imaging_dir : string
 %     Directory of the imaging experiment. Default
-%     ``./Faceted-HyperSARA/imaging``.
+%     ``./Faceted-Hyper-SARA/imaging``.
 % calib_type: string
 %     calibration type: `dde`, `die` or `[]` if no results from a calib
 %     pre-processing step.

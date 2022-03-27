@@ -12,7 +12,7 @@ Clone the current repository with all the submodules as follows
 .. code-block:: bash
 
    # Cloning the repo. with all the submodules:
-   git clone --recurse-submodules https://github.com/basp-group-private/Faceted-Hyper-SARA.git
+   git clone --recurse-submodules https://github.com/basp-group/Faceted-Hyper-SARA.git
    cd Faceted-Hyper-SARA
 
 
@@ -123,8 +123,8 @@ To test the imaging pipeline with a synthetic data test similar to the one consi
 Contributing
 ------------
 
-- Issue Tracker: `https://github.com/basp-group-private/Faceted-Hyper-SARA/issues <https://github.com/basp-group-private/Faceted-Hyper-SARA/issues>`_
-- Source Code: `https://github.com/basp-group-private/Faceted-Hyper-SARA <https://github.com/basp-group-private/Faceted-Hyper-SARA>`_
+- Issue Tracker: `https://github.com/basp-group/Faceted-Hyper-SARA/issues <https://github.com/basp-group/Faceted-Hyper-SARA/issues>`_
+- Source Code: `https://github.com/basp-group/Faceted-Hyper-SARA <https://github.com/basp-group/Faceted-Hyper-SARA>`_
 
 To contribute to the project, make sure the following elements are properly
 configured before submitting any pull request (PR).

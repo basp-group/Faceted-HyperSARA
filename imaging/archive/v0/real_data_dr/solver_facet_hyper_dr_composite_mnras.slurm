@@ -23,7 +23,7 @@ module load matlab/R2019b
 
 ### execute program
 # mkdir ${SLURM_SUBMIT_DIR}/pref_${SLURM_JOB_ID}
-cp -R ../lib/measurement-operator/nufft ../lib/measurement-operator/nufft_${SLURM_JOB_ID}
+cp -R ../lib/RI-measurement-operator/nufft ../lib/measurement-operator/nufft_${SLURM_JOB_ID}
 # export MATLAB_PREFDIR=${SLURM_SUBMIT_DIR}/pref_${SLURM_JOB_ID}
 # $HOME/matlab_wrapper_2019_fix "func_solver_fouRed_real_data_composite('${datadir}', '${name}', ${Qx}, ${Qy}, ${Qc}, ${gamma0}, ${gamma}, [1:17,19,21:32], ${subInd}, 2, 1, 2, ${fouRed_gamma}, 1, ${adpteps})">./logs/solver_facet_hyper_dr_mnras_perc${fouRed_gamma}_gamma${gamma}_gamma0_${gamma0}_adapteps${adpteps}_Qx${Qx}_Qy${Qy}_Qc${Qc}_run.txt
 
@@ -37,6 +37,6 @@ matlab -nodisplay < temporary_file.m > ./logs/solver_facet_hyper_dr_mnras_perc${
 
 rm temporary_file.m
 # rm -rf ${SLURM_SUBMIT_DIR}/pref_${SLURM_JOB_ID}
-rm -r ../lib/measurement-operator/nufft_${SLURM_JOB_ID}
+rm -r ../lib/RI-measurement-operator/nufft_${SLURM_JOB_ID}
 
 module unload matlab/R2019b
