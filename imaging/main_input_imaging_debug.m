@@ -181,9 +181,9 @@ clear; clc; close all;
 %% target source & datasets names as specified during data extraction
 % src name & datasets
 % TODO: to be adjusted by the user
-srcName = 'cygA';
-param_global.exp_type = 'spatial'; % 'spectral'
-datasetNames = {'spatial'}; % {'spectral'} % allowing for multiple datasets, empty cell if a single dataset
+srcName = 'cygASband_Cube_256_512';
+param_global.exp_type = 'test'; % ! only for debugging purposes
+datasetNames = {'test'}; % allowing for multiple datasets, empty cell if a single dataset
 %set as specified in the data extraction step, {''} otherwise.
 
 %% Paths
@@ -246,10 +246,9 @@ json_filename = "default_parameters.json";
 % > nChannelsPerImage = 16;
 
 % TODO: to be adjusted by the user
-idChannels2Image = [1:20]; % ids of the physical (input) channels to be 
+idChannels2Image = [1:2]; % ids of the physical (input) channels to be 
 % imaged, e.g., [1:256] for channel range from 1 to 256
-% for 'spectral' experiment, set id of the channels considered.
- nChannelsPerImage = 1; % number of consecutive channels to be combined into each effective (output) channel.
+nChannelsPerImage = 1; % number of consecutive channels to be combined into each effective (output) channel.
 
 nEffChans2Image = floor(numel(idChannels2Image) / nChannelsPerImage); % ouput effective channels: number of images in the estimate model cube
 % !must be equal to 1 for 'sara' and greater than 1 for 'fhs'
@@ -270,8 +269,8 @@ param_global.measop_flag_visibility_gridding = 0; % 1 if active, 0 otherwise.
 
 %% image details, dims &  cellsize
 % TODO: to be adjusted by the user
-param_global.im_Nx = 2048; % 512
-param_global.im_Ny = 1024; % 256
+param_global.im_Nx = 512;
+param_global.im_Ny = 256;
 param_global.im_pixelSize = []; % pixelsize in asec, set to [] to use
 % the default value set from the uv-coverage.
 
@@ -284,8 +283,8 @@ param_global.algo_flag_computeOperatorNorm = true;
 % faceting params: note that if interleaving is active, one subcube is
 % imaged at a time: Qc=1 by default.
 % TODO: to be adjusted by the user
-param_global.facet_Qx = 4; % num. of spatial facets along axis x (only used in Faceted HyperSARA)
-param_global.facet_Qy = 4; % num. of spatial facets along axis y (only used in Faceted HyperSARA)
+param_global.facet_Qx = 1; % num. of spatial facets along axis x (only used in Faceted HyperSARA)
+param_global.facet_Qy = 1; % num. of spatial facets along axis y (only used in Faceted HyperSARA)
 param_global.facet_overlap_fraction = [0.5, 0.5]; % (only used in Faceted HyperSARA)
 param_global.facet_subcubeInd = 0; % id of subcube to image if spectral faceting is active, 0 otherwise
 
