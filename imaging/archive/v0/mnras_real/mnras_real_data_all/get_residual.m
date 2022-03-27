@@ -29,7 +29,7 @@ end
 addpath ../lib/operators/;
 addpath ../lib/RI-measurement-operator/nufft/;
 addpath ../lib/utils/;
-addpath ../lib/faceted-wavelet-transform/src;
+addpath ../lib/SARA-dictionary/src;
 addpath ../data/;
 addpath ../src_mnras/;
 

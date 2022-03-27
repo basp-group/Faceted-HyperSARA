@@ -136,7 +136,7 @@ addpath ../../lib/RI-measurement-operator/lib/utils/;
 addpath ../../lib/generate_data;
 % addpath ../../lib/RI-measurement-operator/irt/nufft/
 addpath ../../lib/utils/;
-addpath ../../lib/faceted-wavelet-transform/src;
+addpath ../../lib/SARA-dictionary/src;
 addpath ../../data/;
 addpath ../../src/;
 addpath ../../src/heuristics/;

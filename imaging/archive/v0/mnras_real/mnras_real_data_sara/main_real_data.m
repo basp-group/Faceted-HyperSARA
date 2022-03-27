@@ -76,7 +76,7 @@ addpath ../lib/generate_data/
 addpath ../lib/operators/
 addpath ../lib/RI-measurement-operator/nufft/
 addpath ../lib/utils/
-addpath ../lib/faceted-wavelet-transform/src
+addpath ../lib/SARA-dictionary/src
 addpath ../data/
 addpath ../src_mnras/
 % only cw version used in this script

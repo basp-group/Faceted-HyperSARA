@@ -37,7 +37,7 @@ addpath ../lib/;
 addpath ../lib/operators/;
 addpath ../lib/RI-measurement-operator/nufft/;
 addpath ../lib/utils/;
-addpath ../lib/faceted-wavelet-transform/src;
+addpath ../lib/SARA-dictionary/src;
 addpath ../src_mnras/;
 addpath ../src_mnras/spmd/;
 addpath ../src_mnras/spmd/dr/;

@@ -1,7 +1,7 @@
 clc; clear all; close all;
 format compact;
 
-addpath ../../lib/faceted-wavelet-transform/src;
+addpath ../../lib/SARA-dictionary/src;
 
 %% ground truth
 image_name = 'cygASband_Cube_256_512_100';

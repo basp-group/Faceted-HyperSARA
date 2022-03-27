@@ -13,7 +13,7 @@ HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA
 ``Faceted-Hyper-SARA`` relies on two auxiliary submodules:
 
 1. `RI-measurement-operator <https://github.com/basp-group/RI-measurement-operator>`_ for the implementation of the radio-interferometry measurement operator;
-2. `faceted-wavelet-transform <https://github.com/basp-group/faceted-wavelet-transform>`_ for the implementation of the priors.
+2. `SARA-dictionary <https://github.com/basp-group/SARA-dictionary>`_ for the implementation of the priors.
 
 
 .. warning::

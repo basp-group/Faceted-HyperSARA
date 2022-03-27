@@ -9,7 +9,7 @@ addpath ../data;
 addpath ../lib/print/;
 mkdir figs_spatial;
 addpath ../results/final/spatial_new;
-addpath ../lib/faceted-wavelet-transform/src;
+addpath ../lib/SARA-dictionary/src;
 
 %% Define experiment type
 Ny = 1024;

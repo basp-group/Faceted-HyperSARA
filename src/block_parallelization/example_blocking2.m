@@ -1,7 +1,7 @@
 clc; clear all; close all;
 format compact;
 
-addpath lib/faceted-wavelet-transform/src;
+addpath lib/SARA-dictionary/src;
 
 %% base characteristics
 nfacets = 0;

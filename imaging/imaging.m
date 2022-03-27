@@ -154,7 +154,7 @@ addpath([project_dir, filesep, 'lib', filesep, 'RI-measurement-operator', filese
 addpath([project_dir, filesep, 'lib', filesep, 'RI-measurement-operator', filesep, 'lib', filesep, 'utils']);
 addpath([project_dir, filesep, 'lib', filesep, 'RI-measurement-operator', filesep, 'lib', filesep, 'operators']);
 addpath([project_dir, filesep, 'lib', filesep, 'RI-measurement-operator', filesep, 'lib', filesep, 'ddes_utils']);
-addpath([project_dir, filesep, 'lib', filesep, 'faceted-wavelet-transform', filesep, 'src']);
+addpath([project_dir, filesep, 'lib', filesep, 'SARA-dictionary', filesep, 'src']);
 addpath([project_dir, filesep, 'src']);
 addpath([project_dir, filesep, 'src', filesep, 'heuristics', filesep]);
 %
