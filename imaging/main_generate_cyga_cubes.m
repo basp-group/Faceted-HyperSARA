@@ -17,9 +17,10 @@ clear;
 clc;
 close all;
 
-data_path = '../data/';
+data_path = strcat('..', filesep, 'data', filesep);
+mkdir(data_path);
 addpath(data_path);
-addpath('../lib/generate_data');
+addpath(strcat('..', filesep, 'lib', filesep, 'generate_data'));
 
 %% Freq info
 nu_1 = 2.052e9;  % starting freq

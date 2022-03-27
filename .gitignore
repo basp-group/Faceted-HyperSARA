@@ -271,14 +271,7 @@ docs/build
 lib/faceted-wavelet-transform/*
 lib/measurement-operator/*
 *.mat
-*.mat
 *.fits
-*.fits
-data/vla_7.95h_dt10s.uvw.mat
-*.fits
-*.mat
-*.fits
-data/W28_512.fits
 pyxisMs2mat/log-emeerkatsims.txt
 imaging/cyga_main_input_imaging.m
 imaging/default_parameters.json
@@ -287,3 +280,4 @@ imaging/imagingm.m
 imaging/dmain_input_imaging.m
 imaging/debug_main_input_imaging.m
 imaging/main_input_imaging_4matthieu.m
+local
