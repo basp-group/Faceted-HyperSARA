@@ -108,6 +108,7 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 
 % Note
 % ----
+% - All the results will be stored in a directory of th
 % - Examples to set the input (physical) and output (effective) channels IDs:
 %
 % .. code-block:: matlab
