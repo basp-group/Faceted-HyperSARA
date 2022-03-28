@@ -180,7 +180,7 @@ clear rg_y rg_x rg_yo rg_xo;
 % ! -- TO BE CHECKED (to be created out of the solver to simplify?)
 numworkers = Q + K;
 cirrus_cluster = parcluster('SlurmProfile1');
-job_path = ['/lustre/home/sc004/pthouven/Faceted-Hyper-SARA/mnras_real/mnras_real_data_all/local_cluster_jobs/' num2str(param.ind) '/'];
+job_path = ['/lustre/home/sc004/pthouven/Faceted-HyperSARA/mnras_real/mnras_real_data_all/local_cluster_jobs/' num2str(param.ind) '/'];
 mkdir(job_path);
 cirrus_cluster.JobStorageLocation = job_path;
 cirrus_cluster.NumWorkers = numworkers;

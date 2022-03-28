@@ -1,6 +1,6 @@
-[submodule "lib/faceted-wavelet-transform"]
-	path = lib/faceted-wavelet-transform
-	url = https://github.com/basp-group-private/faceted-wavelet-transform.git
-[submodule "lib/measurement-operator"]
-	path = lib/measurement-operator
-	url = https://github.com/basp-group-private/measurement-operator.git
+[submodule "lib/SARA-dictionary"]
+	path = lib/SARA-dictionary
+	url = git@github.com:basp-group-private/SARA-dictionary.git
+[submodule "lib/RI-measurement-operator"]
+	path = lib/RI-measurement-operator
+	url = git@github.com:basp-group-private/RI-measurement-operator.git

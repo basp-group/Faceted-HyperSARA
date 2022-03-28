@@ -4,7 +4,7 @@
 2. Meqtrees https://github.com/ratt-ru/meqtrees/wiki/Installation
 
 # General notes
-1. Data extraction is performed using `pyxis`. The task should be performed in `./Faceted-Hyper-SARA/pyxisMs2mat` which contains the python script `pyxis4DataExtraction.py`.
+1. Data extraction is performed using `pyxis`. The task should be performed in `./Faceted-HyperSARA/pyxisMs2mat` which contains the python script `pyxis4DataExtraction.py`.
 2. Extracted .mat files are saved in `../data/`. The files contain the following fields
 ```bash
 "frequency" # channel frequency                       
@@ -33,7 +33,7 @@ $FIELDID  # default FIELDID=0 : field ID of the source of interest,
 $FIRSTCH  # default FIRSTCH=0 : ID of the first channnel to be extracted from each spectral window, 
 $LASTCH   # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted from each spectral window
 ```
-**Note:** In `./Faceted-Hyper-SARA/imaging/main_input_imaging.m`, the user should set  the name of the image cube to be reconstructed `srcName` to the value of `$SRCNAME`
+**Note:** In `./Faceted-HyperSARA/imaging/main_input_imaging.m`, the user should set  the name of the image cube to be reconstructed `srcName` to the value of `$SRCNAME`
 
 From the terminal launch:
 ```bash
@@ -47,7 +47,7 @@ Data will be saved as .mat files in the directory `../data/cyga/`. In the case o
 ../data/cyga/data_ch_3.mat
 ../data/cyga/data_ch_4.mat
 ```
-**Note:** In `./Faceted-Hyper-SARA/imaging/main_input_imaging.m`, if the data set nametag (`$MSTAG`) was not provided during data extraction, as in the example above, the user should set `datasetNames` as
+**Note:** In `./Faceted-HyperSARA/imaging/main_input_imaging.m`, if the data set nametag (`$MSTAG`) was not provided during data extraction, as in the example above, the user should set `datasetNames` as
 ```bash
 datasetNames = {''};
 ```
@@ -91,7 +91,7 @@ Data sets will be saved in the sub-directories.
  ../data/cyga/dataset2/
  ../data/cyga/datasetn/
 ```
-**Note:** In `./Faceted-Hyper-SARA/imaging/main_input_imaging.m`, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.
+**Note:** In `./Faceted-HyperSARA/imaging/main_input_imaging.m`, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.
 ```bash
 datasetNames = {'dataset1', 'dataset2','datasetn'};
 ```

@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 
 # -- Project information -----------------------------------------------------
 
-project = "Faceted-Hyper-SARA"
+project = "Faceted-HyperSARA"
 copyright = "2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz"
 author = "P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz"
 
@@ -69,7 +69,7 @@ exclude_patterns = [
     "_build",
     "Thumbs.db",
     ".DS_Store",
-    "lib/faceted-wavelet-transform",
+    "lib/SARA-dictionary",
     "lib/RI-measurement-operator",
 ]
 matlab_src_dir = os.path.abspath(os.path.join("..", ".."))

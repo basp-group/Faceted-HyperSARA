@@ -268,8 +268,8 @@ docs/_*
 *local_cluster_jobs*
 *pref_*
 docs/build
-lib/faceted-wavelet-transform/*
-lib/measurement-operator/*
+lib/SARA-dictionary/*
+lib/RI-measurement-operator/*
 *.mat
 *.fits
 pyxisMs2mat/log-emeerkatsims.txt

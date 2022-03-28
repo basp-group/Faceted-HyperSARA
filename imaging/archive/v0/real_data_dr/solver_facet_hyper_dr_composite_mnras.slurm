@@ -12,11 +12,11 @@
 #SBATCH --qos=standard
 
 #### change to current working directory
-#SBATCH -D /lustre/home/sc004/pthouven/Faceted-Hyper-SARA/real_data_dr
+#SBATCH -D /lustre/home/sc004/pthouven/Faceted-HyperSARA/real_data_dr
 
 #### Redirect error & output files
-#SBATCH -e /lustre/home/sc004/pthouven/Faceted-Hyper-SARA/real_data_dr/solver_facethypersara_dr_err.log
-#SBATCH -o /lustre/home/sc004/pthouven/Faceted-Hyper-SARA/real_data_dr/solver_facethypersara_dr_out.log
+#SBATCH -e /lustre/home/sc004/pthouven/Faceted-HyperSARA/real_data_dr/solver_facethypersara_dr_err.log
+#SBATCH -o /lustre/home/sc004/pthouven/Faceted-HyperSARA/real_data_dr/solver_facethypersara_dr_out.log
 
 #### load matlab module (setup environment)
 module load matlab/R2019b

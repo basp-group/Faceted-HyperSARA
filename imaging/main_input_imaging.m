@@ -32,9 +32,9 @@
 %     concatenated for each output (effective) channel. Set automatically if
 %     `idChannels2Image` and `nChannelsPerImage` are provided.
 % main_dir : string
-%     Directory of the Faceted-Hyper-SARA repository.
+%     Directory of the Faceted-HyperSARA repository.
 % data_dir : string
-%     Directory of the input ``.mat`` data files. Default ``./Faceted-Hyper-SARA/data/``.
+%     Directory of the input ``.mat`` data files. Default ``./Faceted-HyperSARA/data/``.
 % imaging_dir : string
 %     Directory of the imaging experiment. Default
 %     ``./Faceted-HyperSARA/imaging``.
@@ -171,7 +171,7 @@
 %% Documentation
 %
 % For more details about the different parameters to be configured, see the
-% online documentation: https://basp-group.github.io/Faceted-Hyper-SARA/default.html .
+% online documentation: https://basp-group.github.io/Faceted-HyperSARA/default.html .
 
 clear; clc; close all;
 %%------------------------------------------------------------------------
@@ -186,7 +186,7 @@ datasetNames = {'CYGA-ConfigA', 'CYGA-ConfigC'}; %  accomodating multiple datase
 
 
 %% Paths
-% Main path of the Faceted-Hyper-SARA repository
+% Main path of the Faceted-HyperSARA repository
 %/ TODO: to be adjusted by the user if required.
 % Keep current setting by default
 main_dir = ['..',filesep]; 

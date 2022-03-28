@@ -63,6 +63,7 @@ The user must provide the name/path to the measurement set ``$MS``. The followin
 
    In ``$FHS/imaging/main_input_imaging.m``, the user should set the name of the image cube to be reconstructed ``srcName`` to the same value as ``$SRCNAME``
 
+
 From the terminal, execute:
 
 .. code-block:: bash
@@ -82,6 +83,7 @@ Data will be saved as .mat files in the directory ``$FHS/data/cyga/``. In the ca
 .. note::
    
    In ``$FHS/imaging/main_input_imaging.m``, if the data set nametag (``$MSTAG``) was not provided during data extraction, as in the example above, the user should set ``datasetNames`` as
+
 
    .. code-block:: bash
 
@@ -148,6 +150,7 @@ Data sets will be saved in the sub-directories.
 .. note::
 
    In ``$FHS/imaging/main_input_imaging.m``, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.
+
 
    .. code-block:: bash
 
