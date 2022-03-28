@@ -57,7 +57,7 @@ Reconstructing an image cube from an MS-Table
    "v"  % v coordinate (in units of the wavelength)
    "w"  % w coordinate (in units of the wavelength)                       
    "nW"  % sqrt(weights)
-   "nWimag" % imaging weights if available (Briggs or uniform), empty otherwise
+   "nWimag" % (optional field) imaging weights if available (Briggs or uniform), empty otherwise
    "maxProjBaseline"  % max projected baseline (in units of the wavelength)
 
 
@@ -103,12 +103,12 @@ To test the imaging pipeline with a synthetic data test similar to the one consi
 
       % generate data for the spatial faceting experiment
       main_generate_data('default_parameters.json', 'cygA', 8, ...
-      '$FHS/data/msSpecs.mat', 'spatial', 2, 40, false, ...
+      '../data/msSpecs.mat', 'spatial', 2, 40, false, ...
       "local", false)
 
       % generate data for the spectral faceting experiment
       main_generate_data('default_parameters.json', 'cygA', 8, ...
-      '$FHS/data/msSpecs.mat', 'spectral', 2, 40, false, ...
+      '../data/msSpecs.mat', 'spectral', 2, 40, false, ...
       "local", false)
 
 4. (Optional) Make a copy of ``$FHS/imaging/default_parameters.json``, and 
