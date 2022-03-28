@@ -4,7 +4,7 @@ Faceted-Hyper-SARA
 ``Faceted-Hyper-SARA`` is a MATLAB library for radio-interferometric wideband intensity imaging. The library contains an implementation of
 algorithms from the "SARA" family (SARA :cite:p:`Carrillo2012,Onose2017`,
 HyperSARA :cite:p:`Abdulaziz2019` and Faceted HyperSARA 
-:cite:p:`Thouvenin2021`). The proposed implementation enables
+:cite:p:`Thouvenin2021`). The library offers a collection of utility functions and scripts from data extraction from an RI measurement set ``MS Table`` to the reconstruction of a wideband intensity image over the field of view and frequency range of interest.  The proposed implementation enables
 
 - data dimensionality reduction via visibility gridding :cite:p:`Kartik2017`;
 - correction of the :math:`w`-term via :math:`w`-projection :cite:p:`Dabbech2017`;
