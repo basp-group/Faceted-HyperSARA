@@ -20,9 +20,9 @@ The :mod:`pyxisMs2mat.pyxis4DataExtraction` module requires the two following Py
 General notes
 -------------
 
-1. Data extraction is performed using ``pyxis``. The task should be performed in the directory ``./Faceted-HyperSARA/pyxisMs2mat``, which contains the python script ``pyxis4DataExtraction.py``.
+1. Data extraction is performed using ``pyxis``. The task should be performed in the directory ``$FHS/pyxisMs2mat``, which contains the python script ``pyxis4DataExtraction.py``.
 
-2. Extracted ``.mat`` files are saved in ``../data/``. The files contain the following fields.
+2. Extracted ``.mat`` files are saved in ``$FHS/data/``. The files contain the following fields.
 
 .. code-block:: matlab
 
@@ -61,7 +61,8 @@ The user must provide the name/path to the measurement set ``$MS``. The followin
 
 .. note::
 
-   In ``./Faceted-HyperSARA/imaging/main_input_imaging.m``, the user should set the name of the image cube to be reconstructed ``srcName`` to the same value as ``$SRCNAME``
+   In ``$FHS/imaging/main_input_imaging.m``, the user should set the name of the image cube to be reconstructed ``srcName`` to the same value as ``$SRCNAME``
+
 
 From the terminal, execute:
 
@@ -70,18 +71,19 @@ From the terminal, execute:
    pyxis MS=myms.ms  SRCNAME=cyga FIRSTCH=0  LASTCH=3 FIELDID=0 getdata_ms
 
 
-Data will be saved as .mat files in the directory ``../data/cyga/``. In the case of a single spectral window, the outcome is as follows
+Data will be saved as .mat files in the directory ``$FHS/data/cyga/``. In the case of a single spectral window, the outcome is as follows
 
 .. code-block:: bash
 
-   ../data/cyga/data_ch_1.mat
-   ../data/cyga/data_ch_2.mat
-   ../data/cyga/data_ch_3.mat
-   ../data/cyga/data_ch_4.mat
+   data/cyga/data_ch_1.mat
+   data/cyga/data_ch_2.mat
+   data/cyga/data_ch_3.mat
+   data/cyga/data_ch_4.mat
 
 .. note::
    
-   In ``./Faceted-HyperSARA/imaging/main_input_imaging.m``, if the data set nametag (``$MSTAG``) was not provided during data extraction, as in the example above, the user should set ``datasetNames`` as
+   In ``$FHS/imaging/main_input_imaging.m``, if the data set nametag (``$MSTAG``) was not provided during data extraction, as in the example above, the user should set ``datasetNames`` as
+
 
    .. code-block:: bash
 
@@ -109,18 +111,18 @@ From the terminal, execute:
 
    pyxis MSLOW=mylowbandms.ms MSHIGH=myhighbandms.ms SRCNAME=cyga FIRSTCH=0 LASTCH=15 FIELDID=2  getdata_ms_concat_bandwidth
 
-Data will be saved as .mat files in the directory ``../data/cyga/``.
+Data will be saved as .mat files in the directory ``$FHS/data/cyga/``.
 
 In the case of a single spectral window, the outcome is as follows
 
 .. code-block:: bash
 
-   ../data/cyga/data_ch_1.mat  % channel 1 from mylowbandms.ms
+   data/cyga/data_ch_1.mat  % channel 1 from mylowbandms.ms
    .
-   ../data/cyga/data_ch_16.mat % channel 16 from mylowbandms.ms
-   ../data/cyga/data_ch_17.mat % channel 1 from myhighbandms.ms
+   data/cyga/data_ch_16.mat % channel 16 from mylowbandms.ms
+   data/cyga/data_ch_17.mat % channel 1 from myhighbandms.ms
    .
-   ../data/cyga/data_ch_32.mat % channel 16 from myhighbandms.ms
+   data/cyga/data_ch_32.mat % channel 16 from myhighbandms.ms
 
 
 Combine different measurment sets spanning the same frequency bandwidth, with same spectral window specs
@@ -140,14 +142,15 @@ Data sets will be saved in the sub-directories.
 
 .. code-block:: bash
 
-   ../data/cyga/dataset1/
-   ../data/cyga/dataset2/
-   ../data/cyga/datasetn/
+   data/cyga/dataset1/
+   data/cyga/dataset2/
+   data/cyga/datasetn/
 
 
 .. note::
 
-   In ``./Faceted-HyperSARA/imaging/main_input_imaging.m``, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.
+   In ``$FHS/imaging/main_input_imaging.m``, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.
+
 
    .. code-block:: bash
 
