@@ -69,7 +69,7 @@ exclude_patterns = [
     "_build",
     "Thumbs.db",
     ".DS_Store",
-    "lib/faceted-wavelet-transform",
+    "lib/SARA-dictionary",
     "lib/RI-measurement-operator",
 ]
 matlab_src_dir = os.path.abspath(os.path.join("..", ".."))
