@@ -1,0 +1,46 @@
+# https://pre-commit.com/
+repos:
+  # using custom command in pre-commit
+  # https://stackoverflow.com/questions/59499061/how-to-run-custom-shell-script-file-before-pre-commit-hook
+  # code formatting
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: check-case-conflict
+      - id: check-docstring-first
+      # - id: check-json
+      #   exclude: ^(.vscode/|other/folder/) # weird errors with .vscode/*.json
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+        exclude: ^((.*)\.(ipynb|otherext)) # avoid reformat notebooks everytime
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+  # - repo: https://github.com/myint/rstcheck
+  #   rev: 3f92957478422df87bd730abde66f089cc1ee19b
+  #   hooks:
+  #     - id: rstcheck
+  #       args: [
+  #           # "--report",
+  #           # "info",
+  #           "--ignore-directives",
+  #           "autofunction,automodule,bibliography,math,numfig,plot,testcode,testoutput",
+  #           "--ignore-roles",
+  #           "eq,cite",
+  #         ]
+  # - repo: https://github.com/executablebooks/mdformat
+  #   rev: 0.7.11
+  #   hooks:
+  #     - id: mdformat
+  #       additional_dependencies:
+  #       - mdformat-gfm
+  #       - mdformat-black
+  # # push up-to-date documentation after every commit
+  # # https://stackoverflow.com/questions/59499061/how-to-run-custom-shell-script-file-before-pre-commit-hook
+  # - repo: local
+  #   hooks:
+  #   - id: doc
+  #     name: doc
+  #     entry: bash -c 'make -C docs/ html;'
+  #     verbose: true
+  #     language: python

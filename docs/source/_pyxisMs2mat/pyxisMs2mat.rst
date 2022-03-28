@@ -1,0 +1,157 @@
+pyxisMs2mat package
+===================
+
+Set of helper functions to extract useful data from a ``MS Table`` into a set a ``.mat`` file compatible with the interface of this library. Examples are provided below.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: List of modules
+
+   pyxisMs2mat.pyxis4DataExtraction
+
+Requirements
+------------
+
+The :mod:`pyxisMs2mat.pyxis4DataExtraction` module requires the two following Python packages.
+
+1. Casacore: https://github.com/casacore/casacore
+2. Meqtrees: https://github.com/ratt-ru/meqtrees/wiki/Installation
+
+General notes
+-------------
+
+1. Data extraction is performed using ``pyxis``. The task should be performed in the directory ``$FHS/pyxisMs2mat``, which contains the python script ``pyxis4DataExtraction.py``.
+
+2. Extracted ``.mat`` files are saved in ``$FHS/data/``. The files contain the following fields.
+
+.. code-block:: matlab
+
+   "frequency"  % channel frequency                       
+   "y"  % data (Stokes I)
+   "u"  % u coordinate (in units of the wavelength)
+   "v"  % v coordinate (in units of the wavelength)
+   "w"  % w coordinate (in units of the wavelength)                       
+   "nW"  % sqrt(weights)
+   "nWimag" % imaging weights if available (Briggs or uniform), empty otherwise
+   "maxProjBaseline"  % max projected baseline (in units of the wavelength)
+
+3. Output channels' indices and their associated filenames are incremented by **1** for MATLAB indexing purposes.
+
+4. Functions provided in :mod:`pyxisMs2mat.pyxis4DataExtraction` are given as examples. The user is encouraged to define new functions tailored to the structure of his measurement set in case it is organised differently.
+
+5. In case of multiple spectral windows, the user is advised to use the  ``split`` task in CASA to image specific spectral windows and extract the data from the resulting measurement subset.
+
+Examples
+--------
+
+Single measurement set (MS)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Extracting data from the channels indexed from  ``0`` to ``3`` of the source with field ID ``0``, from **all** spectral windows.
+
+The user must provide the name/path to the measurement set ``$MS``. The following inputs are optional.
+
+.. code-block:: bash
+
+   $SRCNAME  # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
+   $MSTAG    # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
+   $FIELDID  # default FIELDID=0 : field ID of the source of interest, 
+   $FIRSTCH  # default FIRSTCH=0 : ID of the first channnel to be extracted from each spectral window, 
+   $LASTCH   # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted from each spectral window
+
+.. note::
+
+   In ``$FHS/imaging/main_input_imaging.m``, the user should set the name of the image cube to be reconstructed ``srcName`` to the same value as ``$SRCNAME``
+
+
+From the terminal, execute:
+
+.. code-block:: bash
+
+   pyxis MS=myms.ms  SRCNAME=cyga FIRSTCH=0  LASTCH=3 FIELDID=0 getdata_ms
+
+
+Data will be saved as .mat files in the directory ``$FHS/data/cyga/``. In the case of a single spectral window, the outcome is as follows
+
+.. code-block:: bash
+
+   data/cyga/data_ch_1.mat
+   data/cyga/data_ch_2.mat
+   data/cyga/data_ch_3.mat
+   data/cyga/data_ch_4.mat
+
+.. note::
+   
+   In ``$FHS/imaging/main_input_imaging.m``, if the data set nametag (``$MSTAG``) was not provided during data extraction, as in the example above, the user should set ``datasetNames`` as
+
+
+   .. code-block:: bash
+
+      datasetNames = {''};
+
+
+Combine two measurement sets at two consecutive frequency bandwidths, with same spectral window specs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Extracting data from the channels indexed from  ``0`` to ``15`` of the source with field ID ``2``, from **all** spectral windows.
+
+The user must provide the name/path to the two measurement sets ``$MSLOW``  and ``$MSHIGH`` associated with the low frequency band and high frequency band meaurement sets, respectively. The following inputs are optional.
+
+.. code-block:: bash
+
+   $SRCNAME  # default SRCNAME="" : source nametag which defines the main directory of the extracted data.
+   $MSTAG    # default MSTAG="" : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available. 
+   $FIELDID  # default FIELDID=0 : field ID of the source of interest, 
+   $FIRSTCH  # default FIRSTCH=0 : ID of the first channnel to be extracted from each spectral window, 
+   $LASTCH   # default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted from each spectral window
+
+From the terminal, execute:
+
+.. code-block:: bash
+
+   pyxis MSLOW=mylowbandms.ms MSHIGH=myhighbandms.ms SRCNAME=cyga FIRSTCH=0 LASTCH=15 FIELDID=2  getdata_ms_concat_bandwidth
+
+Data will be saved as .mat files in the directory ``$FHS/data/cyga/``.
+
+In the case of a single spectral window, the outcome is as follows
+
+.. code-block:: bash
+
+   data/cyga/data_ch_1.mat  % channel 1 from mylowbandms.ms
+   .
+   data/cyga/data_ch_16.mat % channel 16 from mylowbandms.ms
+   data/cyga/data_ch_17.mat % channel 1 from myhighbandms.ms
+   .
+   data/cyga/data_ch_32.mat % channel 16 from myhighbandms.ms
+
+
+Combine different measurment sets spanning the same frequency bandwidth, with same spectral window specs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Extracting data from the channels indexed from  `0` to `12` of the source with field ID `0`, from **all** spectral windows.
+From the terminal, execute:
+
+.. code-block:: bash
+
+   pyxis MS=myms1.ms  SRCNAME=cyga MSTAG=dataset1 FIRSTCH=0  LASTCH=12 FIELDID=0 getdata_ms \
+   pyxis MS=myms2.ms  SRCNAME=cyga MSTAG=dataset2 FIRSTCH=0  LASTCH=12 FIELDID=0 getdata_ms \
+   pyxis MS=mymsn.ms  SRCNAME=cyga MSTAG=datasetn FIRSTCH=0  LASTCH=12 FIELDID=0 getdata_ms \
+
+
+Data sets will be saved in the sub-directories. 
+
+.. code-block:: bash
+
+   data/cyga/dataset1/
+   data/cyga/dataset2/
+   data/cyga/datasetn/
+
+
+.. note::
+
+   In ``$FHS/imaging/main_input_imaging.m``, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.
+
+
+   .. code-block:: bash
+
+      datasetNames = {'dataset1', 'dataset2','datasetn'};
