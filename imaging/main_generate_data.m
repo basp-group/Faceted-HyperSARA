@@ -64,8 +64,6 @@ function main_generate_data(json_filename, srcName, ncores_data, ...
 %
 % - The resulting ``.mat`` files (one for each frequency) are composed of the following variables
 %
-% y0 (complex[:])
-%     Clean (i.e., noiseless) visibility vector.
 % y (complex[:])
 %     Noisy visibility vector.
 % l2bounds (double)
@@ -85,6 +83,12 @@ function main_generate_data(json_filename, srcName, ncores_data, ...
 %     Maximum projected baseline, expressed in units of the wavelength.
 % nW (double[:])
 %     Inverse noise whitening vector (``1/sigma_noise``).
+%
+
+% Not used field
+%
+% y0 (complex[:])
+%     Clean (i.e., noiseless) visibility vector.
 %
 
 % %% Debug parameters
