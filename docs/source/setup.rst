@@ -15,7 +15,7 @@ Clone the current repository with all the submodules as follows
    git clone --recurse-submodules https://github.com/basp-group/Faceted-HyperSARA.git
    cd Faceted-HyperSARA
 
-From now on, we will refer to the full path to the ``Faceted-Hyper-SARA`` repository as ``$FHS``.
+From now on, we will refer to the full path to the ``Faceted-HyperSARA`` repository as ``$FHS``.
 
 Updating submodules (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
