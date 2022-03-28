@@ -600,7 +600,7 @@ switch algo_solver
 
             if flag_visibility_gridding
                 % if residual data are available
-                if exist('preproc_residuals', 'var')
+                if exist('preproc_residuals', 'var') && ~isempty(preproc_residuals)
                     preproc_residuals{iEffCh, 1} = vertcat(preproc_residuals{iEffCh, 1}{:});
                     preproc_residuals{iEffCh, 1} = preproc_residuals{iEffCh, 1}(:);
                 end
