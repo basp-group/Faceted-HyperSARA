@@ -154,6 +154,10 @@ function [A, At, H, W, aW, Sigma, gridded_y, gridded_noise] = util_gen_dr_measur
             res_data(W{i}{1}) =  res_data(W{i}{1}) .*  Sigma{i}{1}; % apply Sigma to residual data
             gridded_noise.l2bounds{i}{1} = norm(res_data(W{i}{1}));
             gridded_noise.sigma{i} = std(nonzeros([real(res_data); imag(res_data)]));
+        else
+            tmp_nmeas =numel(Sigma{i}{1});
+            gridded_noise.l2bounds{i}{1}= sqrt(tmp_nmeas + 2 * sqrt(tmp_nmeas));
+            gridded_noise.sigma{i} =sqrt(gridded_noise.l2bounds{i}{1}.^2/tmp_nmeas);
         end
         clear res_data;
 
