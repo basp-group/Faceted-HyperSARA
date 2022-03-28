@@ -1,7 +1,7 @@
 # Parallel faceted imaging in radio interferometry via proximal splitting
 
 [![license](https://img.shields.io/badge/license-GPL--3.0-brightgreen.svg)](LICENSE)
-[![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://basp-group.github.io/Faceted-Hyper-SARA/_imaging/imaging.html)
+[![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://basp-group.github.io/Faceted-HyperSARA/_imaging/imaging.html)
 
 ## Description
 
@@ -28,17 +28,17 @@ To properly clone the project with the submodules, you may need to choose one of
 - cloning the repository from scratch
 
 ```bash
-git clone --recurse-submodules https://github.com/basp-group/Faceted-Hyper-SARA.git
+git clone --recurse-submodules https://github.com/basp-group/Faceted-HyperSARA.git
 ```
 If you are using an SSH key for github rather than a personal token, then you will need to clone the repository as follows instead:
 
 ```bash
-git clone git@github.com:basp-group/Faceted-Hyper-SARA.git
+git clone git@github.com:basp-group/Faceted-HyperSARA.git
 ```
 
 You will then also need to update the local repository configuration to use this approach for the sub-modules and update the submodules separately as detailed below. If you have problems updating the submodule access configuration open a issue on this repository.
 
-- submodules update: updating from an existing `Faceted-Hyper-SARA` repository:
+- submodules update: updating from an existing `Faceted-HyperSARA` repository:
 
 ```bash
 git pull
@@ -56,19 +56,19 @@ To do so, issue the following commands in a terminal.
 ```bash
 # if on MAC: 
 # brew install wget
-cd path/to/Faceted-Hyper-SARA
+cd path/to/Faceted-HyperSARA
 cd data
 wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
 ```
 
-Please refer to the [online documentation](https://basp-group.github.io/Faceted-Hyper-SARA/_imaging/imaging.html) to configure and run the imaging script (see [documentation](doc) section if you prefer building the documentation locally).
+Please refer to the [online documentation](https://basp-group.github.io/Faceted-HyperSARA/_imaging/imaging.html) to configure and run the imaging script (see [documentation](doc) section if you prefer building the documentation locally).
 
 <!-- ## Configuration
 
 To reproduce the experiments on the Cirrus HPC system ([https://www.cirrus.ac.uk](https://www.cirrus.ac.uk)), configure the `.csv` file contained in `imaging/spatial` or `imaging/spectral` as required and run the following
 
 ```bash
-cd path/to/Faceted-Hyper-SARA
+cd path/to/Faceted-HyperSARA
 module load anaconda/python3
 # configure / update the python job script
 vi job_spatial.py
@@ -78,7 +78,7 @@ Cirrus is configured with Matlab and python installed using the module system an
 
 ## Documentation <a name="doc"></a>
 
-- A full [documentation](https://basp-group.github.io/Faceted-Hyper-SARA/_imaging/imaging.html) is directly accessible online.
+- A full [documentation](https://basp-group.github.io/Faceted-HyperSARA/_imaging/imaging.html) is directly accessible online.
 
 - To build the documentation, make sure the following Python packages have been installed, and issue the appropriate buid command.
 

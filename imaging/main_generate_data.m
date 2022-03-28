@@ -19,7 +19,7 @@ function main_generate_data(json_filename, srcName, ncores_data, ...
 %     Path to a pre-generated coverage file (a single ``.mat`` file
 %     containing a 3 column array `uvw`, each corresponding to the u, v and
 %     w coordinates). The :math:`uv`-coverage used in 
-%     :cite:p:`Thouvenin2021` is provided in ``Faceted-Hyper-SARA/data/msSpecs.mat``.
+%     :cite:p:`Thouvenin2021` is provided in ``Faceted-HyperSARA/data/msSpecs.mat``.
 % exp_type : string
 %     Type of experiment considered, reproducing those of the associated
 %     publication. Possible value is ``spatial`` (respectively 
@@ -60,7 +60,7 @@ function main_generate_data(json_filename, srcName, ncores_data, ...
 %
 % Important
 % ---------
-% - The synthetic data ``.mat`` files are saved by default in the directory ``Faceted-Hyper-SARA/data/<srcName>/<exp_type>``, with ``<srcName>`` and ``<exp_type>`` replaced by the value selected when calling the function.
+% - The synthetic data ``.mat`` files are saved by default in the directory ``Faceted-HyperSARA/data/<srcName>/<exp_type>``, with ``<srcName>`` and ``<exp_type>`` replaced by the value selected when calling the function.
 %
 % - The resulting ``.mat`` files (one for each frequency) are composed of the following variables
 %

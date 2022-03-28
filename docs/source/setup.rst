@@ -12,14 +12,14 @@ Clone the current repository with all the submodules as follows
 .. code-block:: bash
 
    # Cloning the repo. with all the submodules:
-   git clone --recurse-submodules https://github.com/basp-group/Faceted-Hyper-SARA.git
-   cd Faceted-Hyper-SARA
+   git clone --recurse-submodules https://github.com/basp-group/Faceted-HyperSARA.git
+   cd Faceted-HyperSARA
 
 
 Updating submodules (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-From an existing ``Faceted-Hyper-SARA`` repository, issue the following commands
+From an existing ``Faceted-HyperSARA`` repository, issue the following commands
 
 .. code-block:: bash
 
@@ -31,7 +31,7 @@ From an existing ``Faceted-Hyper-SARA`` repository, issue the following commands
 
 .. warning::
 
-   Note that a simple ``pull`` instruction from the ``Faceted-Hyper-SARA`` repository does not update the submodules if the version on which it relies has been modified. If this is the case, update the submodules with the instructions provided above.
+   Note that a simple ``pull`` instruction from the ``Faceted-HyperSARA`` repository does not update the submodules if the version on which it relies has been modified. If this is the case, update the submodules with the instructions provided above.
 
 
 
@@ -83,7 +83,7 @@ To test the imaging pipeline with a synthetic data test similar to the one consi
  
       # if on MAC:
       # brew install wget
-      cd path/to/Faceted-Hyper-SARA
+      cd path/to/Faceted-HyperSARA
       mkdir data && cd data
       wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
 
@@ -123,8 +123,8 @@ To test the imaging pipeline with a synthetic data test similar to the one consi
 Contributing
 ------------
 
-- Issue Tracker: `https://github.com/basp-group/Faceted-Hyper-SARA/issues <https://github.com/basp-group/Faceted-Hyper-SARA/issues>`_
-- Source Code: `https://github.com/basp-group/Faceted-Hyper-SARA <https://github.com/basp-group/Faceted-Hyper-SARA>`_
+- Issue Tracker: `https://github.com/basp-group/Faceted-HyperSARA/issues <https://github.com/basp-group/Faceted-HyperSARA/issues>`_
+- Source Code: `https://github.com/basp-group/Faceted-HyperSARA <https://github.com/basp-group/Faceted-HyperSARA>`_
 
 To contribute to the project, make sure the following elements are properly
 configured before submitting any pull request (PR).

@@ -8,14 +8,14 @@
 %
 %    # if on MAC:
 %    # brew install wget
-%    cd path/to/Faceted-Hyper-SARA
+%    cd path/to/Faceted-HyperSARA
 %    mkdir data && cd data
 %    wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
 %
 % .. note::
 %
 %    Cubes and additional informations for the synthetic data experiments 
-%    are saved by default in the folder ``Faceted-Hyper-SARA/data/``.
+%    are saved by default in the folder ``Faceted-HyperSARA/data/``.
 %
 
 clear;

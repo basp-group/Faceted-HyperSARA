@@ -1,12 +1,12 @@
 clc; clear; close all;
 format compact;
 
-addpath  '/Users/ad33/CodesScience/Faceted-Hyper-SARA/final_results/CubeHelix';
-addpath /Users/ad33/CodesScience/Faceted-Hyper-SARA/final_results;
-addpath /Users/ad33/CodesScience/Faceted-Hyper-SARA/final_results/exp1/fhs;
-addpath /Users/ad33/CodesScience/Faceted-Hyper-SARA/final_results/exp1/sara;
+addpath  '/Users/ad33/CodesScience/Faceted-HyperSARA/final_results/CubeHelix';
+addpath /Users/ad33/CodesScience/Faceted-HyperSARA/final_results;
+addpath /Users/ad33/CodesScience/Faceted-HyperSARA/final_results/exp1/fhs;
+addpath /Users/ad33/CodesScience/Faceted-HyperSARA/final_results/exp1/sara;
 
-addpath  /Users/ad33/CodesScience/Faceted-Hyper-SARA/lib/print;
+addpath  /Users/ad33/CodesScience/Faceted-HyperSARA/lib/print;
 
 %% Parameters
 load_images = 1;

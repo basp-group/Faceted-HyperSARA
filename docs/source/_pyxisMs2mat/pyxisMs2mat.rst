@@ -20,7 +20,7 @@ The :mod:`pyxisMs2mat.pyxis4DataExtraction` module requires the two following Py
 General notes
 -------------
 
-1. Data extraction is performed using ``pyxis``. The task should be performed in the directory ``./Faceted-Hyper-SARA/pyxisMs2mat``, which contains the python script ``pyxis4DataExtraction.py``.
+1. Data extraction is performed using ``pyxis``. The task should be performed in the directory ``./Faceted-HyperSARA/pyxisMs2mat``, which contains the python script ``pyxis4DataExtraction.py``.
 
 2. Extracted ``.mat`` files are saved in ``../data/``. The files contain the following fields.
 
@@ -61,7 +61,7 @@ The user must provide the name/path to the measurement set ``$MS``. The followin
 
 .. note::
 
-   In ``./Faceted-Hyper-SARA/imaging/main_input_imaging.m``, the user should set the name of the image cube to be reconstructed ``srcName`` to the same value as ``$SRCNAME``
+   In ``./Faceted-HyperSARA/imaging/main_input_imaging.m``, the user should set the name of the image cube to be reconstructed ``srcName`` to the same value as ``$SRCNAME``
 
 From the terminal, execute:
 
@@ -81,7 +81,7 @@ Data will be saved as .mat files in the directory ``../data/cyga/``. In the case
 
 .. note::
    
-   In ``./Faceted-Hyper-SARA/imaging/main_input_imaging.m``, if the data set nametag (``$MSTAG``) was not provided during data extraction, as in the example above, the user should set ``datasetNames`` as
+   In ``./Faceted-HyperSARA/imaging/main_input_imaging.m``, if the data set nametag (``$MSTAG``) was not provided during data extraction, as in the example above, the user should set ``datasetNames`` as
 
    .. code-block:: bash
 
@@ -147,7 +147,7 @@ Data sets will be saved in the sub-directories.
 
 .. note::
 
-   In ``./Faceted-Hyper-SARA/imaging/main_input_imaging.m``, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.
+   In ``./Faceted-HyperSARA/imaging/main_input_imaging.m``, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.
 
    .. code-block:: bash
 
