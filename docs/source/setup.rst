@@ -15,15 +15,16 @@ Clone the current repository with all the submodules as follows
    git clone --recurse-submodules https://github.com/basp-group/Faceted-Hyper-SARA.git
    cd Faceted-Hyper-SARA
 
+From now on, we will refer to the full path to the ``Faceted-Hyper-SARA`` repository as ``$FHS``.
 
 Updating submodules (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-From an existing ``Faceted-Hyper-SARA`` repository, issue the following commands
+From ``$FHS``, issue the following commands
 
 .. code-block:: bash
 
-   cd path/to/repo
+   cd $FHS
    git pull
    git submodule sync --recursive # update submodule address, in case the url has changed
    git submodule update --init --recursive # update the content of the submodules
@@ -43,8 +44,8 @@ Reconstructing an image cube from an MS-Table
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. Start by extracting the data from an ``MS Table`` using the Python script 
-   ``pyxisMs2mat/pyxis4DataExtraction.py``, that is to be launched from  the sub-directory ``pyxisMs2mat/``. The data will be extracted in the form of a 
-   collection of ``.mat`` that will be saved in the sub-directory ``data``. Instructions and examples are provided in the :doc:`_pyxisMs2mat/pyxisMs2mat` page (also available in the standalone ``pyxisMs2mat/ReadMe.md`` file). Data extraction requires the `casacore <https://github.com/casacore/casacore>`_ and `meqtrees <https://github.com/ratt-ru/meqtrees/wiki/Installation>`_ libraries.
+   ``$FHS/pyxisMs2mat/pyxis4DataExtraction.py``, that is to be launched from  the sub-directory ``$FHS/pyxisMs2mat/``. The data will be extracted as a
+   collection of ``.mat``, saved in the sub-directory ``$FHS/data``. Instructions and examples are provided in the :doc:`_pyxisMs2mat/pyxisMs2mat` page (also available in the standalone ``$FHS/pyxisMs2mat/ReadMe.md`` file). Data extraction requires the `casacore <https://github.com/casacore/casacore>`_ and `meqtrees <https://github.com/ratt-ru/meqtrees/wiki/Installation>`_ libraries.
 
 .. code-block:: matlab
 
@@ -60,14 +61,14 @@ Reconstructing an image cube from an MS-Table
    "maxProjBaseline"  % max projected baseline (in units of the wavelength)
 
 
-2. (Optional) Make a copy of ``imaging/default_parameters.json``, and 
+2. (Optional) Make a copy of ``$FHS/imaging/default_parameters.json``, and 
    update the main algorithm parameters specified in this file (all values are 
    set to default, reliable values). Documentation for all the parameters involved is given in the :doc:`default` page.
 
 3. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
    provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction ``%/ TODO: to be adjusted by the user``.
 
-4. Run ``main_input_imaging.m`` from ``imaging/`` sub-directory with MATLAB. Results will be saved in the sub-directory ``results/``.
+4. Run ``main_input_imaging.m`` from ``$FHS/imaging/`` sub-directory with MATLAB. Results will be saved in the sub-directory ``$FHS/results/``.
 
 
 Testing the library with a synthetic dataset
@@ -77,19 +78,19 @@ To test the imaging pipeline with a synthetic data test similar to the one consi
 
 1. Retrieve the 
    `S_DDE_MODEL.fits <https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits>`_ image file associated with :cite:p:`Dabbech2021`.
-   Place the file in the ``data/`` folder at the root of the library.
+   Place the file in the ``$FHS/data/`` folder at the root of the library.
 
    .. code-block:: bash
  
       # if on MAC:
       # brew install wget
-      cd path/to/Faceted-Hyper-SARA
+      cd $FHS/
       mkdir data && cd data
       wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
 
 2. Generate one (or all) synthetic wideband image cube used in
    :cite:p:`Thouvenin2021` using the
-   :mat:scpt:`imaging.main_generate_cyga_cubes` script. Data cubes and auxiliary matlab files will be saved in ``data/``.
+   :mat:scpt:`imaging.main_generate_cyga_cubes` script. Data cubes and auxiliary matlab files will be saved in ``$FHS/data/``.
 
    .. code-block:: matlab
 
@@ -102,22 +103,22 @@ To test the imaging pipeline with a synthetic data test similar to the one consi
 
       % generate data for the spatial faceting experiment
       main_generate_data('default_parameters.json', 'cygA', 8, ...
-      '../data/msSpecs.mat', 'spatial', 2, 40, false, ...
+      '$FHS/data/msSpecs.mat', 'spatial', 2, 40, false, ...
       "local", false)
 
       % generate data for the spectral faceting experiment
       main_generate_data('default_parameters.json', 'cygA', 8, ...
-      '../data/msSpecs.mat', 'spectral', 2, 40, false, ...
+      '$FHS/data/msSpecs.mat', 'spectral', 2, 40, false, ...
       "local", false)
 
-4. (Optional) Make a copy of ``imaging/default_parameters.json``, and 
+4. (Optional) Make a copy of ``$FHS/imaging/default_parameters.json``, and 
    update the main algorithm parameters specified in this file (all values are 
    set to default, reliable values). Documentation for all the parameters involved is given in the :doc:`default` page.
 
 5. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
-   provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction ``% TODO: to be adjusted by the user``. Example configuration used for the experiments reported in :cite:p:`Thouvenin2021` is provided in the ``imaging/main_input_imaging_synth.m`` script.
+   provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction ``% TODO: to be adjusted by the user``. Example configuration used for the experiments reported in :cite:p:`Thouvenin2021` is provided in the ``$FHS/imaging/main_input_imaging_synth.m`` script.
 
-6. Run ``main_input_imaging.m`` from ``imaging/`` sub-directory with MATLAB. Results will be saved in the sub-directory ``results/``.
+6. Run ``main_input_imaging.m`` from ``$FHS/imaging/`` sub-directory with MATLAB. Results will be saved in the sub-directory ``$FHS/results/``.
 
 
 Contributing
@@ -153,7 +154,7 @@ Building the documentation
    cd docs
    make html
 
-- All the generated ``.html`` files are contained in the ``docs/build`` folder.
+- All the generated ``.html`` files are contained in the ``$FHS/docs/build`` folder.
 - If needed, you can delete the ``conda`` environment as follows
 
 .. code-block:: bash
@@ -169,8 +170,8 @@ Add a ``worktree`` from the ``master`` branch
 .. code-block:: bash
 
    # make sure the folder html does not exist before running the command
-   git worktree add docs/build/html gh-pages
-   cd docs/build/html
+   git worktree add $FHS/docs/build/html gh-pages
+   cd $FHS/docs/build/html
    git add .
    git commit -m "Build documentation as of $(git log '--format=format:%H' master -1)"
    git push origin gh-pages
