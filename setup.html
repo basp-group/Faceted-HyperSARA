@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributors" href="contributors.html" />
+    <link rel="prev" title="Faceted-HyperSARA" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_src/src.html">src package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Setup</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/setup.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="setup">
+<h1>Setup<a class="headerlink" href="#setup" title="Permalink to this headline"></a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<section id="environment-setup">
+<h3>Environment setup<a class="headerlink" href="#environment-setup" title="Permalink to this headline"></a></h3>
+<p>Clone the current repository with all the submodules as follows</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cloning the repo. with all the submodules:</span>
+git clone --recurse-submodules https://github.com/basp-group/Faceted-HyperSARA.git
+<span class="nb">cd</span> Faceted-HyperSARA
+</pre></div>
+</div>
+<p>From now on, we will refer to the full path to the <code class="docutils literal notranslate"><span class="pre">Faceted-Hyper-SARA</span></code> repository as <code class="docutils literal notranslate"><span class="pre">$FHS</span></code>.</p>
+</section>
+<section id="updating-submodules-optional">
+<h3>Updating submodules (optional)<a class="headerlink" href="#updating-submodules-optional" title="Permalink to this headline"></a></h3>
+<p>From <code class="docutils literal notranslate"><span class="pre">$FHS</span></code>, issue the following commands</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> <span class="nv">$FHS</span>
+git pull
+git submodule sync --recursive <span class="c1"># update submodule address, in case the url has changed</span>
+git submodule update --init --recursive <span class="c1"># update the content of the submodules</span>
+git submodule update --remote --merge <span class="c1"># fetch and merge latest state of the submodule</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Note that a simple <code class="docutils literal notranslate"><span class="pre">pull</span></code> instruction from the <code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA</span></code> repository does not update the submodules if the version on which it relies has been modified. If this is the case, update the submodules with the instructions provided above.</p>
+</div>
+</section>
+</section>
+<section id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline"></a></h2>
+<section id="reconstructing-an-image-cube-from-an-ms-table">
+<h3>Reconstructing an image cube from an MS-Table<a class="headerlink" href="#reconstructing-an-image-cube-from-an-ms-table" title="Permalink to this headline"></a></h3>
+<ol class="arabic simple">
+<li><p>Start by extracting the data from an <code class="docutils literal notranslate"><span class="pre">MS</span> <span class="pre">Table</span></code> using the Python script
+<code class="docutils literal notranslate"><span class="pre">$FHS/pyxisMs2mat/pyxis4DataExtraction.py</span></code>, that is to be launched from  the sub-directory <code class="docutils literal notranslate"><span class="pre">$FHS/pyxisMs2mat/</span></code>. The data will be extracted as a
+collection of <code class="docutils literal notranslate"><span class="pre">.mat</span></code>, saved in the sub-directory <code class="docutils literal notranslate"><span class="pre">$FHS/data</span></code>. Instructions and examples are provided in the <a class="reference internal" href="_pyxisMs2mat/pyxisMs2mat.html"><span class="doc">pyxisMs2mat package</span></a> page (also available in the standalone <code class="docutils literal notranslate"><span class="pre">$FHS/pyxisMs2mat/ReadMe.md</span></code> file). Data extraction requires the <a class="reference external" href="https://github.com/casacore/casacore">casacore</a> and <a class="reference external" href="https://github.com/ratt-ru/meqtrees/wiki/Installation">meqtrees</a> libraries.</p></li>
+</ol>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">%%  the data files contain the following fields.</span><span class="w"></span>
+<span class="c">% Note that flagged data are already discarded.</span><span class="w"></span>
+<span class="s">&quot;frequency&quot;</span><span class="w">  </span><span class="c">% channel frequency</span><span class="w"></span>
+<span class="s">&quot;y&quot;</span><span class="w">  </span><span class="c">% data (Stokes I)</span><span class="w"></span>
+<span class="s">&quot;u&quot;</span><span class="w">  </span><span class="c">% u coordinate (in units of the wavelength)</span><span class="w"></span>
+<span class="s">&quot;v&quot;</span><span class="w">  </span><span class="c">% v coordinate (in units of the wavelength)</span><span class="w"></span>
+<span class="s">&quot;w&quot;</span><span class="w">  </span><span class="c">% w coordinate (in units of the wavelength)</span><span class="w"></span>
+<span class="s">&quot;nW&quot;</span><span class="w">  </span><span class="c">% sqrt(weights)</span><span class="w"></span>
+<span class="s">&quot;nWimag&quot;</span><span class="w"> </span><span class="c">% imaging weights if available (Briggs or uniform), empty otherwise</span><span class="w"></span>
+<span class="s">&quot;maxProjBaseline&quot;</span><span class="w">  </span><span class="c">% max projected baseline (in units of the wavelength)</span><span class="w"></span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>(Optional) Make a copy of <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/default_parameters.json</span></code>, and
+update the main algorithm parameters specified in this file (all values are
+set to default, reliable values). Documentation for all the parameters involved is given in the <a class="reference internal" href="default.html"><span class="doc">Default parameters</span></a> page.</p></li>
+<li><p>Configure <a class="reference internal" href="default.html#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a> following the instructions
+provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction <code class="docutils literal notranslate"><span class="pre">%/</span> <span class="pre">TODO:</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">adjusted</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">user</span></code>.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">main_input_imaging.m</span></code> from <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/</span></code> sub-directory with MATLAB. Results will be saved in the sub-directory <code class="docutils literal notranslate"><span class="pre">$FHS/results/</span></code>.</p></li>
+</ol>
+</section>
+<section id="testing-the-library-with-a-synthetic-dataset">
+<h3>Testing the library with a synthetic dataset<a class="headerlink" href="#testing-the-library-with-a-synthetic-dataset" title="Permalink to this headline"></a></h3>
+<p>To test the imaging pipeline with a synthetic data test similar to the one considered in <span id="id1">[<a class="reference internal" href="biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span>, follow the instructions below.</p>
+<ol class="arabic">
+<li><p>Retrieve the
+<a class="reference external" href="https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits">S_DDE_MODEL.fits</a> image file associated with <span id="id2">[<a class="reference internal" href="biblio.html#id7" title="A. Dabbech, A. Repetti, R. A. Perley, O. M. Smirnov, and Y. Wiaux. Cygnus A jointly calibrated and imaged via non-convex optimization from VLA data. Monthly Notices of the Royal Astronomical Society, 506(4):4855-4876, 07 2021. doi:10.1093/mnras/stab1903.">Dabbech2021</a>]</span>.
+Place the file in the <code class="docutils literal notranslate"><span class="pre">$FHS/data/</span></code> folder at the root of the library.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># if on MAC:</span>
+<span class="c1"># brew install wget</span>
+<span class="nb">cd</span> <span class="nv">$FHS</span>/
+mkdir data <span class="o">&amp;&amp;</span> <span class="nb">cd</span> data
+wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
+</pre></div>
+</div>
+</li>
+<li><p>Generate one (or all) synthetic wideband image cube used in
+<span id="id3">[<a class="reference internal" href="biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span> using the
+<a class="reference internal" href="_imaging/imaging.html#imaging.main_generate_cyga_cubes" title="imaging.main_generate_cyga_cubes"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_generate_cyga_cubes</span></code></a> script. Data cubes and auxiliary matlab files will be saved in <code class="docutils literal notranslate"><span class="pre">$FHS/data/</span></code>.</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">main_generate_cyga_cubes</span><span class="w"></span>
+</pre></div>
+</div>
+</li>
+<li><p>Generate a synthetic dataset using
+<a class="reference internal" href="_imaging/imaging.html#imaging.main_generate_data" title="imaging.main_generate_data"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">imaging.main_generate_data()</span></code></a>. The two datasets considered in <span id="id4">[<a class="reference internal" href="biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span> can be generated by running the following MATLAB instructions</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% generate data for the spatial faceting experiment</span><span class="w"></span>
+<span class="n">main_generate_data</span><span class="p">(</span><span class="s">&#39;default_parameters.json&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;cygA&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
+<span class="s">&#39;$FHS/data/msSpecs.mat&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;spatial&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
+<span class="s">&quot;local&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+
+<span class="c">% generate data for the spectral faceting experiment</span><span class="w"></span>
+<span class="n">main_generate_data</span><span class="p">(</span><span class="s">&#39;default_parameters.json&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;cygA&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
+<span class="s">&#39;$FHS/data/msSpecs.mat&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;spectral&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
+<span class="s">&quot;local&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+</li>
+<li><p>(Optional) Make a copy of <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/default_parameters.json</span></code>, and
+update the main algorithm parameters specified in this file (all values are
+set to default, reliable values). Documentation for all the parameters involved is given in the <a class="reference internal" href="default.html"><span class="doc">Default parameters</span></a> page.</p></li>
+<li><p>Configure <a class="reference internal" href="default.html#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a> following the instructions
+provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">TODO:</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">adjusted</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">user</span></code>. Example configuration used for the experiments reported in <span id="id5">[<a class="reference internal" href="biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span> is provided in the <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/main_input_imaging_synth.m</span></code> script.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">main_input_imaging.m</span></code> from <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/</span></code> sub-directory with MATLAB. Results will be saved in the sub-directory <code class="docutils literal notranslate"><span class="pre">$FHS/results/</span></code>.</p></li>
+</ol>
+</section>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Issue Tracker: <a class="reference external" href="https://github.com/basp-group/Faceted-HyperSARA/issues">https://github.com/basp-group/Faceted-HyperSARA/issues</a></p></li>
+<li><p>Source Code: <a class="reference external" href="https://github.com/basp-group/Faceted-HyperSARA">https://github.com/basp-group/Faceted-HyperSARA</a></p></li>
+</ul>
+<p>To contribute to the project, make sure the following elements are properly
+configured before submitting any pull request (PR).</p>
+<section id="building-the-documentation">
+<h3>Building the documentation<a class="headerlink" href="#building-the-documentation" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>Make sure any new functionality is properly documented using the <code class="docutils literal notranslate"><span class="pre">numpy</span></code>
+docstring style.</p></li>
+<li><p>To build the documentation, issue the folowing commands.</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup conda environment to build the documentation</span>
+conda env create --name fhs-doc --file environment.yml
+
+<span class="c1"># alternative using conda/pip</span>
+<span class="c1"># conda create -n fhs-doc</span>
+<span class="c1"># conda activate fhs-doc</span>
+<span class="c1"># conda install pip</span>
+<span class="c1"># pip install miss_hit</span>
+<span class="c1"># pip install -r requirement.txt</span>
+
+<span class="c1"># building the documentation in html format</span>
+<span class="nb">cd</span> docs
+make html
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>All the generated <code class="docutils literal notranslate"><span class="pre">.html</span></code> files are contained in the <code class="docutils literal notranslate"><span class="pre">$FHS/docs/build</span></code> folder.</p></li>
+<li><p>If needed, you can delete the <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment as follows</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env remove -n fhs-doc
+</pre></div>
+</div>
+</section>
+<section id="pushing-the-documentation-online">
+<h3>Pushing the documentation online<a class="headerlink" href="#pushing-the-documentation-online" title="Permalink to this headline"></a></h3>
+<p>Add a <code class="docutils literal notranslate"><span class="pre">worktree</span></code> from the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># make sure the folder html does not exist before running the command</span>
+git worktree add <span class="nv">$FHS</span>/docs/build/html gh-pages
+<span class="nb">cd</span> <span class="nv">$FHS</span>/docs/build/html
+git add .
+git commit -m <span class="s2">&quot;Build documentation as of </span><span class="k">$(</span>git log <span class="s1">&#39;--format=format:%H&#39;</span> master -1<span class="k">)</span><span class="s2">&quot;</span>
+git push origin gh-pages
+<span class="c1"># delete the worktree</span>
+<span class="nb">cd</span> ../
+git worktree remove html
+</pre></div>
+</div>
+</section>
+<section id="code-layout">
+<h3>Code layout<a class="headerlink" href="#code-layout" title="Permalink to this headline"></a></h3>
+<p>If you contribute code to the library (through a <a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests">pull request</a>), make sure any submitted code is properly formatted with the <a class="reference external" href="https://pypi.org/project/miss-hit/">miss_hit</a> package using the provided <code class="docutils literal notranslate"><span class="pre">miss_hit.cfg</span></code> configuration file</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># activate fhs-doc environment (see previous paragraph)</span>
+conda activate fhs-doc
+<span class="c1"># run the following command from the root of the package (where the miss_hit.cfg file is)</span>
+mh_style --fix .
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Faceted-HyperSARA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contributors.html" class="btn btn-neutral float-right" title="Contributors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

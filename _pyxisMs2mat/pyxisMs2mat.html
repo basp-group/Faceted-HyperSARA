@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyxisMs2mat package &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Module pyxisMs2mat.pyxis4DataExtraction" href="pyxisMs2mat.pyxis4DataExtraction.html" />
+    <link rel="prev" title="imaging package" href="../_imaging/imaging.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_src/src.html">src package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pyxisMs2mat package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pyxisMs2mat.pyxis4DataExtraction.html">Module pyxisMs2mat.pyxis4DataExtraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#general-notes">General notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>pyxisMs2mat package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_pyxisMs2mat/pyxisMs2mat.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyxisms2mat-package">
+<h1>pyxisMs2mat package<a class="headerlink" href="#pyxisms2mat-package" title="Permalink to this headline"></a></h1>
+<p>Set of helper functions to extract useful data from a <code class="docutils literal notranslate"><span class="pre">MS</span> <span class="pre">Table</span></code> into a set a <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file compatible with the interface of this library. Examples are provided below.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">List of modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pyxisMs2mat.pyxis4DataExtraction.html">Module pyxisMs2mat.pyxis4DataExtraction</a></li>
+</ul>
+</div>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline"></a></h2>
+<p>The <a class="reference internal" href="pyxisMs2mat.pyxis4DataExtraction.html#module-pyxisMs2mat.pyxis4DataExtraction" title="pyxisMs2mat.pyxis4DataExtraction"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxisMs2mat.pyxis4DataExtraction</span></code></a> module requires the two following Python packages.</p>
+<ol class="arabic simple">
+<li><p>Casacore: <a class="reference external" href="https://github.com/casacore/casacore">https://github.com/casacore/casacore</a></p></li>
+<li><p>Meqtrees: <a class="reference external" href="https://github.com/ratt-ru/meqtrees/wiki/Installation">https://github.com/ratt-ru/meqtrees/wiki/Installation</a></p></li>
+</ol>
+</section>
+<section id="general-notes">
+<h2>General notes<a class="headerlink" href="#general-notes" title="Permalink to this headline"></a></h2>
+<ol class="arabic simple">
+<li><p>Data extraction is performed using <code class="docutils literal notranslate"><span class="pre">pyxis</span></code>. The task should be performed in the directory <code class="docutils literal notranslate"><span class="pre">$FHS/pyxisMs2mat</span></code>, which contains the python script <code class="docutils literal notranslate"><span class="pre">pyxis4DataExtraction.py</span></code>.</p></li>
+<li><p>Extracted <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files are saved in <code class="docutils literal notranslate"><span class="pre">$FHS/data/</span></code>. The files contain the following fields.</p></li>
+</ol>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;frequency&quot;</span><span class="w">  </span><span class="c">% channel frequency</span><span class="w"></span>
+<span class="s">&quot;y&quot;</span><span class="w">  </span><span class="c">% data (Stokes I)</span><span class="w"></span>
+<span class="s">&quot;u&quot;</span><span class="w">  </span><span class="c">% u coordinate (in units of the wavelength)</span><span class="w"></span>
+<span class="s">&quot;v&quot;</span><span class="w">  </span><span class="c">% v coordinate (in units of the wavelength)</span><span class="w"></span>
+<span class="s">&quot;w&quot;</span><span class="w">  </span><span class="c">% w coordinate (in units of the wavelength)</span><span class="w"></span>
+<span class="s">&quot;nW&quot;</span><span class="w">  </span><span class="c">% sqrt(weights)</span><span class="w"></span>
+<span class="s">&quot;nWimag&quot;</span><span class="w"> </span><span class="c">% imaging weights if available (Briggs or uniform), empty otherwise</span><span class="w"></span>
+<span class="s">&quot;maxProjBaseline&quot;</span><span class="w">  </span><span class="c">% max projected baseline (in units of the wavelength)</span><span class="w"></span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Output channels’ indices and their associated filenames are incremented by <strong>1</strong> for MATLAB indexing purposes.</p></li>
+<li><p>Functions provided in <a class="reference internal" href="pyxisMs2mat.pyxis4DataExtraction.html#module-pyxisMs2mat.pyxis4DataExtraction" title="pyxisMs2mat.pyxis4DataExtraction"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pyxisMs2mat.pyxis4DataExtraction</span></code></a> are given as examples. The user is encouraged to define new functions tailored to the structure of his measurement set in case it is organised differently.</p></li>
+<li><p>In case of multiple spectral windows, the user is advised to use the  <code class="docutils literal notranslate"><span class="pre">split</span></code> task in CASA to image specific spectral windows and extract the data from the resulting measurement subset.</p></li>
+</ol>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h2>
+<section id="single-measurement-set-ms">
+<h3>Single measurement set (MS)<a class="headerlink" href="#single-measurement-set-ms" title="Permalink to this headline"></a></h3>
+<p>Extracting data from the channels indexed from  <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">3</span></code> of the source with field ID <code class="docutils literal notranslate"><span class="pre">0</span></code>, from <strong>all</strong> spectral windows.</p>
+<p>The user must provide the name/path to the measurement set <code class="docutils literal notranslate"><span class="pre">$MS</span></code>. The following inputs are optional.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$SRCNAME</span>  <span class="c1"># default SRCNAME=&quot;&quot; : source nametag which defines the main directory of the extracted data.</span>
+<span class="nv">$MSTAG</span>    <span class="c1"># default MSTAG=&quot;&quot; : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available.</span>
+<span class="nv">$FIELDID</span>  <span class="c1"># default FIELDID=0 : field ID of the source of interest,</span>
+<span class="nv">$FIRSTCH</span>  <span class="c1"># default FIRSTCH=0 : ID of the first channnel to be extracted from each spectral window,</span>
+<span class="nv">$LASTCH</span>   <span class="c1"># default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted from each spectral window</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/main_input_imaging.m</span></code>, the user should set the name of the image cube to be reconstructed <code class="docutils literal notranslate"><span class="pre">srcName</span></code> to the same value as <code class="docutils literal notranslate"><span class="pre">$SRCNAME</span></code></p>
+</div>
+<p>From the terminal, execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pyxis <span class="nv">MS</span><span class="o">=</span>myms.ms  <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span>  <span class="nv">LASTCH</span><span class="o">=</span><span class="m">3</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">0</span> getdata_ms
+</pre></div>
+</div>
+<p>Data will be saved as .mat files in the directory <code class="docutils literal notranslate"><span class="pre">$FHS/data/cyga/</span></code>. In the case of a single spectral window, the outcome is as follows</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>data/cyga/data_ch_1.mat
+data/cyga/data_ch_2.mat
+data/cyga/data_ch_3.mat
+data/cyga/data_ch_4.mat
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/main_input_imaging.m</span></code>, if the data set nametag (<code class="docutils literal notranslate"><span class="pre">$MSTAG</span></code>) was not provided during data extraction, as in the example above, the user should set <code class="docutils literal notranslate"><span class="pre">datasetNames</span></code> as</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">datasetNames</span> <span class="o">=</span> <span class="o">{</span><span class="s1">&#39;&#39;</span><span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="combine-two-measurement-sets-at-two-consecutive-frequency-bandwidths-with-same-spectral-window-specs">
+<h3>Combine two measurement sets at two consecutive frequency bandwidths, with same spectral window specs<a class="headerlink" href="#combine-two-measurement-sets-at-two-consecutive-frequency-bandwidths-with-same-spectral-window-specs" title="Permalink to this headline"></a></h3>
+<p>Extracting data from the channels indexed from  <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">15</span></code> of the source with field ID <code class="docutils literal notranslate"><span class="pre">2</span></code>, from <strong>all</strong> spectral windows.</p>
+<p>The user must provide the name/path to the two measurement sets <code class="docutils literal notranslate"><span class="pre">$MSLOW</span></code>  and <code class="docutils literal notranslate"><span class="pre">$MSHIGH</span></code> associated with the low frequency band and high frequency band meaurement sets, respectively. The following inputs are optional.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$SRCNAME</span>  <span class="c1"># default SRCNAME=&quot;&quot; : source nametag which defines the main directory of the extracted data.</span>
+<span class="nv">$MSTAG</span>    <span class="c1"># default MSTAG=&quot;&quot; : nametag of the data set which defines the subdirectory of the extracted data. It needs to be set when multiple data sets of the source of interest are available.</span>
+<span class="nv">$FIELDID</span>  <span class="c1"># default FIELDID=0 : field ID of the source of interest,</span>
+<span class="nv">$FIRSTCH</span>  <span class="c1"># default FIRSTCH=0 : ID of the first channnel to be extracted from each spectral window,</span>
+<span class="nv">$LASTCH</span>   <span class="c1"># default  LASTCH=NUM_CHAN : ID of the last channnel to be extracted from each spectral window</span>
+</pre></div>
+</div>
+<p>From the terminal, execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pyxis <span class="nv">MSLOW</span><span class="o">=</span>mylowbandms.ms <span class="nv">MSHIGH</span><span class="o">=</span>myhighbandms.ms <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span> <span class="nv">LASTCH</span><span class="o">=</span><span class="m">15</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">2</span>  getdata_ms_concat_bandwidth
+</pre></div>
+</div>
+<p>Data will be saved as .mat files in the directory <code class="docutils literal notranslate"><span class="pre">$FHS/data/cyga/</span></code>.</p>
+<p>In the case of a single spectral window, the outcome is as follows</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>data/cyga/data_ch_1.mat  % channel <span class="m">1</span> from mylowbandms.ms
+.
+data/cyga/data_ch_16.mat % channel <span class="m">16</span> from mylowbandms.ms
+data/cyga/data_ch_17.mat % channel <span class="m">1</span> from myhighbandms.ms
+.
+data/cyga/data_ch_32.mat % channel <span class="m">16</span> from myhighbandms.ms
+</pre></div>
+</div>
+</section>
+<section id="combine-different-measurment-sets-spanning-the-same-frequency-bandwidth-with-same-spectral-window-specs">
+<h3>Combine different measurment sets spanning the same frequency bandwidth, with same spectral window specs<a class="headerlink" href="#combine-different-measurment-sets-spanning-the-same-frequency-bandwidth-with-same-spectral-window-specs" title="Permalink to this headline"></a></h3>
+<p>Extracting data from the channels indexed from  <cite>0</cite> to <cite>12</cite> of the source with field ID <cite>0</cite>, from <strong>all</strong> spectral windows.
+From the terminal, execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pyxis <span class="nv">MS</span><span class="o">=</span>myms1.ms  <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">MSTAG</span><span class="o">=</span>dataset1 <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span>  <span class="nv">LASTCH</span><span class="o">=</span><span class="m">12</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">0</span> getdata_ms <span class="se">\</span>
+pyxis <span class="nv">MS</span><span class="o">=</span>myms2.ms  <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">MSTAG</span><span class="o">=</span>dataset2 <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span>  <span class="nv">LASTCH</span><span class="o">=</span><span class="m">12</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">0</span> getdata_ms <span class="se">\</span>
+pyxis <span class="nv">MS</span><span class="o">=</span>mymsn.ms  <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">MSTAG</span><span class="o">=</span>datasetn <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span>  <span class="nv">LASTCH</span><span class="o">=</span><span class="m">12</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">0</span> getdata_ms <span class="se">\</span>
+</pre></div>
+</div>
+<p>Data sets will be saved in the sub-directories.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>data/cyga/dataset1/
+data/cyga/dataset2/
+data/cyga/datasetn/
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/main_input_imaging.m</span></code>, the user should provide the nametags of the different sets in a cell as input to combine the data sets during imaging.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">datasetNames</span> <span class="o">=</span> <span class="o">{</span><span class="s1">&#39;dataset1&#39;</span>, <span class="s1">&#39;dataset2&#39;</span>,<span class="s1">&#39;datasetn&#39;</span><span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../_imaging/imaging.html" class="btn btn-neutral float-left" title="imaging package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyxisMs2mat.pyxis4DataExtraction.html" class="btn btn-neutral float-right" title="Module pyxisMs2mat.pyxis4DataExtraction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

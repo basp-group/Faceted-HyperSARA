@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module pyxisMs2mat.pyxis4DataExtraction &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="pyxisMs2mat package" href="pyxisMs2mat.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_src/src.html">src package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="pyxisMs2mat.html">pyxisMs2mat package</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module pyxisMs2mat.pyxis4DataExtraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyxisMs2mat.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyxisMs2mat.html#general-notes">General notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyxisMs2mat.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="pyxisMs2mat.html">pyxisMs2mat package</a> &raquo;</li>
+      <li>Module pyxisMs2mat.pyxis4DataExtraction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_pyxisMs2mat/pyxisMs2mat.pyxis4DataExtraction.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pyxisms2mat-pyxis4dataextraction">
+<h1>Module pyxisMs2mat.pyxis4DataExtraction<a class="headerlink" href="#module-pyxisms2mat-pyxis4dataextraction" title="Permalink to this headline"></a></h1>
+<p>Helper functions to extract useful data from an <code class="docutils literal notranslate"><span class="pre">MS</span> <span class="pre">Table</span></code> into a set a <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file.</p>
+<span class="target" id="module-pyxisMs2mat.pyxis4DataExtraction"></span><dl class="py function">
+<dt class="sig sig-object py" id="pyxisMs2mat.pyxis4DataExtraction.getdata">
+<span class="sig-prename descclassname"><span class="pre">pyxisMs2mat.pyxis4DataExtraction.</span></span><span class="sig-name descname"><span class="pre">getdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mstag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqFirst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqLast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileid0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyxisMs2mat/pyxis4DataExtraction.html#getdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyxisMs2mat.pyxis4DataExtraction.getdata" title="Permalink to this definition"></a></dt>
+<dd><p>Python function to access the MS and extract relevant data into a .mat file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msname</strong> (<em>string</em>) – Path to the MS.</p></li>
+<li><p><strong>srcname</strong> (<em>string</em>) – Name of the target source.</p></li>
+<li><p><strong>mstag</strong> (<em>str</em>) – Name tag of the MS (required if multiple MSs), by default “”.</p></li>
+<li><p><strong>freqFirst</strong> (<em>int</em>) – Index of the first channel frequency to extract from each spectral window, by default 0.</p></li>
+<li><p><strong>freqLast</strong> (<em>int</em>) – Index of the last channel frequency to extract from each spectral window, by default last channel frequency available in the MS.</p></li>
+<li><p><strong>srcid</strong> (<em>int</em>) – Field id of the target source.</p></li>
+<li><p><strong>fileid0</strong> (<em>int</em>) – ID of the last frequency channel if MSs of multiple frequency bandwidths are provided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ID of the last frequency channel if MSs of multiple frequency bandwidths are provided.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyxisMs2mat.pyxis4DataExtraction.getdata_ms">
+<span class="sig-prename descclassname"><span class="pre">pyxisMs2mat.pyxis4DataExtraction.</span></span><span class="sig-name descname"><span class="pre">getdata_ms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$MS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$SRCNAME'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mstag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$MSTAG'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$FIELDID'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqFirst</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$FIRSTCH'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqLast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$LASTCH'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyxisMs2mat/pyxis4DataExtraction.html#getdata_ms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyxisMs2mat.pyxis4DataExtraction.getdata_ms" title="Permalink to this definition"></a></dt>
+<dd><p>Pyxis function to be used from the command line to extract data from a single MS.
+Data from all available spectral windows will be extracted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msf</strong> (<em>str, required</em>) – Path to the MS.</p></li>
+<li><p><strong>srcname</strong> (<em>str, optional</em>) – Name of the target source, by default “”.</p></li>
+<li><p><strong>mstag</strong> (<em>str, optional</em>) – Name tag of the MS (required if multiple MSs), by default “”.</p></li>
+<li><p><strong>srcid</strong> (<em>str, optional</em>) – Field id of the target source, by default 0.</p></li>
+<li><p><strong>freqFirst</strong> (<em>str, optional</em>) – Index of the first channel frequency to extract from each spectral window, by default 0.</p></li>
+<li><p><strong>freqLast</strong> (<em>str, optional</em>) – Index of the last channel frequency to extract from each spectral window, by default last channel frequency available in the MS.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyxisMs2mat.pyxis4DataExtraction.getdata_ms_concat_bandwidth">
+<span class="sig-prename descclassname"><span class="pre">pyxisMs2mat.pyxis4DataExtraction.</span></span><span class="sig-name descname"><span class="pre">getdata_ms_concat_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msf_lowbandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$MSLOW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msf_highbandwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$MSHIGH'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$SRCNAME'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srcid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$FIELDID'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mstag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$MSTAG'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqFirst</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$FIRSTCH'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqLast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$LASTCH'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyxisMs2mat/pyxis4DataExtraction.html#getdata_ms_concat_bandwidth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyxisMs2mat.pyxis4DataExtraction.getdata_ms_concat_bandwidth" title="Permalink to this definition"></a></dt>
+<dd><p>Pyxis function to be used from the command line to extract data resulting from the combination of two MSs spanning two different frequency bands.
+Both MSs are expected to have the same specs of their associated spectral windows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msf_lowbandwidth</strong> (<em>str, required</em>) – Path to the low frequency band MS.</p></li>
+<li><p><strong>msf_highbandwidth</strong> (<em>str, required</em>) – Path to the high frequency band MS.</p></li>
+<li><p><strong>srcname</strong> (<em>str, optional</em>) – Name of the target source, by default “”.</p></li>
+<li><p><strong>srcid</strong> (<em>str, optional</em>) – Field id of the target source, by default 0.</p></li>
+<li><p><strong>mstag</strong> (<em>str, optional</em>) – Name tag of the MS (required if multiple MSs), by default “”.</p></li>
+<li><p><strong>freqFirst</strong> (<em>str, optional</em>) – Index of the first channel frequency to extract from each spectral window, by default 0.</p></li>
+<li><p><strong>freqLast</strong> (<em>str, optional</em>) – Index of the last channel frequency to extract from each spectral window, by default last channel frequency available in the MS.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyxisMs2mat.html" class="btn btn-neutral float-left" title="pyxisMs2mat package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

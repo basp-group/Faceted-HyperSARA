@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module lib.generate_data &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Module lib.operators" href="lib.operators.html" />
+    <link rel="prev" title="lib package" href="lib.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_src/src.html">src package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="lib.html">lib package</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module lib.generate_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.operators.html">Module  lib.operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.utils.html">Module  lib.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="lib.html">lib package</a> &raquo;</li>
+      <li>Module lib.generate_data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_lib/lib.generate_data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-lib-generate-data">
+<h1>Module lib.generate_data<a class="headerlink" href="#module-lib-generate-data" title="Permalink to this headline"></a></h1>
+<p>Helper functions to generate synthetic datasets such as those considered in <span id="id1">[<a class="reference internal" href="../biblio.html#id2" title="Abdullah Abdulaziz, Arwa Dabbech, and Yves Wiaux. Wideband super-resolution imaging in radio interferometry via low rankness and joint average sparsity models (HyperSARA). Monthly Notices of the Royal Astronomical Society, 489(1):1230–1248, 2019.">Abdulaziz2019</a>, <a class="reference internal" href="../biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span>.</p>
+<span class="target" id="module-lib.generate_data"></span><dl class="mat function">
+<dt class="sig sig-object mat" id="lib.generate_data.generate_cube">
+<span class="sig-prename descclassname"><span class="pre">lib.generate_data.</span></span><span class="sig-name descname"><span class="pre">generate_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_name</span></em>, <em class="sig-param"><span class="pre">f</span></em>, <em class="sig-param"><span class="pre">emission_lines</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.generate_data.generate_cube" title="Permalink to this definition"></a></dt>
+<dd><p>Script to generate a fully synthetic image cube as in
+<span id="id2">[<a class="reference internal" href="../biblio.html#id2" title="Abdullah Abdulaziz, Arwa Dabbech, and Yves Wiaux. Wideband super-resolution imaging in radio interferometry via low rankness and joint average sparsity models (HyperSARA). Monthly Notices of the Royal Astronomical Society, 489(1):1230–1248, 2019.">Abdulaziz2019</a>]</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> (<em>string</em>) – Name of a reference monochromatic image in <code class="docutils literal notranslate"><span class="pre">.fits</span></code> format.</p></li>
+<li><p><strong>f</strong> (<em>double[:]</em>) – Frequencies over which the wideband image is generated.</p></li>
+<li><p><strong>emission_lines</strong> (<em>bool</em>) – If set to true, insert emission lines in the synthetic wideband
+image.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>x0</strong> (<em>double[:, :, :]</em>) – Synthetic wideband image (3D) [N(1), N(2), L].</p></li>
+<li><p><strong>X0</strong> (<em>double[:, :]</em>) – Synthetic wideband image (reshape in 2D format) [N(1)*N*(2), L].</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.generate_data.generate_cube_W28">
+<span class="sig-prename descclassname"><span class="pre">lib.generate_data.</span></span><span class="sig-name descname"><span class="pre">generate_cube_W28</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_name</span></em>, <em class="sig-param"><span class="pre">f</span></em>, <em class="sig-param"><span class="pre">emission_lines</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.generate_data.generate_cube_W28" title="Permalink to this definition"></a></dt>
+<dd><p>Script to generate a fully synthetic image cube as in
+<span id="id3">[<a class="reference internal" href="../biblio.html#id2" title="Abdullah Abdulaziz, Arwa Dabbech, and Yves Wiaux. Wideband super-resolution imaging in radio interferometry via low rankness and joint average sparsity models (HyperSARA). Monthly Notices of the Royal Astronomical Society, 489(1):1230–1248, 2019.">Abdulaziz2019</a>]</span> tailored to W28.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> (<em>string</em>) – Name of a reference monochromatic image in <code class="docutils literal notranslate"><span class="pre">.fits</span></code> format.</p></li>
+<li><p><strong>f</strong> (<em>double[:]</em>) – Frequencies over which the wideband image is generated.</p></li>
+<li><p><strong>emission_lines</strong> (<em>bool</em>) – If set to true, insert emission lines in the synthetic wideband
+image.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>x0</strong> (<em>double[:, :, :]</em>) – Synthetic wideband image (3D) [N(1), N(2), L].</p></li>
+<li><p><strong>X0</strong> (<em>double[:, :]</em>) – Synthetic wideband image (reshape in 2D format) [N(1)*N*(2), L].</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.generate_data.generate_undersampled_cube">
+<span class="sig-prename descclassname"><span class="pre">lib.generate_data.</span></span><span class="sig-name descname"><span class="pre">generate_undersampled_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x0</span></em>, <em class="sig-param"><span class="pre">f</span></em>, <em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">c</span></em>, <em class="sig-param"><span class="pre">unds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.generate_data.generate_undersampled_cube" title="Permalink to this definition"></a></dt>
+<dd><p>Function returning a spectrally undersampled version of an input
+wideband image cube.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x0</strong> (<em>double[:, :, :]</em>) – Synthetic wideband image (3D) [Ny, Nx, c].</p></li>
+<li><p><strong>f</strong> (<em>double[:]</em>) – Frequencies over which the wideband image <cite>x0</cite> is defined.</p></li>
+<li><p><strong>Ny</strong> (<em>int</em>) – Spatial dimension of <cite>x0</cite> along axis y.</p></li>
+<li><p><strong>Nx</strong> (<em>int</em>) – Spatial dimension of <cite>x0</cite> along axis y.</p></li>
+<li><p><strong>c</strong> (<em>int</em>) – Spectrsl dimension of <cite>x0</cite>.</p></li>
+<li><p><strong>unds</strong> (<em>int</em>) – Spectral downsampling factor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>x0_new</strong> (<em>double[:, :, :]</em>) – Output wideband image.</p></li>
+<li><p><strong>X0_new</strong> (<em>double[:, :, :]</em>) – Matrix-format version of <cite>x0_new</cite>.</p></li>
+<li><p><strong>f_new</strong> (<em>double[:]</em>) – Frequencies over which <cite>x0_new</cite> is defined.</p></li>
+<li><p><strong>c_new</strong> (<em>int</em>) – Number of spectral channels after spectral downsmapling.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.generate_data.stationary_Gaussian_process">
+<span class="sig-prename descclassname"><span class="pre">lib.generate_data.</span></span><span class="sig-name descname"><span class="pre">stationary_Gaussian_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">m</span></em>, <em class="sig-param"><span class="pre">n</span></em>, <em class="sig-param"><span class="pre">rho</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.generate_data.stationary_Gaussian_process" title="Permalink to this definition"></a></dt>
+<dd><p>Draw a realization of a stationary random Gaussian field over an
+:math`m times n` grid, following <span id="id4">[<a class="reference internal" href="../biblio.html#id10" title="Dirk P. Kroese and Zdravko I. Botev. Spatial Process Simulation, pages 369–404. Springer International Publishing, Cham, 2015. doi:10.1007/978-3-319-10064-7_12.">Kroese2015</a>]</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>int</em>) – Image dimension (y axis).</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – Image dimension (x axis).</p></li>
+<li><p><strong>rho</strong> (<em>anonymous function</em>) – Function handle, function of a matrix <span class="math notranslate nohighlight">\(h\)</span> such that
+<span class="math notranslate nohighlight">\(\text{cov}(X_t, Y_s) = \rho(t-s)\)</span> is the covariance of
+a 2-dimensional stationary Gaussian field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>field1, field2</strong> (<em>double[:, :]</em>) – Two independent realization over the :math`m times n` grid
+considered.</p></li>
+<li><p><strong>tx, ty</strong> (<em>double[:]</em>) – Two vectors such that each field can be displayed using the command
+<code class="docutils literal notranslate"><span class="pre">imagesc(tx,</span> <span class="pre">ty,</span> <span class="pre">field1)</span></code> (idem for field2).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The size of covariance matrix is <code class="docutils literal notranslate"><span class="pre">m^2*n^2</span></code>.</p></li>
+<li><p>By default, when the function is called without assigning the output,
+<cite>field1</cite> is drectly display using the <code class="docutils literal notranslate"><span class="pre">imagesc</span></code> MATLAB function.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.generate_data.util_gen_measurements">
+<span class="sig-prename descclassname"><span class="pre">lib.generate_data.</span></span><span class="sig-name descname"><span class="pre">util_gen_measurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">input_snr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.generate_data.util_gen_measurements" title="Permalink to this definition"></a></dt>
+<dd><p>Generate noisy visibilities over several spectral channels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Input wodeband image.</p></li>
+<li><p><strong>G</strong> (<em>cell of cell of sparse complex[:, :]</em>) – Degridding matrix (per channel, per block).</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of int[:]</em>) – Selection vector to extract data blocks from the full Fourier plane.</p></li>
+<li><p><strong>A</strong> (<em>anonymous function.</em>) – Function handle implementing the NUFFT.</p></li>
+<li><p><strong>input_snr</strong> (<em>double</em>) – Target input SNR taken over all channels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>y0</strong> (<em>cell of cell of complex[:]</em>) – Clean (i.e., noiseless) visibilities.</p></li>
+<li><p><strong>y</strong> (<em>cell of cell of complex[:]</em>) – Noisy visibilities.</p></li>
+<li><p><strong>Nm</strong> (<em>int</em>) – Total number of visbilities (across all data blocks and channels).</p></li>
+<li><p><strong>sigma_noise</strong> (<em>double</em>) – Overall noise level.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.generate_data.util_gen_measurements_sigma">
+<span class="sig-prename descclassname"><span class="pre">lib.generate_data.</span></span><span class="sig-name descname"><span class="pre">util_gen_measurements_sigma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">sigma_noise</span></em>, <em class="sig-param"><span class="pre">seed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.generate_data.util_gen_measurements_sigma" title="Permalink to this definition"></a></dt>
+<dd><p>Generate noisy synthetic viasilities using a predefined noise level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Input wodeband image.</p></li>
+<li><p><strong>G</strong> (<em>cell of cell of sparse complex[:, :]</em>) – Degridding matrix (per channel, per block).</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of int[:]</em>) – Selection vector to extract data blocks from the full Fourier plane.</p></li>
+<li><p><strong>A</strong> (<em>anonymous function.</em>) – Function handle implementing the NUFFT.</p></li>
+<li><p><strong>sigma_noise</strong> (<em>double</em>) – Overall noise level.</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – Seed to initialize the random number generator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>y0</strong> (<em>cell of cell of complex[:]</em>) – Clean (i.e., noiseless) visibilities.</p></li>
+<li><p><strong>y</strong> (<em>cell of cell of complex[:]</em>) – Noisy visibilities.</p></li>
+<li><p><strong>Nm</strong> (<em>int</em>) – Total number of visbilities (across all data blocks and channels).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.generate_data.util_gen_measurements_snr">
+<span class="sig-prename descclassname"><span class="pre">lib.generate_data.</span></span><span class="sig-name descname"><span class="pre">util_gen_measurements_snr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">input_snr</span></em>, <em class="sig-param"><span class="pre">rng_stream</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.generate_data.util_gen_measurements_snr" title="Permalink to this definition"></a></dt>
+<dd><p>Generate noisy synthetic viasilities using a predefined per-channel input
+SNR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Input wodeband image.</p></li>
+<li><p><strong>G</strong> (<em>cell of cell of sparse complex[:, :]</em>) – Degridding matrix (per channel, per block).</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of int[:]</em>) – Selection vector to extract data blocks from the full Fourier plane.</p></li>
+<li><p><strong>A</strong> (<em>anonymous function.</em>) – Function handle implementing the NUFFT.</p></li>
+<li><p><strong>input_snr</strong> (<em>double[:]</em>) – Input SNR for each spectral channel.</p></li>
+<li><p><strong>rng_stream</strong> (<em>random number generator</em>) – Random number generator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>y0</strong> (<em>cell of cell of complex[:]</em>) – Clean (i.e., noiseless) visibilities.</p></li>
+<li><p><strong>y</strong> (<em>cell of cell of complex[:]</em>) – Noisy visibilities.</p></li>
+<li><p><strong>Ml</strong> (<em>int[:]</em>) – Number of data points in each spectral channel.</p></li>
+<li><p><strong>Nm</strong> (<em>int</em>) – Total number of visbilities (across all data blocks and channels).</p></li>
+<li><p><strong>sigma_noise</strong> (<em>double[:]</em>) – Noise level in each spectral channel.</p></li>
+<li><p><strong>norm_noise</strong> (<em>double[:]</em>) – Euclidean norm of the Gaussian noise affecting each data channel.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.generate_data.util_gen_measurements_snr_new">
+<span class="sig-prename descclassname"><span class="pre">lib.generate_data.</span></span><span class="sig-name descname"><span class="pre">util_gen_measurements_snr_new</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">input_snr</span></em>, <em class="sig-param"><span class="pre">rng_stream</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.generate_data.util_gen_measurements_snr_new" title="Permalink to this definition"></a></dt>
+<dd><p>Generate noisy synthetic viasilities using a predefined per-channel input
+SNR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Input wodeband image.</p></li>
+<li><p><strong>G</strong> (<em>cell of cell of sparse complex[:, :]</em>) – Degridding matrix (per channel, per block).</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of int[:]</em>) – Selection vector to extract data blocks from the full Fourier plane.</p></li>
+<li><p><strong>A</strong> (<em>anonymous function.</em>) – Function handle implementing the NUFFT.</p></li>
+<li><p><strong>input_snr</strong> (<em>double[:]</em>) – Input SNR for each spectral channel.</p></li>
+<li><p><strong>rng_stream</strong> (<em>random number generator</em>) – Random number generator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>y0</strong> (<em>cell of cell of complex[:]</em>) – Clean (i.e., noiseless) visibilities.</p></li>
+<li><p><strong>y</strong> (<em>cell of cell of complex[:]</em>) – Noisy visibilities.</p></li>
+<li><p><strong>Ml</strong> (<em>int[:]</em>) – Number of data points in each spectral channel.</p></li>
+<li><p><strong>Nm</strong> (<em>int</em>) – Total number of visbilities (across all data blocks and channels).</p></li>
+<li><p><strong>sigma_noise</strong> (<em>double[:]</em>) – Noise level in each spectral channel.</p></li>
+<li><p><strong>norm_noise</strong> (<em>double[:]</em>) – Euclidean norm of the Gaussian noise affecting each data channel.</p></li>
+<li><p><strong>G</strong> (<em>cell of cell of sparse complex[:, :]</em>) – Degridding matrix (per channel, per block) including noise whitening
+contribution.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.generate_data.util_gen_sampling_pattern">
+<span class="sig-prename descclassname"><span class="pre">lib.generate_data.</span></span><span class="sig-name descname"><span class="pre">util_gen_sampling_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pattern</span></em>, <em class="sig-param"><span class="pre">param</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.generate_data.util_gen_sampling_pattern" title="Permalink to this definition"></a></dt>
+<dd><p>Function to generate a synthetic <span class="math notranslate nohighlight">\(uv\)</span>-coverage as in
+<span id="id5">[<a class="reference internal" href="../biblio.html#id11" title="A. Onose, A. Dabbech, and Y. Wiaux. An accelerated splitting algorithm for radio-interferometric imaging: when natural and uniform weighting meet. Monthly Notices of the Royal Astronomical Society, 469(1):938–949, 2017.">Onose2017</a>]</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pattern</strong> (<em>string</em>) – Type of <span class="math notranslate nohighlight">\(uv\)</span>-coverage. Available options are …</p></li>
+<li><p><strong>param</strong> (<em>struct</em>) – Configuration options for the generation of the synthetic sampling
+pattern (to be completed).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>u</em> – [description]</p></li>
+<li><p><em>v</em> – [description]</p></li>
+<li><p><em>uw</em> – [description]</p></li>
+<li><p><em>vw</em> – [description]</p></li>
+<li><p><em>Nm</em> – [description]</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lib.html" class="btn btn-neutral float-left" title="lib package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lib.operators.html" class="btn btn-neutral float-right" title="Module lib.operators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

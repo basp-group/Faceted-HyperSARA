@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Default parameters &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src package" href="_src/src.html" />
+    <link rel="prev" title="References" href="biblio.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Default parameters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#user-defined-parameters">User-defined parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inner-algorithmic-parameters">Inner algorithmic parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_src/src.html">src package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Default parameters</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/default.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="default-parameters">
+<h1>Default parameters<a class="headerlink" href="#default-parameters" title="Permalink to this headline"></a></h1>
+<p>A number of parameters can be accessed by the user to apply one of the three implemented imaging approaches.</p>
+<section id="user-defined-parameters">
+<h2>User-defined parameters<a class="headerlink" href="#user-defined-parameters" title="Permalink to this headline"></a></h2>
+<p>All parameters which explicitly require to be set by the user are defined in the <a class="reference internal" href="#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a> script. Additional instructions on how to set these values are provided in the documentation below and in the source code of this script, to be modified by the user.</p>
+<dl class="mat script">
+<dt class="sig sig-object mat" id="imaging.main_input_imaging">
+<span class="sig-prename descclassname"><span class="pre">imaging.</span></span><span class="sig-name descname"><span class="pre">main_input_imaging</span></span><a class="headerlink" href="#imaging.main_input_imaging" title="Permalink to this definition"></a></dt>
+<dd><p>Main imaging utility script, to be configured by the user to run an
+experiment.</p>
+<p>This file calls the generic imaging pipeline
+<a class="reference internal" href="_imaging/imaging.html#imaging.imaging" title="imaging.imaging"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">imaging.imaging()</span></code></a> to reconstruct an image from
+the input dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>srcName</strong> (<em>string</em>) – Name of the target source to be reconstructed as specified during
+data extraction, used to get the data and generate output files.</p></li>
+<li><p><strong>datasetNames</strong> (<em>cell of string</em>) – Name of the different datasets used (e.g., in the cases of
+different acquisition configurations or different observation times),
+to be set to <code class="docutils literal notranslate"><span class="pre">{''}</span></code> if one data set is imaged or no name tag of
+the MS is given during data extraction.</p></li>
+<li><p><strong>dataFilename</strong> (<em>anonymous function</em>) – Function handle taking a channel index as an input, and returning the
+name of the associated data <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file (one file per frequency channel)
+following the nomenclature adopted during data extraction. Do not
+modify unless the nomenclature has been altered.</p></li>
+<li><p><strong>idChannels2Image</strong> (<em>array[int]</em>) – Indices of the  input (<cite>physical</cite>) channels to be imaged.</p></li>
+<li><p><strong>nChannelsPerImage</strong> (<em>int</em>) – Number of consecutive channels to be concatenated into each  output
+(effective) channel (set to <cite>1</cite> if full spectral resolution is
+considered, i.e. number of output channels is equal to the number of
+input channels).</p></li>
+<li><p><strong>effChans2Image</strong> (<em>cell array</em>) – Cell array containing the ids of the input (physical) channels to be
+concatenated for each output (effective) channel. Set automatically if
+<cite>idChannels2Image</cite> and <cite>nChannelsPerImage</cite> are provided.</p></li>
+<li><p><strong>main_dir</strong> (<em>string</em>) – Directory of the Faceted-HyperSARA repository.</p></li>
+<li><p><strong>data_dir</strong> (<em>string</em>) – Directory of the input <code class="docutils literal notranslate"><span class="pre">.mat</span></code> data files. Default <code class="docutils literal notranslate"><span class="pre">./Faceted-HyperSARA/data/</span></code>.</p></li>
+<li><p><strong>imaging_dir</strong> (<em>string</em>) – Directory of the imaging experiment. Default
+<code class="docutils literal notranslate"><span class="pre">./Faceted-HyperSARA/imaging</span></code>.</p></li>
+<li><p><strong>calib_type</strong> (<em>string</em>) – calibration type: <cite>dde</cite>, <cite>die</cite> or <cite>[]</cite> if no results from a calib
+pre-processing step.</p></li>
+<li><p><strong>preproc_calib_dir</strong> (<em>string</em>) – Sub-directory in <cite>data_dir</cite>  containing files from a calibration
+pre-processing step. To be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code> if not used or not
+available.</p></li>
+<li><p><strong>json_filename</strong> (<em>string</em>) – Name of the input <code class="docutils literal notranslate"><span class="pre">.json</span></code> configuration file specifying the
+value of the algorithm parameters (PDFB, reweighting, ellipsoid,
+projection, preconditioning, …).</p></li>
+<li><p><strong>param_global.im_Nx</strong> (<em>int</em>) – Number of pixels along axis x in the reconstructed image.</p></li>
+<li><p><strong>param_global.im_Ny</strong> (<em>int</em>) – Number of pixels along axis y in the reconstructed image.</p></li>
+<li><p><strong>param_global.im_pixelSize</strong> (<em>double</em>) – Pixel-size in arcsec. Set to <code class="docutils literal notranslate"><span class="pre">[]</span></code> to use
+the default value corresponding to 2 times the resolution of the
+observation (given by the longest baseline at the highest frequency).</p></li>
+<li><p><strong>param_global.measop_flag_visibility_gridding</strong> (<em>bool</em>) – Flag to activate visibility gridding for data dimensionality
+reduction.</p></li>
+<li><p><strong>param_global.algo_solver</strong> (<em>string</em>) – Name of the imaging approach used. Possible values are <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>
+(Faceted-HyperSARA), <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code> (HyperSARA) and <code class="docutils literal notranslate"><span class="pre">&quot;sara&quot;</span></code> (SARA).</p></li>
+<li><p><strong>param_global.facet_Qx</strong> (<em>int</em>) – Number of spatial facets along spatial axis x. Active only in
+<code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>. If the field is not specified, the maximum possible
+number of facets will the selected along the y axis.</p></li>
+<li><p><strong>param_global.facet_Qy</strong> (<em>int</em>) – Number of spatial facets along spatial axis y. Active only in
+<code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>. If the field is not specified, the maximum possible
+number of facets will the selected along the y axis.</p></li>
+<li><p><strong>param_global.facet_overlap_fraction</strong> (<em>double[2]</em>) – Fraction of the total size of facet overlapping with a neighbouring
+facet along each axis (y and x) for the faceted low-rankness prior.
+Active only in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>. Will be reset
+automatically to <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">0]</span></code> if the spatial faceting is not active in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>
+along at least one dimension (i.e., <code class="docutils literal notranslate"><span class="pre">param_global.facet_Qy</span> <span class="pre">=</span> <span class="pre">1</span></code> and/or <code class="docutils literal notranslate"><span class="pre">param_global.facet_Qx</span> <span class="pre">=</span> <span class="pre">1</span></code>).</p></li>
+<li><p><strong>param_global.facet_subcubeInd</strong> (<em>int</em>) – Index of the subcube to be reconstructed (if spectral faceting is
+used). To be set to <code class="docutils literal notranslate"><span class="pre">0</span></code> otherwise.</p></li>
+<li><p><strong>param_global.reg_gam</strong> (<em>double</em>) – Additional multiplicative factor affecting the joint average sparsity
+regularization term in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code>. Additional
+multiplicative factor affecting the average sparsity
+regularization term in <code class="docutils literal notranslate"><span class="pre">&quot;sara&quot;</span></code>.</p></li>
+<li><p><strong>param_global.reg_gam_bar</strong> (<em>double</em>) – Additional multiplicative factor affecting  low-rankness prior
+regularization parameter. Active only in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code>.</p></li>
+<li><p><strong>param_global.reg_flag_reweighting</strong> (<em>bool</em>) – Flag to activate the re-weighting procedure. Default set to
+<code class="docutils literal notranslate"><span class="pre">true</span></code>.</p></li>
+<li><p><strong>param_global.reg_nReweights</strong> (<em>int</em>) – Maximum number of reweighting iterations.</p></li>
+<li><p><strong>param_global.algo_flag_computeOperatorNorm</strong> (<em>bool</em>) – Flag to trigger the computation of the norm of the measurement
+operator. Default set to <code class="docutils literal notranslate"><span class="pre">true</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">false</span></code>,
+MATLAB will look for a file where this
+quantity has been saved (save and computation steps are triggered in
+<a class="reference internal" href="_imaging/imaging.html#imaging.imaging" title="imaging.imaging"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">imaging.imaging()</span></code></a>).</p></li>
+<li><p><strong>param_global.parcluster</strong> (<em>string</em>) – Name of the parallel parcluster profile to launch the parpool. By default <code class="docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code> profile
+is used. The user should set it to the name of the slurm parcluster
+profile created on his/her HPC machine, if prefered.</p></li>
+<li><p><strong>param_global.preproc_filename_l2bounds</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
+returning a string corresponding to the name of a file
+containing pre-computed <span class="math notranslate nohighlight">\(\ell_2\)</span> bounds. If not used, must be set
+to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><strong>param_global.preproc_filename_model</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
+returning the name of a file containing a model image to be used to
+initialize the reconstruction algorithm. If not used, should be set to
+<code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><strong>param_global.preproc_filename_die</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
+returning a string corresponding to the name of a file containing
+DIE calibration constants. If not used, must be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><strong>param_global.preproc_filename_dde</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
+returning a string corresponding to the name of a file containing
+DDE calibration constants. If not used, must be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">%% Examples to set the input (physical) and output (effective) channels IDs</span><span class="w"></span>
+<span class="c">%% Option 1: provide  `effChans2Image` a cell array containing the ids</span><span class="w"></span>
+<span class="c">% of the physical channels to be concatenated for each effective channel.</span><span class="w"></span>
+<span class="c">% example a: two effective channels, containing two physical</span><span class="w"></span>
+<span class="c">% channels each</span><span class="w"></span>
+<span class="n">effChans2Image</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]};</span><span class="w"></span>
+
+<span class="c">% example b: one effective channel with one physical channel</span><span class="w"></span>
+<span class="n">effChans2Image</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{[</span><span class="mi">1</span><span class="p">]};</span><span class="w"></span>
+
+<span class="c">%% Option 2: provide all ids of physical channels `nChannelsPerImage` &amp; number</span><span class="w"></span>
+<span class="c">% of channel per effective channel `nChannelsPerImage`. The list of the ids</span><span class="w"></span>
+<span class="c">% of the physical channels to be concatenated for each effective</span><span class="w"></span>
+<span class="c">% channel `effChans2Image` will be created automatically.</span><span class="w"></span>
+<span class="c">% example c:  subcube 1 (first channel from each spectral</span><span class="w"></span>
+<span class="c">% window (in this example two spectral windows are flagged).</span><span class="w"></span>
+<span class="c">% The number of output (effective) channels is equal to the number</span><span class="w"></span>
+<span class="c">% of input (physical) channels</span><span class="w"></span>
+<span class="n">idChannels2Image</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">272</span><span class="p">,</span><span class="w"> </span><span class="mi">289</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">320</span><span class="p">,</span><span class="w"> </span><span class="mi">337</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">512</span><span class="p">];</span><span class="w"></span>
+<span class="n">nChannelsPerImage</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+
+<span class="c">% example d: reduced imagecube containing 30 effective channels</span><span class="w"></span>
+<span class="c">% each combining 16 physical channels.</span><span class="w"></span>
+<span class="c">% In this example the number of output (effective) channels is reduced to 30 from</span><span class="w"></span>
+<span class="c">% 480 input (physical) channels.</span><span class="w"></span>
+<span class="n">idChannels2Image</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">272</span><span class="p">,</span><span class="w"> </span><span class="mi">289</span><span class="p">:</span><span class="mi">320</span><span class="p">,</span><span class="w"> </span><span class="mi">337</span><span class="p">:</span><span class="mi">512</span><span class="p">];</span><span class="w"></span>
+<span class="n">nChannelsPerImage</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<ul class="simple">
+<li><p>Data files (example: <code class="docutils literal notranslate"><span class="pre">'data_ch_1.mat'</span></code>) are expected to contain the following variables : <cite>y</cite> (complex vector of
+visibilities, Stokes I), <cite>u</cite> , <cite>v</cite>, <cite>w</cite> (arrays of
+<span class="math notranslate nohighlight">\(uvw\)</span>-coordinates),`maxProjBaseline`
+(double, maximum projected baseline), <cite>nW</cite> (noise whitening vector), <cite>frequency</cite> (associated frequency).</p></li>
+<li><p>Note that the data <cite>y</cite>  are not whitened.
+The variables <cite>maxProjBaseline</cite> and the <cite>uvw</cite> coordinates are
+in units of the wavelength (i.e. normalised by the associated wavelength).</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="inner-algorithmic-parameters">
+<h2>Inner algorithmic parameters<a class="headerlink" href="#inner-algorithmic-parameters" title="Permalink to this headline"></a></h2>
+<p>The parameters listed below, defined in the <code class="docutils literal notranslate"><span class="pre">imaging/default_parameters.json</span></code> file, specify the configuration in which the reweighting scheme and the primal-dual forward-backward (PDFB) algorithm are applied in the selected imaging approach.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Users are encouraged to use the default values provided in <code class="docutils literal notranslate"><span class="pre">imaging/default_parameters.json</span></code>, unless precisely aware of their impact on the reconstruction process.</p>
+</div>
+<p>Default values can be bypassed by providing the name of a new <code class="docutils literal notranslate"><span class="pre">.json</span></code> file to the <a class="reference internal" href="#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a> configuration script (see the variable <code class="docutils literal notranslate"><span class="pre">json_filename</span></code> in l. 136). Note that all the fields specified in <code class="docutils literal notranslate"><span class="pre">imaging/default_parameters.json</span></code> are required to be able to run the imaging pipeline.</p>
+<div class="admonition-reweighting-scheme-cite-p-candes2009 admonition">
+<p class="admonition-title">Reweighting scheme <span id="id1">[<a class="reference internal" href="biblio.html#id3" title="Emmanuel J. Candès, Xiaodong Li, Yi Ma, and John Wright. Robust principal component analysis? journal of ACM, 58(1):1–37, 2009.">Candes2009</a>]</span></p>
+<dl class="simple">
+<dt>flag_reweighting<span class="classifier">true</span></dt><dd><p>Flag indicating whether the reweighting scheme is activated or not.</p>
+</dd>
+<dt>min_iter<span class="classifier">1</span></dt><dd><p>Minimum number of reweighting iterations.</p>
+</dd>
+<dt>max_iter<span class="classifier">10</span></dt><dd><p>Maximum number of reweighting iterations.</p>
+</dd>
+<dt>rel_var<span class="classifier">1e-4</span></dt><dd><p>Stopping criterion (relative variation of the objective function over two consecutive reweighting steps).</p>
+</dd>
+<dt>alpha<span class="classifier">1</span></dt><dd><p>Additional</p>
+</dd>
+<dt>backup_frequency<span class="classifier">1</span></dt><dd><p>Number of iterations after which all the variables within the algorithm are saved (for a warm-restart).</p>
+</dd>
+<dt>verbose<span class="classifier">2</span></dt><dd><p>Run the algorithm in verbose mode (0: no information displayed, 1: partial information displayed, 2: most verbose state).</p>
+</dd>
+</dl>
+<p>See <a class="reference internal" href="_src/src.sara.html#src.sara.sara" title="src.sara.sara"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">src.sara.sara()</span></code></a>, <a class="reference internal" href="_src/src.hs.html#src.hs.hyperSARA" title="src.hs.hyperSARA"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">src.hs.hyperSARA()</span></code></a> and <a class="reference internal" href="_src/src.fhs.html#src.fhs.facetHyperSARA" title="src.fhs.facetHyperSARA"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">src.fhs.facetHyperSARA()</span></code></a> for further details.</p>
+</div>
+<div class="admonition-primal-dual-forward-backward-algorithm-pdfb-cite-p-condat2013-vu2013-pesquet2014 admonition">
+<p class="admonition-title">Primal-dual forward-backward algorithm (PDFB) <span id="id2">[<a class="reference internal" href="biblio.html#id5" title="Laurent Condat. A primal-dual splitting method for convex optimization involving Lipschitzian, proximable and linear composite terms. J. Optim. Theory Appl., 158:460–479, 2013.">Condat2013</a>, <a class="reference internal" href="biblio.html#id15" title="Bang Công Vũ. A splitting algorithm for dual monotone inclusions involving cocoercive operators. Advances in Computational Mathematics, 38(3):667–681, Apr. 2013.">Vu2013</a>, <a class="reference internal" href="biblio.html#id12" title="Jean-Christophe Pesquet and Audrey Repetti. A class of randomized primal-dual algorithms for distributed optimization. Journal of nonlinear and convex analysis, 16(12):2453–2490, Nov. 2015.">Pesquet2014</a>]</span></p>
+<dl class="simple">
+<dt>min_iter<span class="classifier">10</span></dt><dd><p>Minimum number of iterations.</p>
+</dd>
+<dt>max_iter<span class="classifier">2000</span></dt><dd><p>Maximum number of iterations.</p>
+</dd>
+<dt>rel_var<span class="classifier">1e-5</span></dt><dd><p>Stopping criterion (relative variation of the objective function). This criterion needs to be satisfied jointly with the data-fidelity criterion encoded in <code class="docutils literal notranslate"><span class="pre">fidelity_tolerance</span></code>.</p>
+</dd>
+<dt>fidelity_tolerance<span class="classifier">1.01</span></dt><dd><p>Data fidelity cirterion (norm of the residual in each data block is within <code class="docutils literal notranslate"><span class="pre">fidelity_tolerance</span></code> of the radius of the associated <span class="math notranslate nohighlight">\(\ell_2\)</span>-ball constraint). This criterion needs to be satisfied jointly with the relative variation criterion encoded in <code class="docutils literal notranslate"><span class="pre">rel_var</span></code>.</p>
+</dd>
+<dt>rel_var_low<span class="classifier">5e-6</span></dt><dd><p>Additional relative variation criterion, taking precedence over <code class="docutils literal notranslate"><span class="pre">rel_var</span></code> and <code class="docutils literal notranslate"><span class="pre">fidelity_tolerance</span></code>. This criterion avoids configurations in which the iterates are trapped in a local minimum, and very slowly evolve to satisfy the data-fidelity constraints.</p>
+</dd>
+</dl>
+<p>See <a class="reference internal" href="_src/src.sara.html#src.sara.sara" title="src.sara.sara"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">src.sara.sara()</span></code></a>, <a class="reference internal" href="_src/src.hs.html#src.hs.hyperSARA" title="src.hs.hyperSARA"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">src.hs.hyperSARA()</span></code></a> and <a class="reference internal" href="_src/src.fhs.html#src.fhs.facetHyperSARA" title="src.fhs.facetHyperSARA"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">src.fhs.facetHyperSARA()</span></code></a> for further details.</p>
+</div>
+<div class="admonition-non-uniform-fast-fourier-transform-nufft-cite-p-fessler2003 admonition">
+<p class="admonition-title">Non-uniform fast Fourier transform (NUFFT) <span id="id3">[<a class="reference internal" href="biblio.html#id8" title="Jeffrey A. Fessler and Bradley P. Sutton. Nonuniform fast Fourier transforms using min-max interpolation. IEEE Trans. Signal Process., 51(2):560–574, Januray 2003.">Fessler2003</a>]</span></p>
+<dl class="simple">
+<dt>ox<span class="classifier">2</span></dt><dd><p>Fourier oversampling factor along the axis x.</p>
+</dd>
+<dt>oy<span class="classifier">2</span></dt><dd><p>Fourier oversampling factor along the axis y.</p>
+</dd>
+<dt>Kx<span class="classifier">7</span></dt><dd><p>Size of the NUFFT interpolation kernel along axis x.</p>
+</dd>
+<dt>Ky<span class="classifier">7</span></dt><dd><p>Size of the NUFFT interpolation kernel along axis y.</p>
+</dd>
+<dt>kernel<span class="classifier">“minmax:tuned”</span></dt><dd><p>Name of the selected NUFFT interpolation kernel. Possible options include <code class="docutils literal notranslate"><span class="pre">kaiser</span></code>, <code class="docutils literal notranslate"><span class="pre">minmax:kb</span></code> and <code class="docutils literal notranslate"><span class="pre">minmax:tuned</span></code>. See associated documentation of the <a class="reference external" href="https://basp-group.github.io/RI-measurement-operator/_lib/lib.operators.html#lib.operators.op_nufft">lib.operators.op_nufft function</a> from the RI-measurement-operator module.</p>
+</dd>
+</dl>
+</div>
+<div class="admonition-preconditioning-instrumental-in-pdfb-cite-p-onose2017 admonition">
+<p class="admonition-title">Preconditioning (instrumental in PDFB) <span id="id4">[<a class="reference internal" href="biblio.html#id11" title="A. Onose, A. Dabbech, and Y. Wiaux. An accelerated splitting algorithm for radio-interferometric imaging: when natural and uniform weighting meet. Monthly Notices of the Royal Astronomical Society, 469(1):938–949, 2017.">Onose2017</a>]</span></p>
+<dl class="simple">
+<dt>gen_uniform_weight_matrix<span class="classifier">true</span></dt><dd><p>Flag to activate the generation of uniform weights (to be kept active)</p>
+</dd>
+<dt>uniform_weight_sub_pixels<span class="classifier">1</span></dt><dd><p>Parameter to consider sub-pixel weights in the uniform weighting scheme.</p>
+</dd>
+</dl>
+<p>See associated documentation of the <a class="reference external" href="https://basp-group.github.io/RI-measurement-operator/_lib/lib.utils.html#lib.utils.util_gen_preconditioning_matrix">lib.utils.util_gen_preconditioning_matrix function</a> from the RI-measurement-operator module.</p>
+</div>
+<div class="admonition-ellipsoid-projection-instrumental-in-pdfb-cite-p-onose2017 admonition">
+<p class="admonition-title">Ellipsoid projection (instrumental in PDFB) <span id="id5">[<a class="reference internal" href="biblio.html#id11" title="A. Onose, A. Dabbech, and Y. Wiaux. An accelerated splitting algorithm for radio-interferometric imaging: when natural and uniform weighting meet. Monthly Notices of the Royal Astronomical Society, 469(1):938–949, 2017.">Onose2017</a>]</span></p>
+<dl class="simple">
+<dt>min_iter<span class="classifier">1</span></dt><dd><p>Minimum number of iterations.</p>
+</dd>
+<dt>max_iter<span class="classifier">20</span></dt><dd><p>Maximum number of iterations.</p>
+</dd>
+<dt>eps<span class="classifier">1e-8</span></dt><dd><p>Stopping criterion based on the relative variation of the objective function (associated with the projection problem).</p>
+</dd>
+</dl>
+<p>See associated documentation of the <a class="reference external" href="https://basp-group.github.io/RI-measurement-operator/_lib/lib.utils.html#lib.utils.solver_proj_elipse_fb">lib.utils.solver_proj_elipse_fb</a> from the RI-measurement-operator module.</p>
+</div>
+<div class="admonition-wavelet-dictionary-sara-dictionary-by-default-cite-p-carrillo2012 admonition">
+<p class="admonition-title">Wavelet dictionary (SARA dictionary by default) <span id="id6">[<a class="reference internal" href="biblio.html#id4" title="R. E. Carrillo, J. D. McEwen, and Y. Wiaux. Sparsity averaging reweighted analysis (SARA): a novel algorithm for radio-interferometric imaging. Monthly Notices of the Royal Astronomical Society, 426(2):1223–1234, 2012.">Carrillo2012</a>]</span></p>
+<dl class="simple">
+<dt>basis<span class="classifier">[“db1”, “db2”, “db3”, “db4”, “db5”, “db6”, “db7”, “db8”, “self”]</span></dt><dd><p>Name of the wavelet dictionaries considered (“self” corresponding to the Dirac basis). By default, contains the list of wavelets defining the SARA dictionary <span id="id7">[<a class="reference internal" href="biblio.html#id4" title="R. E. Carrillo, J. D. McEwen, and Y. Wiaux. Sparsity averaging reweighted analysis (SARA): a novel algorithm for radio-interferometric imaging. Monthly Notices of the Royal Astronomical Society, 426(2):1223–1234, 2012.">Carrillo2012</a>]</span>. Whenever used, the Dirac basis needs to be specified in last.</p>
+</dd>
+<dt>nlevel<span class="classifier">4</span></dt><dd><p>Number of decomposition scales considered.</p>
+</dd>
+<dt>filter_length<span class="classifier">[2, 4, 6, 8, 10, 12, 14, 16, 0]</span></dt><dd><p>Length of the filters corresponding to the selected wavelet dictionaries, where by convention 0 corresponds to the Dirac basis.</p>
+</dd>
+</dl>
+<p>See associated documentation in the <a class="reference external" href="https://basp-group.github.io/SARA-dictionary/index.html">SARA-dictionary</a> module.</p>
+</div>
+<div class="admonition-math-w-projection-parameters-cite-p-dabbech2017 admonition">
+<p class="admonition-title"><span class="math notranslate nohighlight">\(w\)</span>-projection parameters <span id="id8">[<a class="reference internal" href="biblio.html#id16" title="Arwa Dabbech, Laura Wolz, Luke Pratley, Jason D McEwen, and Yves Wiaux. The w-effect in interferometric imaging: from a fast sparse measurement operator to superresolution. Monthly Notices of the Royal Astronomical Society, 471(4):4300–4313, Jul. 2017.">Dabbech2017</a>]</span></p>
+<dl class="simple">
+<dt>measop_flag_wproj<span class="classifier">false</span></dt><dd><p>Flag to activate <span class="math notranslate nohighlight">\(w\)</span>-correction.</p>
+</dd>
+<dt>measop_wprojCEnergyL2<span class="classifier">0.9999</span></dt><dd><p>Sparsification levels for the <span class="math notranslate nohighlight">\(w\)</span> kernel, to be selected in the interval <span class="math notranslate nohighlight">\([0.99, 1]\)</span>.</p>
+</dd>
+<dt>measop_wprojGEnergyL2<span class="classifier">0.9999</span></dt><dd><p>Sparsification levels for convolution kernels involved in the degridding matrix <span class="math notranslate nohighlight">\(G\)</span> after <span class="math notranslate nohighlight">\(w\)</span>-correction. To be selected in the interval <span class="math notranslate nohighlight">\([0.99, 1]\)</span>.</p>
+</dd>
+</dl>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="biblio.html" class="btn btn-neutral float-left" title="References" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="_src/src.html" class="btn btn-neutral float-right" title="src package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module lib.operators &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Module lib.utils" href="lib.utils.html" />
+    <link rel="prev" title="Module lib.generate_data" href="lib.generate_data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_src/src.html">src package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="lib.html">lib package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lib.generate_data.html">Module lib.generate_data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module  lib.operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.utils.html">Module  lib.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="lib.html">lib package</a> &raquo;</li>
+      <li>Module  lib.operators</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_lib/lib.operators.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-lib-operators">
+<h1>Module  lib.operators<a class="headerlink" href="#module-lib-operators" title="Permalink to this headline"></a></h1>
+<p>Helper functions to simplify the call to the measurement and SARA operators (forward and adjoint operators).</p>
+<span class="target" id="module-lib.operators"></span><dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.HS_adjoint_operator">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_adjoint_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">Gw</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">M</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_adjoint_operator" title="Permalink to this definition"></a></dt>
+<dd><p>Apply adjoint of the wideband measurement operator (w/o data blocking,
+adjoint of <a class="reference internal" href="#lib.operators.HS_forward_operator" title="lib.operators.HS_forward_operator"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_forward_operator()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>cell of complex[:]</em>) – Input visibilities.</p></li>
+<li><p><strong>Gw</strong> (<em>cell of sparse complex[:, :]</em>) – Degridding matrix (per channel).</p></li>
+<li><p><strong>At</strong> (<em>anonymous function</em>) – Weighted iFFT involved in the adjoint NUFFT.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Spatial dimension of the wideband image (y axis).</p></li>
+<li><p><strong>M</strong> (<em>int</em>) – Spatial dimension of the wideband image (x axis).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – Output wideband image.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:, :, :]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.HS_adjoint_operator_G">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_adjoint_operator_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">M</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_adjoint_operator_G" title="Permalink to this definition"></a></dt>
+<dd><p>Apply adjoint of the wideband measurement operator (with or w/o
+data dimensionality reduction, adjoint of
+<a class="reference internal" href="#lib.operators.HS_forward_operator_G" title="lib.operators.HS_forward_operator_G"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_forward_operator_G()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>cell of cell of complex[:]</em>) – Input visibilities.</p></li>
+<li><p><strong>G</strong> (<em>cell of cell of sparse complex[:, :]</em>) – Degridding matrix  or holographic matrix if visibility gridding is active (per channel per block).</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of int[:]</em>) – Selection vector to extract data blocks from the full Fourier plane.</p></li>
+<li><p><strong>At</strong> (<em>anonymous function</em>) – Weighted iFFT involved in the adjoint NUFFT.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Spatial dimension of the wideband image (y axis).</p></li>
+<li><p><strong>M</strong> (<em>int</em>) – Spatial dimension of the wideband image (x axis).</p></li>
+<li><p><strong>flag_visibility_gridding</strong> (<em>bool</em>) – Flag indicating whether data dimensionality reduction via visibility gridding is considered.</p></li>
+<li><p><strong>Sigma</strong> (<em>cell of cell of double[:]</em>) – Weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – Output wideband image.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:, :, :]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.HS_adjoint_operator_precond">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_adjoint_operator_precond</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">Gw</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">aW</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">M</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_adjoint_operator_precond" title="Permalink to this definition"></a></dt>
+<dd><p>Apply adjoint of the preconditioned wideband measurement operator
+(w/o data blocking, adjoint of
+<a class="reference internal" href="#lib.operators.HS_forward_operator_precond" title="lib.operators.HS_forward_operator_precond"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_forward_operator_precond()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>cell of complex[:]</em>) – Input visibilities.</p></li>
+<li><p><strong>Gw</strong> (<em>cell of sparse complex[:, :]</em>) – Degridding matrix (per channel).</p></li>
+<li><p><strong>At</strong> (<em>anonymous function</em>) – Weighted iFFT involved in the adjoint NUFFT.</p></li>
+<li><p><strong>aW</strong> (<em>cell of double[:]</em>) – Diagonal preconditioning matrices (encoded as vector, each cell entry
+associated with a different channel).</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Spatial dimension of the wideband image (y axis).</p></li>
+<li><p><strong>M</strong> (<em>int</em>) – Spatial dimension of the wideband image (x axis).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – Output wideband image.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:, :, :]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.HS_adjoint_operator_precond_G">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_adjoint_operator_precond_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">aW</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">M</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_adjoint_operator_precond_G" title="Permalink to this definition"></a></dt>
+<dd><p>Apply adjoint of the preconditioned wideband measurement operator
+(with or w/o data dimensionality reduction, adjoint of
+<a class="reference internal" href="#lib.operators.HS_forward_operator_precond_G" title="lib.operators.HS_forward_operator_precond_G"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_forward_operator_precond_G()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>cell of cell of complex[:]</em>) – Input visibilities.</p></li>
+<li><p><strong>G</strong> (<em>cell of cell of sparse complex[:, :]</em>) – Degridding matrix  or holographic matrix if visibility gridding is active  (per channel per block).</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of int[:]</em>) – Selection vector to extract data blocks from the full Fourier plane.</p></li>
+<li><p><strong>At</strong> (<em>anonymous function</em>) – Weighted iFFT involved in the adjoint NUFFT.</p></li>
+<li><p><strong>aW</strong> (<em>cell of cell of double</em>) – Diagonal preconditioning matrices (encoded as vector, for each
+channel and data block within a channel).</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Spatial dimension of the wideband image (y axis).</p></li>
+<li><p><strong>M</strong> (<em>int</em>) – Spatial dimension of the wideband image (x axis).</p></li>
+<li><p><strong>flag_visibility_gridding</strong> (<em>bool</em>) – Flag indicating whether data dimensionality reduction via visibility gridding is considered.</p></li>
+<li><p><strong>Sigma</strong> (<em>cell of cell of double</em>) – Weighting vector involved in data dimensionality reduction via visibility gridding.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – Output wideband image.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:, :, :]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.HS_adjoint_sparsity">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_adjoint_sparsity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">Psit</span></em>, <em class="sig-param"><span class="pre">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_adjoint_sparsity" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the SARA dictionary to a wideband image (adjoint of
+<a class="reference internal" href="#lib.operators.HS_forward_sparsity" title="lib.operators.HS_forward_sparsity"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_forward_sparsity()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Wideband image [N(1), N(2), L]</p></li>
+<li><p><strong>Psit</strong> (<em>anonymous function</em>) – Function handle representing the serial implementation of the
+SARA dictionary.</p></li>
+<li><p><strong>b</strong> (<em>int</em>) – Number of coefficients obtained after application of the SARA
+dictionary to a monochromatic image.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x_wave</strong> – Wavelet dictionaries obtained for each channel [b, L].</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:, :]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.HS_forward_operator">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_forward_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">Gw</span></em>, <em class="sig-param"><span class="pre">A</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_forward_operator" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the forward wideband measurement operator (w/o data blocking,
+adjoint of <a class="reference internal" href="#lib.operators.HS_adjoint_operator" title="lib.operators.HS_adjoint_operator"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_adjoint_operator()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Wideband image.</p></li>
+<li><p><strong>Gw</strong> (<em>cell of sparse complex[:, :]</em>) – Degridding matrix (per channel).</p></li>
+<li><p><strong>A</strong> (<em>anonymous function</em>) – Weighted FFT involved in the NUFFT.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>y</strong> – Visibilities.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cell of complex[:]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.HS_forward_operator_G">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_forward_operator_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_forward_operator_G" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the forward wideband measurement operator (with or w/o
+data dimensionality reduction, adjoint of
+<a class="reference internal" href="#lib.operators.HS_adjoint_operator_G" title="lib.operators.HS_adjoint_operator_G"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_adjoint_operator_G()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Wideband image.</p></li>
+<li><p><strong>G</strong> (<em>cell of cell of sparse complex[:, :]</em>) – Degridding matrix  or holographic matrix if visibility gridding is active (per channel per block).</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of int[:]</em>) – Selection vector to map data blocks to the full Fourier plane.</p></li>
+<li><p><strong>A</strong> (<em>anonymous function</em>) – Weighted FFT involved in the NUFFT.</p></li>
+<li><p><strong>flag_visibility_gridding</strong> (<em>bool</em>) – Flag indicating whether data dimensionality reduction  via visibility gridding is considered.</p></li>
+<li><p><strong>Sigma</strong> (<em>cell of cell of double[:]</em>) – Weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>y</strong> – Output visibilities.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cell of cell of complex[:]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.HS_forward_operator_precond">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_forward_operator_precond</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">Gw</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">aW</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_forward_operator_precond" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the forward preconditioned wideband measurement operator
+(w/o data blocking, adjoint of
+<a class="reference internal" href="#lib.operators.HS_adjoint_operator_precond" title="lib.operators.HS_adjoint_operator_precond"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_adjoint_operator_precond()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Wideband image.</p></li>
+<li><p><strong>Gw</strong> (<em>cell of sparse complex[:, :]</em>) – Degridding matrix (per channel).</p></li>
+<li><p><strong>A</strong> (<em>anonymous function</em>) – Weighted FFT involved in the NUFFT.</p></li>
+<li><p><strong>aW</strong> (<em>cell of double[:]</em>) – Diagonal preconditioning matrices (encoded as vector, each cell entry
+associated with a different channel).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>y</strong> – Output visibilities.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cell of complex[:]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.HS_forward_operator_precond_G">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_forward_operator_precond_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">aW</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_forward_operator_precond_G" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the forward preconditioned wideband measurement operator
+(with or w/o data dimensionality reduction, adjoint of
+<a class="reference internal" href="#lib.operators.HS_adjoint_operator_precond_G" title="lib.operators.HS_adjoint_operator_precond_G"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_adjoint_operator_precond_G()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Wideband image.</p></li>
+<li><p><strong>G</strong> (<em>cell of cell of sparse complex[:, :]</em>) – Degridding matrix  or holographic matrix if visibility gridding is active  (per channel per block).</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of int[:]</em>) – Selection vector to map data blocks to the full Fourier plane.</p></li>
+<li><p><strong>A</strong> (<em>anonymous function</em>) – Weighted FFT involved in the NUFFT.</p></li>
+<li><p><strong>aW</strong> (<em>cell of cell of double</em>) – Diagonal preconditioning matrices (encoded as vector, for each
+channel and data block within a channel).</p></li>
+<li><p><strong>flag_visibility_gridding</strong> (<em>bool</em>) – Flag indicating whether data dimensionality reduction via visibility gridding is considered.</p></li>
+<li><p><strong>Sigma</strong> (<em>cell of cell of double[:]</em>) – Weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>y</strong> – Output visibilities.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cell of cell of complex[:]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.HS_forward_sparsity">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_forward_sparsity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x_wave</span></em>, <em class="sig-param"><span class="pre">Psi</span></em>, <em class="sig-param"><span class="pre">n</span></em>, <em class="sig-param"><span class="pre">m</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_forward_sparsity" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the adjoint of the SARA dictionary to a wideband image (adjoint of
+<a class="reference internal" href="#lib.operators.HS_adjoint_sparsity" title="lib.operators.HS_adjoint_sparsity"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_adjoint_sparsity()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_wave</strong> (<em>double[:, :]</em>) – Wavelet coefficients in the SARA sparsity domain [b, L].</p></li>
+<li><p><strong>Psi</strong> (<em>anonymous function</em>) – Function handle representing the serial implementation of the adjoint
+SARA dictionary.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – Spatial dimension of the output wideband image (y axis).</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – Spatial dimension of the output wideband image (x axis).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – Wideband image [n, m, L]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:, :, :]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.op_nufft_calib">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">op_nufft_calib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">p</span></em>, <em class="sig-param"><span class="pre">D</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">Nn</span></em>, <em class="sig-param"><span class="pre">No</span></em>, <em class="sig-param"><span class="pre">Ns</span></em>, <em class="sig-param"><span class="pre">S</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.op_nufft_calib" title="Permalink to this definition"></a></dt>
+<dd><p>Create the nonuniform gridding matrix and fft operators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>double[:, 2]</em>) – Nonuniformly distributed frequency location points.</p></li>
+<li><p><strong>D</strong> (<em>complex[:, :]</em>) – DDE kernels (in the Fourier domain).</p></li>
+<li><p><strong>N</strong> (<em>int[2]</em>) – Size of the reconstruction image.</p></li>
+<li><p><strong>Nn</strong> (<em>int[2]</em>) – Size of the kernels (number of neighbors considered on each direction).</p></li>
+<li><p><strong>No</strong> (<em>int[2]</em>) – Oversampled fft from which to recover the non uniform fft via kernel
+convolution.</p></li>
+<li><p><strong>Ns</strong> (<em>int[2]</em>) – FFT shift.</p></li>
+<li><p><strong>S</strong> (<em>int[1]</em>) – Size of the DDE support (square support).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>A</strong> (<em>function handle</em>) – Function handle for direct operator.</p></li>
+<li><p><strong>At</strong> (<em>function handle</em>) – Function handle for adjoint operator.</p></li>
+<li><p><strong>Gw</strong> (<em>sparse complex[:, :]</em>) – Global convolution kernel matrix.</p></li>
+<li><p><strong>scale</strong> (<em>complex[:, :]</em>) – Scale paremters for the oversampled FFT.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.op_p_nufft_calib">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">op_p_nufft_calib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">p</span></em>, <em class="sig-param"><span class="pre">D</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">Nn</span></em>, <em class="sig-param"><span class="pre">No</span></em>, <em class="sig-param"><span class="pre">Ns</span></em>, <em class="sig-param"><span class="pre">S</span></em>, <em class="sig-param"><span class="pre">ww</span></em>, <em class="sig-param"><span class="pre">param</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.op_p_nufft_calib" title="Permalink to this definition"></a></dt>
+<dd><p>Create the nonuniform gridding matrix and fft operators to be used for
+parallel processing</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>cell of double[:, 2]</em>) – Nonuniformly distributed frequency location points for each
+cell member which will be treated in parallel.</p></li>
+<li><p><strong>D</strong> (<em>complex[:, :]</em>) – DDE kernels (in the Fourier domain).</p></li>
+<li><p><strong>N</strong> (<em>int[2]</em>) – Size of the reconstructed image.</p></li>
+<li><p><strong>Nn</strong> (<em>int[2]</em>) – Size of the kernels (number of neighbors considered on each direction).</p></li>
+<li><p><strong>No</strong> (<em>int[2]</em>) – Oversampled fft from which to recover the non uniform fft via
+kernel convolution.</p></li>
+<li><p><strong>Ns</strong> (<em>int[2]</em>) – FFT shift.</p></li>
+<li><p><strong>S</strong> (<em>int[1]</em>) – Size of the DDE support (square support).</p></li>
+<li><p><strong>ww</strong> (<em>cell of double[:, 2]</em>) – :<cite>math</cite>:<cite>w</cite> component for each cell member which will be treated in
+parallel.</p></li>
+<li><p><strong>param</strong> (<em>struct</em>) – Parameters to build the degridding matrices, composed of the following
+fields.</p></li>
+<li><p><strong>param.use_nufft_blocks</strong> (<em>bool</em>) – Flag to specify NUFFT blocks are used (data blocking).</p></li>
+<li><p><strong>param.gen_only_fft_op</strong> (<em>bool</em>) – Flag to only generate the weighted FFT and inverse FFT involved in the
+the forward and the adjoint NUFFT operators, respectively.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>A</strong> (<em>function handle</em>) – Function handle for direct operator.</p></li>
+<li><p><strong>At</strong> (<em>function handle</em>) – Function handle for adjoint operator.</p></li>
+<li><p><strong>G</strong> (<em>cell of sparse complex[:, :]</em>) – Convolution kernel matrix (small) associated with each patch in the
+Fourier plane.</p></li>
+<li><p><strong>W</strong> (<em>cell of int[:]</em>) – Mask of the values that contribute to the convolution.</p></li>
+<li><p><strong>Gw</strong> (<em>sparse complex[:, :]</em>) – Global convolution kernel matrix.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.util_gen_dr_measurement_operator">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">util_gen_dr_measurement_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">u</span></em>, <em class="sig-param"><span class="pre">v</span></em>, <em class="sig-param"><span class="pre">w</span></em>, <em class="sig-param"><span class="pre">nW</span></em>, <em class="sig-param"><span class="pre">nchans</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">param_nufft</span></em>, <em class="sig-param"><span class="pre">param_wproj</span></em>, <em class="sig-param"><span class="pre">preproc_dr_residuals</span></em>, <em class="sig-param"><span class="pre">ddes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.util_gen_dr_measurement_operator" title="Permalink to this definition"></a></dt>
+<dd><p>Build the measurement operator incorporating visibility gridding
+for a given uv-coverage at pre-defined frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the data vectors (Stokes I).</p></li>
+<li><p><strong>u</strong> (<em>cell of cell of double[:]</em>) – <cite>u</cite> coordinate.</p></li>
+<li><p><strong>v</strong> (<em>cell of cell of double[:]</em>) – <cite>v</cite> coordinate.</p></li>
+<li><p><strong>w</strong> (<em>cell of cell of double[:]</em>) – <cite>w</cite> coordinate.</p></li>
+<li><p><strong>nW</strong> (<em>cell of cell of double[:]</em>) – noise whitening vector for natural weighting.</p></li>
+<li><p><strong>param_precond</strong> (<em>struct</em>) – Structure to configure the preconditioning matrices.</p></li>
+<li><p><strong>param_wproj</strong> (<em>struct</em>) – Structure to configure <cite>w</cite>-projection.</p></li>
+<li><p><strong>preproc_dr_residuals</strong> (<em>cell</em>) – Cell containing the residual visibility vectors from a calibration
+pre-processing step, assumed as noise vectors.</p></li>
+<li><p><strong>ddes</strong> (<em>cell array</em>) – Cell containing DDE calibration kernels in the spatial Fourier domain
+from a pre-processing step to be incorporated in the measurement operator.</p></li>
+<li><p><strong>nchans</strong> (<em>int</em>) – Number of channels.</p></li>
+<li><p><strong>Nx</strong> (<em>int</em>) – Image dimension (x-axis).</p></li>
+<li><p><strong>Ny</strong> (<em>int</em>) – Image dimension (y-axis).</p></li>
+<li><p><strong>Kx</strong> (<em>int</em>) – Dimension interpolation kernel (x-axis).</p></li>
+<li><p><strong>Ky</strong> (<em>int</em>) – Dimension interpolation kernel (y-axis).</p></li>
+<li><p><strong>ox</strong> (<em>int</em>) – Fourier oversampling factor(x-axis).</p></li>
+<li><p><strong>oy</strong> (<em>int</em>) – Fourier oversampling factor(y-axis).</p></li>
+<li><p><strong>kernel</strong> (<em>string</em>) – Type of interpolation kernel selected (‘kaiser’ or ‘minmax:tuned’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>A</strong> (<em>lambda function</em>) – Lambda function to compute the rescaled 2D Fourier transform involved
+in the emasurement operator.</p></li>
+<li><p><strong>At</strong> (<em>lambda function</em>) – Lambda function to compute the adjoint of <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p></li>
+<li><p><strong>H</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the holographic matrix for each channel, and
+each data block within a channel. H is a lower-triangular
+matrix to optimise memory requirements.</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of double[:]</em>) – Cell containing the selection vector for each channel, and
+data block within a channel.</p></li>
+<li><p><strong>aWw</strong> (<em>cell of cell of double[:]</em>) – Cell containing the preconditioning vectors for each channel, and
+data block within a channel.</p></li>
+<li><p><strong>Sigma</strong> (<em>cell of cell of double</em>) – Cell containing the diagonal weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
+<li><p><strong>gridded_y</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the reduced data vectors which corresponds to the gridded visibilities.</p></li>
+<li><p><strong>gridded_noise</strong> (<em>struct</em>) – struct containing estimated l2bounds and  noise std, from
+gridding residual visibilities obtained during a pre-processing
+calibration step.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p>check if data pre-processing exist
+ddes</p>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.util_gen_measurement_operator">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">util_gen_measurement_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">u</span></em>, <em class="sig-param"><span class="pre">v</span></em>, <em class="sig-param"><span class="pre">w</span></em>, <em class="sig-param"><span class="pre">nW</span></em>, <em class="sig-param"><span class="pre">nchans</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">param_nufft</span></em>, <em class="sig-param"><span class="pre">param_wproj</span></em>, <em class="sig-param"><span class="pre">param_precond</span></em>, <em class="sig-param"><span class="pre">ddes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.util_gen_measurement_operator" title="Permalink to this definition"></a></dt>
+<dd><p>Build the measurement operator for a given uv-coverage at pre-defined
+frequencies.</p>
+<p>Build the measurement operator for a given uv-coverage at pre-defined
+frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>cell of cell of double[:]</em>) – <cite>u</cite> coordinate.</p></li>
+<li><p><strong>v</strong> (<em>cell of cell of double[:]</em>) – <cite>v</cite> coordinate.</p></li>
+<li><p><strong>w</strong> (<em>cell of cell of double[:]</em>) – <cite>w</cite> coordinate.</p></li>
+<li><p><strong>nW</strong> (<em>cell</em>) – noise whitening vector for natural weighting.</p></li>
+<li><p><strong>param_precond</strong> (<em>struct</em>) – Structure to configure the preconditioning matrices.</p></li>
+<li><p><strong>param_nufft</strong> (<em>struct</em>) – Structure to configure NUFFT.</p></li>
+<li><p><strong>param_wproj</strong> (<em>struct</em>) – Structure to configure w-projection.</p></li>
+<li><p><strong>ddes</strong> (<em>cell array</em>) – Cell containing DDE calibration kernels in the spatial Fourier domain
+from a pre-processing step to be incorporated in the measurement operator.</p></li>
+<li><p><strong>nchans</strong> (<em>Number of channels</em>)</p></li>
+<li><p><strong>Nx</strong> (<em>int</em>) – Image dimension (x-axis).</p></li>
+<li><p><strong>Ny</strong> (<em>int</em>) – Image dimension (y-axis).</p></li>
+<li><p><strong>Kx</strong> (<em>int</em>) – Dimension interpolation kernel (x-axis).</p></li>
+<li><p><strong>Ky</strong> (<em>int</em>) – Dimension interpolation kernel (y-axis).</p></li>
+<li><p><strong>ox</strong> (<em>int</em>) – Fourier oversampling factor(x-axis).</p></li>
+<li><p><strong>oy</strong> (<em>int</em>) – Fourier oversampling factor(y-axis).</p></li>
+<li><p><strong>kernel</strong> (<em>string</em>) – Type of interpolation kernel selected (‘kaiser’ or ‘minmax:tuned’).</p></li>
+<li><p><strong>ddes</strong> (<em>array</em>) – Array of antenna gains to be incorporated in the de-gridding matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>A</strong> (<em>lambda function</em>) – Lambda function to compute the rescaled 2D Fourier transform involved
+in the emasurement operator.</p></li>
+<li><p><strong>At</strong> (<em>lambda function</em>) – Lambda function to compute the adjoint of <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p></li>
+<li><p><strong>G</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the trimmed-down interpolation kernels for each
+channel, and each data block within a channel.</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of double[:]</em>) – Cell containing the selection vector for each channel, and
+data block within a channel.</p></li>
+<li><p><strong>aW</strong> (<em>cell of cell of double[:]</em>) – Cell containing the preconditioning vectors for each channel, and
+data block within a channel.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.util_gen_measurement_operator_synth">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">util_gen_measurement_operator_synth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">u</span></em>, <em class="sig-param"><span class="pre">v</span></em>, <em class="sig-param"><span class="pre">param_precond</span></em>, <em class="sig-param"><span class="pre">param_blocking</span></em>, <em class="sig-param"><span class="pre">fc</span></em>, <em class="sig-param"><span class="pre">fmax</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">Kx</span></em>, <em class="sig-param"><span class="pre">Ky</span></em>, <em class="sig-param"><span class="pre">ox</span></em>, <em class="sig-param"><span class="pre">oy</span></em>, <em class="sig-param"><span class="pre">kernel</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.util_gen_measurement_operator_synth" title="Permalink to this definition"></a></dt>
+<dd><p>Build the measurement operator for a given uv-coverage at pre-defined
+frequencies.</p>
+<p>Build the measurement operator for a given uv-coverage at pre-defined
+frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>array (vector)</em>) – <cite>u</cite> coverage.</p></li>
+<li><p><strong>v</strong> (<em>array (vector)</em>) – <cite>v</cite> coverage.</p></li>
+<li><p><strong>param_precond</strong> (<em>struct</em>) – Structure to configure the preconditioning matrices.</p></li>
+<li><p><strong>param_blocking</strong> (<em>struct</em>) – Structure to configure data blocking.</p></li>
+<li><p><strong>fc</strong> (<em>array (vector)</em>) – Frequencies at which the operator needs to be defined.</p></li>
+<li><p><strong>Nx</strong> (<em>int</em>) – Image dimension (x-axis).</p></li>
+<li><p><strong>Ny</strong> (<em>int</em>) – Image dimension (y-axis).</p></li>
+<li><p><strong>Kx</strong> (<em>int</em>) – Dimension interpolation kernel (x-axis).</p></li>
+<li><p><strong>Ky</strong> (<em>int</em>) – Dimension interpolation kernel (y-axis).</p></li>
+<li><p><strong>ox</strong> (<em>int</em>) – Fourier oversampling factor(x-axis).</p></li>
+<li><p><strong>oy</strong> (<em>int</em>) – Fourier oversampling factor(y-axis).</p></li>
+<li><p><strong>kernel</strong> (<em>string</em>) – Selected interpolator (among <code class="docutils literal notranslate"><span class="pre">'minmax:kb'</span></code>, <code class="docutils literal notranslate"><span class="pre">'minmax:tuned'</span></code> and
+<code class="docutils literal notranslate"><span class="pre">'kaiser'</span></code>). Recommended default is
+<code class="docutils literal notranslate"><span class="pre">'minmax:kb'</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>A</strong> (<em>lambda function</em>) – Lambda function to compute the rescaled 2D Fourier transform involved
+in the emasurement operator.</p></li>
+<li><p><strong>At</strong> (<em>lambda function</em>) – Lambda function to compute the adjoint of <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p></li>
+<li><p><strong>G</strong> (<em>cell</em>) – Cell containing the trimmed-down interpolation kernels for each
+channel, and each data block within a channel.</p></li>
+<li><p><strong>W</strong> (<em>cell</em>) – Cell containing the selection vector for each channel, and
+data block within a channel.</p></li>
+<li><p><strong>aWw</strong> (<em>cell</em>) – Cell containing the preconditioning vectors for each channel, and
+data block within a channel.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lib.generate_data.html" class="btn btn-neutral float-left" title="Module lib.generate_data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lib.utils.html" class="btn btn-neutral float-right" title="Module lib.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

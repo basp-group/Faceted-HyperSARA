@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module src.hs &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Module src.sara" href="src.sara.html" />
+    <link rel="prev" title="Module src.heuristics" href="src.heuristics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="src.html">src package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="src.fhs.html">Module src.fhs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.heuristics.html">Module src.heuristics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module src.hs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.sara.html">Module src.sara</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.html#module-src">API src</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="src.html">src package</a> &raquo;</li>
+      <li>Module src.hs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_src/src.hs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src-hs">
+<h1>Module src.hs<a class="headerlink" href="#module-src-hs" title="Permalink to this headline"></a></h1>
+<p>Functions specific to the implementation of the HyperSARA algorithm <span id="id1">[<a class="reference internal" href="../biblio.html#id2" title="Abdullah Abdulaziz, Arwa Dabbech, and Yves Wiaux. Wideband super-resolution imaging in radio interferometry via low rankness and joint average sparsity models (HyperSARA). Monthly Notices of the Royal Astronomical Society, 489(1):1230–1248, 2019.">Abdulaziz2019</a>]</span>.</p>
+<span class="target" id="module-src.hs"></span><dl class="mat function">
+<dt class="sig sig-object mat" id="src.hs.compute_sara_prior_distributed">
+<span class="sig-prename descclassname"><span class="pre">src.hs.</span></span><span class="sig-name descname"><span class="pre">compute_sara_prior_distributed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">Psit</span></em>, <em class="sig-param"><span class="pre">n_wavelet_coefficients</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.hs.compute_sara_prior_distributed" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the l21-norm of the wavelet cofficients associated with the SARA
+dictionary.</p>
+<p>Compute <span class="math notranslate nohighlight">\(\Vert \boldsymbol{\Psi}^\dagger \mathbf{X} \Vert_{2,1}\)</span> for
+an input wideband image <span class="math notranslate nohighlight">\(\mathbf{X} \in \mathbb{R}^{N\times L}\)</span>,
+with <span class="math notranslate nohighlight">\(\boldsymbol{\Psi}^\dagger\)</span> the SARA dictionary <span id="id2">[<a class="reference internal" href="../biblio.html#id4" title="R. E. Carrillo, J. D. McEwen, and Y. Wiaux. Sparsity averaging reweighted analysis (SARA): a novel algorithm for radio-interferometric imaging. Monthly Notices of the Royal Astronomical Society, 426(2):1223–1234, 2012.">Carrillo2012</a>]</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Wideband image cube <code class="docutils literal notranslate"><span class="pre">[N(1),</span> <span class="pre">N(2),</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>Psit</strong> (<em>lambda function</em>) – SARA dictionary <code class="docutils literal notranslate"><span class="pre">&#64;[1]</span></code>.</p></li>
+<li><p><strong>n_wavelet_coefficients</strong> (<em>int</em>) – Number of wavelet coefficients (per channel) <code class="docutils literal notranslate"><span class="pre">[1]</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>f</strong> – Value of <span class="math notranslate nohighlight">\(\Vert \boldsymbol{\Psi}^\dagger \mathbf{X} \Vert_{2,1}\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.hs.hs_initialize_data_worker">
+<span class="sig-prename descclassname"><span class="pre">src.hs.</span></span><span class="sig-name descname"><span class="pre">hs_initialize_data_worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.hs.hs_initialize_data_worker" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the variables stored on the data workers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>y</strong> (<em>cell</em>) – Input data, stored as 2-layer cell, the first for channels, the
+second for data blocks within each channel.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>v2</strong> (<em>cell</em>) – Data fidelity dual variable. Same structure as <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+<li><p><strong>norm_res</strong> (<em>cell</em>) – Norm of the residual. Same structure as <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+<li><p><strong>t_block</strong> (<em>cell</em>) – Last iteration at which each block has been updated {L}{nblocks}.
+Same structure as
+<code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+<li><p><strong>proj</strong> (<em>cell</em>) – Result of the projection step  <code class="docutils literal notranslate"><span class="pre">{L}{nblocks}[M,</span> <span class="pre">1]</span></code>. Same structure
+as <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.hs.hs_initialize_dual_lowrankness_serial">
+<span class="sig-prename descclassname"><span class="pre">src.hs.</span></span><span class="sig-name descname"><span class="pre">hs_initialize_dual_lowrankness_serial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">reweighting_alpha</span></em>, <em class="sig-param"><span class="pre">sig_bar</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.hs.hs_initialize_dual_lowrankness_serial" title="Permalink to this definition"></a></dt>
+<dd><p>Initalize the dual variables related to the l21-norm prior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Wideband image <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>reweighting_alpha</strong> (<em>double</em>) – Reweighting parameter.</p></li>
+<li><p><strong>sig_bar</strong> (<em>double</em>) – Reweighting floor level.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>v0</strong> (<em>double[:, :]</em>) – Dual variable associated with the nuclear-norm  prior
+<code class="docutils literal notranslate"><span class="pre">[min(M*N,</span> <span class="pre">L),</span> <span class="pre">1]</span></code>.</p></li>
+<li><p><strong>weights0</strong> (<em>double[:]</em>) – Associated weights for the reweigthing step.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.hs.hs_initialize_dual_sparsity_distributed">
+<span class="sig-prename descclassname"><span class="pre">src.hs.</span></span><span class="sig-name descname"><span class="pre">hs_initialize_dual_sparsity_distributed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">Psit</span></em>, <em class="sig-param"><span class="pre">extension_mode</span></em>, <em class="sig-param"><span class="pre">nlevel</span></em>, <em class="sig-param"><span class="pre">reweighting_alpha</span></em>, <em class="sig-param"><span class="pre">sig</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.hs.hs_initialize_dual_sparsity_distributed" title="Permalink to this definition"></a></dt>
+<dd><p>Initalize the dual variables related to the
+l21-norm prior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Wideband image <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>Psit</strong> (<em>anonymous function</em>) – Full SARA operator <code class="docutils literal notranslate"><span class="pre">&#64;[1]</span></code>.</p></li>
+<li><p><strong>extension_mode</strong> (<em>string</em>) – Name of the boundary extension mode.</p></li>
+<li><p><strong>nlevel</strong> (<em>int</em>) – Depth of the wavelet decompositions.</p></li>
+<li><p><strong>reweighting_alpha</strong> (<em>double</em>) – Rewighting parameter.</p></li>
+<li><p><strong>sig</strong> (<em>double</em>) – Estimate of the noise level transferred to the SARA domain.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>v1</strong> (<em>double[:, :]</em>) – Dual variable associated with the l21-norm prior <code class="docutils literal notranslate"><span class="pre">[s,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>weights1</strong> (<em>double[:, :]</em>) – Weights associated for the reweigthing step <code class="docutils literal notranslate"><span class="pre">[s,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>s</strong> (<em>int</em>) – Number of wavelet decompostion for each channel <code class="docutils literal notranslate"><span class="pre">[1]</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.hs.hs_update_dual_lowrankness_serial">
+<span class="sig-prename descclassname"><span class="pre">src.hs.</span></span><span class="sig-name descname"><span class="pre">hs_update_dual_lowrankness_serial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">v0</span></em>, <em class="sig-param"><span class="pre">xhat</span></em>, <em class="sig-param"><span class="pre">weights0</span></em>, <em class="sig-param"><span class="pre">beta0</span></em>, <em class="sig-param"><span class="pre">sigma0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.hs.hs_update_dual_lowrankness_serial" title="Permalink to this definition"></a></dt>
+<dd><p>Update the dual variables related to the nuclear
+norm prior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v0</strong> (<em>double[:, :]</em>) – Dual variable associated with the nuclear norm prior
+<code class="docutils literal notranslate"><span class="pre">[min(M*N,</span> <span class="pre">L),</span> <span class="pre">1]</span></code>.</p></li>
+<li><p><strong>xhat</strong> (<em>double[:, :, :]</em>) – Auxiliary variable related to the wideband image <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>weights0</strong> (<em>double[:, :]</em>) – Weights for the reweighting <code class="docutils literal notranslate"><span class="pre">[min(M*N,</span> <span class="pre">L),</span> <span class="pre">1]</span></code>.</p></li>
+<li><p><strong>beta0</strong> (<em>double</em>) – Thresholding parameter (gamma0 / sigma0) [1]</p></li>
+<li><p><strong>sigma0</strong> (<em>double</em>) – Convergence parameter [1].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>v0</strong> (<em>double[:, :]</em>) – Dual variable associated with the nuclear norm prior
+<code class="docutils literal notranslate"><span class="pre">[min(M*N,</span> <span class="pre">L),</span> <span class="pre">1]</span></code>.</p></li>
+<li><p><strong>weights0</strong> (<em>double[:, :, :]</em>) – Auxiliary variable for the update of the primal variable
+<code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L].</span></code></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.hs.hs_update_dual_sparsity_distributed">
+<span class="sig-prename descclassname"><span class="pre">src.hs.</span></span><span class="sig-name descname"><span class="pre">hs_update_dual_sparsity_distributed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">v1</span></em>, <em class="sig-param"><span class="pre">Psit</span></em>, <em class="sig-param"><span class="pre">Psi</span></em>, <em class="sig-param"><span class="pre">xhat</span></em>, <em class="sig-param"><span class="pre">weights1</span></em>, <em class="sig-param"><span class="pre">beta1</span></em>, <em class="sig-param"><span class="pre">sigma1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.hs.hs_update_dual_sparsity_distributed" title="Permalink to this definition"></a></dt>
+<dd><p>Update the dual variable related to the facet <span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> norm
+prior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v1</strong> (<em>double[:, :]</em>) – Dual variable associated with the facet <span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> norm
+<code class="docutils literal notranslate"><span class="pre">[s,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>Psit</strong> (<em>anonymous function</em>) – Full SARA operator <code class="docutils literal notranslate"><span class="pre">&#64;[1]</span></code>.</p></li>
+<li><p><strong>Psi</strong> (<em>anonymous function</em>) – Adjoint of the full SARA operator <code class="docutils literal notranslate"><span class="pre">&#64;[1]</span></code>.</p></li>
+<li><p><strong>xhat</strong> (<em>double[:, :, :]</em>) – Auxiliary variable related to the wideband image <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>weights1</strong> (<em>double[:, :]</em>) – Weights associated with the reweigthing step pixels due to the
+overlap between facets <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N]</span></code>.</p></li>
+<li><p><strong>beta1</strong> (<em>double</em>) – Update step (mu / gamma1) <code class="docutils literal notranslate"><span class="pre">[1]</span></code>.</p></li>
+<li><p><strong>sigma1</strong> (<em>double</em>) – Convergence parameter <code class="docutils literal notranslate"><span class="pre">[1]</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>v1</strong> (<em>double[:, :]</em>) – Dual variable associated with the <span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> norm prior
+<code class="docutils literal notranslate"><span class="pre">[s,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>g1</strong> (<em>double[:, :, :]</em>) – Auxiliary variable for the update of the primal variable
+<code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.hs.hs_update_weights_lowrankness_serial">
+<span class="sig-prename descclassname"><span class="pre">src.hs.</span></span><span class="sig-name descname"><span class="pre">hs_update_weights_lowrankness_serial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">reweight_alpha</span></em>, <em class="sig-param"><span class="pre">sig_bar</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.hs.hs_update_weights_lowrankness_serial" title="Permalink to this definition"></a></dt>
+<dd><p>Update the weigths for the reweighting of the nuclear norm prior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Wideband image <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>reweight_alpha</strong> (<em>double</em>) – Reweighting parameter <code class="docutils literal notranslate"><span class="pre">[1]</span></code>.</p></li>
+<li><p><strong>sig_bar</strong> (<em>double</em>) – Noise level (singular value space).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>weights</strong> – Weights associated with the reweigthing step <code class="docutils literal notranslate"><span class="pre">[s,</span> <span class="pre">L]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:, :]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.hs.hs_update_weights_sparsity_distributed">
+<span class="sig-prename descclassname"><span class="pre">src.hs.</span></span><span class="sig-name descname"><span class="pre">hs_update_weights_sparsity_distributed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">Psit</span></em>, <em class="sig-param"><span class="pre">weights</span></em>, <em class="sig-param"><span class="pre">reweight_alpha</span></em>, <em class="sig-param"><span class="pre">sig</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.hs.hs_update_weights_sparsity_distributed" title="Permalink to this definition"></a></dt>
+<dd><p>Update the weigths for the reweighting of the
+l21-norm prior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Wideband image <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>Psit</strong> (<em>lambda functions</em>) – Full SARA operator <code class="docutils literal notranslate"><span class="pre">&#64;[1]</span></code>.</p></li>
+<li><p><strong>weights</strong> (<em>double[:, :]</em>) – Weights associated with the reweigthing step <code class="docutils literal notranslate"><span class="pre">[s,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>reweight_alpha</strong> (<em>double</em>) – Reweighting parameter <code class="docutils literal notranslate"><span class="pre">[1]</span></code>.</p></li>
+<li><p><strong>sig</strong> (<em>double</em>) – Estimate of the noise level in the SARA domain.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>weights</strong> – Updated weights associated with the reweigthing step <code class="docutils literal notranslate"><span class="pre">[s,</span> <span class="pre">L]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:, :]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.hs.hyperSARA">
+<span class="sig-prename descclassname"><span class="pre">src.hs.</span></span><span class="sig-name descname"><span class="pre">hyperSARA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">epsilon</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">pU</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">param</span></em>, <em class="sig-param"><span class="pre">K</span></em>, <em class="sig-param"><span class="pre">wavelet</span></em>, <em class="sig-param"><span class="pre">nlevel</span></em>, <em class="sig-param"><span class="pre">spectral_chunk</span></em>, <em class="sig-param"><span class="pre">n_channels</span></em>, <em class="sig-param"><span class="pre">M</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">oy</span></em>, <em class="sig-param"><span class="pre">ox</span></em>, <em class="sig-param"><span class="pre">warmstart_name</span></em>, <em class="sig-param"><span class="pre">checkpoint_name</span></em>, <em class="sig-param"><span class="pre">flag_dimensionality_reduction</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.hs.hyperSARA" title="Permalink to this definition"></a></dt>
+<dd><p>Implementation of the HyperSARA imaging algorithm.</p>
+<p>Implementation of the reweighting / PDFB algorithm underlying the
+HyperSARA imaging approach <span id="id3">[<a class="reference internal" href="../biblio.html#id2" title="Abdullah Abdulaziz, Arwa Dabbech, and Yves Wiaux. Wideband super-resolution imaging in radio interferometry via low rankness and joint average sparsity models (HyperSARA). Monthly Notices of the Royal Astronomical Society, 489(1):1230–1248, 2019.">Abdulaziz2019</a>]</span>. At each iteration of
+the outer reweighting scheme, the PDFB solves a problem of the form</p>
+<div class="math notranslate nohighlight">
+\[\min_{X \in \mathbb{R}_+^{N \times L}}
+\overline{\mu} \| X \|_{\overline{\omega}, *}
++ \mu \|\Psi^\dagger X \|_{\omega, 2,1} + \sum_{\ell, b}
+\iota_{ \{\| y_{\ell, b} - \Phi_{\ell, b}(\cdot) \|_2
+\leq \varepsilon_{\ell, b}\} } (x_\ell).\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>composite, cell</em>) – Blocks of visibilities {L}{nblocks_l}.</p></li>
+<li><p><strong>epsilon</strong> (<em>composite, cell</em>) – Data fidelity constraints {L}{nblocks_l}.</p></li>
+<li><p><strong>A</strong> (<em>function handle</em>) – Measurement operator.</p></li>
+<li><p><strong>At</strong> (<em>function handle</em>) – Adjoint of the measurement operator.</p></li>
+<li><p><strong>pU</strong> (<em>composite, cell</em>) – Preconditioning matrices {L}{nblocks_l}.</p></li>
+<li><p><strong>G</strong> (<em>composite, cell of sparse matrices</em>) – Degridding matrices {L}{nblocks_l}.</p></li>
+<li><p><strong>W</strong> (<em>composite, cell of int[:]</em>) – Masks for selection of the blocks of visibilities.</p></li>
+<li><p><strong>param</strong> (<em>struct</em>) – Algorithm parameters.</p></li>
+<li><p><strong>K</strong> (<em>int</em>) – Number of data workers.</p></li>
+<li><p><strong>wavelet</strong> (<em>cell of string</em>) – List of wavelet basis (for the SARA prior). If the Dirac basis
+(<code class="docutils literal notranslate"><span class="pre">'self'</span></code>) is considered, it needs to appear in last position.</p></li>
+<li><p><strong>nlevel</strong> (<em>int</em>) – Number of wavelet decomposition levels.</p></li>
+<li><p><strong>spectral_chunk</strong> (<em>cell of int[:]</em>) – List of channels handled by each data process {K, 1}.</p></li>
+<li><p><strong>n_channels</strong> (<em>int</em>) – Total number of spectral channels.</p></li>
+<li><p><strong>M</strong> (<em>int</em>) – Spatial image size along axis y.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Spatial image size along axis x.</p></li>
+<li><p><strong>oy</strong> (<em>int</em>) – Fourier oversampling factor along axis y.</p></li>
+<li><p><strong>ox</strong> (<em>int</em>) – Fourier oversampling factor along axis x.</p></li>
+<li><p><strong>warmstart_name</strong> (<em>string</em>) – Name of a valid <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file to initialize the solver (warm-start).</p></li>
+<li><p><strong>checkpoint_name</strong> (<em>string</em>) – Name defining the name for checkpoint files saved
+throughout the iterations.</p></li>
+<li><p><strong>flag_dimensionality_reduction</strong> (<em>bool</em>) – Flag to indicate data dimensiomality reduction is used.</p></li>
+<li><p><strong>Sigma</strong> (<em>composite, cell of complex[:, :]</em>) – Dimensionality reduction matrix. (?)</p></li>
+<li><p><strong>varargin{1}</strong> (<em>double[:, :]</em>) – Initial value for the primal variable [M*N, L].</p></li>
+<li><p><strong>varargin{2}</strong> (<em>double[:, :]</em>) – Ground truth wideband image (only when debugging synthetic
+data experiments) [M*N, L].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>xsol</strong> – Reconstructed wideband image [M*N, L].</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:, :]</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>The <cite>param</cite> structure should contain the following fields.</p></li>
+</ul>
+<dl class="simple">
+<dt>param.verbose (string)</dt><dd><p>Print log or not</p>
+</dd>
+<dt>param.nu0 (double)</dt><dd><p>Norm of the splitting operator used to defined the low-rankness dual
+variable (identity, thus fixed to 1).</p>
+</dd>
+<dt>param.nu1 (double)</dt><dd><p>Upper bound on the norm of the SARA operator <span class="math notranslate nohighlight">\(\Psi^\dagger\)</span>.</p>
+</dd>
+<dt>param.nu2 (double)</dt><dd><p>Upper bound on the norm of the measurement operator <span class="math notranslate nohighlight">\(\Phi\)</span></p>
+</dd>
+<dt>param.gamma  (double)</dt><dd><p>Regularization parameter (sparsity prior).</p>
+</dd>
+<dt>param.gamma0  (double)</dt><dd><p>Regularization parameter (low-rankness prior).</p>
+</dd>
+<dt>param.pdfb_min_iter (int)</dt><dd><p>Minimum number of iterations (PDFB).</p>
+</dd>
+<dt>param.pdfb_max_iter (int)</dt><dd><p>Maximum number of iterations (PDFB).</p>
+</dd>
+<dt>param.pdfb_rel_var (double)</dt><dd><p>Relative variation tolerance (PDFB).</p>
+</dd>
+<dt>param.pdfb_fidelity_tolerance (double)</dt><dd><p>Tolerance to check data constraints are satisfied (PDFB).</p>
+</dd>
+<dt>param.reweighting_max_iter (int)</dt><dd><p>Maximum number of reweighting steps.</p>
+</dd>
+<dt>param.reweighting_min_iter (int)</dt><dd><p>Minimum number of reweighting steps (to reach “noise” level).</p>
+</dd>
+<dt>param.reweighting_rel_var (double)</dt><dd><p>Tolerance relative variation (reweighting).</p>
+</dd>
+<dt>param.reweighting_alpha (double)</dt><dd><p>Starting reweighting parameter.</p>
+</dd>
+<dt>param.reweighting_sig (double)</dt><dd><p>Noise level (in wavelet space)</p>
+</dd>
+<dt>param.reweighting_sig_bar (double)</dt><dd><p>Noise level (singular value space)</p>
+</dd>
+<dt>param.elipse_proj_max_iter (int)</dt><dd><p>Maximum number of iterations for the FB algo that implements the
+projection onto the ellipsoid.</p>
+</dd>
+<dt>param.elipse_proj_min_iter (int)</dt><dd><p>Minimum number of iterations for the FB algo that implements the
+projection onto the ellipsoid.</p>
+</dd>
+<dt>parma.elipse_proj_eps (double)</dt><dd><p>Stopping criterion for the projection.</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>The following fileds are added to <cite>param</cite> in the course of the
+algorithm to be able to restart it from a previous state</p></li>
+</ul>
+<dl class="simple">
+<dt>param.reweighting_alpha (double)</dt><dd><p>Current state of the reweighting parameter.</p>
+</dd>
+<dt>param.init_reweight_step_count (int)</dt><dd><p>Iteration index of the current reweighting step when the checkpoint
+file is written.</p>
+</dd>
+<dt>param.init_reweight_last_iter_step (int)</dt><dd><p>Global iteration index (unrolled over all pdfb iterations performed
+in the reweighting scheme) from which to restart the algorithm.</p>
+</dd>
+<dt>param.init_t_start (int)</dt><dd><p>Global iteration index (unrolled over all pdfb iterations performed
+in the reweighting scheme) from which to restart the algorithm
+(<code class="docutils literal notranslate"><span class="pre">param.init_t_start</span> <span class="pre">=</span> <span class="pre">param.init_reweight_last_iter_step</span> <span class="pre">+</span> <span class="pre">1</span></code>).</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>The following fileds are added to <cite>param</cite> in the course of the
+algorithm to be able to restart it from a previous state</p></li>
+</ul>
+<dl class="simple">
+<dt>param.reweighting_alpha (double)</dt><dd><p>Current state of the reweighting parameter.</p>
+</dd>
+<dt>param.init_reweight_step_count (int)</dt><dd><p>Iteration index of the current reweighting step when the checkpoint
+file is written.</p>
+</dd>
+<dt>param.init_reweight_last_iter_step (int)</dt><dd><p>Global iteration index (unrolled over all pdfb iterations performed
+in the reweighting scheme) from which to restart the algorithm.</p>
+</dd>
+<dt>param.init_t_start (int)</dt><dd><p>Global iteration index (unrolled over all pdfb iterations performed
+in the reweighting scheme) from which to restart the algorithm
+(<code class="docutils literal notranslate"><span class="pre">param.init_t_start</span> <span class="pre">=</span> <span class="pre">param.init_reweight_last_iter_step</span> <span class="pre">+</span> <span class="pre">1</span></code>).</p>
+</dd>
+</dl>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The checkpoint file saved throughout the iterations is composed of the
+following variables (to be verified).</p>
+<dl class="simple">
+<dt>param (struct)</dt><dd><p>Current state of the parameter structure (updated with auxiliary
+parameters describing the state of the solver when the checkpoint
+file has been written).</p>
+</dd>
+<dt>xsol (double[:, :])</dt><dd><p>Current state of the image estimate.</p>
+</dd>
+<dt>res (double[:, :, :])</dt><dd><p>Current state of the wideband residual image.</p>
+</dd>
+<dt>g (double[:, :])</dt><dd><p>Auxiliary variable involved in the update of the primal variable.</p>
+</dd>
+<dt>epsilon (cell of cell of double)</dt><dd><p>(Updated) Value of the l2-ball radii.</p>
+</dd>
+<dt>t_block (cell of cell of int)</dt><dd><p>Index of the last iteration where the weigths have been updated.</p>
+</dd>
+<dt>proj (cell of cell of complex[:])</dt><dd><p>Auxiliary variable involved in the update of the data fidelity dual
+variables.</p>
+</dd>
+<dt>norm_res (cell of cell of double)</dt><dd><p>Norm of the residual image (per channel per block).</p>
+</dd>
+<dt>v0 (cell of double[:])</dt><dd><p>Dual variables associated with the low-rankness.</p>
+</dd>
+<dt>v1 (double[:, :])</dt><dd><p>Dual variables associated with the sparsity prior.</p>
+</dd>
+<dt>v2 (cell of cell complex[:])</dt><dd><p>Dual variables associated with the data fidelity terms (each cell
+corresponding to a data block).</p>
+</dd>
+<dt>weights0 (cell of double[:])</dt><dd><p>Weights associated with the low-rankness prior.</p>
+</dd>
+<dt>weights1 (cell of double[:])</dt><dd><p>Weights associated with the sparsity prior.</p>
+</dd>
+<dt>end_iter (int)</dt><dd><p>Last iteration (unrolled over all pdfb iterations).</p>
+</dd>
+<dt>t_l21 (double)</dt><dd><p>Time to update the sparsity dual variable.</p>
+</dd>
+<dt>t_nuclear (double)</dt><dd><p>Time to update the low-rankness dual variable.</p>
+</dd>
+<dt>t_master (double)</dt><dd><p>Time to perform update/computations on the master process.</p>
+</dd>
+<dt>t_data (double)</dt><dd><p>Time to update the data fidelity dual variables.</p>
+</dd>
+<dt>rel_val (double)</dt><dd><p>Relative variation of the solution across the iterations.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="src.heuristics.html" class="btn btn-neutral float-left" title="Module src.heuristics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="src.sara.html" class="btn btn-neutral float-right" title="Module src.sara" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

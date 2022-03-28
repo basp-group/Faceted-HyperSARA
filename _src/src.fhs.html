@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module src.fhs &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Module src.heuristics" href="src.heuristics.html" />
+    <link rel="prev" title="src package" href="src.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="src.html">src package</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module src.fhs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.heuristics.html">Module src.heuristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.hs.html">Module src.hs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.sara.html">Module src.sara</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.html#module-src">API src</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="src.html">src package</a> &raquo;</li>
+      <li>Module src.fhs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_src/src.fhs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src-fhs">
+<h1>Module src.fhs<a class="headerlink" href="#module-src-fhs" title="Permalink to this headline"></a></h1>
+<p>Functions specific to the implementation of the Faceted HyperSARA algorithm <span id="id1">[<a class="reference internal" href="../biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span>.</p>
+<span class="target" id="module-src.fhs"></span><dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.facetHyperSARA">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">facetHyperSARA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">epsilon</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">pU</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">param</span></em>, <em class="sig-param"><span class="pre">Qx</span></em>, <em class="sig-param"><span class="pre">Qy</span></em>, <em class="sig-param"><span class="pre">K</span></em>, <em class="sig-param"><span class="pre">wavelet</span></em>, <em class="sig-param"><span class="pre">filter_length</span></em>, <em class="sig-param"><span class="pre">nlevel</span></em>, <em class="sig-param"><span class="pre">window_type</span></em>, <em class="sig-param"><span class="pre">spectral_chunk</span></em>, <em class="sig-param"><span class="pre">n_channels</span></em>, <em class="sig-param"><span class="pre">overlap_size</span></em>, <em class="sig-param"><span class="pre">alph</span></em>, <em class="sig-param"><span class="pre">alph_bar</span></em>, <em class="sig-param"><span class="pre">M</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">oy</span></em>, <em class="sig-param"><span class="pre">ox</span></em>, <em class="sig-param"><span class="pre">warmstart_name</span></em>, <em class="sig-param"><span class="pre">checkpoint_name</span></em>, <em class="sig-param"><span class="pre">flag_dimensionality_reduction</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.facetHyperSARA" title="Permalink to this definition"></a></dt>
+<dd><p>Implementation of the Faceted HyperSARA imaging algorithm.</p>
+<p>Implementation of the reweighting / PDFB algorithm underlying the
+Faceted HyperSARA imaging approach <span id="id2">[<a class="reference internal" href="../biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span>. At
+each iteration of the outer reweighting scheme, the PDFB solves a problem
+of the form</p>
+<div class="math notranslate nohighlight">
+\[\min_{X \in \mathbb{R}_+^{N \times L}}
+\sum_{q=1}^Q \big(
+\overline{\mu}_q \| D_q \overline{S}_q X \|_{\overline{\omega}_q, *}
++ \mu \|\Psi_q^\dagger S_q X \|_{\omega_q, 2,1} \big)
++ \sum_{\ell, b} \iota_{ \{\| y_{\ell, b} - \Phi_{\ell, b}(\cdot) \|_2
+\leq \varepsilon_{\ell, b}\} } (x_\ell).\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>composite, cell</em>) – Blocks of visibilities {L}{nblocks_l}.</p></li>
+<li><p><strong>epsilon</strong> (<em>composite, cell</em>) – Data fidelity constraints {L}{nblocks_l}.</p></li>
+<li><p><strong>A</strong> (<em>function handle</em>) – Measurement operator.</p></li>
+<li><p><strong>At</strong> (<em>function handle</em>) – Adjoint of the measurement operator.</p></li>
+<li><p><strong>pU</strong> (<em>composite, cell</em>) – Preconditioning matrices {L}{nblocks_l}.</p></li>
+<li><p><strong>G</strong> (<em>composite, cell of sparse matrices</em>) – Degridding matrices {L}{nblocks_l}.</p></li>
+<li><p><strong>W</strong> (<em>composite, cell of int[:]</em>) – Masks for selection of the blocks of visibilities.</p></li>
+<li><p><strong>param</strong> (<em>struct</em>) – Algorithm parameters.</p></li>
+<li><p><strong>Qx</strong> (<em>int</em>) – Number of spatial facets along spatial axis x.</p></li>
+<li><p><strong>Qy</strong> (<em>int</em>) – Number of spatial facets along spatial axis y.</p></li>
+<li><p><strong>K</strong> (<em>int</em>) – Number of data workers.</p></li>
+<li><p><strong>wavelet</strong> (<em>cell of string</em>) – List of wavelet basis (for the SARA prior). If the Dirac basis
+(<code class="docutils literal notranslate"><span class="pre">'self'</span></code>) is considered, it needs to appear in last position.</p></li>
+<li><p><strong>filter_length</strong> (<em>int[:]</em>) – Length of each wavelet filter considered for the SARA dictionary (0
+by convention for the Dirac basis).</p></li>
+<li><p><strong>nlevel</strong> (<em>int</em>) – Number of wavelet decomposition levels.</p></li>
+<li><p><strong>window_type</strong> (string (<code class="docutils literal notranslate"><span class="pre">&quot;triangular&quot;</span></code> by default, <code class="docutils literal notranslate"><span class="pre">&quot;hamming&quot;</span></code> or) – <code class="docutils literal notranslate"><span class="pre">&quot;pc&quot;</span></code> (piecewise-constant))
+Type of apodization window considered for the faceted nuclear norm
+prior.</p></li>
+<li><p><strong>spectral_chunk</strong> (<em>cell of int[:]</em>) – List of indices of spectral channels handled by each of the <cite>K</cite> data
+workers</p></li>
+<li><p><strong>n_channels</strong> (<em>int</em>) – Total number of spectral channels.</p></li>
+<li><p><strong>overlap_size</strong> (<em>int[2]</em>) – Overlap size between consecutive facets along each axis (y and x) for
+the faceted low-rankness prior.</p></li>
+<li><p><strong>alph</strong> (<em>double</em>) – Sparsity regularization parameter.</p></li>
+<li><p><strong>alph_bar</strong> (<em>double[:]</em>) – Per-facet low-rankness regularization parameter.</p></li>
+<li><p><strong>M</strong> (<em>int</em>) – Spatial image size along axis y.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Spatial image size along axis x.</p></li>
+<li><p><strong>oy</strong> (<em>int</em>) – Fourier oversampling factor along axis y.</p></li>
+<li><p><strong>ox</strong> (<em>int</em>) – Fourier oversampling factor along axis x.</p></li>
+<li><p><strong>warmstart_name</strong> (<em>string</em>) – Name of a valid <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file to initialize the solver (warm-start).</p></li>
+<li><p><strong>checkpoint_name</strong> (<em>string</em>) – Name defining the name for checkpoint files saved
+throughout the iterations.</p></li>
+<li><p><strong>flag_dimensionality_reduction</strong> (<em>bool</em>) – Flag to indicate data dimensiomality reduction is used.</p></li>
+<li><p><strong>Sigma</strong> (<em>composite, cell of complex[:, :]</em>) – Dimensionality reduction matrix. (?)</p></li>
+<li><p><strong>varargin{1}</strong> (<em>double[:, :]</em>) – Initial value for the primal variable [M*N, L].</p></li>
+<li><p><strong>varargin{2}</strong> (<em>double[:, :]</em>) – Ground truth wideband image (only when debugging synthetic
+data experiments) [M*N, L].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>xsol</strong> – Reconstructed wideband image [M*N, L].</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:, :]</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>The <cite>param</cite> structure should contain the following fields.</p></li>
+</ul>
+<dl class="simple">
+<dt>param.verbose (string)</dt><dd><p>Print log or not</p>
+</dd>
+<dt>param.nu0 (double)</dt><dd><p>Norm of the splitting operator used to defined the faceted
+low-rankness dual variable (identity for <code class="docutils literal notranslate"><span class="pre">rectangular</span></code> window, thus
+fixed to 1).</p>
+</dd>
+<dt>param.nu1 (double)</dt><dd><p>Upper bound on the norm of the SARA operator <span class="math notranslate nohighlight">\(\Psi^\dagger\)</span>.</p>
+</dd>
+<dt>param.nu2 (double)</dt><dd><p>Upper bound on the norm of the measurement operator <span class="math notranslate nohighlight">\(\Phi\)</span></p>
+</dd>
+<dt>param.gamma  (double)</dt><dd><p>Regularization parameter (sparsity prior).</p>
+</dd>
+<dt>param.gamma0  (double[:)</dt><dd><p>Regularization parameter (faceted low-rankness prior).</p>
+</dd>
+<dt>param.pdfb_min_iter (int)</dt><dd><p>Minimum number of iterations (PDFB).</p>
+</dd>
+<dt>param.pdfb_max_iter (int)</dt><dd><p>Maximum number of iterations (PDFB).</p>
+</dd>
+<dt>param.pdfb_rel_var (double)</dt><dd><p>Relative variation tolerance (PDFB).</p>
+</dd>
+<dt>param.pdfb_fidelity_tolerance (double)</dt><dd><p>Tolerance to check data constraints are satisfied (PDFB).</p>
+</dd>
+<dt>param.reweighting_max_iter (int)</dt><dd><p>Maximum number of reweighting steps.</p>
+</dd>
+<dt>param.reweighting_min_iter (int)</dt><dd><p>Minimum number of reweighting steps (to reach “noise” level).</p>
+</dd>
+<dt>param.reweighting_rel_var (double)</dt><dd><p>Tolerance relative variation (reweighting).</p>
+</dd>
+<dt>param.reweighting_alpha (double)</dt><dd><p>Starting reweighting parameter.</p>
+</dd>
+<dt>param.reweighting_sig (double)</dt><dd><p>Noise level (in wavelet space)</p>
+</dd>
+<dt>param.reweighting_sig_bar (double)</dt><dd><p>Noise level (singular value space)</p>
+</dd>
+<dt>param.elipse_proj_max_iter (int)</dt><dd><p>Maximum number of iterations for the FB algo that implements the
+projection onto the ellipsoid.</p>
+</dd>
+<dt>param.elipse_proj_min_iter (int)</dt><dd><p>Minimum number of iterations for the FB algo that implements the
+projection onto the ellipsoid.</p>
+</dd>
+<dt>parma.elipse_proj_eps (double)</dt><dd><p>Stopping criterion for the projection.</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>The following fileds are added to <cite>param</cite> in the course of the
+algorithm to be able to restart it from a previous state</p></li>
+</ul>
+<dl class="simple">
+<dt>param.reweighting_alpha (double)</dt><dd><p>Current state of the reweighting parameter.</p>
+</dd>
+<dt>param.init_reweight_step_count (int)</dt><dd><p>Iteration index of the current reweighting step when the checkpoint
+file is written.</p>
+</dd>
+<dt>param.init_reweight_last_iter_step (int)</dt><dd><p>Global iteration index (unrolled over all pdfb iterations performed
+in the reweighting scheme) from which to restart the algorithm.</p>
+</dd>
+<dt>param.init_t_start (int)</dt><dd><p>Global iteration index (unrolled over all pdfb iterations performed
+in the reweighting scheme) from which to restart the algorithm
+(<code class="docutils literal notranslate"><span class="pre">param.init_t_start</span> <span class="pre">=</span> <span class="pre">param.init_reweight_last_iter_step</span> <span class="pre">+</span> <span class="pre">1</span></code>).</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>The following fileds are added to <cite>param</cite> in the course of the
+algorithm to be able to restart it from a previous state</p></li>
+</ul>
+<dl class="simple">
+<dt>param.reweighting_alpha (double)</dt><dd><p>Current state of the reweighting parameter.</p>
+</dd>
+<dt>param.init_reweight_step_count (int)</dt><dd><p>Iteration index of the current reweighting step when the checkpoint
+file is written.</p>
+</dd>
+<dt>param.init_reweight_last_iter_step (int)</dt><dd><p>Global iteration index (unrolled over all pdfb iterations performed
+in the reweighting scheme) from which to restart the algorithm.</p>
+</dd>
+<dt>param.init_t_start (int)</dt><dd><p>Global iteration index (unrolled over all pdfb iterations performed
+in the reweighting scheme) from which to restart the algorithm
+(<code class="docutils literal notranslate"><span class="pre">param.init_t_start</span> <span class="pre">=</span> <span class="pre">param.init_reweight_last_iter_step</span> <span class="pre">+</span> <span class="pre">1</span></code>).</p>
+</dd>
+</dl>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The checkpoint file saved throughout the iterations is composed of the
+following variables (to be verified).</p>
+<dl class="simple">
+<dt>param (struct)</dt><dd><p>Current state of the parameter structure (updated with auxiliary
+parameters describing the state of the solver when the checkpoint
+file has been written).</p>
+</dd>
+<dt>xsol (double[:, :])</dt><dd><p>Current state of the image estimate [M*N, L].</p>
+</dd>
+<dt>res (double[:, :, :])</dt><dd><p>Current state of the wideband residual image.</p>
+</dd>
+<dt>g (double[:, :])</dt><dd><p>Auxiliary variable involved in the update of the primal variable.</p>
+</dd>
+<dt>epsilon (cell of cell of double)</dt><dd><p>(Updated) Value of the l2-ball radii.</p>
+</dd>
+<dt>t_block (cell of cell of int)</dt><dd><p>Index of the last iteration where the weigths have been updated.</p>
+</dd>
+<dt>proj (cell of cell of complex[:])</dt><dd><p>Auxiliary variable involved in the update of the data fidelity dual
+variables.</p>
+</dd>
+<dt>norm_res (cell of cell of double)</dt><dd><p>Norm of the residual image (per channel per block).</p>
+</dd>
+<dt>v0 (cell of double[:])</dt><dd><p>Dual variables associated with the low-rankness prior {Q}.</p>
+</dd>
+<dt>v1 (cell of double[:, :])</dt><dd><p>Dual variables associated with the sparsity prior {Q}.</p>
+</dd>
+<dt>v2 (cell of cell complex[:])</dt><dd><p>Dual variables associated with the data fidelity terms (each cell
+corresponding to a data block) {K}.</p>
+</dd>
+<dt>weights0 (cell of double[:])</dt><dd><p>Weights associated with the faceted low-rankness prior {Q}.</p>
+</dd>
+<dt>weights1 (cell of double[:])</dt><dd><p>Weights associated with the sparsity prior {Q}.</p>
+</dd>
+<dt>end_iter (int)</dt><dd><p>Last iteration (unrolled over all pdfb iterations).</p>
+</dd>
+<dt>t_facet (double)</dt><dd><p>Time to update all the variables assoacited with a spatial facet..</p>
+</dd>
+<dt>t_data (double)</dt><dd><p>Time to update the data fidelity dual variables.</p>
+</dd>
+<dt>rel_val (double)</dt><dd><p>Relative variation of the solution across the iterations.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.facetHyperSARA2">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">facetHyperSARA2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">epsilon</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">pU</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">param</span></em>, <em class="sig-param"><span class="pre">Qx</span></em>, <em class="sig-param"><span class="pre">Qy</span></em>, <em class="sig-param"><span class="pre">K</span></em>, <em class="sig-param"><span class="pre">wavelet</span></em>, <em class="sig-param"><span class="pre">filter_length</span></em>, <em class="sig-param"><span class="pre">nlevel</span></em>, <em class="sig-param"><span class="pre">window_type</span></em>, <em class="sig-param"><span class="pre">spectral_chunk</span></em>, <em class="sig-param"><span class="pre">n_channels</span></em>, <em class="sig-param"><span class="pre">overlap_size</span></em>, <em class="sig-param"><span class="pre">alph</span></em>, <em class="sig-param"><span class="pre">alph_bar</span></em>, <em class="sig-param"><span class="pre">M</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">oy</span></em>, <em class="sig-param"><span class="pre">ox</span></em>, <em class="sig-param"><span class="pre">warmstart_name</span></em>, <em class="sig-param"><span class="pre">checkpoint_name</span></em>, <em class="sig-param"><span class="pre">flag_dimensionality_reduction</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.facetHyperSARA2" title="Permalink to this definition"></a></dt>
+<dd><p>TODO: try to replace A, At, pU, G, W by a functor (if possible)</p>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.fhs_compute_facet_prior">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">fhs_compute_facet_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x_facet</span></em>, <em class="sig-param"><span class="pre">Iq</span></em>, <em class="sig-param"><span class="pre">offset</span></em>, <em class="sig-param"><span class="pre">status_q</span></em>, <em class="sig-param"><span class="pre">nlevel</span></em>, <em class="sig-param"><span class="pre">wavelet</span></em>, <em class="sig-param"><span class="pre">Ncoefs_q</span></em>, <em class="sig-param"><span class="pre">dims_overlap_ref_q</span></em>, <em class="sig-param"><span class="pre">offsetLq</span></em>, <em class="sig-param"><span class="pre">offsetRq</span></em>, <em class="sig-param"><span class="pre">crop_sparsity</span></em>, <em class="sig-param"><span class="pre">crop_low_rank</span></em>, <em class="sig-param"><span class="pre">spatial_weights</span></em>, <em class="sig-param"><span class="pre">size_v1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.fhs_compute_facet_prior" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the value of the faceted prior (<span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> + nuclear
+norm).</p>
+<p>Compute the value of the faceted prior (<span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> and  nuclear
+norm) for a single facet. This version includes a spatial correction of
+the faceted nuclear norm (tapering window).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_facet</strong> (<em>double[:, :, :]</em>) – Overlapping image facet <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>Iq</strong> (<em>int[:]</em>) – Starting index of the non-overlapping facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offset</strong> (<em>int[:]</em>) – offset to be used from one dictionary to another (different overlap
+needed for each dictionary -&gt; cropping) <code class="docutils literal notranslate"><span class="pre">{nDictionaries}</span></code>.</p></li>
+<li><p><strong>status_q</strong> (<em>int[:]</em>) – Status of the current facet (last or first facet along vert. / hrz.
+direction).</p></li>
+<li><p><strong>nlevel</strong> (<em>int</em>) – Depth of the wavelet decompositions.</p></li>
+<li><p><strong>wavelet</strong> (<em>cell (strings)</em>) – Name of the wavelet dictionaries.</p></li>
+<li><p><strong>Ncoefs_q</strong> (<em>int[:, :]</em>) – Size of the wavelet decompositions at each scale.</p></li>
+<li><p><strong>dims_overlap_ref_q</strong> (<em>int[:]</em>) – Dimensions of the facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetLq</strong> (<em>int[:]</em>) – Amount of zero-padding from the “left” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetRq</strong> (<em>int[:]</em>) – Amount of zero-padding from the “right” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>crop_sparsity</strong> (<em>int[:]</em>) – Relative cropping necessary for the facet <span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> norm
+[1, 2].</p></li>
+<li><p><strong>crop_low_rank</strong> (<em>int[:]</em>) – Relative cropping necessary for the facet nuclear norm <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>spatial_weights</strong> (<em>double[:, :]</em>) – Spatial weights (apodization window) applied to the facet nuclear
+norm.</p></li>
+<li><p><strong>size_v1</strong> (<em>int[:]</em>) – Size of the dual variable associated with the facet
+<span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> norm <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>l21_norm</strong> (<em>double</em>) – Facet <span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> norm.</p></li>
+<li><p><strong>nuclear_norm</strong> (<em>double</em>) – Facet nuclear norm.</p></li>
+<li><p><em>..note::</em> – The l21 and nuclear norms do not act on the same facet, hence the
+cropping step.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.fhs_initialize_data_worker">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">fhs_initialize_data_worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.fhs_initialize_data_worker" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the variables stored on the data workers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>y</strong> (<em>cell</em>) – Input data, stored as 2-layer cell, the first for channels, the
+second for data blocks within each channel.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>v2</strong> (<em>cell</em>) – Data fidelity dual variable. Same structure as <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+<li><p><strong>norm_res</strong> (<em>cell</em>) – Norm of the residual. Same structure as <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+<li><p><strong>t_block</strong> (<em>cell</em>) – Last iteration at which each block has been updated <code class="docutils literal notranslate"><span class="pre">{L}{nblocks}</span></code>.
+Same structure as
+<code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+<li><p><strong>proj</strong> (<em>cell</em>) – Result of the projection step  <code class="docutils literal notranslate"><span class="pre">{L}{nblocks}[M,</span> <span class="pre">1]</span></code>. Same structure
+as <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.fhs_initialize_dual_and_weights">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">fhs_initialize_dual_and_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x_facet</span></em>, <em class="sig-param"><span class="pre">I</span></em>, <em class="sig-param"><span class="pre">offset</span></em>, <em class="sig-param"><span class="pre">status</span></em>, <em class="sig-param"><span class="pre">nlevel</span></em>, <em class="sig-param"><span class="pre">wavelet</span></em>, <em class="sig-param"><span class="pre">Ncoefs</span></em>, <em class="sig-param"><span class="pre">dims_o</span></em>, <em class="sig-param"><span class="pre">n_channels</span></em>, <em class="sig-param"><span class="pre">dims_overlap_ref</span></em>, <em class="sig-param"><span class="pre">offsetL</span></em>, <em class="sig-param"><span class="pre">offsetR</span></em>, <em class="sig-param"><span class="pre">reweight_alpha</span></em>, <em class="sig-param"><span class="pre">crop_sparsity</span></em>, <em class="sig-param"><span class="pre">crop_low_rank</span></em>, <em class="sig-param"><span class="pre">apodization_window</span></em>, <em class="sig-param"><span class="pre">sig</span></em>, <em class="sig-param"><span class="pre">sig_bar</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.fhs_initialize_dual_and_weights" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize dual variables and weights associated with the faceted
+low-rankness and average joint-sparsity prior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_facet</strong> (<em>double[:, :, :]</em>) – Overlapping image facet <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>I</strong> (<em>int[:]</em>) – Starting index of the non-overlapping facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offset</strong> (<em>int[:]</em>) – Offset to be used from one dictionary to another (different overlap
+needed for each dictionary -&gt; cropping) <code class="docutils literal notranslate"><span class="pre">{nDictionaries}</span></code>.</p></li>
+<li><p><strong>status</strong> (<em>int[:]</em>) – Status of the current facet (last or first facet along vert. / hrz.
+direction) <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>nlevel</strong> (<em>int</em>) – Depth of the wavelet decompositions.</p></li>
+<li><p><strong>wavelet</strong> (<em>cell, string</em>) – Name of the wavelet transforms involved in the faceted average
+joint-sparsity prior.</p></li>
+<li><p><strong>Ncoefs</strong> (<em>int[:]</em>) – Size of the wavelet decompositions at each scale.</p></li>
+<li><p><strong>dims_o</strong> (<em>int[:]</em>) – Dimension of a facet (with overlap) <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>n_channels</strong> (<em>int</em>) – Number of spectral channels.</p></li>
+<li><p><strong>dims_overlap_ref</strong> (<em>int[:]</em>) – Dimension of the facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetL</strong> (<em>int[:]</em>) – Amount of zero-pading from the “left” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetR</strong> (<em>int[:]</em>) – Amount of zero-padding from the “right” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>reweight_alpha</strong> (<em>double</em>) – Reweighting parameter.</p></li>
+<li><p><strong>crop_sparsity</strong> (<em>int[:]</em>) – Amount of pixels to be cropped from the facet along each dimension to
+retrieve the pixels over which the current facet’s sparstiy prior is
+acting <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>crop_low_rank</strong> (<em>int[:]</em>) – Amount of pixels to be cropped from the facet along each dimension to
+retrieve the pixels over which the current facet’s sparstiy prior is
+acting <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>apodization_window</strong> (<em>double[:, :]</em>) – Apodization window used in the faceted low-rankness prior.</p></li>
+<li><p><strong>sig</strong> (<em>double</em>) – Noise level for the weights (joint-sparsity prior).</p></li>
+<li><p><strong>sig_bar</strong> (<em>double</em>) – Noise level for the weights (low-rankness prior).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>v0</strong> (<em>double[:, :]</em>) – Dual variable associated with the low-rankness prior.</p></li>
+<li><p><strong>v1</strong> (<em>double[:, :]</em>) – Dual variable associated with the average joint-sparsity prior.</p></li>
+<li><p><strong>weights0</strong> (<em>double[:]</em>) – Weigths associated with the low-rankness prior.</p></li>
+<li><p><strong>weights1</strong> (<em>double[:]</em>) – Weigths associated with the average joint-sparsity prior.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.fhs_initialize_facet_dual">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">fhs_initialize_facet_dual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Ncoefs</span></em>, <em class="sig-param"><span class="pre">dims_o</span></em>, <em class="sig-param"><span class="pre">n_channels</span></em>, <em class="sig-param"><span class="pre">nlevel</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.fhs_initialize_facet_dual" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize dual variables (constant overlap).</p>
+<p>Initialize all the dual variables for a given facet (nuclear and
+<span class="math notranslate nohighlight">\(\ell_{2, 1}\)</span> norms).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Ncoefs</strong> (<em>int[:, :]</em>) – Number of wavelet coefficients at each scale.</p></li>
+<li><p><strong>dims_o</strong> (<em>int[:]</em>) – Dimension of a facet (with overlap) <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>n_channels</strong> (<em>int</em>) – Number of spectral channels.</p></li>
+<li><p><strong>nlevel</strong> (<em>int</em>) – Depth of the wavelet decompositions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>v0</strong> (<em>double[:, :]</em>) – Dual variable associated with the nuclear norm.</p></li>
+<li><p><strong>v1</strong> (<em>double[:, :]</em>) – Dual variable associated with the <span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> norm.</p></li>
+<li><p><strong>weights0</strong> (<em>double[:]</em>) – Weigths associated with the nuclear norm.</p></li>
+<li><p><strong>weights1</strong> (<em>double[:]</em>) – Weigths ssociated with the <span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> norm.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.fhs_setup_priors">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">fhs_setup_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Qx</span></em>, <em class="sig-param"><span class="pre">Qy</span></em>, <em class="sig-param"><span class="pre">I</span></em>, <em class="sig-param"><span class="pre">dims</span></em>, <em class="sig-param"><span class="pre">dims_o</span></em>, <em class="sig-param"><span class="pre">dims_overlap_ref</span></em>, <em class="sig-param"><span class="pre">I_overlap</span></em>, <em class="sig-param"><span class="pre">dims_overlap</span></em>, <em class="sig-param"><span class="pre">status</span></em>, <em class="sig-param"><span class="pre">offsetL</span></em>, <em class="sig-param"><span class="pre">offsetR</span></em>, <em class="sig-param"><span class="pre">Ncoefs</span></em>, <em class="sig-param"><span class="pre">temLIdxs</span></em>, <em class="sig-param"><span class="pre">temRIdxs</span></em>, <em class="sig-param"><span class="pre">window_type</span></em>, <em class="sig-param"><span class="pre">overlap_size</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.fhs_setup_priors" title="Permalink to this definition"></a></dt>
+<dd><p>Setup all the composite arrays for the faceted low-rankness and average
+joint sparsity priors involed in Faceted HyperSARA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Qx</strong> (<em>int</em>) – Number of facets (axis x).</p></li>
+<li><p><strong>Qy</strong> (<em>int</em>) – Number of facets (axis y).</p></li>
+<li><p><strong>I</strong> (<em>int[:]</em>) – Starting index of the non-overlapping tile <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>dims</strong> (<em>int[:]</em>) – Size of the non-overlapping tile <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>dims_o</strong> (<em>int[:]</em>) – Dimension of a facet (with overlap) <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>dims_overlap_ref</strong> (<em>int[:]</em>) – Dimension of the facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>I_overlap</strong> (<em>int[:]</em>) – Starting index of the overlapping facets <code class="docutils literal notranslate"><span class="pre">[Q,</span> <span class="pre">1]</span></code>.</p></li>
+<li><p><strong>dims_overlap</strong> (<em>int[:, :]</em>) – Size of the overlapping facets <code class="docutils literal notranslate"><span class="pre">[Q,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>status</strong> (<em>int[:]</em>) – Status of the current facet (last or first facet along vert. / hrz.
+direction) <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetL</strong> (<em>int[:, :]</em>) – Amount of zero-pading from the “left” <code class="docutils literal notranslate"><span class="pre">[Q,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetR</strong> (<em>int[:, :]</em>) – Amount of zero-padding from the “right” <code class="docutils literal notranslate"><span class="pre">[Q,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>Ncoefs</strong> (<em>cell of int[:, :]</em>) – Size of the wavelet decomposition across each scale.</p></li>
+<li><p><strong>temLIdxs</strong> (<em>int[:, :]</em>) – Amount of cropping from the “left” <code class="docutils literal notranslate"><span class="pre">[Q,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>temRIdxs</strong> (<em>int[:, :]</em>) – Amount of cropping from the “right” <code class="docutils literal notranslate"><span class="pre">[Q,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>window_type</strong> (<em>string</em>) – Type of apodization window considered for the faceted low-rankness
+prior.</p></li>
+<li><p><strong>overlap_size</strong> (<em>int[:]</em>) – Number of overlapping pixels in the current facet along each
+direction <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Iq</strong> (<em>int[:]</em>) – Starting index of the non-overlapping base facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>dims_q</strong> (<em>int[:]</em>) – Dimensions of the non-overlapping base facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>dims_oq</strong> (<em>int[:]</em>) – Diemnsions of the overlapping facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>dims_overlap_ref_q</strong> (<em>int[:]</em>) – Dimension of the facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>I_overlap_q</strong> (<em>int[:]</em>) – Starting index of the facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>dims_overlap_q</strong> (<em>int[:]</em>) – Dimensions of the facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>status_q</strong> (<em>int[:]</em>) – Status of the current facet (last or first facet along vert. or hrz.
+direction) [ndict, 2].</p></li>
+<li><p><strong>offsetLq</strong> (<em>int[:]</em>) – Amount of zero-pading from the “left” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetRq</strong> (<em>int[:]</em>) – Amount of zero-pading from the “right” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>Ncoefs_q</strong> (<em>int[:, :]</em>) – Size of the wavelet decompositions at each scale.</p></li>
+<li><p><strong>temLIdxs_q</strong> (<em>int[:]</em>) – Amount of cropping from the “left” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>temRIdxs_q</strong> (<em>int[:]</em>) – Amount of cropping from the “right” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>overlap_g_south</strong> (<em>int[:]</em>) – Size of the overlap for the south neighbour [2,1].</p></li>
+<li><p><strong>overlap_g_east</strong> (<em>int[:]</em>) – Size of the overlap for the east neighbour [2,1].</p></li>
+<li><p><strong>overlap_g_south_east</strong> (<em>int[:]</em>) – Size of the overlap for the south-east neighbour [2,1].</p></li>
+<li><p><strong>overlap</strong> (<em>int[:]</em>) – Number of overlapping pixels along each direction.</p></li>
+<li><p><strong>w</strong> (<em>double[:, :]</em>) – Apodization window considered for the faceted low-rankness prior.</p></li>
+<li><p><strong>crop_low_rank</strong> (<em>int[:]</em>) – [Relative cropping necessary for the faceted low-rankness prior
+<code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>crop_sparsity</strong> (<em>int[:]</em>) – Relative cropping necessary for the faceted joint-sparsity prior
+<code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.fhs_update_dual_lowrankness">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">fhs_update_dual_lowrankness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">v0</span></em>, <em class="sig-param"><span class="pre">xhat</span></em>, <em class="sig-param"><span class="pre">apodization_window</span></em>, <em class="sig-param"><span class="pre">weights0</span></em>, <em class="sig-param"><span class="pre">beta0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.fhs_update_dual_lowrankness" title="Permalink to this definition"></a></dt>
+<dd><p>Update the dual variable related to the weighted nuclear norm prior.</p>
+<p>Update step for the facet dual variable related to the nuclear norm
+prior over a given facet. This version includes a spatial correction for
+the faceted nuclear norm (tapering window).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v0</strong> (<em>double[:]</em>) – Dual variable associated with the nuclear norm prior
+<code class="docutils literal notranslate"><span class="pre">[min(M*N,</span> <span class="pre">L),</span> <span class="pre">1]</span></code>.</p></li>
+<li><p><strong>xhat</strong> (<em>double[:, :, :]</em>) – Auxiliary variable related to the wideband image <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>apodization_window</strong> (<em>double[:, :]</em>) – Spatial weights applied to the facet nuclear norm <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>weights0</strong> (<em>double[:]</em>) – Weights for the reweighting <code class="docutils literal notranslate"><span class="pre">[min(M*N,</span> <span class="pre">L),</span> <span class="pre">1]</span></code>.</p></li>
+<li><p><strong>beta0</strong> (<em>double</em>) – Thresholding parameter (gamma0/sigma0).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>v0</strong> (<em>double[:, :]</em>) – Dual variable associated with the nuclear norm prior
+<code class="docutils literal notranslate"><span class="pre">[min(M*N,</span> <span class="pre">L),</span> <span class="pre">1]</span></code>.</p></li>
+<li><p><strong>g0</strong> (<em>double[:, :, :]</em>) – Auxiliary variable for the update of the primal variable
+<code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.fhs_update_dual_sparsity">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">fhs_update_dual_sparsity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">v1</span></em>, <em class="sig-param"><span class="pre">x_facet</span></em>, <em class="sig-param"><span class="pre">apodization_window</span></em>, <em class="sig-param"><span class="pre">beta1</span></em>, <em class="sig-param"><span class="pre">Iq</span></em>, <em class="sig-param"><span class="pre">dims_q</span></em>, <em class="sig-param"><span class="pre">I_overlap_q</span></em>, <em class="sig-param"><span class="pre">dims_overlap_q</span></em>, <em class="sig-param"><span class="pre">offset</span></em>, <em class="sig-param"><span class="pre">status_q</span></em>, <em class="sig-param"><span class="pre">nlevel</span></em>, <em class="sig-param"><span class="pre">wavelet</span></em>, <em class="sig-param"><span class="pre">Ncoefs_q</span></em>, <em class="sig-param"><span class="pre">temLIdxs_q</span></em>, <em class="sig-param"><span class="pre">temRIdxs_q</span></em>, <em class="sig-param"><span class="pre">offsetLq</span></em>, <em class="sig-param"><span class="pre">offsetRq</span></em>, <em class="sig-param"><span class="pre">dims_overlap_ref_q</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.fhs_update_dual_sparsity" title="Permalink to this definition"></a></dt>
+<dd><p>Update the dual variable associated with the facet l21-norm prior.</p>
+<p>Update a facet dual variable associated with the l21-norm prior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v1</strong> (<em>double[:, :]</em>) – Dual variable associated with the <span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> prior <code class="docutils literal notranslate"><span class="pre">[s,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>x_facet</strong> (<em>double[:, :, :]</em>) – Overlapping image facet <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>apodization_window</strong> (<em>double[:, :]</em>) – Weights to mitigate tessellation aretefacts due to the overlap
+between facets <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N]</span></code>.</p></li>
+<li><p><strong>beta1</strong> (<em>double</em>) – Ratio between regularization and convergence parameter
+(gamma1 / sigma1).</p></li>
+<li><p><strong>Iq</strong> (<em>int[:]</em>) – Starting index of the non-overlapping base facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>dims_q</strong> (<em>int[:]</em>) – Dimensions of the non-overlapping base facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>I_overlap_q</strong> (<em>int[:]</em>) – Starting index of the facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>dims_overlap_q</strong> (<em>int[:]</em>) – Dimensions of the facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offset</strong> (<em>cell of int[:]</em>) – Offset to be used from one dictionary to another (different overlap
+needed for each dictionary -&gt; cropping) <code class="docutils literal notranslate"><span class="pre">{nDictionaries}</span></code>.</p></li>
+<li><p><strong>status_q</strong> (<em>int[:]</em>) – Status of the current facet (last or first facet along vert. or hrz.
+direction) [ndict, 2].</p></li>
+<li><p><strong>nlevel</strong> (<em>int</em>) – Depth of the wavelet decompositions.</p></li>
+<li><p><strong>wavelet</strong> (<em>cell (string)</em>) – Name of the wavelet dictionaries {ndict}.</p></li>
+<li><p><strong>Ncoefs_q</strong> (<em>int[:]</em>) – Size of the wavelet decompositions at each scale.</p></li>
+<li><p><strong>temLIdxs_q</strong> (<em>int[:]</em>) – Amount of cropping from the “left” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>temRIdxs_q</strong> (<em>int[:]</em>) – Amount of cropping from the “right” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetLq</strong> (<em>int[:]</em>) – Amount of zero-pading from the “left” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetRq</strong> (<em>int[:]</em>) – Amount of zero-pading from the “right” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>dims_overlap_ref_q</strong> (<em>int[:]</em>) – Dimension of the facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>v1</strong> (<em>double[:, :]</em>) – Dual variable associated with the <span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> prior <code class="docutils literal notranslate"><span class="pre">[s,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>g</strong> (<em>double[:, :, :]</em>) – Auxiliary variable for the update of the primal variable <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.fhs_update_primal">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">fhs_update_primal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">xsol</span></em>, <em class="sig-param"><span class="pre">g</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.fhs_update_primal" title="Permalink to this definition"></a></dt>
+<dd><p>Update the wideband facet (primal variable).</p>
+<p>Update step for the primal variable in the preconditioned primal-dual
+algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xsol</strong> (<em>double[:, :, :]</em>) – Wideband facet <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>g</strong> (<em>double[:, :, :]</em>) – Auxiliary variable related to the wideband facet <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>xsol</strong> (<em>double[:, :, :]</em>) – Udated wideband facet <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>xhat</strong> (<em>double[:, :, :]</em>) – Auxiliary variable related to the wideband facet <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>rel_x</strong> (<em>double</em>) – Squared relative variation between two consecutive iterates.</p></li>
+<li><p><strong>norm_x</strong> (<em>double</em>) – Squared Euclidean norm of <cite>xsol</cite>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.fhs.fhs_update_weights">
+<span class="sig-prename descclassname"><span class="pre">src.fhs.</span></span><span class="sig-name descname"><span class="pre">fhs_update_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x_facet</span></em>, <em class="sig-param"><span class="pre">size_v1</span></em>, <em class="sig-param"><span class="pre">I</span></em>, <em class="sig-param"><span class="pre">offset</span></em>, <em class="sig-param"><span class="pre">status</span></em>, <em class="sig-param"><span class="pre">nlevel</span></em>, <em class="sig-param"><span class="pre">wavelet</span></em>, <em class="sig-param"><span class="pre">Ncoefs</span></em>, <em class="sig-param"><span class="pre">dims_overlap_ref</span></em>, <em class="sig-param"><span class="pre">offsetL</span></em>, <em class="sig-param"><span class="pre">offsetR</span></em>, <em class="sig-param"><span class="pre">reweight_alpha</span></em>, <em class="sig-param"><span class="pre">crop_sparsity</span></em>, <em class="sig-param"><span class="pre">crop_low_rank</span></em>, <em class="sig-param"><span class="pre">apodization_window</span></em>, <em class="sig-param"><span class="pre">sig</span></em>, <em class="sig-param"><span class="pre">sig_bar</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.fhs.fhs_update_weights" title="Permalink to this definition"></a></dt>
+<dd><p>Update the weights of the per facet priors.</p>
+<p>Update the weights involved in the reweighting procedure applied to the
+faceted l21 and nuclear norms. This version includes a spatial weighting
+correction for the nuclear norm (tapering window).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_facet</strong> (<em>double[:, :, :]</em>) – Overlapping image facet <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">N,</span> <span class="pre">L]</span></code>.</p></li>
+<li><p><strong>size_v1</strong> (<em>int[:]</em>) – Size of the dual variable associated with the facet
+<span class="math notranslate nohighlight">\(\ell_{2,1}\)</span> norm <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>I</strong> (<em>int[:]</em>) – Starting index of the non-overlapping facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offset</strong> (<em>cell of int[:]</em>) – Offset to be used from one dictionary to another (different overlap
+needed for each dictionary -&gt; cropping) <code class="docutils literal notranslate"><span class="pre">{nDictionaries}</span></code>.</p></li>
+<li><p><strong>status</strong> (<em>int[:]</em>) – Status of the current facet (last or first facet along vert. / hrz.
+direction) <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>nlevel</strong> (<em>int</em>) – Depth of the wavelet decompositions.</p></li>
+<li><p><strong>wavelet</strong> (<em>cell of string</em>) – Name of the wavelet dictionaries.</p></li>
+<li><p><strong>Ncoefs</strong> (<em>int[:]</em>) – Size of the wavelet decompositions at each scale.</p></li>
+<li><p><strong>dims_overlap_ref</strong> (<em>int[:]</em>) – Dimension of the facet <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetL</strong> (<em>int[:]</em>) – Amount of zero-pading from the “left” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>offsetR</strong> (<em>int[:]</em>) – Amount of zero-padding from the “right” <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>reweight_alpha</strong> (<em>double</em>) – Reweighting parameter.</p></li>
+<li><p><strong>crop_sparsity</strong> (<em>int[:]</em>) – Relative cropping necessary for the facet l21-norm <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>crop_low_rank</strong> (<em>int[:]</em>) – Relative cropping necessary for the facet nuclear norm <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+<li><p><strong>apodization_window</strong> (<em>double[:, :]</em>) – Spatial weights applied to the facet nuclear norm (same size as
+<code class="docutils literal notranslate"><span class="pre">x_facet</span></code> after cropping by <code class="docutils literal notranslate"><span class="pre">crop_low_rank</span></code>).</p></li>
+<li><p><strong>sig</strong> (<em>double</em>) – Noise level (wavelet space).</p></li>
+<li><p><strong>sig_bar</strong> (<em>double</em>) – Noise level (singular value space).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>weights1</strong> (<em>double[:, :]</em>) – Weights for the reweighting of the facet <span class="math notranslate nohighlight">\(\ell_{2,1}\)</span>-norm
+[size_v1(1), size_v1(2)].</p></li>
+<li><p><strong>weights0</strong> (<em>double[:, :]</em>) – Weights for the reweighting of the nuclear norm [min(M*N, L), 1].</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="src.html" class="btn btn-neutral float-left" title="src package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="src.heuristics.html" class="btn btn-neutral float-right" title="Module src.heuristics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

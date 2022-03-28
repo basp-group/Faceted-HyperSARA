@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>imaging package &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pyxisMs2mat package" href="../_pyxisMs2mat/pyxisMs2mat.html" />
+    <link rel="prev" title="Module lib.utils" href="../_lib/lib.utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_src/src.html">src package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_lib/lib.html">lib package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>imaging package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_imaging/imaging.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="imaging-package">
+<h1>imaging package<a class="headerlink" href="#imaging-package" title="Permalink to this headline"></a></h1>
+<p>Collection of scripts to launch the proposed imaging pipeline on synthetic or real data.</p>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="imaging.imaging">
+<span class="sig-prename descclassname"><span class="pre">imaging.</span></span><span class="sig-name descname"><span class="pre">imaging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">srcName</span></em>, <em class="sig-param"><span class="pre">datasetsNames</span></em>, <em class="sig-param"><span class="pre">dataFilename</span></em>, <em class="sig-param"><span class="pre">effChans2Image</span></em>, <em class="sig-param"><span class="pre">param_solver</span></em>, <em class="sig-param"><span class="pre">param_global</span></em>, <em class="sig-param"><span class="pre">param_nufft</span></em>, <em class="sig-param"><span class="pre">param_precond</span></em>, <em class="sig-param"><span class="pre">dict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#imaging.imaging" title="Permalink to this definition"></a></dt>
+<dd><p>Main function to run any algorithm from the SARA family using the
+configuration provided in <a class="reference internal" href="../default.html#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a>.
+The approaches are Faceted HyperSARA, HyperSARA and SARA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>srcName</strong> (<em>string</em>) – Name of the target source to be reconstructed as specified during
+data extraction, used to get the data and generate output files.</p></li>
+<li><p><strong>dataSetsNames</strong> (<em>cell of string</em>) – Names of the different datasets used (e.g., in the cases of
+different acquisition configurations or different observation times),
+to be set to <code class="docutils literal notranslate"><span class="pre">{''}</span></code> if one data set is imaged or no name tag of
+the MS is given during data extraction.</p></li>
+<li><p><strong>dataFilenames</strong> (<em>cell of string</em>) – Function handle taking a channel index as an input and returning the
+name of the associated data <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file (one file per frequency channel),
+following the nomenclature adopted during data extraction .</p></li>
+<li><p><strong>effChans2Image</strong> (<em>cell array</em>) – Cell array containing the ids of the physical (input) channels to be
+concatenated for each effective (output) channel.</p></li>
+<li><p><strong>param_global</strong> (<em>struct</em>) – Global imaging pipeline parameters (see
+<a class="reference internal" href="../default.html#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">imaging.main_input_imaging()</span></code></a>).</p></li>
+<li><p><strong>param_global.im_pixelSize</strong> (<em>double</em>) – Pixel-size in arcsec. Set to <code class="docutils literal notranslate"><span class="pre">[]</span></code> to use
+the default value corresponding to 2 times the resolution of the
+observation (given by the longest baseline at the highest frequency).</p></li>
+<li><p><strong>param_global.im_Nx</strong> (<em>int</em>) – Image dimension (x axis, dimension 2).</p></li>
+<li><p><strong>param_global.im_Ny</strong> (<em>int</em>) – Image dimension (y axis, dimension 1).</p></li>
+<li><p><strong>param_global.measop_flag_visibility_gridding</strong> (<em>bool</em>) – Flag to activate data dimensionality reduction via visibility gridding in the
+definition of the measurement operator.</p></li>
+<li><p><strong>param_global.algo_solver</strong> (string (<code class="docutils literal notranslate"><span class="pre">&quot;sara&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>).) – Selected solver.</p></li>
+<li><p><strong>param_global.facet_subcubeInd</strong> (<em>int</em>) – Index of the spectral facet to be reconstructed (set to -1 or 0 to
+deactivate spectral faceting).</p></li>
+<li><p><strong>param_global.facet_Qc</strong> (<em>int</em>) – Number of spectral facets. Active only in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>.</p></li>
+<li><p><strong>param_global.facet_Qx</strong> (<em>int</em>) – Number of spatial facets along spatial axis x. Active only in
+<code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>.</p></li>
+<li><p><strong>param_global.facet_Qy</strong> (<em>int</em>) – Number of spatial facets along spatial axis y. Active only in
+<code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>.</p></li>
+<li><p><strong>param_global.facet_overlap_fraction</strong> (<em>double[2]</em>) – Fraction of the total size of facet overlapping with a neighbouring
+facet along each axis (y and x) for the faceted low-rankness prior.
+Active only in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>. Will be reset
+automatically to <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">0]</span></code> if the spatial faceting is not active in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>
+along at least one dimension(i.e., <code class="docutils literal notranslate"><span class="pre">param_global.facet_Qy</span> <span class="pre">=</span> <span class="pre">1</span></code> and/or <code class="docutils literal notranslate"><span class="pre">param_global.facet_Qx</span> <span class="pre">=</span> <span class="pre">1</span></code>).</p></li>
+<li><p><strong>param_global.facet_window_type</strong> (string (<code class="docutils literal notranslate"><span class="pre">&quot;triangular&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hamming&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;pc&quot;</span></code> (piecewise-constant))) – Type of apodization window considered for the faceted nuclear norm
+prior. Active only in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>.</p></li>
+<li><p><strong>param_global.reg_gam</strong> (<em>double</em>) – Additional multiplicative factor affecting the joint average sparsity
+regularization term in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code>. Additional
+multiplicative factor affecting the average sparsity
+regularization term in <code class="docutils literal notranslate"><span class="pre">&quot;sara&quot;</span></code>.</p></li>
+<li><p><strong>param_global.reg_gam_bar</strong> (<em>double</em>) – Additional multiplicative factor affecting  low-rankness prior
+regularization parameter. Active only in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code>.</p></li>
+<li><p><strong>param_global.reg_flag_reweight</strong> (<em>int</em>) – Flag to activate re-weighting.</p></li>
+<li><p><strong>param_global.reg_nReweights</strong> (<em>int</em>) – Maximum number of reweighting steps.</p></li>
+<li><p><strong>param_global.algo_flag_computeOperatorNorm</strong> (<em>bool</em>) – Flag to trigger the computation of the norm of the (preconditionned) measurement
+operator. Default set to <code class="docutils literal notranslate"><span class="pre">true</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">false</span></code>,
+MATLAB will look for a file where this
+quantity has been saved (save and computation steps are triggered in
+<a class="reference internal" href="#imaging.imaging" title="imaging.imaging"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">imaging.imaging()</span></code></a>).</p></li>
+<li><p><strong>param_global.algo_flag_solveMinimization</strong> (<em>bool</em>) – Flag triggering the solver (<code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;sara&quot;</span></code>).</p></li>
+<li><p><strong>param_global.ncores_data</strong> (<em>int</em>) – Number of cores handlig the data fidelity terms (data cores). For
+Faceted HyperSARA, the total number of cores used
+is <code class="docutils literal notranslate"><span class="pre">Qx*Qy</span> <span class="pre">+</span> <span class="pre">ncores_data</span> <span class="pre">+</span> <span class="pre">1</span></code>. For SARA and HyperSARA, represents
+the number of cores used for the parallelization.</p></li>
+<li><p><strong>param_global.parcluster</strong> (<em>string</em>) – Name of the parallel parcluster profile to launch the parpool. By default <code class="docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code> profile
+is used. The user should set it to the name of the slurm parcluster
+profile created on his/her HPC machine, if prefered.</p></li>
+<li><p><strong>param_global.preproc_filename_l2bounds</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
+returning a string corresponding to the name of a file
+containing pre-computed <span class="math notranslate nohighlight">\(\ell_2\)</span> bounds. If not used, must be set
+to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><strong>param_global.preproc_filename_model</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
+returning the name of a file containing a model image to be used to
+initialize the reconstruction algorithm. If not used, should be set to
+<code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><strong>param_global.preproc_filename_die</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
+returning a string corresponding to the name of a file containing
+DIE calibration constants. If not used, must be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><strong>param_global.preproc_filename_dde</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
+returning a string corresponding to the name of a file containing
+DDE calibration constants. If not used, must be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat script">
+<dt class="sig sig-object mat" id="imaging.main_generate_cyga_cubes">
+<span class="sig-prename descclassname"><span class="pre">imaging.</span></span><span class="sig-name descname"><span class="pre">main_generate_cyga_cubes</span></span><a class="headerlink" href="#imaging.main_generate_cyga_cubes" title="Permalink to this definition"></a></dt>
+<dd><p>Main script to generate the reference synthetic wideband image cubes
+used in <span id="id1">[<a class="reference internal" href="../biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span>. Requires the
+<a class="reference external" href="https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits">S_DDE_MODEL.fits</a>
+image file associated with <span id="id2">[<a class="reference internal" href="../biblio.html#id7" title="A. Dabbech, A. Repetti, R. A. Perley, O. M. Smirnov, and Y. Wiaux. Cygnus A jointly calibrated and imaged via non-convex optimization from VLA data. Monthly Notices of the Royal Astronomical Society, 506(4):4855-4876, 07 2021. doi:10.1093/mnras/stab1903.">Dabbech2021</a>]</span>, which can be retrieved
+as follows from a unix (MAC, Linux, Windows WSL or MinGw) terminal.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># if on MAC:</span>
+<span class="c1"># brew install wget</span>
+<span class="nb">cd</span> path/to/Faceted-HyperSARA
+mkdir data <span class="o">&amp;&amp;</span> <span class="nb">cd</span> data
+wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Cubes and additional informations for the synthetic data experiments
+are saved by default in the folder <code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA/data/</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="imaging.main_generate_data">
+<span class="sig-prename descclassname"><span class="pre">imaging.</span></span><span class="sig-name descname"><span class="pre">main_generate_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json_filename</span></em>, <em class="sig-param"><span class="pre">srcName</span></em>, <em class="sig-param"><span class="pre">ncores_data</span></em>, <em class="sig-param"><span class="pre">coverage_path</span></em>, <em class="sig-param"><span class="pre">exp_type</span></em>, <em class="sig-param"><span class="pre">superresolution_factor</span></em>, <em class="sig-param"><span class="pre">isnr</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">parcluster</span></em>, <em class="sig-param"><span class="pre">flag_generateCoverage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#imaging.main_generate_data" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a <code class="docutils literal notranslate"><span class="pre">.mat</span></code> synthetic dataset compatible with the requirements
+from the imaging interface specified in
+<a class="reference internal" href="../default.html#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json_filename</strong> (<em>string</em>) – Name of the input <code class="docutils literal notranslate"><span class="pre">.json</span></code> configuration file specifying the
+value of the algorithm parameters (PDFB, reweighting, ellipsoid,
+projection, preconditioning, …).</p></li>
+<li><p><strong>srcName</strong> (<em>string</em>) – Name of the image cube to be reconstructed.</p></li>
+<li><p><strong>ncores_data</strong> (<em>int</em>) – Number of CPU cores allocated to the data generation process.</p></li>
+<li><p><strong>coverage_path</strong> (<em>string</em>) – Path to a pre-generated coverage file (a single <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file
+containing a 3 column array <cite>uvw</cite>, each corresponding to the u, v and
+w coordinates). The <span class="math notranslate nohighlight">\(uv\)</span>-coverage used in
+<span id="id3">[<a class="reference internal" href="../biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span> is provided in <code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA/data/msSpecs.mat</span></code>.</p></li>
+<li><p><strong>exp_type</strong> (<em>string</em>) – Type of experiment considered, reproducing those of the associated
+publication. Possible value is <code class="docutils literal notranslate"><span class="pre">spatial</span></code> (respectively
+<code class="docutils literal notranslate"><span class="pre">spectral</span></code>) to generate the <span class="math notranslate nohighlight">\(1024 \times 2048 \times 20\)</span>
+(resp. <span class="math notranslate nohighlight">\(256 \times 512 \times 100\)</span>) CygA cube adopted for the
+spatial (resp. spectral) faceting experiment in
+<span id="id4">[<a class="reference internal" href="../biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span>.</p></li>
+<li><p><strong>superresolution_factor</strong> (<em>double</em>) – Base super-resolution factor used to define the pixelSize (by
+default, twice the nominal resolution of the instrument).</p></li>
+<li><p><strong>isnr</strong> (<em>double</em>) – Input SNR of the generated data.</p></li>
+<li><p><strong>flag_visibility_gridding</strong> (<em>bool</em>) – Flag to activate dimensionality reduction via visibility gridding (not active at the moment).</p></li>
+<li><p><strong>parcluster</strong> (<em>string</em>) – Name of the parcluster profile used to launch parpool, default
+<code class="docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code>.</p></li>
+<li><p><strong>flag_generateCoverage</strong> (<em>bool</em>) – Flag to generate a custom coverage. Otherwise, load a pre-defined
+coverage file.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The two datasets used in <span id="id5">[<a class="reference internal" href="../biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span> can be generated by
+running the following MATLAB commands</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% generate data for the spatial faceting experiment</span><span class="w"></span>
+<span class="n">main_generate_data</span><span class="p">(</span><span class="s">&#39;default_parameters.json&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;cygA&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
+<span class="s">&#39;../data/msSpecs.mat&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;spatial&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
+<span class="s">&quot;local&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+
+<span class="c">% generate data for the spectral faceting experiment</span><span class="w"></span>
+<span class="n">main_generate_data</span><span class="p">(</span><span class="s">&#39;default_parameters.json&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;cygA&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
+<span class="s">&#39;../data/msSpecs.mat&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;spectral&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
+<span class="s">&quot;local&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>The synthetic data <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files are saved by default in the directory <code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA/data/&lt;srcName&gt;/&lt;exp_type&gt;</span></code>, with <code class="docutils literal notranslate"><span class="pre">&lt;srcName&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;exp_type&gt;</span></code> replaced by the value selected when calling the function.</p></li>
+<li><p>The resulting <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files (one for each frequency) are composed of the following variables</p></li>
+</ul>
+<dl class="simple">
+<dt>y (complex[:])</dt><dd><p>Noisy visibility vector.</p>
+</dd>
+<dt>l2bounds (double)</dt><dd><p><span class="math notranslate nohighlight">\(\ell_2\)</span> bounds to be used in the data fidelity constraints.</p>
+</dd>
+<dt>sigma_noise (double)</dt><dd><p>Standard deviation of the additive white complex Gaussian noise
+affecting the clean data <cite>y0</cite>.</p>
+</dd>
+<dt>u (double[:])</dt><dd><p><span class="math notranslate nohighlight">\(u\)</span> coordinate, expressed in units of the wavelength.</p>
+</dd>
+<dt>v (double[:])</dt><dd><p><span class="math notranslate nohighlight">\(v\)</span> coordinate, expressed in units of the wavelength.</p>
+</dd>
+<dt>w (double[:])</dt><dd><p><span class="math notranslate nohighlight">\(w\)</span> component, expressed in units of the wavelength.</p>
+</dd>
+<dt>frequency (double)</dt><dd><p>Acquisition frequency (in Hz).</p>
+</dd>
+<dt>maxProjBaseline (double)</dt><dd><p>Maximum projected baseline, expressed in units of the wavelength.</p>
+</dd>
+<dt>nW (double[:])</dt><dd><p>Inverse noise whitening vector (<code class="docutils literal notranslate"><span class="pre">1/sigma_noise</span></code>).</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../_lib/lib.utils.html" class="btn btn-neutral float-left" title="Module lib.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../_pyxisMs2mat/pyxisMs2mat.html" class="btn btn-neutral float-right" title="pyxisMs2mat package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

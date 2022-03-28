@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module src.sara &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="lib package" href="../_lib/lib.html" />
+    <link rel="prev" title="Module src.hs" href="src.hs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="src.html">src package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="src.fhs.html">Module src.fhs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.heuristics.html">Module src.heuristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.hs.html">Module src.hs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module src.sara</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.html#module-src">API src</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="src.html">src package</a> &raquo;</li>
+      <li>Module src.sara</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_src/src.sara.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src-sara">
+<h1>Module src.sara<a class="headerlink" href="#module-src-sara" title="Permalink to this headline"></a></h1>
+<p>Implementation of the SARA algorithm <span id="id1">[<a class="reference internal" href="../biblio.html#id4" title="R. E. Carrillo, J. D. McEwen, and Y. Wiaux. Sparsity averaging reweighted analysis (SARA): a novel algorithm for radio-interferometric imaging. Monthly Notices of the Royal Astronomical Society, 426(2):1223–1234, 2012.">Carrillo2012</a>, <a class="reference internal" href="../biblio.html#id11" title="A. Onose, A. Dabbech, and Y. Wiaux. An accelerated splitting algorithm for radio-interferometric imaging: when natural and uniform weighting meet. Monthly Notices of the Royal Astronomical Society, 469(1):938–949, 2017.">Onose2017</a>]</span>.</p>
+<span class="target" id="module-src.sara"></span><dl class="mat function">
+<dt class="sig sig-object mat" id="src.sara.sara">
+<span class="sig-prename descclassname"><span class="pre">src.sara.</span></span><span class="sig-name descname"><span class="pre">sara</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">epsilon</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">pU</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">Psi</span></em>, <em class="sig-param"><span class="pre">Psit</span></em>, <em class="sig-param"><span class="pre">param</span></em>, <em class="sig-param"><span class="pre">warsmtart_name</span></em>, <em class="sig-param"><span class="pre">checkpoint_name</span></em>, <em class="sig-param"><span class="pre">alph</span></em>, <em class="sig-param"><span class="pre">flag_dimensionality_reduction</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.sara.sara" title="Permalink to this definition"></a></dt>
+<dd><p>Implementation of the SARA imaging algorithm.</p>
+<p>Implementation of the reweighting / PDFB algorithm underlying the
+SARA imaging approach <span id="id2">[<a class="reference internal" href="../biblio.html#id11" title="A. Onose, A. Dabbech, and Y. Wiaux. An accelerated splitting algorithm for radio-interferometric imaging: when natural and uniform weighting meet. Monthly Notices of the Royal Astronomical Society, 469(1):938–949, 2017.">Onose2017</a>]</span>. At each iteration of
+the outer reweighting scheme, the PDFB solves a problem of the form</p>
+<div class="math notranslate nohighlight">
+\[\min_{x \in \mathbb{R}_+^{N}}
+\mu \|\Psi^\dagger x \|_{\omega, 1} + \sum_{b}
+\iota_{ \{\| y_{b} - \Phi_{b}(\cdot) \|_2
+\leq \varepsilon_{b}\} } (x).\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>composite, cell</em>) – Blocks of visibilities {L}{nblocks_l}.</p></li>
+<li><p><strong>epsilon</strong> (<em>composite, cell</em>) – Data fidelity constraints {L}{nblocks_l}.</p></li>
+<li><p><strong>A</strong> (<em>function handle</em>) – Measurement operator.</p></li>
+<li><p><strong>At</strong> (<em>function handle</em>) – Adjoint of the measurement operator.</p></li>
+<li><p><strong>pU</strong> (<em>composite, cell</em>) – Preconditioning matrices {L}{nblocks_l}.</p></li>
+<li><p><strong>G</strong> (<em>composite, cell of sparse matrices</em>) – Degridding matrices {L}{nblocks_l}.</p></li>
+<li><p><strong>W</strong> (<em>composite, cell of int[:]</em>) – Masks for selection of the blocks of visibilities.</p></li>
+<li><p><strong>Psi</strong> (<em>anonymous function</em>) – Function handle representing the serial implementation of the SARA
+dictionary.</p></li>
+<li><p><strong>Psit</strong> (<em>anonymous function</em>) – Function handle representing the serial implementation of the adjoint
+SARA dictionary.</p></li>
+<li><p><strong>param</strong> (<em>struct</em>) – Algorithm parameters (see full description below).</p></li>
+<li><p><strong>warmstart_name</strong> (<em>string</em>) – Name of a valid <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file to initialize the solver (warm-start).</p></li>
+<li><p><strong>checkpoint_name</strong> (<em>string</em>) – Name defining the name for checkpoint files saved
+throughout the iterations.</p></li>
+<li><p><strong>alph</strong> (<em>double</em>) – Regularization parameter.</p></li>
+<li><p><strong>flag_dimensionality_reduction</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>Sigma</strong> (<em>composite, cell of complex[:, :]</em>) – Dimensionality reduction matrix. (?)</p></li>
+<li><p><strong>varargin{1}</strong> (<em>double[:, :]</em>) – Initial value for the primal variable.</p></li>
+<li><p><strong>varargin{2}</strong> (<em>double[:, :]</em>) – Ground truth wideband image (only when debugging synthetic
+data experiments).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>xsol</strong> – Reconstructed image.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double[:]</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>The <cite>param</cite> structure should contain the following fields.</p></li>
+</ul>
+<dl class="simple">
+<dt>param.verbose (string)</dt><dd><p>Print log or not</p>
+</dd>
+<dt>param.nu1 (double)</dt><dd><p>Upper bound on the norm of the SARA operator <span class="math notranslate nohighlight">\(\Psi^\dagger\)</span>.</p>
+</dd>
+<dt>param.nu2 (double)</dt><dd><p>Upper bound on the norm of the measurement operator <span class="math notranslate nohighlight">\(\Phi\)</span></p>
+</dd>
+<dt>param.gamma  (double)</dt><dd><p>Regularization parameter.</p>
+</dd>
+<dt>param.pdfb_min_iter (int)</dt><dd><p>Minimum number of iterations (PDFB).</p>
+</dd>
+<dt>param.pdfb_max_iter (int)</dt><dd><p>Maximum number of iterations (PDFB).</p>
+</dd>
+<dt>param.pdfb_rel_var (double)</dt><dd><p>Relative variation tolerance (PDFB).</p>
+</dd>
+<dt>param.pdfb_fidelity_tolerance (double)</dt><dd><p>Tolerance to check data constraints are satisfied (PDFB).</p>
+</dd>
+<dt>param.reweighting_max_iter (int)</dt><dd><p>Maximum number of reweighting steps.</p>
+</dd>
+<dt>param.reweighting_min_iter (int)</dt><dd><p>Minimum number of reweighting steps (to reach “noise” level).</p>
+</dd>
+<dt>param.reweighting_rel_var (double)</dt><dd><p>Tolerance relative variation (reweighting).</p>
+</dd>
+<dt>param.reweighting_alpha (double)</dt><dd><p>Starting reweighting parameter.</p>
+</dd>
+<dt>param.reweighting_sig (double)</dt><dd><p>Noise level (in wavelet space)</p>
+</dd>
+<dt>param.elipse_proj_max_iter (int)</dt><dd><p>Maximum number of iterations for the FB algo that implements the
+projection onto the ellipsoid.</p>
+</dd>
+<dt>param.elipse_proj_min_iter (int)</dt><dd><p>Minimum number of iterations for the FB algo that implements the
+projection onto the ellipsoid.</p>
+</dd>
+<dt>parma.elipse_proj_eps (double)</dt><dd><p>Stopping criterion for the projection.</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>The following fileds are added to <cite>param</cite> in the course of the
+algorithm to be able to restart it from a previous state</p></li>
+</ul>
+<dl class="simple">
+<dt>param.reweighting_alpha (double)</dt><dd><p>Current state of the reweighting parameter.</p>
+</dd>
+<dt>param.init_reweight_step_count (int)</dt><dd><p>Iteration index of the current reweighting step when the checkpoint
+file is written.</p>
+</dd>
+<dt>param.init_reweight_last_iter_step (int)</dt><dd><p>Global iteration index (unrolled over all pdfb iterations performed
+in the reweighting scheme) from which to restart the algorithm.</p>
+</dd>
+<dt>param.init_t_start (int)</dt><dd><p>Global iteration index (unrolled over all pdfb iterations performed
+in the reweighting scheme) from which to restart the algorithm
+(<code class="docutils literal notranslate"><span class="pre">param.init_t_start</span> <span class="pre">=</span> <span class="pre">param.init_reweight_last_iter_step</span> <span class="pre">+</span> <span class="pre">1</span></code>).</p>
+</dd>
+</dl>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The checkpoint file saved throughout the iterations is composed of the
+following variables (to be verified).</p>
+<dl class="simple">
+<dt>param (struct)</dt><dd><p>Current state of the parameter structure (updated with auxiliary
+parameters describing the state of the solver when the checkpoint
+file has been written).</p>
+</dd>
+<dt>xsol (double[:])</dt><dd><p>Current state of the image estimate.</p>
+</dd>
+<dt>res (double[:, :])</dt><dd><p>Current state of the residual image.</p>
+</dd>
+<dt>g (double[:])</dt><dd><p>Auxiliary variable involved in the update of the primal variable.</p>
+</dd>
+<dt>epsilon (cell)</dt><dd><p>(Updated) Value of the l2-ball radii.</p>
+</dd>
+<dt>t_block (cell of int)</dt><dd><p>Index of the last iteration where the weigths have been updated.</p>
+</dd>
+<dt>proj (cell of complex[:])</dt><dd><p>Auxiliary variable involved in the update of the data fidelity dual
+variables.</p>
+</dd>
+<dt>norm_res (cell of double)</dt><dd><p>Norm of the residual image (per block).</p>
+</dd>
+<dt>v1 (double[:])</dt><dd><p>Dual variables associated with the sparsity prior.</p>
+</dd>
+<dt>v2 (cell of complex[:])</dt><dd><p>Dual variables associated with the data fidelity terms (each cell
+corresponding to a data block).</p>
+</dd>
+<dt>weights1 (double[:])</dt><dd><p>Weights associated with the sparsity prior.</p>
+</dd>
+<dt>end_iter (int)</dt><dd><p>Last iteration (unrolled over all pdfb iterations).</p>
+</dd>
+<dt>t_l11 (double)</dt><dd><p>Time to update the sparsity dual variable.</p>
+</dd>
+<dt>t_master (double)</dt><dd><p>Time to perform update/computations on the master process.</p>
+</dd>
+<dt>t_data (double)</dt><dd><p>Time to update the data fidelity dual variables.</p>
+</dd>
+<dt>rel_val (double)</dt><dd><p>Relative variation of the solution across the iterations.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="src.hs.html" class="btn btn-neutral float-left" title="Module src.hs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../_lib/lib.html" class="btn btn-neutral float-right" title="lib package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

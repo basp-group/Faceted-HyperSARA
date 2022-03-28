@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyxisMs2mat.pyxis4DataExtraction &mdash; Faceted-Hyper-SARA mnras_real_data-378-g584d694 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Faceted-Hyper-SARA
+          </a>
+              <div class="version">
+                mnras_real_data-378-g584d694
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_src/src.html">src package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Faceted-Hyper-SARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>pyxisMs2mat.pyxis4DataExtraction</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyxisMs2mat.pyxis4DataExtraction</h1><div class="highlight"><pre>
+<span></span><span class="c1">## Rodrigues compatibale simulation pipeline</span>
+<span class="c1">## Script based on a template provided by Sphesihle Makhathini [sphemakh@gmail.com]</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">im</span>
+<span class="kn">import</span> <span class="nn">im.argo</span>
+<span class="kn">import</span> <span class="nn">im.lwimager</span>
+<span class="kn">import</span> <span class="nn">imager</span>
+<span class="kn">import</span> <span class="nn">lsm</span>
+<span class="kn">import</span> <span class="nn">mqt</span>
+<span class="kn">import</span> <span class="nn">ms</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pyfits</span>
+<span class="kn">import</span> <span class="nn">pyrap.tables</span>
+<span class="kn">import</span> <span class="nn">Pyxis</span>
+<span class="kn">import</span> <span class="nn">scipy.io</span> <span class="k">as</span> <span class="nn">sio</span>
+<span class="kn">import</span> <span class="nn">Tigger</span>
+<span class="kn">from</span> <span class="nn">astropy.io</span> <span class="kn">import</span> <span class="n">ascii</span><span class="p">,</span> <span class="n">fits</span>
+<span class="kn">from</span> <span class="nn">casacore.tables</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">Pyxis.ModSupport</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">PI</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+<span class="n">FWHM</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">256</span><span class="p">))</span>
+<span class="n">C</span> <span class="o">=</span> <span class="mi">299792458</span>
+
+
+<div class="viewcode-block" id="getdata_ms_concat_bandwidth"><a class="viewcode-back" href="../../_pyxisMs2mat/pyxisMs2mat.pyxis4DataExtraction.html#pyxisMs2mat.pyxis4DataExtraction.getdata_ms_concat_bandwidth">[docs]</a><span class="k">def</span> <span class="nf">getdata_ms_concat_bandwidth</span><span class="p">(</span>
+    <span class="n">msf_lowbandwidth</span><span class="o">=</span><span class="s2">&quot;$MSLOW&quot;</span><span class="p">,</span>
+    <span class="n">msf_highbandwidth</span><span class="o">=</span><span class="s2">&quot;$MSHIGH&quot;</span><span class="p">,</span>
+    <span class="n">srcname</span><span class="o">=</span><span class="s2">&quot;$SRCNAME&quot;</span><span class="p">,</span>
+    <span class="n">srcid</span><span class="o">=</span><span class="s2">&quot;$FIELDID&quot;</span><span class="p">,</span>
+    <span class="n">mstag</span><span class="o">=</span><span class="s2">&quot;$MSTAG&quot;</span><span class="p">,</span>
+    <span class="n">freqFirst</span><span class="o">=</span><span class="s2">&quot;$FIRSTCH&quot;</span><span class="p">,</span>
+    <span class="n">freqLast</span><span class="o">=</span><span class="s2">&quot;$LASTCH&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Pyxis function to be used from the command line to extract data resulting from the combination of two MSs spanning two different frequency bands.</span>
+<span class="sd">    Both MSs are expected to have the same specs of their associated spectral windows.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    msf_lowbandwidth : str, required</span>
+<span class="sd">        Path to the low frequency band MS.</span>
+<span class="sd">    msf_highbandwidth : str, required</span>
+<span class="sd">        Path to the high frequency band MS.</span>
+<span class="sd">    srcname : str, optional</span>
+<span class="sd">        Name of the target source, by default &quot;&quot;.</span>
+<span class="sd">    srcid : str, optional</span>
+<span class="sd">        Field id of the target source, by default 0.</span>
+<span class="sd">    mstag : str, optional</span>
+<span class="sd">        Name tag of the MS (required if multiple MSs), by default &quot;&quot;.</span>
+<span class="sd">    freqFirst : str, optional</span>
+<span class="sd">        Index of the first channel frequency to extract from each spectral window, by default 0.</span>
+<span class="sd">    freqLast : str, optional</span>
+<span class="sd">         Index of the last channel frequency to extract from each spectral window, by default last channel frequency available in the MS.</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+
+    <span class="n">msname1</span> <span class="o">=</span> <span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">msf_lowbandwidth</span><span class="p">)</span>
+    <span class="n">msname2</span> <span class="o">=</span> <span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">msf_highbandwidth</span><span class="p">)</span>
+    <span class="n">srcname</span> <span class="o">=</span> <span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">srcname</span><span class="p">)</span>
+    <span class="n">mstag</span> <span class="o">=</span> <span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">mstag</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+       <span class="n">freqFirst</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freqFirst</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+       <span class="n">freqFirst</span> <span class="o">=</span><span class="mi">0</span>
+    <span class="k">try</span><span class="p">:</span>
+       <span class="n">freqLast</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freqLast</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span> 
+       <span class="n">freqLast</span> <span class="o">=</span><span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">srcid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">srcid</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">srcid</span> <span class="o">=</span><span class="mi">0</span>
+        
+        
+    <span class="n">fileid0</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># channel ID counter</span>
+    <span class="c1"># extract data from the first MS (low frequency band)</span>
+    <span class="n">fileidMid</span> <span class="o">=</span> <span class="n">getdata</span><span class="p">(</span>
+        <span class="n">msname</span><span class="o">=</span><span class="n">msname1</span><span class="p">,</span>
+        <span class="n">srcname</span><span class="o">=</span><span class="n">srcname</span><span class="p">,</span>
+        <span class="n">mstag</span><span class="o">=</span><span class="n">mstag</span><span class="p">,</span>
+        <span class="n">freqFirst</span><span class="o">=</span><span class="n">freqFirst</span><span class="p">,</span>
+        <span class="n">freqLast</span><span class="o">=</span><span class="n">freqLast</span><span class="p">,</span>
+        <span class="n">srcid</span><span class="o">=</span><span class="n">srcid</span><span class="p">,</span>
+        <span class="n">fileid0</span><span class="o">=</span><span class="n">fileid0</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># extract data from the second MS (high frequency band)</span>
+    <span class="c1"># Note that `fileidMid` needed for indexing the frequency channels of the second MS</span>
+    <span class="n">fileidEnd</span> <span class="o">=</span> <span class="n">getdata</span><span class="p">(</span>
+        <span class="n">msname</span><span class="o">=</span><span class="n">msname2</span><span class="p">,</span>
+        <span class="n">srcname</span><span class="o">=</span><span class="n">srcname</span><span class="p">,</span>
+        <span class="n">mstag</span><span class="o">=</span><span class="n">mstag</span><span class="p">,</span>
+        <span class="n">freqFirst</span><span class="o">=</span><span class="n">freqFirst</span><span class="p">,</span>
+        <span class="n">freqLast</span><span class="o">=</span><span class="n">freqLast</span><span class="p">,</span>
+        <span class="n">srcid</span><span class="o">=</span><span class="n">srcid</span><span class="p">,</span>
+        <span class="n">fileid0</span><span class="o">=</span><span class="n">fileidMid</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">info</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%s</span><span class="s2"> files extracted.&quot;</span> <span class="o">%</span> <span class="n">fileidEnd</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="getdata_ms"><a class="viewcode-back" href="../../_pyxisMs2mat/pyxisMs2mat.pyxis4DataExtraction.html#pyxisMs2mat.pyxis4DataExtraction.getdata_ms">[docs]</a><span class="k">def</span> <span class="nf">getdata_ms</span><span class="p">(</span> <span class="n">msf</span><span class="o">=</span><span class="s2">&quot;$MS&quot;</span><span class="p">,</span><span class="n">srcname</span><span class="o">=</span><span class="s2">&quot;$SRCNAME&quot;</span><span class="p">,</span> <span class="n">mstag</span><span class="o">=</span><span class="s2">&quot;$MSTAG&quot;</span><span class="p">,</span><span class="n">srcid</span><span class="o">=</span><span class="s2">&quot;$FIELDID&quot;</span><span class="p">,</span> <span class="n">freqFirst</span><span class="o">=</span><span class="s2">&quot;$FIRSTCH&quot;</span><span class="p">,</span> <span class="n">freqLast</span><span class="o">=</span><span class="s2">&quot;$LASTCH&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pyxis function to be used from the command line to extract data from a single MS. </span>
+<span class="sd">    Data from all available spectral windows will be extracted.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    msf : str, required</span>
+<span class="sd">        Path to the MS.</span>
+<span class="sd">    srcname : str, optional</span>
+<span class="sd">        Name of the target source, by default &quot;&quot;.</span>
+<span class="sd">    mstag : str, optional</span>
+<span class="sd">        Name tag of the MS (required if multiple MSs), by default &quot;&quot;.</span>
+<span class="sd">    srcid : str, optional</span>
+<span class="sd">        Field id of the target source, by default 0.</span>
+<span class="sd">    freqFirst : str, optional</span>
+<span class="sd">        Index of the first channel frequency to extract from each spectral window, by default 0.</span>
+<span class="sd">    freqLast : str, optional</span>
+<span class="sd">        Index of the last channel frequency to extract from each spectral window, by default last channel frequency available in the MS.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    
+    <span class="n">msname</span> <span class="o">=</span> <span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">msf</span><span class="p">)</span>
+    <span class="n">srcname</span> <span class="o">=</span> <span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">srcname</span><span class="p">)</span>
+    <span class="n">mstag</span> <span class="o">=</span> <span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">mstag</span><span class="p">)</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">freqFirst</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freqFirst</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">freqFirst</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">freqLast</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freqLast</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">freqLast</span> <span class="o">=</span><span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">srcid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">II</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">srcid</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span> 
+        <span class="n">srcid</span> <span class="o">=</span><span class="mi">0</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Field ID is not provided, data of field ID 0 will be extracted&quot;</span><span class="p">)</span>
+        
+    <span class="n">fileid0</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">fileidEnd</span> <span class="o">=</span> <span class="n">getdata</span><span class="p">(</span>
+        <span class="n">msname</span><span class="o">=</span><span class="n">msname</span><span class="p">,</span>
+        <span class="n">srcname</span><span class="o">=</span><span class="n">srcname</span><span class="p">,</span>
+        <span class="n">mstag</span><span class="o">=</span><span class="n">mstag</span><span class="p">,</span>
+        <span class="n">freqFirst</span><span class="o">=</span><span class="n">freqFirst</span><span class="p">,</span>
+        <span class="n">freqLast</span><span class="o">=</span><span class="n">freqLast</span><span class="p">,</span>
+        <span class="n">srcid</span><span class="o">=</span><span class="n">srcid</span><span class="p">,</span>
+        <span class="n">fileid0</span><span class="o">=</span><span class="n">fileid0</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="getdata"><a class="viewcode-back" href="../../_pyxisMs2mat/pyxisMs2mat.pyxis4DataExtraction.html#pyxisMs2mat.pyxis4DataExtraction.getdata">[docs]</a><span class="k">def</span> <span class="nf">getdata</span><span class="p">(</span><span class="n">msname</span><span class="p">,</span> <span class="n">srcname</span><span class="p">,</span> <span class="n">mstag</span><span class="p">,</span> <span class="n">freqFirst</span><span class="p">,</span> <span class="n">freqLast</span><span class="p">,</span> <span class="n">srcid</span><span class="p">,</span>  <span class="n">fileid0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Python function to access the MS and extract relevant data into a .mat file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    msname : string</span>
+<span class="sd">        Path to the MS.</span>
+<span class="sd">    srcname : string</span>
+<span class="sd">        Name of the target source.</span>
+<span class="sd">    mstag : str</span>
+<span class="sd">        Name tag of the MS (required if multiple MSs), by default &quot;&quot;.</span>
+<span class="sd">    freqFirst : int</span>
+<span class="sd">        Index of the first channel frequency to extract from each spectral window, by default 0.</span>
+<span class="sd">    freqLast : int</span>
+<span class="sd">        Index of the last channel frequency to extract from each spectral window, by default last channel frequency available in the MS.</span>
+<span class="sd">    srcid : int</span>
+<span class="sd">        Field id of the target source.</span>
+<span class="sd">    </span>
+<span class="sd">    fileid0 :int</span>
+<span class="sd">        ID of the last frequency channel if MSs of multiple frequency bandwidths are provided.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        ID of the last frequency channel if MSs of multiple frequency bandwidths are provided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    
+    <span class="n">data_parent_dir</span> <span class="o">=</span> <span class="s2">&quot;../data&quot;</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">sh</span><span class="p">(</span><span class="s2">&quot;mkdir -p  </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">data_parent_dir</span><span class="p">)</span>
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">data_parent_dir</span><span class="p">,</span> <span class="n">srcname</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">sh</span><span class="p">(</span><span class="s2">&quot;mkdir -p  </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_dir</span><span class="p">))</span>
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span>  <span class="o">%</span> <span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">mstag</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">sh</span><span class="p">(</span><span class="s2">&quot;mkdir -p  </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_dir</span><span class="p">))</span>
+    <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Data .mat files will be saved in </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">data_dir</span><span class="p">)</span>
+    
+    <span class="n">info</span><span class="p">(</span><span class="n">msname</span><span class="p">)</span>
+    <span class="n">tab</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">ms</span><span class="p">(</span><span class="n">msname</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">info</span><span class="p">(</span><span class="s2">&quot;MS table columns:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">tab</span><span class="o">.</span><span class="n">colnames</span><span class="p">()))</span>
+
+    <span class="n">spwtab</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">ms</span><span class="p">(</span><span class="n">msname</span><span class="p">,</span> <span class="n">subtable</span><span class="o">=</span><span class="s2">&quot;SPECTRAL_WINDOW&quot;</span><span class="p">)</span>    
+    <span class="n">bandwidth</span> <span class="o">=</span> <span class="n">spwtab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;CHAN_WIDTH&quot;</span><span class="p">)[</span><span class="n">ms</span><span class="o">.</span><span class="n">SPWID</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">freqStepVect</span> <span class="o">=</span> <span class="n">spwtab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;CHAN_WIDTH&quot;</span><span class="p">)</span>
+    <span class="n">freqsVect</span> <span class="o">=</span> <span class="n">spwtab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;CHAN_FREQ&quot;</span><span class="p">)</span>
+    <span class="n">spw_numch</span> <span class="o">=</span> <span class="n">spwtab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;NUM_CHAN&quot;</span><span class="p">)</span>
+    
+    <span class="n">nSpw</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">spw_numch</span><span class="p">)</span>
+    <span class="n">nChperSpw</span> <span class="o">=</span> <span class="n">spw_numch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="n">nSpw</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>     
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> spectral window detected, composed of </span><span class="si">%s</span><span class="s2"> channels each&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">nSpw</span><span class="p">,</span><span class="n">nChperSpw</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> spectral window, composed of </span><span class="si">%s</span><span class="s2"> channels&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">nSpw</span><span class="p">,</span><span class="n">nChperSpw</span><span class="p">))</span>    
+    <span class="n">spwtab</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">freqFirst</span> <span class="p">:</span>
+           <span class="n">freqFirst</span> <span class="o">=</span><span class="mi">0</span>
+           <span class="n">info</span><span class="p">(</span><span class="s2">&quot;First channel ID  is not provided or set to 0. First channel extracted ID=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">freqFirst</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">freqLast</span> <span class="p">:</span> 
+           <span class="n">freqLast</span> <span class="o">=</span> <span class="n">nChperSpw</span><span class="o">-</span><span class="mi">1</span>
+           <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Highest channel ID  is not provided. Last channel extracted ID=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">freqLast</span><span class="p">)</span>
+           
+    <span class="c1"># load remaining specs</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;FIELD_ID&quot;</span><span class="p">)</span>
+    <span class="n">srcrows</span> <span class="o">=</span> <span class="n">field</span> <span class="o">==</span> <span class="n">srcid</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="n">srcrows</span><span class="p">]</span>
+    <span class="n">uvw</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;UVW&quot;</span><span class="p">)</span>
+    <span class="n">nmeas</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">uvw</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of measurements per channel </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">nmeas</span><span class="p">)</span>
+    <span class="n">uvw</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">srcrows</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">data_id</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;DATA_DESC_ID&quot;</span><span class="p">)</span>
+    <span class="n">data_id</span> <span class="o">=</span> <span class="n">data_id</span><span class="p">[</span><span class="n">srcrows</span><span class="p">]</span>
+    <span class="c1"># flag row (common across channels)</span>
+    <span class="n">flag_row</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;FLAG_ROW&quot;</span><span class="p">)</span>
+    <span class="n">flag_row</span> <span class="o">=</span> <span class="n">flag_row</span><span class="p">[</span><span class="n">srcrows</span><span class="p">]</span>
+    <span class="n">flag_row</span> <span class="o">=</span> <span class="n">flag_row</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="n">flag_row</span> <span class="o">=</span> <span class="n">flag_row</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>  
+    <span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">flag_row</span><span class="p">)</span>
+    <span class="n">info</span><span class="p">(</span> <span class="s2">&quot;Number of measurements per channel associated with the target source: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">npts</span><span class="p">)</span>
+
+    <span class="c1"># load data</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data_full</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;CORRECTED_DATA&quot;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">data_full</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;DATA&quot;</span><span class="p">)</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;CORRECTED_DATA not found, reading DATA instead &quot;</span><span class="p">)</span>
+        
+    <span class="n">data_full</span> <span class="o">=</span> <span class="n">data_full</span><span class="p">[</span><span class="n">srcrows</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+    <span class="n">data_size</span> <span class="o">=</span> <span class="n">data_full</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">ncorr</span> <span class="o">=</span> <span class="n">data_size</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">ncorr</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;All four correlations are available&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> correlations available, Stokes I assumed&quot;</span> <span class="o">%</span><span class="n">ncorr</span><span class="p">)</span>
+        
+    <span class="n">data_corr_1</span> <span class="o">=</span> <span class="n">data_full</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">data_corr_4</span> <span class="o">=</span> <span class="n">data_full</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">ncorr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">data_full</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># load remaining flags</span>
+    <span class="n">flagAll</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;FLAG&quot;</span><span class="p">)</span>
+    <span class="n">flagAll</span> <span class="o">=</span> <span class="n">flagAll</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">flagAll</span> <span class="o">=</span> <span class="n">flagAll</span><span class="p">[</span><span class="n">srcrows</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+    <span class="n">flagAll</span> <span class="o">=</span> <span class="n">flagAll</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">flagAll</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">ncorr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> 
+
+    
+    <span class="c1"># load weights</span>
+    <span class="n">isavail_weight_spectrum</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">weight_ch</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;WEIGHT_SPECTRUM&quot;</span><span class="p">)</span>
+        <span class="n">weight_ch</span> <span class="o">=</span> <span class="n">weight_ch</span><span class="p">[</span><span class="n">srcrows</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">weight_corr_1</span> <span class="o">=</span> <span class="n">weight_ch</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">weight_corr_4</span> <span class="o">=</span> <span class="n">weight_ch</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">ncorr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">weight_ch</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">isavail_weight_spectrum</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;WEIGHT_SPECTRUM not available --&gt; using WEIGHT&quot;</span><span class="p">)</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;WEIGHT&quot;</span><span class="p">)</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span><span class="p">[</span><span class="n">srcrows</span><span class="p">]</span>
+        <span class="n">weight_corr_1</span> <span class="o">=</span> <span class="n">weight</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">weight_corr_4</span> <span class="o">=</span> <span class="n">weight</span><span class="p">[:,</span> <span class="n">ncorr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># load imaging weights</span>
+    <span class="n">isavail_imaging_weight</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">weightImaging</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;IMAGING_WEIGHT&quot;</span><span class="p">)</span>
+        <span class="n">weightImaging</span> <span class="o">=</span> <span class="n">weightImaging</span><span class="p">[</span><span class="n">srcrows</span><span class="p">]</span>
+        <span class="n">isavail_imaging_weight</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">weightImaging_corr_1</span> <span class="o">=</span> <span class="n">weightImaging</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># typically same weights for all corr</span>
+        <span class="n">weightImaging</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;IMAGING_WEIGHTS is  available&quot;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">weightImaging</span> <span class="o">=</span> <span class="n">tab</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="s2">&quot;IMAGING_WEIGHT_SPECTRUM&quot;</span><span class="p">)</span>
+            <span class="n">weightImaging</span> <span class="o">=</span> <span class="n">weightImaging</span><span class="p">[</span><span class="n">srcrows</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">isavail_imaging_weight</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">weightImaging_corr_1</span> <span class="o">=</span> <span class="n">weightImaging</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># typically same weights for all corr</span>
+            <span class="n">weightImaging</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">info</span><span class="p">(</span><span class="s2">&quot;IMAGING_WEIGHTS_SPECTRUM is  available&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">weightImaging</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">ifreq</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">freqFirst</span><span class="p">,</span> <span class="n">freqLast</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># imaging weights</span>
+        <span class="n">wimagI</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">isavail_imaging_weight</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">wimagI</span> <span class="o">=</span> <span class="n">weightImaging_corr_1</span><span class="p">[:,</span> <span class="n">ifreq</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">wimagI</span> <span class="o">=</span> <span class="n">weightImaging_corr_1</span>
+        <span class="c1"># natural weights</span>
+        <span class="k">if</span> <span class="n">isavail_weight_spectrum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">w1</span> <span class="o">=</span> <span class="n">weight_corr_1</span><span class="p">[:,</span> <span class="n">ifreq</span><span class="p">]</span>
+            <span class="n">w4</span> <span class="o">=</span> <span class="n">weight_corr_4</span><span class="p">[:,</span> <span class="n">ifreq</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">w1</span> <span class="o">=</span> <span class="n">weight_corr_1</span>
+            <span class="n">w4</span> <span class="o">=</span> <span class="n">weight_corr_4</span>
+        <span class="c1"># Stokes I</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">w1</span> <span class="o">*</span> <span class="n">data_corr_1</span><span class="p">[:,</span> <span class="n">ifreq</span><span class="p">]</span> <span class="o">+</span> <span class="n">w4</span> <span class="o">*</span> <span class="n">data_corr_4</span><span class="p">[:,</span> <span class="n">ifreq</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">w1</span> <span class="o">+</span> <span class="n">w4</span><span class="p">)</span>
+        <span class="c1"># data = (data_corr_1[:,ifreq] +data_corr_4[:,ifreq])*0.5</span>
+        <span class="n">weightI</span> <span class="o">=</span> <span class="n">w1</span> <span class="o">+</span> <span class="n">w4</span>
+        <span class="c1"># flag</span>
+        <span class="n">dataflag</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">flag</span> <span class="o">=</span> <span class="p">(</span><span class="n">dataflag</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">+</span><span class="n">flagAll</span><span class="p">[:,</span> <span class="n">ifreq</span><span class="p">]</span> <span class="o">+</span> <span class="n">flag_row</span><span class="p">)</span>
+        <span class="n">dataflag</span> <span class="o">=</span><span class="p">[];</span>
+        <span class="n">flag</span> <span class="o">=</span> <span class="p">(</span><span class="n">flag</span><span class="o">==</span><span class="kc">False</span><span class="p">)</span> 
+
+        <span class="c1"># save data</span>
+        <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading data and writing file..Freq </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ifreq</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">nSpw</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">iSpw</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nSpw</span><span class="p">):</span>
+                <span class="n">frequency</span> <span class="o">=</span> <span class="n">freqsVect</span><span class="p">[</span><span class="n">iSpw</span><span class="p">,</span> <span class="n">ifreq</span><span class="p">]</span>
+                <span class="c1">#info(&quot;Spectral window %s, current freq id %s: %s MHz&quot;%( iSpw, ifreq,frequency/1e6))</span>
+                <span class="n">rows_slice</span> <span class="o">=</span> <span class="n">data_id</span> <span class="o">==</span> <span class="n">iSpw</span>
+                <span class="n">flag_slice</span> <span class="o">=</span> <span class="n">flag</span><span class="p">[</span><span class="n">rows_slice</span><span class="p">]</span>
+                <span class="c1">#data</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">rows_slice</span><span class="p">]</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">flag_slice</span><span class="p">]</span>
+                <span class="c1">#1/sigma</span>
+                <span class="n">nW</span> <span class="o">=</span> <span class="n">weightI</span><span class="p">[</span><span class="n">rows_slice</span><span class="p">]</span>
+                <span class="n">nW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nW</span><span class="p">[</span><span class="n">flag_slice</span><span class="p">])</span>
+                <span class="c1">#imaging weights if available               </span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">nWimag</span> <span class="o">=</span> <span class="n">wimagI</span><span class="p">[</span><span class="n">rows_slice</span><span class="p">]</span>
+                    <span class="n">nWimag</span> <span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nWimag</span><span class="p">[</span><span class="n">flag_slice</span><span class="p">])</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">nWimag</span><span class="o">=</span> <span class="p">[]</span>
+                <span class="c1">#uvw in units of the wavelength</span>
+                <span class="n">uvw_slice</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">rows_slice</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="n">frequency</span><span class="p">)</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">uvw_slice</span><span class="p">[</span><span class="n">flag_slice</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">uvw_slice</span><span class="p">[</span><span class="n">flag_slice</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="n">uvw_slice</span><span class="p">[</span><span class="n">flag_slice</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+                <span class="n">uvw_slice</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="c1">#max projected baseline (needed for pixelsize)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">maxProjBaseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">u</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">v</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">maxProjBaseline</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+                <span class="n">fileid</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">fileid0</span> <span class="o">+</span> <span class="p">(</span><span class="n">iSpw</span> <span class="o">*</span> <span class="n">nChperSpw</span><span class="p">)</span> <span class="o">+</span> <span class="n">ifreq</span>
+                <span class="n">dataFileName</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/data_ch_</span><span class="si">%s</span><span class="s2">.mat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">fileid</span><span class="p">)</span>
+                <span class="c1">#info(&quot;Channel id: %d. File saved at %s&quot; % (fileid, dataFileName))</span>
+                <span class="n">sio</span><span class="o">.</span><span class="n">savemat</span><span class="p">(</span>
+                    <span class="n">dataFileName</span><span class="p">,</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="n">frequency</span><span class="p">,</span>                      
+                        <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span><span class="c1"># data (Stokes I)</span>
+                        <span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="n">u</span><span class="p">,</span><span class="c1"># u coordinate (in units of the wavelength)</span>
+                        <span class="s2">&quot;v&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span><span class="c1"># u coordinate (in units of the wavelength)</span>
+                        <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span><span class="c1"># u coordinate (in units of the wavelength)                       </span>
+                        <span class="s2">&quot;nW&quot;</span><span class="p">:</span> <span class="n">nW</span><span class="p">,</span><span class="c1"># 1/sigma</span>
+                        <span class="s2">&quot;nWimag&quot;</span><span class="p">:</span> <span class="n">nWimag</span><span class="p">,</span> <span class="c1">#imaging weights if available (Briggs or uniform) </span>
+                        <span class="s2">&quot;maxProjBaseline&quot;</span><span class="p">:</span> <span class="n">maxProjBaseline</span><span class="p">,</span><span class="c1">#max projected baseline                         </span>
+                    <span class="p">},</span>
+                <span class="p">)</span>
+                <span class="n">npts</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+                <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Spectral window </span><span class="si">%s</span><span class="s2">, current channel id </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> MHz (</span><span class="si">%s</span><span class="s2"> data pts). File saved at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">iSpw</span><span class="p">,</span><span class="n">ifreq</span><span class="p">,</span> <span class="n">frequency</span><span class="o">/</span><span class="mf">1e6</span><span class="p">,</span><span class="n">npts</span><span class="p">,</span><span class="n">dataFileName</span><span class="p">))</span>
+                
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># applying flags </span>
+            <span class="n">frequency</span> <span class="o">=</span> <span class="n">freqsVect</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">ifreq</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">flag</span><span class="p">]</span> <span class="p">;</span>  
+            <span class="n">u</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">flag</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span> 
+            <span class="n">v</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">flag</span><span class="p">,</span> <span class="mi">1</span><span class="p">];</span> 
+            <span class="n">w</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">flag</span><span class="p">,</span> <span class="mi">2</span><span class="p">];</span>       
+            <span class="n">nW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">weightI</span><span class="p">[</span><span class="n">flag</span><span class="p">])</span> 
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">nWimag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">wimagI</span><span class="p">[</span><span class="n">flag</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">nWimag</span> <span class="o">=</span><span class="p">[]</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">maxProjBaseline</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">u</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">v</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">maxProjBaseline</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span>    
+            
+            <span class="n">dataFileName</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/data_ch_</span><span class="si">%s</span><span class="s2">.mat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">ifreq</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">sio</span><span class="o">.</span><span class="n">savemat</span><span class="p">(</span>
+                <span class="n">dataFileName</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="n">frequency</span><span class="p">,</span>
+                    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span><span class="c1"># data (Stokes I)</span>
+                    <span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="n">u</span><span class="p">,</span><span class="c1"># u coordinate (in units of the wavelength)</span>
+                    <span class="s2">&quot;v&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span> <span class="c1"># v coordinate (in units of the wavelength)</span>
+                    <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span> <span class="c1"># w coordinate  (in units of the wavelength)              </span>
+                    <span class="s2">&quot;nW&quot;</span><span class="p">:</span> <span class="n">nW</span><span class="p">,</span> <span class="c1"># 1/sigma</span>
+                    <span class="s2">&quot;nWimag&quot;</span><span class="p">:</span> <span class="n">nWimag</span><span class="p">,</span>  <span class="c1">#imaging weights if available (Briggs or uniform)         </span>
+                    <span class="s2">&quot;maxProjBaseline&quot;</span><span class="p">:</span> <span class="n">maxProjBaseline</span><span class="p">,</span><span class="c1">#max projected baseline </span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> 
+            <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Spw 0, current channel id </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> MHz (</span><span class="si">%s</span><span class="s2"> data pts). File saved at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">ifreq</span><span class="p">,</span> <span class="n">frequency</span><span class="o">/</span><span class="mf">1e6</span><span class="p">,</span><span class="n">npts</span><span class="p">,</span><span class="n">dataFileName</span><span class="p">))</span>
+
+            <span class="n">fileid</span> <span class="o">=</span> <span class="n">ifreq</span> <span class="o">+</span> <span class="mi">1</span>
+            
+
+    <span class="n">tab</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">fileid0</span> <span class="o">=</span> <span class="n">fileid</span>
+    <span class="n">info</span><span class="p">(</span><span class="s2">&quot;Last file id </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">fileid0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fileid0</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

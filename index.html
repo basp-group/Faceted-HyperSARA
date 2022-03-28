@@ -1,94 +1,190 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Faceted-Hyper-SARA --by basp-group--</title>
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-light.css">
-    <meta name="viewport" content="width=device-width">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): when precision meets scalability</h1>
-        <p>MATLAB source code</p>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faceted-HyperSARA &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Setup" href="setup.html" /> 
+</head>
 
-        <p class="view"><a href="https://github.com/basp-group/Faceted-HyperSARA">View the Project on GitHub <small>basp-group/Faceted-Hyper-SARA</small></a></p>
-
-
-        <!-- <ul>
-          <li><a href="https://github.com/basp-group/Faceted-HyperSARA/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/basp-group/Faceted-HyperSARA/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/basp-group/Faceted-HyperSARA">View On <strong>GitHub</strong></a></li>
-        </ul> -->
-      </header>
-
-       <section>
-       <h2>Faceted-Hyper-SARA</h2>
-       <p>The code will be made available upon acceptance of the paper.</p>
-       </section>
-
-      
-
-
-<section>
-<h3>
-
-<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h3>
-
-<p>Upcoming radio interferometers are aiming to image the sky at new levels of resolution and sensitivity, with wide-band image cubes reaching close to the Petabyte scale for SKA. Modern proximal optimization algorithms have recently shown a potential to significantly outperform clean thanks to their ability to inject complex image models to regularize the inverse problem for image formation from visibility data. They are also scalable to large data volumes thanks to a splitting functionality enabling the decomposition of data into blocks, for parallel processing of all block-specific data-fidelity terms of the objective function. In the present work, the same splitting functionality is further exploited to decompose the target image cube into spatio-spectral facets, and enable parallel processing of facet-specific regularization terms in the objective. The resulting algorithm, dubbed ``Faceted HyperSARA'', was implemented in MATLAB (code available on the Puri-Psi webpage). Extensive simulation results on synthetic image cubes confirm that faceting can provide a major increase in scalability at no cost in imaging quality. A proof-of-concept reconstruction of a 15~GB image cube of Cyg A from 7.4 GB of VLA data, utilizing 496 CPU cores on a High Performance Computing system for 68 hours, confirms both scalability and a quantum jump in imaging quality from clean. Last but not least, we also combined Faceted HyperSARA with a joint image and data dimensionality reduction technique, under the assumption of a slow spectral slope of Cyg A in the frequency range of interest. Our results show that dimensionality reduction enables utilizing no more than 31 CPU cores for 142 hours to form the image while preserving the overall reconstruction quality, thus demonstrating a second scalability feature beyond faceting. All Cyg A reconstructed image cubes are available online.</p>
-
-<p>The codes made available here represent a proof of concept MATLAB implementation of the proposed algorithm.</p>
-
-<h3>
-<a id="authors" class="anchor" href="#authors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors</h3>
-
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
 <ul>
-  <li>Dr. Pierre-Antoine Thouvenin</li>
-  <li>Mr. Abdullah Abdulaziz</li>
-  <li>Dr. Ming Jiang</li>
-  <li>Dr. Arwa Dabbech</li>
-  <li>Dr. Audrey Repetti</li>
-  <li>Mr. Adrian Jackson</li>
-  <li>Prof. Jean-Philippe Thiran</li>
-  <li>Prof. Yves Wiaux</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_src/src.html">src package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
 </ul>
 
-<h3>
-<a id="article" class="anchor" href="#article" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Article</h3>
+        </div>
+      </div>
+    </nav>
 
-<p>P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech, A. Repetti, A. Jackson, J.-P. Thiran, Y. Wiaux --
-<em><strong>Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): when precision meets scalability</strong>, 
-  submitted, <a href="https://researchportal.hw.ac.uk/en/publications/parallel-faceted-imaging-in-radio-interferometry-via-proximal-spl">preprint available online</a>, Jan. 2020.  
-</em></p>
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Faceted-HyperSARA</a>
+      </nav>
 
-</section>
-     
-
-
-
-<footer>
-        <p>This project is maintained by <a href="https://github.com/basp-group">basp-group</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-</footer>
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Faceted-HyperSARA</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
 </div>
-    <script src="javascripts/scale.fix.js"></script>
-              <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-82326814-1");
-            pageTracker._trackPageview();
-            } catch(err) {}
-     </script>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="faceted-hypersara">
+<h1>Faceted-HyperSARA<a class="headerlink" href="#faceted-hypersara" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA</span></code> is a MATLAB library for radio-interferometric wideband intensity imaging. The library offers a collection of utility functions and scripts from data extraction from an RI measurement set <code class="docutils literal notranslate"><span class="pre">MS</span> <span class="pre">Table</span></code> to the reconstruction of a wideband intensity image over the field of view and frequency range of interest. The library contains an implementation of algorithms from the “SARA” family (SARA <span id="id1">[<a class="reference internal" href="biblio.html#id4" title="R. E. Carrillo, J. D. McEwen, and Y. Wiaux. Sparsity averaging reweighted analysis (SARA): a novel algorithm for radio-interferometric imaging. Monthly Notices of the Royal Astronomical Society, 426(2):1223–1234, 2012.">Carrillo2012</a>, <a class="reference internal" href="biblio.html#id11" title="A. Onose, A. Dabbech, and Y. Wiaux. An accelerated splitting algorithm for radio-interferometric imaging: when natural and uniform weighting meet. Monthly Notices of the Royal Astronomical Society, 469(1):938–949, 2017.">Onose2017</a>]</span>,
+HyperSARA <span id="id2">[<a class="reference internal" href="biblio.html#id2" title="Abdullah Abdulaziz, Arwa Dabbech, and Yves Wiaux. Wideband super-resolution imaging in radio interferometry via low rankness and joint average sparsity models (HyperSARA). Monthly Notices of the Royal Astronomical Society, 489(1):1230–1248, 2019.">Abdulaziz2019</a>]</span> and Faceted HyperSARA
+<span id="id3">[<a class="reference internal" href="biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span>). The follwing features, crucial to achieve high precision imaging from large data volumes, are supported.</p>
+<ul class="simple">
+<li><p>data dimensionality reduction via visibility gridding <span id="id4">[<a class="reference internal" href="biblio.html#id9" title="S. V. Kartik, R. E. Carrillo, J.-P. Thiran, and Y. Wiaux. A Fourier dimensionality reduction model for big data interferometric imaging. Monthly Notices of the Royal Astronomical Society, 480(2):2382–2400, 2017. doi:10.1093/mnras/stx531.">Kartik2017</a>]</span>;</p></li>
+<li><p>correction of the <span class="math notranslate nohighlight">\(w\)</span>-term via <span class="math notranslate nohighlight">\(w\)</span>-projection <span id="id5">[<a class="reference internal" href="biblio.html#id16" title="Arwa Dabbech, Laura Wolz, Luke Pratley, Jason D McEwen, and Yves Wiaux. The w-effect in interferometric imaging: from a fast sparse measurement operator to superresolution. Monthly Notices of the Royal Astronomical Society, 471(4):4300–4313, Jul. 2017.">Dabbech2017</a>]</span>;</p></li>
+<li><p>incorporation of available compact Fourier models of the direction dependent effects (DDEs) in the measurement operator <span id="id6">[<a class="reference internal" href="biblio.html#id7" title="A. Dabbech, A. Repetti, R. A. Perley, O. M. Smirnov, and Y. Wiaux. Cygnus A jointly calibrated and imaged via non-convex optimization from VLA data. Monthly Notices of the Royal Astronomical Society, 506(4):4855-4876, 07 2021. doi:10.1093/mnras/stab1903.">Dabbech2021</a>]</span>.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA</span></code> relies on two auxiliary submodules:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://github.com/basp-group/RI-measurement-operator">RI-measurement-operator</a> for the formation of the radio-interferometric measurement operator;</p></li>
+<li><p><a class="reference external" href="https://github.com/basp-group/SARA-dictionary">SARA-dictionary</a> for the implementation of the sparsity priors.</p></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This project is still under active development.</p>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#getting-started">Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#contributing">Contributing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributors.html#active-contributors">Active contributors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributors.html#past-contributors">Past contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="biblio.html">References</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="default.html">Default parameters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="default.html#user-defined-parameters">User-defined parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="default.html#inner-algorithmic-parameters">Inner algorithmic parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_src/src.html">src package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_src/src.fhs.html">Module src.fhs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_src/src.heuristics.html">Module src.heuristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_src/src.hs.html">Module src.hs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_src/src.sara.html">Module src.sara</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_src/src.html#module-src">API src</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_lib/lib.html">lib package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_lib/lib.generate_data.html">Module lib.generate_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_lib/lib.operators.html">Module  lib.operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_lib/lib.utils.html">Module  lib.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_pyxisMs2mat/pyxisMs2mat.pyxis4DataExtraction.html">Module pyxisMs2mat.pyxis4DataExtraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_pyxisMs2mat/pyxisMs2mat.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_pyxisMs2mat/pyxisMs2mat.html#general-notes">General notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_pyxisMs2mat/pyxisMs2mat.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="mat-modindex.html"><span class="std std-ref">MATLAB Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
 
-  </body>
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="setup.html" class="btn btn-neutral float-right" title="Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>
-

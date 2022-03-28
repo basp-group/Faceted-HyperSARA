@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module src.heuristics &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Module src.hs" href="src.hs.html" />
+    <link rel="prev" title="Module src.fhs" href="src.fhs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="src.html">src package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="src.fhs.html">Module src.fhs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module src.heuristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.hs.html">Module src.hs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.sara.html">Module src.sara</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.html#module-src">API src</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="src.html">src package</a> &raquo;</li>
+      <li>Module src.heuristics</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_src/src.heuristics.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src-heuristics">
+<h1>Module src.heuristics<a class="headerlink" href="#module-src-heuristics" title="Permalink to this headline"></a></h1>
+<p>Functions associated with the computation of the heuristic regularization parameters to be used in SARA, HyperSARA or Faceted HyperSARA.</p>
+<span class="target" id="module-src.heuristics"></span><dl class="mat function">
+<dt class="sig sig-object mat" id="src.heuristics.compute_noise_level">
+<span class="sig-prename descclassname"><span class="pre">src.heuristics.</span></span><span class="sig-name descname"><span class="pre">compute_noise_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">n_channels</span></em>, <em class="sig-param"><span class="pre">std_noise</span></em>, <em class="sig-param"><span class="pre">algo_version</span></em>, <em class="sig-param"><span class="pre">Qx</span></em>, <em class="sig-param"><span class="pre">Qy</span></em>, <em class="sig-param"><span class="pre">overlap_size</span></em>, <em class="sig-param"><span class="pre">squared_operator_norm</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.heuristics.compute_noise_level" title="Permalink to this definition"></a></dt>
+<dd><p>Compute heuristic order of magnitude for the regularization parameters
+involved in SARA <span id="id1">[<a class="reference internal" href="../biblio.html#id2" title="Abdullah Abdulaziz, Arwa Dabbech, and Yves Wiaux. Wideband super-resolution imaging in radio interferometry via low rankness and joint average sparsity models (HyperSARA). Monthly Notices of the Royal Astronomical Society, 489(1):1230–1248, 2019.">Abdulaziz2019</a>]</span> or Faceted HyperSARA
+<span id="id2">[<a class="reference internal" href="../biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Ny</strong> (<em>int</em>) – Spatial image size along axis y.</p></li>
+<li><p><strong>Nx</strong> (<em>int</em>) – Spatial image size along axis y.</p></li>
+<li><p><strong>n_channels</strong> (<em>int</em>) – Number of frequency channels.</p></li>
+<li><p><strong>std_noise</strong> (<em>double</em>) – Estimate of the standard deviation of the white Gaussian noise
+affecting the data.</p></li>
+<li><p><strong>algo_version</strong> (<em>string</em>) – Imaging problem considered (HyperSARA, <code class="docutils literal notranslate"><span class="pre">'hs'</span></code> or Faceted
+HyperSARA <code class="docutils literal notranslate"><span class="pre">'fhs'</span></code>),</p></li>
+<li><p><strong>Qx</strong> (<em>int</em>) – Number of spatial facets along spatial axis x.</p></li>
+<li><p><strong>Qy</strong> (<em>int</em>) – Number of spatial facets along spatial axis y.</p></li>
+<li><p><strong>overlap_size</strong> (<em>int[2]</em>) – Overlap size between consecutive facets along each axis (y and x).</p></li>
+<li><p><strong>squared_operator_norm</strong> (<em>double</em>) – Square of the measurement operator norm, <span class="math notranslate nohighlight">\(\|\Phi\|_2^2\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>sig</strong> (<em>double</em>) – Heuristic value sparsity regularization parameter.</p></li>
+<li><p><strong>sig_bar</strong> (<em>double</em>) – Heursitic value low-rankness regularization parameter.</p></li>
+<li><p><strong>mu_chi</strong> (<em>double</em>) – Heuristic estimate of the mean of the noise using a
+<span class="math notranslate nohighlight">\(\chi_2\)</span> approximation. (?)</p></li>
+<li><p><strong>sig_chi</strong> (<em>double</em>) – Heuristic estimate of the standard deviation of the noise using a
+<span class="math notranslate nohighlight">\(\chi_2\)</span> approximation. (?)</p></li>
+<li><p><strong>sig_sara</strong> (<em>double</em>) – Heuristic estimate of the noise level (standard deviation) when
+transferred to the SARA dictionary domain. (?)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="src.heuristics.compute_noise_level_sara">
+<span class="sig-prename descclassname"><span class="pre">src.heuristics.</span></span><span class="sig-name descname"><span class="pre">compute_noise_level_sara</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">std_noise</span></em>, <em class="sig-param"><span class="pre">squared_operator_norm</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.heuristics.compute_noise_level_sara" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate noise level in the SARA domain.</p>
+<p>Return an estimate of the noise standard deviation transferred
+successively from the data to the image domain, then to the SARA domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>std_noise</strong> (<em>double</em>) – Noise standard deviation in the data domain.</p></li>
+<li><p><strong>squared_operator_norm</strong> (<em>double</em>) – Squared norm of the measurement operator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sig</strong> – Estimate of the noise level.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>double</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="src.fhs.html" class="btn btn-neutral float-left" title="Module src.fhs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="src.hs.html" class="btn btn-neutral float-right" title="Module src.hs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

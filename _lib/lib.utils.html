@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module lib.utils &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="imaging package" href="../_imaging/imaging.html" />
+    <link rel="prev" title="Module lib.operators" href="lib.operators.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+              <div class="version">
+                mnras_real_data-390-g13deaa4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_src/src.html">src package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="lib.html">lib package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lib.generate_data.html">Module lib.generate_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lib.operators.html">Module  lib.operators</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module  lib.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="lib.html">lib package</a> &raquo;</li>
+      <li>Module  lib.utils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_lib/lib.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-lib-utils">
+<h1>Module  lib.utils<a class="headerlink" href="#module-lib-utils" title="Permalink to this headline"></a></h1>
+<p>Collection of utility functions used throughout the library.</p>
+<span class="target" id="module-lib.utils"></span><dl class="mat function">
+<dt class="sig sig-object mat" id="lib.utils.fb_nnls">
+<span class="sig-prename descclassname"><span class="pre">lib.utils.</span></span><span class="sig-name descname"><span class="pre">fb_nnls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">param</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.utils.fb_nnls" title="Permalink to this definition"></a></dt>
+<dd><p>Forward-backward algorithm to solve a non-negative least-squares problem of
+the form</p>
+<div class="math notranslate nohighlight">
+\[\min_{x \in \mathbb{R}^N_+}  \frac{1}{2} \| y - Ax \|_2^2,\]</div>
+<p>using a FISTA-like acceleration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>complex[:]</em>) – Input measurements.</p></li>
+<li><p><strong>A</strong> (<em>function handle</em>) – Forward measurement operator</p></li>
+<li><p><strong>At</strong> (<em>function handle</em>) – Adjoint measurement operator.</p></li>
+<li><p><strong>param</strong> (<em>strut</em>) – Parameter structure complsed of the following fields.</p></li>
+<li><p><strong>param.verbose</strong> (<em>int</em>) – 0 no log, 1 print main steps, 2 print all steps.</p></li>
+<li><p><strong>param.max_iter</strong> (<em>int</em>) – Maximum number of iterations (default: 200).</p></li>
+<li><p><strong>param.rel_obj</strong> (<em>double</em>) – Minimum relative change of the objective value (default:
+1e-4). The algorithm stops if
+<span class="math notranslate nohighlight">\(| f(x^{(t)}) - f(x^{(t-1)}) | / f(x^{(t)}) &lt; \text{rel}_\text{obj}\)</span>, where <span class="math notranslate nohighlight">\(x^{(t)}\)</span> is the estimate of the solution at iteration <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>sol</strong> (<em>double[:, :]</em>) – Estimated image.</p></li>
+<li><p><strong>norm_res</strong> (<em>double</em>) – Norm of the residual image <span class="math notranslate nohighlight">\(\|y - Ax\|^2_2\)</span>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.utils.fb_nnls_blocks">
+<span class="sig-prename descclassname"><span class="pre">lib.utils.</span></span><span class="sig-name descname"><span class="pre">fb_nnls_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">param</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.utils.fb_nnls_blocks" title="Permalink to this definition"></a></dt>
+<dd><p>Forward-backward algorithm to solve a non-negative least-squares problem of
+the form</p>
+<div class="math notranslate nohighlight">
+\[\min_{x \in \mathbb{R}^N_+}  \frac{1}{2} \| y - Ax \|_2^2,\]</div>
+<p>using a FISTA-like acceleration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>complex[:]</em>) – Input measurements.</p></li>
+<li><p><strong>A</strong> (<em>function handle</em>) – Forward measurement operator</p></li>
+<li><p><strong>At</strong> (<em>function handle</em>) – Adjoint measurement operator.</p></li>
+<li><p><strong>G</strong> (<em>sparse complex[:, :]</em>) – Degridding matrix.</p></li>
+<li><p><strong>W</strong> (<em>int[:]</em>) – [description]</p></li>
+<li><p><strong>param</strong> (<em>strut</em>) – Parameter structure complsed of the following fields.</p></li>
+<li><p><strong>param.verbose</strong> (<em>int</em>) – 0 no log, 1 print main steps, 2 print all steps.</p></li>
+<li><p><strong>param.max_iter</strong> (<em>int</em>) – Maximum number of iterations (default: 200).</p></li>
+<li><p><strong>param.rel_obj</strong> (<em>double</em>) – Minimum relative change of the objective value (default:
+1e-4). The algorithm stops if
+<span class="math notranslate nohighlight">\(| f(x^{(t)}) - f(x^{(t-1)}) | / f(x^{(t)}) &lt; \text{rel}_\text{obj}\)</span>, where <span class="math notranslate nohighlight">\(x^{(t)}\)</span> is the estimate of the solution at iteration <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>sol</strong> (<em>double[:, :]</em>) – Estimated image.</p></li>
+<li><p><strong>norm_res</strong> (<em>double</em>) – Norm of the residual image <span class="math notranslate nohighlight">\(\|y - Ax\|^2_2\)</span>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.utils.util_antenna_based_block_sp_ar">
+<span class="sig-prename descclassname"><span class="pre">lib.utils.</span></span><span class="sig-name descname"><span class="pre">util_antenna_based_block_sp_ar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">u</span></em>, <em class="sig-param"><span class="pre">ant2</span></em>, <em class="sig-param"><span class="pre">param</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.utils.util_antenna_based_block_sp_ar" title="Permalink to this definition"></a></dt>
+<dd><p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>ant2</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>param</strong> (<em>[type]</em>) – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[type]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.utils.util_gen_data_fidelity_bounds2">
+<span class="sig-prename descclassname"><span class="pre">lib.utils.</span></span><span class="sig-name descname"><span class="pre">util_gen_data_fidelity_bounds2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">Ml</span></em>, <em class="sig-param"><span class="pre">param</span></em>, <em class="sig-param"><span class="pre">sigma_noise</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.utils.util_gen_data_fidelity_bounds2" title="Permalink to this definition"></a></dt>
+<dd><p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>Ml</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>param</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>sigma_noise</strong> (<em>[type]</em>) – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[type]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.utils.util_operator_norm">
+<span class="sig-prename descclassname"><span class="pre">lib.utils.</span></span><span class="sig-name descname"><span class="pre">util_operator_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">aW</span></em>, <em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">tol</span></em>, <em class="sig-param"><span class="pre">max_iter</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.utils.util_operator_norm" title="Permalink to this definition"></a></dt>
+<dd><p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>W</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>A</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>At</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>aW</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>Ny</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>Nx</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>tol</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>max_iter</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>flag_visibility_gridding</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>Sigma</strong> (<em>[type]</em>) – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[type]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.utils.util_set_parpool">
+<span class="sig-prename descclassname"><span class="pre">lib.utils.</span></span><span class="sig-name descname"><span class="pre">util_set_parpool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">solver</span></em>, <em class="sig-param"><span class="pre">ncores_data</span></em>, <em class="sig-param"><span class="pre">Q</span></em>, <em class="sig-param"><span class="pre">parcluster_name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.utils.util_set_parpool" title="Permalink to this definition"></a></dt>
+<dd><p>function to launch parpool before the solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>algo_version</strong> (<em>[string]</em>) – Solver used, ‘fhs’, ‘hs’, or ‘sara’</p></li>
+<li><p><strong>ncores_data</strong> (<em>[int]</em>) – number of data workers</p></li>
+<li><p><strong>Q</strong> (<em>[int]</em>) – number of facet workers</p></li>
+<li><p><strong>parcluster_name</strong> (<em>[string]</em>) – name of the parcluster profile to use, default “local”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>hpc_cluster</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.utils.util_time_based_block_sp_ar">
+<span class="sig-prename descclassname"><span class="pre">lib.utils.</span></span><span class="sig-name descname"><span class="pre">util_time_based_block_sp_ar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">u</span></em>, <em class="sig-param"><span class="pre">time_</span></em>, <em class="sig-param"><span class="pre">param</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.utils.util_time_based_block_sp_ar" title="Permalink to this definition"></a></dt>
+<dd><p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>time_</strong> (<em>[type]</em>) – [description]</p></li>
+<li><p><strong>param</strong> (<em>[type]</em>) – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[type]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lib.operators.html" class="btn btn-neutral float-left" title="Module lib.operators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../_imaging/imaging.html" class="btn btn-neutral float-right" title="imaging package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
