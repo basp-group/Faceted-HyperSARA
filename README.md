@@ -7,9 +7,10 @@
 
 This repository contains Matlab codes associated with the wideband radio-interferometry imaging approach approach described in
 
->P.-A. Thouvenin, A. Abdulaziz, M. Jiang, A. Dabbech, A. Repetti, A. Jackson, J.-P. Thiran, Y. Wiaux, Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA), submitted, [preprint available online](https://arxiv.org/abs/2003.07358), Jan. 2020.  
-
-**Authors:** P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz.
+>P.-A. Thouvenin, A. Abdulaziz, A. Dabbech, A. Repetti, Y. Wiaux, Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations, submitted, [preprint available online](https://arxiv.org/abs/2003.07358), Mar. 2022.  
+>
+>P.-A. Thouvenin, A. Dabbech, M. Jiang, J.-P. Thiran, A. Jackson, Y. Wiaux, 
+Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): II. Real data proof-of-concept and code, submitted, Mar. 2022.
 
 **Dependencies:** the present codes depend on the content of the [`RI-measurement-operator`](https://github.com/basp-group/RI-measurement-operator) and [`SARA-dictionary`](https://github.com/basp-group/SARA-dictionary) github repositories, loaded as github `submodule`s (see [installation](install) section). These modules contains codes associated with the following publications
 
