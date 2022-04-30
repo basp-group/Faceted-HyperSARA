@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Default parameters &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+  <title>Default parameters &mdash; Faceted-HyperSARA  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="src package" href="_src/src.html" />
+    <link rel="next" title="Optional input datasets" href="input.html" />
     <link rel="prev" title="References" href="biblio.html" /> 
 </head>
 
@@ -30,9 +30,6 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> Faceted-HyperSARA
           </a>
-              <div class="version">
-                mnras_real_data-390-g13deaa4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -54,6 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#inner-algorithmic-parameters">Inner algorithmic parameters</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Optional input datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_src/src.html">src package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_lib/lib.html">lib package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_imaging/imaging.html">imaging package</a></li>
@@ -105,12 +103,12 @@ the input dataset.</p>
 data extraction, used to get the data and generate output files.</p></li>
 <li><p><strong>datasetNames</strong> (<em>cell of string</em>) – Name of the different datasets used (e.g., in the cases of
 different acquisition configurations or different observation times),
-to be set to <code class="docutils literal notranslate"><span class="pre">{''}</span></code> if one data set is imaged or no name tag of
+to be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code> if one data set is imaged &amp; no name tag of
 the MS is given during data extraction.</p></li>
 <li><p><strong>dataFilename</strong> (<em>anonymous function</em>) – Function handle taking a channel index as an input, and returning the
-name of the associated data <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file (one file per frequency channel)
-following the nomenclature adopted during data extraction. Do not
-modify unless the nomenclature has been altered.</p></li>
+name of the associated data <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file (one file per frequency channel
+and dataset) following the nomenclature adopted during data extraction.
+Do not modify unless the nomenclature has been altered.</p></li>
 <li><p><strong>idChannels2Image</strong> (<em>array[int]</em>) – Indices of the  input (<cite>physical</cite>) channels to be imaged.</p></li>
 <li><p><strong>nChannelsPerImage</strong> (<em>int</em>) – Number of consecutive channels to be concatenated into each  output
 (effective) channel (set to <cite>1</cite> if full spectral resolution is
@@ -120,7 +118,7 @@ input channels).</p></li>
 concatenated for each output (effective) channel. Set automatically if
 <cite>idChannels2Image</cite> and <cite>nChannelsPerImage</cite> are provided.</p></li>
 <li><p><strong>main_dir</strong> (<em>string</em>) – Directory of the Faceted-HyperSARA repository.</p></li>
-<li><p><strong>data_dir</strong> (<em>string</em>) – Directory of the input <code class="docutils literal notranslate"><span class="pre">.mat</span></code> data files. Default <code class="docutils literal notranslate"><span class="pre">./Faceted-HyperSARA/data/</span></code>.</p></li>
+<li><p><strong>data_dir</strong> (<em>string</em>) – Directory of the input <code class="docutils literal notranslate"><span class="pre">.mat</span></code> data files. Default <code class="docutils literal notranslate"><span class="pre">./Faceted-HyperSARA/data</span></code>.</p></li>
 <li><p><strong>imaging_dir</strong> (<em>string</em>) – Directory of the imaging experiment. Default
 <code class="docutils literal notranslate"><span class="pre">./Faceted-HyperSARA/imaging</span></code>.</p></li>
 <li><p><strong>calib_type</strong> (<em>string</em>) – calibration type: <cite>dde</cite>, <cite>die</cite> or <cite>[]</cite> if no results from a calib
@@ -129,17 +127,26 @@ pre-processing step.</p></li>
 pre-processing step. To be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code> if not used or not
 available.</p></li>
 <li><p><strong>json_filename</strong> (<em>string</em>) – Name of the input <code class="docutils literal notranslate"><span class="pre">.json</span></code> configuration file specifying the
-value of the algorithm parameters (PDFB, reweighting, ellipsoid,
-projection, preconditioning, …).</p></li>
+value of the algorithm and measurement operators’ parameters
+(PDFB, reweighting, ellipsoid,
+projection, preconditioning, w-projection, noise estimation).</p></li>
 <li><p><strong>param_global.im_Nx</strong> (<em>int</em>) – Number of pixels along axis x in the reconstructed image.</p></li>
 <li><p><strong>param_global.im_Ny</strong> (<em>int</em>) – Number of pixels along axis y in the reconstructed image.</p></li>
 <li><p><strong>param_global.im_pixelSize</strong> (<em>double</em>) – Pixel-size in arcsec. Set to <code class="docutils literal notranslate"><span class="pre">[]</span></code> to use
 the default value corresponding to 2 times the resolution of the
 observation (given by the longest baseline at the highest frequency).</p></li>
+<li><p><strong>param_global.adjust_flag_noise</strong> (<em>bool</em>) – Flag to activate noise estimation on the fly in the case of
+unreliable noise statistics.</p></li>
 <li><p><strong>param_global.measop_flag_visibility_gridding</strong> (<em>bool</em>) – Flag to activate visibility gridding for data dimensionality
 reduction.</p></li>
+<li><p><strong>param_global.data_flag_apply_imaging_weights</strong> (<em>bool</em>) – Flag to read and apply imaging weights (e.g. Briggs, uniform) to
+data. Typically, these are stored in the <code class="docutils literal notranslate"><span class="pre">MS</span></code> as <code class="docutils literal notranslate"><span class="pre">IMAGING_WEIGHTS</span></code> or
+<code class="docutils literal notranslate"><span class="pre">IMAGING_WEIGHTS_SPECTRUM</span></code>. If one of these columns
+are found, imaging weights will be automatically extracted as <code class="docutils literal notranslate"><span class="pre">nWimag</span></code>
+in the <code class="docutils literal notranslate"><span class="pre">.mat</span></code> data file.</p></li>
 <li><p><strong>param_global.algo_solver</strong> (<em>string</em>) – Name of the imaging approach used. Possible values are <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>
-(Faceted-HyperSARA), <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code> (HyperSARA) and <code class="docutils literal notranslate"><span class="pre">&quot;sara&quot;</span></code> (SARA).</p></li>
+(Faceted-HyperSARA), <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code> (HyperSARA) and <code class="docutils literal notranslate"><span class="pre">&quot;sara&quot;</span></code> (SARA).
+Default: monochromatic imaging <code class="docutils literal notranslate"><span class="pre">&quot;sara&quot;</span></code>, wideband imaging <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>.</p></li>
 <li><p><strong>param_global.facet_Qx</strong> (<em>int</em>) – Number of spatial facets along spatial axis x. Active only in
 <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>. If the field is not specified, the maximum possible
 number of facets will the selected along the y axis.</p></li>
@@ -149,8 +156,9 @@ number of facets will the selected along the y axis.</p></li>
 <li><p><strong>param_global.facet_overlap_fraction</strong> (<em>double[2]</em>) – Fraction of the total size of facet overlapping with a neighbouring
 facet along each axis (y and x) for the faceted low-rankness prior.
 Active only in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>. Will be reset
-automatically to <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">0]</span></code> if the spatial faceting is not active in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>
-along at least one dimension (i.e., <code class="docutils literal notranslate"><span class="pre">param_global.facet_Qy</span> <span class="pre">=</span> <span class="pre">1</span></code> and/or <code class="docutils literal notranslate"><span class="pre">param_global.facet_Qx</span> <span class="pre">=</span> <span class="pre">1</span></code>).</p></li>
+automatically to <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">0]</span></code> if the spatial faceting is not active in
+<code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code> along at least one dimension
+(i.e., <code class="docutils literal notranslate"><span class="pre">param_global.facet_Qy</span> <span class="pre">=</span> <span class="pre">1</span></code> and/or <code class="docutils literal notranslate"><span class="pre">param_global.facet_Qx</span> <span class="pre">=</span> <span class="pre">1</span></code>).</p></li>
 <li><p><strong>param_global.facet_subcubeInd</strong> (<em>int</em>) – Index of the subcube to be reconstructed (if spectral faceting is
 used). To be set to <code class="docutils literal notranslate"><span class="pre">0</span></code> otherwise.</p></li>
 <li><p><strong>param_global.reg_gam</strong> (<em>double</em>) – Additional multiplicative factor affecting the joint average sparsity
@@ -162,28 +170,31 @@ regularization parameter. Active only in <code class="docutils literal notransla
 <li><p><strong>param_global.reg_flag_reweighting</strong> (<em>bool</em>) – Flag to activate the re-weighting procedure. Default set to
 <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p></li>
 <li><p><strong>param_global.reg_nReweights</strong> (<em>int</em>) – Maximum number of reweighting iterations.</p></li>
-<li><p><strong>param_global.algo_flag_computeOperatorNorm</strong> (<em>bool</em>) – Flag to trigger the computation of the norm of the measurement
-operator. Default set to <code class="docutils literal notranslate"><span class="pre">true</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">false</span></code>,
-MATLAB will look for a file where this
-quantity has been saved (save and computation steps are triggered in
-<a class="reference internal" href="_imaging/imaging.html#imaging.imaging" title="imaging.imaging"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">imaging.imaging()</span></code></a>).</p></li>
-<li><p><strong>param_global.parcluster</strong> (<em>string</em>) – Name of the parallel parcluster profile to launch the parpool. By default <code class="docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code> profile
-is used. The user should set it to the name of the slurm parcluster
-profile created on his/her HPC machine, if prefered.</p></li>
-<li><p><strong>param_global.preproc_filename_l2bounds</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
-returning a string corresponding to the name of a file
-containing pre-computed <span class="math notranslate nohighlight">\(\ell_2\)</span> bounds. If not used, must be set
-to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
-<li><p><strong>param_global.preproc_filename_model</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
+<li><p><strong>param_global.parcluster</strong> (<em>string</em>) – Name of the parallel parcluster profile to launch the parpool. By
+default  <code class="docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code> profile is used. The user should set it to the
+name of the slurm parcluster profile created on his/her HPC machine,
+if prefered.</p></li>
+<li><p><strong>param_global.algo_flag_computeOperatorNorm (bool)</strong> – Flag to activate computation of the measurement operator norm,
+default, true.</p></li>
+<li><p><strong>param_global.algo_flag_saveOperatorNorm (bool)</strong> – Flag to activate saving of the measurement operator norm,
+default, false.</p></li>
+<li><p><strong>param_global.algo_flag_solveMinimization (bool)</strong> – Flag to trigger the solver, true.</p></li>
+<li><p><strong>param_global.preproc_filename_noise_std</strong> (<em>anonymous function</em>) – Function handle, taking the indices of the physical channel
+and the dataset, and returning a string corresponding to the name of a file
+containing noise statistics obtained from a pre-processing step.
+Expected vars: <code class="docutils literal notranslate"><span class="pre">sigma</span></code>: the standard deviation of the noise,
+<code class="docutils literal notranslate"><span class="pre">RESIDUAL</span></code>: (optional) the residual visibilities from a pre-processing
+step. If not used, should be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><strong>param_global.preproc_filename_cal_solutions</strong> (<em>anonymous function</em>) – Function handle, taking the indices of the physical channel and the
+dataset, and returning a string corresponding to the name of a file
+containing DDE/DIE calibration solutions.
+Expected var: <code class="docutils literal notranslate"><span class="pre">DDEs</span></code>: complex array if DDE calibration and
+<code class="docutils literal notranslate"><span class="pre">DIEs</span></code>: complex vector if DIE calibration . If not used, should be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><strong>param_global.preproc_filename_model</strong> (<em>anonymous function</em>) – Function handle, taking the indices of the first and last physical channels,
+associated with an effective (output) channel, and
 returning the name of a file containing a model image to be used to
 initialize the reconstruction algorithm. If not used, should be set to
 <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
-<li><p><strong>param_global.preproc_filename_die</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
-returning a string corresponding to the name of a file containing
-DIE calibration constants. If not used, must be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
-<li><p><strong>param_global.preproc_filename_dde</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
-returning a string corresponding to the name of a file containing
-DDE calibration constants. If not used, must be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -206,45 +217,79 @@ DDE calibration constants. If not used, must be set to <code class="docutils lit
 <span class="c">% window (in this example two spectral windows are flagged).</span><span class="w"></span>
 <span class="c">% The number of output (effective) channels is equal to the number</span><span class="w"></span>
 <span class="c">% of input (physical) channels</span><span class="w"></span>
-<span class="n">idChannels2Image</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">272</span><span class="p">,</span><span class="w"> </span><span class="mi">289</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">320</span><span class="p">,</span><span class="w"> </span><span class="mi">337</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">512</span><span class="p">];</span><span class="w"></span>
+<span class="n">idChannels2Image</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">272</span><span class="p">,</span><span class="w"> </span><span class="mi">289</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">304</span><span class="p">,</span><span class="w"> </span><span class="mi">321</span><span class="p">:</span><span class="mi">16</span><span class="p">:</span><span class="mi">512</span><span class="p">];</span><span class="w"></span>
 <span class="n">nChannelsPerImage</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
 
 <span class="c">% example d: reduced imagecube containing 30 effective channels</span><span class="w"></span>
 <span class="c">% each combining 16 physical channels.</span><span class="w"></span>
 <span class="c">% In this example the number of output (effective) channels is reduced to 30 from</span><span class="w"></span>
 <span class="c">% 480 input (physical) channels.</span><span class="w"></span>
-<span class="n">idChannels2Image</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">272</span><span class="p">,</span><span class="w"> </span><span class="mi">289</span><span class="p">:</span><span class="mi">320</span><span class="p">,</span><span class="w"> </span><span class="mi">337</span><span class="p">:</span><span class="mi">512</span><span class="p">];</span><span class="w"></span>
+<span class="n">idChannels2Image</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">272</span><span class="p">,</span><span class="w"> </span><span class="mi">289</span><span class="p">:</span><span class="mi">304</span><span class="p">,</span><span class="w"> </span><span class="mi">321</span><span class="p">:</span><span class="mi">512</span><span class="p">];</span><span class="w"></span>
 <span class="n">nChannelsPerImage</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <ul class="simple">
-<li><p>Data files (example: <code class="docutils literal notranslate"><span class="pre">'data_ch_1.mat'</span></code>) are expected to contain the following variables : <cite>y</cite> (complex vector of
-visibilities, Stokes I), <cite>u</cite> , <cite>v</cite>, <cite>w</cite> (arrays of
-<span class="math notranslate nohighlight">\(uvw\)</span>-coordinates),`maxProjBaseline`
-(double, maximum projected baseline), <cite>nW</cite> (noise whitening vector), <cite>frequency</cite> (associated frequency).</p></li>
-<li><p>Note that the data <cite>y</cite>  are not whitened.
-The variables <cite>maxProjBaseline</cite> and the <cite>uvw</cite> coordinates are
+<li><p>Data files (example: <code class="docutils literal notranslate"><span class="pre">'data_ch_1.mat'</span></code>) are expected to contain the following variables : <code class="docutils literal notranslate"><span class="pre">y</span></code> (complex vector of
+visibilities, Stokes I), <code class="docutils literal notranslate"><span class="pre">u</span></code> , <code class="docutils literal notranslate"><span class="pre">v</span></code>, <code class="docutils literal notranslate"><span class="pre">w</span></code> (arrays of
+<span class="math notranslate nohighlight">\(uvw\)</span>-coordinates), <cite>maxProjBaseline</cite>
+(double, maximum projected baseline), <code class="docutils literal notranslate"><span class="pre">nW</span></code> (noise whitening vector),
+<code class="docutils literal notranslate"><span class="pre">frequency</span></code> (associated frequency) and <code class="docutils literal notranslate"><span class="pre">nWimag</span></code> (optional,
+imaging weights such as uniform of Briggs)..</p></li>
+<li><p>Extracted data <code class="docutils literal notranslate"><span class="pre">y</span></code>  are not whitened (i.e. natural weights not applied).</p></li>
+<li><p>The variables <code class="docutils literal notranslate"><span class="pre">maxProjBaseline</span></code> and the <span class="math notranslate nohighlight">\(uvw\)</span> coordinates are
 in units of the wavelength (i.e. normalised by the associated wavelength).</p></li>
+<li><p>When spectral faceting is enabled, run <code class="docutils literal notranslate"><span class="pre">imaging/main_input_imaging.m</span></code> for each
+sub-cube, by updating the ID of the
+sub-cube to image <code class="docutils literal notranslate"><span class="pre">param_global.facet_subcubeInd</span></code> along with the
+associated channel frequencies <code class="docutils literal notranslate"><span class="pre">effChans2Image</span></code>.</p></li>
 </ul>
 </div>
 </dd></dl>
 
+<p>Default values of the parameters listed below are included in <code class="docutils literal notranslate"><span class="pre">imaging/default_parameters.json</span></code>. These will be utilised unless the user updates them directly or alternatively specifies them in <a class="reference internal" href="#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a>, in such case, they will be overwritten.</p>
+<div class="admonition-global-parameters admonition">
+<p class="admonition-title">Global parameters</p>
+<dl class="simple">
+<dt>reg_flag_reweighting: true</dt><dd><p>Flag to activate the re-weighting procedure.</p>
+</dd>
+<dt>measop_flag_wproj: false</dt><dd><p>Flag to activate <cite>w</cite>-projection.</p>
+</dd>
+<dt>measop_flag_visibility_gridding: false</dt><dd><p>Flag to activate visibility gridding for data dimensionality reduction.</p>
+</dd>
+<dt>adjust_flag_noise: false</dt><dd><p>Flag to estimate the effective noise level on the fly, activate only when reliable noise estimates are not available.</p>
+</dd>
+<dt>data_flag_apply_imaging_weights: false</dt><dd><p>Flag to apply imaging weights to the data (such as uniform or Briggs, if available) and to incorporate them in the measurement operator. Natural weighting is adopted by default.</p>
+</dd>
+<dt>algo_flag_computeOperatorNorm: true</dt><dd><p>Flag to compute the spectral norm of the measurement operator.</p>
+</dd>
+<dt>algo_flag_saveOperatorNorm: true</dt><dd><p>Flag to save the spectral norm of the measurement operator.</p>
+</dd>
+<dt>algo_flag_solveMinimization: true</dt><dd><p>Flag to run imaging.</p>
+</dd>
+<dt>parcluster: “local”</dt><dd><p>Name of the parcluster profile.</p>
+</dd>
+<dt>preproc_filename_noise_std: []</dt><dd><p>Filename of the estimated noise level.</p>
+</dd>
+<dt>preproc_filename_cal_solutions: []</dt><dd><p>Filename of the DDE calibration kernels.</p>
+</dd>
+<dt>preproc_filename_model: []</dt><dd><p>Filename of the initial image estimate.</p>
+</dd>
+</dl>
+</div>
 </section>
 <section id="inner-algorithmic-parameters">
 <h2>Inner algorithmic parameters<a class="headerlink" href="#inner-algorithmic-parameters" title="Permalink to this headline"></a></h2>
-<p>The parameters listed below, defined in the <code class="docutils literal notranslate"><span class="pre">imaging/default_parameters.json</span></code> file, specify the configuration in which the reweighting scheme and the primal-dual forward-backward (PDFB) algorithm are applied in the selected imaging approach.</p>
+<p>The parameters listed below, defined in the <code class="docutils literal notranslate"><span class="pre">imaging/default_parameters.json</span></code> file, specify the configuration in which the reweighting scheme and the primal-dual forward-backward (PDFB) algorithm are applied in the selected imaging approach. They also include the parameters involved in the <cite>w</cite>-projection to update the measurement operator, and the parameters involved in the estimation of the noise level on the fly in the PDFB algorithm, when available noise statistics are unreliable.</p>
+<p>Default values can be overwritten by providing the name of a new <code class="docutils literal notranslate"><span class="pre">.json</span></code> file to the <a class="reference internal" href="#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a> configuration script (see the variable <code class="docutils literal notranslate"><span class="pre">json_filename</span></code>). Note that all the fields specified in <code class="docutils literal notranslate"><span class="pre">imaging/default_parameters.json</span></code> are required to be able to run the imaging pipeline.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Users are encouraged to use the default values provided in <code class="docutils literal notranslate"><span class="pre">imaging/default_parameters.json</span></code>, unless precisely aware of their impact on the reconstruction process.</p>
+<p>The user is encouraged to use the default values provided in <code class="docutils literal notranslate"><span class="pre">imaging/default_parameters.json</span></code> (particularly the list provided below) unless precisely aware of their impact on the reconstruction process.</p>
 </div>
-<p>Default values can be bypassed by providing the name of a new <code class="docutils literal notranslate"><span class="pre">.json</span></code> file to the <a class="reference internal" href="#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a> configuration script (see the variable <code class="docutils literal notranslate"><span class="pre">json_filename</span></code> in l. 136). Note that all the fields specified in <code class="docutils literal notranslate"><span class="pre">imaging/default_parameters.json</span></code> are required to be able to run the imaging pipeline.</p>
 <div class="admonition-reweighting-scheme-cite-p-candes2009 admonition">
 <p class="admonition-title">Reweighting scheme <span id="id1">[<a class="reference internal" href="biblio.html#id3" title="Emmanuel J. Candès, Xiaodong Li, Yi Ma, and John Wright. Robust principal component analysis? journal of ACM, 58(1):1–37, 2009.">Candes2009</a>]</span></p>
 <dl class="simple">
-<dt>flag_reweighting<span class="classifier">true</span></dt><dd><p>Flag indicating whether the reweighting scheme is activated or not.</p>
-</dd>
 <dt>min_iter<span class="classifier">1</span></dt><dd><p>Minimum number of reweighting iterations.</p>
 </dd>
 <dt>max_iter<span class="classifier">10</span></dt><dd><p>Maximum number of reweighting iterations.</p>
@@ -325,11 +370,24 @@ in units of the wavelength (i.e. normalised by the associated wavelength).</p></
 </dl>
 <p>See associated documentation in the <a class="reference external" href="https://basp-group.github.io/SARA-dictionary/index.html">SARA-dictionary</a> module.</p>
 </div>
+<div class="admonition-noise-estimation-on-the-fly admonition">
+<p class="admonition-title">Noise estimation on the fly</p>
+<dl class="simple">
+<dt>min_iter<span class="classifier">100</span></dt><dd><p>Minimum number of iterations.</p>
+</dd>
+<dt>rel_var<span class="classifier">1e-3</span></dt><dd><p>Tolerance to adjust the noise estimate.</p>
+</dd>
+<dt>start_iter: 500</dt><dd><p>Iteration numbers to force triggering the noise estimation.</p>
+</dd>
+<dt>change_percentage: 0.5</dt><dd><p>The weight of the update w.r.t the l2 norm of the residual data.</p>
+</dd>
+<dt>start_change_percentage: 0.1</dt><dd><p>The weight of the update w.r.t the l2 norm of the residual data, if noise level update triggered at <cite>start_iter</cite> .</p>
+</dd>
+</dl>
+</div>
 <div class="admonition-math-w-projection-parameters-cite-p-dabbech2017 admonition">
 <p class="admonition-title"><span class="math notranslate nohighlight">\(w\)</span>-projection parameters <span id="id8">[<a class="reference internal" href="biblio.html#id16" title="Arwa Dabbech, Laura Wolz, Luke Pratley, Jason D McEwen, and Yves Wiaux. The w-effect in interferometric imaging: from a fast sparse measurement operator to superresolution. Monthly Notices of the Royal Astronomical Society, 471(4):4300–4313, Jul. 2017.">Dabbech2017</a>]</span></p>
 <dl class="simple">
-<dt>measop_flag_wproj<span class="classifier">false</span></dt><dd><p>Flag to activate <span class="math notranslate nohighlight">\(w\)</span>-correction.</p>
-</dd>
 <dt>measop_wprojCEnergyL2<span class="classifier">0.9999</span></dt><dd><p>Sparsification levels for the <span class="math notranslate nohighlight">\(w\)</span> kernel, to be selected in the interval <span class="math notranslate nohighlight">\([0.99, 1]\)</span>.</p>
 </dd>
 <dt>measop_wprojGEnergyL2<span class="classifier">0.9999</span></dt><dd><p>Sparsification levels for convolution kernels involved in the degridding matrix <span class="math notranslate nohighlight">\(G\)</span> after <span class="math notranslate nohighlight">\(w\)</span>-correction. To be selected in the interval <span class="math notranslate nohighlight">\([0.99, 1]\)</span>.</p>
@@ -344,13 +402,13 @@ in units of the wavelength (i.e. normalised by the associated wavelength).</p></
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="biblio.html" class="btn btn-neutral float-left" title="References" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="_src/src.html" class="btn btn-neutral float-right" title="src package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="input.html" class="btn btn-neutral float-right" title="Optional input datasets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

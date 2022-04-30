@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Module lib.operators &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+  <title>Module lib.operators &mdash; Faceted-HyperSARA  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,9 +29,6 @@
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
           </a>
-              <div class="version">
-                mnras_real_data-390-g13deaa4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -49,6 +46,7 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../input.html">Optional input datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_src/src.html">src package</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="lib.html">lib package</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="lib.generate_data.html">Module lib.generate_data</a></li>
@@ -114,7 +112,7 @@ adjoint of <a class="reference internal" href="#lib.operators.HS_forward_operato
 
 <dl class="mat function">
 <dt class="sig sig-object mat" id="lib.operators.HS_adjoint_operator_G">
-<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_adjoint_operator_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">M</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_adjoint_operator_G" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_adjoint_operator_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">M</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Lambda</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_adjoint_operator_G" title="Permalink to this definition"></a></dt>
 <dd><p>Apply adjoint of the wideband measurement operator (with or w/o
 data dimensionality reduction, adjoint of
 <a class="reference internal" href="#lib.operators.HS_forward_operator_G" title="lib.operators.HS_forward_operator_G"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_forward_operator_G()</span></code></a>).</p>
@@ -128,7 +126,7 @@ data dimensionality reduction, adjoint of
 <li><p><strong>N</strong> (<em>int</em>) – Spatial dimension of the wideband image (y axis).</p></li>
 <li><p><strong>M</strong> (<em>int</em>) – Spatial dimension of the wideband image (x axis).</p></li>
 <li><p><strong>flag_visibility_gridding</strong> (<em>bool</em>) – Flag indicating whether data dimensionality reduction via visibility gridding is considered.</p></li>
-<li><p><strong>Sigma</strong> (<em>cell of cell of double[:]</em>) – Weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
+<li><p><strong>Lambda</strong> (<em>cell of cell of double[:]</em>) – Weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -169,7 +167,7 @@ associated with a different channel).</p></li>
 
 <dl class="mat function">
 <dt class="sig sig-object mat" id="lib.operators.HS_adjoint_operator_precond_G">
-<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_adjoint_operator_precond_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">aW</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">M</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_adjoint_operator_precond_G" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_adjoint_operator_precond_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">aW</span></em>, <em class="sig-param"><span class="pre">N</span></em>, <em class="sig-param"><span class="pre">M</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Lambda</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_adjoint_operator_precond_G" title="Permalink to this definition"></a></dt>
 <dd><p>Apply adjoint of the preconditioned wideband measurement operator
 (with or w/o data dimensionality reduction, adjoint of
 <a class="reference internal" href="#lib.operators.HS_forward_operator_precond_G" title="lib.operators.HS_forward_operator_precond_G"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_forward_operator_precond_G()</span></code></a>).</p>
@@ -185,7 +183,7 @@ channel and data block within a channel).</p></li>
 <li><p><strong>N</strong> (<em>int</em>) – Spatial dimension of the wideband image (y axis).</p></li>
 <li><p><strong>M</strong> (<em>int</em>) – Spatial dimension of the wideband image (x axis).</p></li>
 <li><p><strong>flag_visibility_gridding</strong> (<em>bool</em>) – Flag indicating whether data dimensionality reduction via visibility gridding is considered.</p></li>
-<li><p><strong>Sigma</strong> (<em>cell of cell of double</em>) – Weighting vector involved in data dimensionality reduction via visibility gridding.</p></li>
+<li><p><strong>Lambda</strong> (<em>cell of cell of double</em>) – Weighting vector involved in data dimensionality reduction via visibility gridding.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -245,7 +243,7 @@ adjoint of <a class="reference internal" href="#lib.operators.HS_adjoint_operato
 
 <dl class="mat function">
 <dt class="sig sig-object mat" id="lib.operators.HS_forward_operator_G">
-<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_forward_operator_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_forward_operator_G" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_forward_operator_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Lambda</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_forward_operator_G" title="Permalink to this definition"></a></dt>
 <dd><p>Apply the forward wideband measurement operator (with or w/o
 data dimensionality reduction, adjoint of
 <a class="reference internal" href="#lib.operators.HS_adjoint_operator_G" title="lib.operators.HS_adjoint_operator_G"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_adjoint_operator_G()</span></code></a>).</p>
@@ -257,7 +255,7 @@ data dimensionality reduction, adjoint of
 <li><p><strong>W</strong> (<em>cell of cell of int[:]</em>) – Selection vector to map data blocks to the full Fourier plane.</p></li>
 <li><p><strong>A</strong> (<em>anonymous function</em>) – Weighted FFT involved in the NUFFT.</p></li>
 <li><p><strong>flag_visibility_gridding</strong> (<em>bool</em>) – Flag indicating whether data dimensionality reduction  via visibility gridding is considered.</p></li>
-<li><p><strong>Sigma</strong> (<em>cell of cell of double[:]</em>) – Weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
+<li><p><strong>Lambda</strong> (<em>cell of cell of double[:]</em>) – Weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -296,7 +294,7 @@ associated with a different channel).</p></li>
 
 <dl class="mat function">
 <dt class="sig sig-object mat" id="lib.operators.HS_forward_operator_precond_G">
-<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_forward_operator_precond_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">aW</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_forward_operator_precond_G" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">HS_forward_operator_precond_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">aW</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Lambda</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.HS_forward_operator_precond_G" title="Permalink to this definition"></a></dt>
 <dd><p>Apply the forward preconditioned wideband measurement operator
 (with or w/o data dimensionality reduction, adjoint of
 <a class="reference internal" href="#lib.operators.HS_adjoint_operator_precond_G" title="lib.operators.HS_adjoint_operator_precond_G"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">lib.operators.HS_adjoint_operator_precond_G()</span></code></a>).</p>
@@ -310,7 +308,7 @@ associated with a different channel).</p></li>
 <li><p><strong>aW</strong> (<em>cell of cell of double</em>) – Diagonal preconditioning matrices (encoded as vector, for each
 channel and data block within a channel).</p></li>
 <li><p><strong>flag_visibility_gridding</strong> (<em>bool</em>) – Flag indicating whether data dimensionality reduction via visibility gridding is considered.</p></li>
-<li><p><strong>Sigma</strong> (<em>cell of cell of double[:]</em>) – Weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
+<li><p><strong>Lambda</strong> (<em>cell of cell of double[:]</em>) – Weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -416,107 +414,6 @@ Fourier plane.</p></li>
 </dd></dl>
 
 <dl class="mat function">
-<dt class="sig sig-object mat" id="lib.operators.util_gen_dr_measurement_operator">
-<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">util_gen_dr_measurement_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">u</span></em>, <em class="sig-param"><span class="pre">v</span></em>, <em class="sig-param"><span class="pre">w</span></em>, <em class="sig-param"><span class="pre">nW</span></em>, <em class="sig-param"><span class="pre">nchans</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">param_nufft</span></em>, <em class="sig-param"><span class="pre">param_wproj</span></em>, <em class="sig-param"><span class="pre">preproc_dr_residuals</span></em>, <em class="sig-param"><span class="pre">ddes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.util_gen_dr_measurement_operator" title="Permalink to this definition"></a></dt>
-<dd><p>Build the measurement operator incorporating visibility gridding
-for a given uv-coverage at pre-defined frequencies.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>y</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the data vectors (Stokes I).</p></li>
-<li><p><strong>u</strong> (<em>cell of cell of double[:]</em>) – <cite>u</cite> coordinate.</p></li>
-<li><p><strong>v</strong> (<em>cell of cell of double[:]</em>) – <cite>v</cite> coordinate.</p></li>
-<li><p><strong>w</strong> (<em>cell of cell of double[:]</em>) – <cite>w</cite> coordinate.</p></li>
-<li><p><strong>nW</strong> (<em>cell of cell of double[:]</em>) – noise whitening vector for natural weighting.</p></li>
-<li><p><strong>param_precond</strong> (<em>struct</em>) – Structure to configure the preconditioning matrices.</p></li>
-<li><p><strong>param_wproj</strong> (<em>struct</em>) – Structure to configure <cite>w</cite>-projection.</p></li>
-<li><p><strong>preproc_dr_residuals</strong> (<em>cell</em>) – Cell containing the residual visibility vectors from a calibration
-pre-processing step, assumed as noise vectors.</p></li>
-<li><p><strong>ddes</strong> (<em>cell array</em>) – Cell containing DDE calibration kernels in the spatial Fourier domain
-from a pre-processing step to be incorporated in the measurement operator.</p></li>
-<li><p><strong>nchans</strong> (<em>int</em>) – Number of channels.</p></li>
-<li><p><strong>Nx</strong> (<em>int</em>) – Image dimension (x-axis).</p></li>
-<li><p><strong>Ny</strong> (<em>int</em>) – Image dimension (y-axis).</p></li>
-<li><p><strong>Kx</strong> (<em>int</em>) – Dimension interpolation kernel (x-axis).</p></li>
-<li><p><strong>Ky</strong> (<em>int</em>) – Dimension interpolation kernel (y-axis).</p></li>
-<li><p><strong>ox</strong> (<em>int</em>) – Fourier oversampling factor(x-axis).</p></li>
-<li><p><strong>oy</strong> (<em>int</em>) – Fourier oversampling factor(y-axis).</p></li>
-<li><p><strong>kernel</strong> (<em>string</em>) – Type of interpolation kernel selected (‘kaiser’ or ‘minmax:tuned’).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>A</strong> (<em>lambda function</em>) – Lambda function to compute the rescaled 2D Fourier transform involved
-in the emasurement operator.</p></li>
-<li><p><strong>At</strong> (<em>lambda function</em>) – Lambda function to compute the adjoint of <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p></li>
-<li><p><strong>H</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the holographic matrix for each channel, and
-each data block within a channel. H is a lower-triangular
-matrix to optimise memory requirements.</p></li>
-<li><p><strong>W</strong> (<em>cell of cell of double[:]</em>) – Cell containing the selection vector for each channel, and
-data block within a channel.</p></li>
-<li><p><strong>aWw</strong> (<em>cell of cell of double[:]</em>) – Cell containing the preconditioning vectors for each channel, and
-data block within a channel.</p></li>
-<li><p><strong>Sigma</strong> (<em>cell of cell of double</em>) – Cell containing the diagonal weighting matrix involved in data dimensionality reduction via visibility gridding.</p></li>
-<li><p><strong>gridded_y</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the reduced data vectors which corresponds to the gridded visibilities.</p></li>
-<li><p><strong>gridded_noise</strong> (<em>struct</em>) – struct containing estimated l2bounds and  noise std, from
-gridding residual visibilities obtained during a pre-processing
-calibration step.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-<p>check if data pre-processing exist
-ddes</p>
-</dd></dl>
-
-<dl class="mat function">
-<dt class="sig sig-object mat" id="lib.operators.util_gen_measurement_operator">
-<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">util_gen_measurement_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">u</span></em>, <em class="sig-param"><span class="pre">v</span></em>, <em class="sig-param"><span class="pre">w</span></em>, <em class="sig-param"><span class="pre">nW</span></em>, <em class="sig-param"><span class="pre">nchans</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">param_nufft</span></em>, <em class="sig-param"><span class="pre">param_wproj</span></em>, <em class="sig-param"><span class="pre">param_precond</span></em>, <em class="sig-param"><span class="pre">ddes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.util_gen_measurement_operator" title="Permalink to this definition"></a></dt>
-<dd><p>Build the measurement operator for a given uv-coverage at pre-defined
-frequencies.</p>
-<p>Build the measurement operator for a given uv-coverage at pre-defined
-frequencies.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>u</strong> (<em>cell of cell of double[:]</em>) – <cite>u</cite> coordinate.</p></li>
-<li><p><strong>v</strong> (<em>cell of cell of double[:]</em>) – <cite>v</cite> coordinate.</p></li>
-<li><p><strong>w</strong> (<em>cell of cell of double[:]</em>) – <cite>w</cite> coordinate.</p></li>
-<li><p><strong>nW</strong> (<em>cell</em>) – noise whitening vector for natural weighting.</p></li>
-<li><p><strong>param_precond</strong> (<em>struct</em>) – Structure to configure the preconditioning matrices.</p></li>
-<li><p><strong>param_nufft</strong> (<em>struct</em>) – Structure to configure NUFFT.</p></li>
-<li><p><strong>param_wproj</strong> (<em>struct</em>) – Structure to configure w-projection.</p></li>
-<li><p><strong>ddes</strong> (<em>cell array</em>) – Cell containing DDE calibration kernels in the spatial Fourier domain
-from a pre-processing step to be incorporated in the measurement operator.</p></li>
-<li><p><strong>nchans</strong> (<em>Number of channels</em>)</p></li>
-<li><p><strong>Nx</strong> (<em>int</em>) – Image dimension (x-axis).</p></li>
-<li><p><strong>Ny</strong> (<em>int</em>) – Image dimension (y-axis).</p></li>
-<li><p><strong>Kx</strong> (<em>int</em>) – Dimension interpolation kernel (x-axis).</p></li>
-<li><p><strong>Ky</strong> (<em>int</em>) – Dimension interpolation kernel (y-axis).</p></li>
-<li><p><strong>ox</strong> (<em>int</em>) – Fourier oversampling factor(x-axis).</p></li>
-<li><p><strong>oy</strong> (<em>int</em>) – Fourier oversampling factor(y-axis).</p></li>
-<li><p><strong>kernel</strong> (<em>string</em>) – Type of interpolation kernel selected (‘kaiser’ or ‘minmax:tuned’).</p></li>
-<li><p><strong>ddes</strong> (<em>array</em>) – Array of antenna gains to be incorporated in the de-gridding matrix.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>A</strong> (<em>lambda function</em>) – Lambda function to compute the rescaled 2D Fourier transform involved
-in the emasurement operator.</p></li>
-<li><p><strong>At</strong> (<em>lambda function</em>) – Lambda function to compute the adjoint of <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p></li>
-<li><p><strong>G</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the trimmed-down interpolation kernels for each
-channel, and each data block within a channel.</p></li>
-<li><p><strong>W</strong> (<em>cell of cell of double[:]</em>) – Cell containing the selection vector for each channel, and
-data block within a channel.</p></li>
-<li><p><strong>aW</strong> (<em>cell of cell of double[:]</em>) – Cell containing the preconditioning vectors for each channel, and
-data block within a channel.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="mat function">
 <dt class="sig sig-object mat" id="lib.operators.util_gen_measurement_operator_synth">
 <span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">util_gen_measurement_operator_synth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">u</span></em>, <em class="sig-param"><span class="pre">v</span></em>, <em class="sig-param"><span class="pre">param_precond</span></em>, <em class="sig-param"><span class="pre">param_blocking</span></em>, <em class="sig-param"><span class="pre">fc</span></em>, <em class="sig-param"><span class="pre">fmax</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">Kx</span></em>, <em class="sig-param"><span class="pre">Ky</span></em>, <em class="sig-param"><span class="pre">ox</span></em>, <em class="sig-param"><span class="pre">oy</span></em>, <em class="sig-param"><span class="pre">kernel</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.util_gen_measurement_operator_synth" title="Permalink to this definition"></a></dt>
 <dd><p>Build the measurement operator for a given uv-coverage at pre-defined
@@ -559,6 +456,85 @@ data block within a channel.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.util_load_data_gen_dr_measurement_operator">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">util_load_data_gen_dr_measurement_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">dataFilename</span></em>, <em class="sig-param"><span class="pre">effChans2Image</span></em>, <em class="sig-param"><span class="pre">nDataSets</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">param_nufft</span></em>, <em class="sig-param"><span class="pre">param_wproj</span></em>, <em class="sig-param"><span class="pre">preproc_noise_sigma</span></em>, <em class="sig-param"><span class="pre">preproc_filenames</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.util_load_data_gen_dr_measurement_operator" title="Permalink to this definition"></a></dt>
+<dd><p>Build the measurement operator incorporating visibility gridding
+for a given uv-coverage at pre-defined frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the data vectors (Stokes I) to be gridded.</p></li>
+<li><p><strong>dataFilename</strong> (<em>function handle</em>) – Filenames of the data files to load <code class="docutils literal notranslate"><span class="pre">u</span></code>, <code class="docutils literal notranslate"><span class="pre">v</span></code> and <code class="docutils literal notranslate"><span class="pre">w</span></code> coordinates and
+<code class="docutils literal notranslate"><span class="pre">nW</span></code> the weights involved in natural weighting.</p></li>
+<li><p><strong>effChans2Image</strong> (<em>cell</em>) – Indices of the  physical (input) channels, combined to image the
+effective (ouput) channel.</p></li>
+<li><p><strong>nDataSets</strong> (<em>int</em>) – Number of datasets per physical (input) channel.</p></li>
+<li><p><strong>Nx</strong> (<em>int</em>) – Image dimension (x-axis).</p></li>
+<li><p><strong>Ny</strong> (<em>int</em>) – Image dimension (y-axis).</p></li>
+<li><p><strong>param_nufft</strong> (<em>struct</em>) – Structure to configure NUFFT.</p></li>
+<li><p><strong>param_wproj</strong> (<em>struct</em>) – Structure to configure <cite>w</cite>-projection.</p></li>
+<li><p><strong>param_precond</strong> (<em>struct</em>) – Structure to configure the preconditioning matrices.</p></li>
+<li><p><strong>preproc_noise_sigma</strong> (<em>cell of doubles</em>) – Standard deviation values of the noise in the physical (input)
+channels.</p></li>
+<li><p><strong>preproc_filenames</strong> (<em>struct</em>) – Struct composed of two fields: (i) <code class="docutils literal notranslate"><span class="pre">preproc_filenames.dde</span></code>: anonymous
+functions to get DDE calibration kernel files, expected
+variable to be loaded <code class="docutils literal notranslate"><span class="pre">DDEs</span></code>. (ii) <code class="docutils literal notranslate"><span class="pre">preproc_filenames.noise_std</span></code>:
+anonymous functions to get the noise-related files,  expected
+variable to be loaded (optional) <code class="docutils literal notranslate"><span class="pre">RESIDUAL</span></code>  residual
+visibility vector from a preprocessing step, assumed to be a noise
+vector.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>A</strong> (<em>function handle</em>) – Function to compute the rescaled 2D Fourier transform involved
+in the emasurement operator.</p></li>
+<li><p><strong>At</strong> (<em>function handle</em>) – Function to compute the adjoint of <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p></li>
+<li><p><strong>H</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the holographic matrix for each channel, and
+each data block within a channel. H is a lower-triangular
+matrix to optimise memory requirements.</p></li>
+<li><p><strong>W</strong> (<em>cell of cell of double[:]</em>) – Cell containing the selection vector for each channel, and
+data block within a channel.</p></li>
+<li><p><strong>aWw</strong> (<em>cell of cell of double[:]</em>) – Cell containing the preconditioning vectors for each channel, and
+data block within a channel.</p></li>
+<li><p><strong>Lambda</strong> (<em>cell of cell of double</em>) – Cell containing the diagonal weighting matrix involved in data
+dimensionality reduction via visibility gridding.</p></li>
+<li><p><strong>gridded_y</strong> (<em>cell of cell of complex[:]</em>) – Cell containing the reduced data vectors which corresponds to the gridded visibilities.</p></li>
+<li><p><strong>gridded_noise</strong> (<em>struct</em>) – struct containing estimated l2bounds and  noise std, from
+gridding a noise data vector.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="mat function">
+<dt class="sig sig-object mat" id="lib.operators.util_load_data_gen_measurement_operator">
+<span class="sig-prename descclassname"><span class="pre">lib.operators.</span></span><span class="sig-name descname"><span class="pre">util_load_data_gen_measurement_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dataFilename</span></em>, <em class="sig-param"><span class="pre">effChans2Image</span></em>, <em class="sig-param"><span class="pre">nDataSets</span></em>, <em class="sig-param"><span class="pre">Nx</span></em>, <em class="sig-param"><span class="pre">Ny</span></em>, <em class="sig-param"><span class="pre">param_nufft</span></em>, <em class="sig-param"><span class="pre">param_wproj</span></em>, <em class="sig-param"><span class="pre">param_precond</span></em>, <em class="sig-param"><span class="pre">ddesfilename</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lib.operators.util_load_data_gen_measurement_operator" title="Permalink to this definition"></a></dt>
+<dd><p>Build the measurement operator for a given uv-coverage at pre-defined
+frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataFilename</strong> (<em>function handle</em>) – Filenames of the data files to load <code class="docutils literal notranslate"><span class="pre">u</span></code>, <code class="docutils literal notranslate"><span class="pre">v</span></code> and <code class="docutils literal notranslate"><span class="pre">w</span></code> coordinates and
+<code class="docutils literal notranslate"><span class="pre">nW</span></code> the weights involved in natural weighting.</p></li>
+<li><p><strong>effChans2Image</strong> (<em>cell</em>) – Indices of the  physical (input) channels, combined to image the
+effective (ouput) channel.</p></li>
+<li><p><strong>nDataSets</strong> (<em>int</em>) – Number of datasets per physical (input) channel.</p></li>
+<li><p><strong>Nx</strong> (<em>int</em>) – Image dimension (x-axis).</p></li>
+<li><p><strong>Ny</strong> (<em>int</em>) – Image dimension (y-axis).</p></li>
+<li><p><strong>param_nufft</strong> (<em>struct</em>) – Structure to configure NUFFT.</p></li>
+<li><p><strong>param_wproj</strong> (<em>struct</em>) – Structure to configure w-projection.</p></li>
+<li><p><strong>param_precond</strong> (<em>struct</em>) – Structure to configure the preconditioning matrices.</p></li>
+<li><p><strong>ddesfilename</strong> (<em>function handle</em>) – Filenames of the DDE calibration kernels in the spatial Fourier domain
+from a pre-processing step to be incorporated in the measurement
+operator. Expected variable to be loaded <code class="docutils literal notranslate"><span class="pre">DDEs</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -572,7 +548,7 @@ data block within a channel.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

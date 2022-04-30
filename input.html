@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Optional input datasets &mdash; Faceted-HyperSARA  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src package" href="_src/src.html" />
+    <link rel="prev" title="Default parameters" href="default.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Faceted-HyperSARA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation &amp; references</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="biblio.html">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="default.html">Default parameters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Optional input datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#directory-description">Directory description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#general-remarks">General remarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input-datasets">Input datasets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_src/src.html">src package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_lib/lib.html">lib package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_imaging/imaging.html">imaging package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_pyxisMs2mat/pyxisMs2mat.html">pyxisMs2mat package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Faceted-HyperSARA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Optional input datasets</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/input.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="optional-input-datasets">
+<h1>Optional input datasets<a class="headerlink" href="#optional-input-datasets" title="Permalink to this headline"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The full path to the <code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA</span></code> repository is referred to as
+<code class="docutils literal notranslate"><span class="pre">$FHS</span></code> in the following lines.</p>
+</div>
+<section id="directory-description">
+<h2>Directory description<a class="headerlink" href="#directory-description" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">$FHS/data</span></code> directory contains the <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files generated during the data extraction step using <code class="docutils literal notranslate"><span class="pre">pyxis</span></code> packages.
+It can also contain additional user input from a pre-processing step such as monochromatic joint (DDE/DIE) calibration and imaging step.</p>
+<p>The pre-processing input can include corrected noise estimates, initial image estimates, and DDE/DIE estimates. Considering a target source to be imaged tagged using <code class="docutils literal notranslate"><span class="pre">$SRCNAME</span></code>, the pre-processing input is stored in the sub-directory <code class="docutils literal notranslate"><span class="pre">$FHS/data/$SRCNAME/pre_processing/</span></code>.</p>
+</section>
+<section id="general-remarks">
+<h2>General remarks<a class="headerlink" href="#general-remarks" title="Permalink to this headline"></a></h2>
+<ol class="arabic simple">
+<li><p>The user can opt for a different organisation of the auxilliary files, provided that this organisation is reflected in the filenames indicated in <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/main_input_imaging.m</span></code>.</p></li>
+</ol>
+<p>2. All <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files are associated with  a frequency channel and a dataset (if many), similarly to the data files
+generated during the data extraction step.</p>
+<ol class="arabic simple" start="3">
+<li><p>If not available, the user should keep the filenames associated with the auxiliary input empty in <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/main_input_imaging.m</span></code>.</p></li>
+</ol>
+</section>
+<section id="input-datasets">
+<h2>Input datasets<a class="headerlink" href="#input-datasets" title="Permalink to this headline"></a></h2>
+<section id="corrected-noise-estimates">
+<h3>Corrected noise estimates<a class="headerlink" href="#corrected-noise-estimates" title="Permalink to this headline"></a></h3>
+<p>The different parameters involved in the definition of the optimisation task are derived from the noise statistics. More precisely, the <span class="math notranslate nohighlight">\(\ell_2\)</span>-bounds of the data fidelity terms, and the regularisation parameters associated with the different model priors are linked to the standard deviation of the zero-mean noise, affecting the data. In practice, calibration errors can dominate the theoretical noise.  In such case, the user is advised, when possible, to provide “corrected” noise levels, which are to be applied on the <strong>naturally</strong> weighted visibilities. For instance, these estimates can be obtained as the standard deviation of the <strong>naturally</strong> weighted <strong>residual</strong> visibilities resulting from  a pre-processing joint calibration and imaging step.
+When available, the noise estimates are stored <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: calibration: physical channel frequency id: 1, dataset nametag: $MSTAG</span>
+<span class="nv">$FHS</span>/data/<span class="nv">$SRCNAME</span>/pre_processing/sigma/<span class="nv">$MSTAG</span>/chs1_sigma.mat
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files contain the following field</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;sigma&quot;</span><span class="w"> </span><span class="c">% (double) the corrected standard deviation of the noise.</span><span class="w"></span>
+<span class="s">&quot;RESIDUAL&quot;</span><span class="w"> </span><span class="c">% (double complex vector) !! optional !! residual visibilities to be considered as a noise vector if the visibility gridding-based scheme is enabled.</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the case of imperfect calibration, and non availability of reliable noise level estimates, the user is advised to activate the functionality for adaptive estimation of the noise level by setting the following parameter in  <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/main_input_imaging.m</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>param_global.adjust_flag_noise <span class="o">=</span> true<span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="image-estimates">
+<h3>Image estimates<a class="headerlink" href="#image-estimates" title="Permalink to this headline"></a></h3>
+<p>Estimated model images can be exploited to initialise the iterative algorithm, for acceleration purposes. These are saved in <code class="docutils literal notranslate"><span class="pre">.fits</span></code> files.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: effective channel combining physical channels indexed from 1 to 16</span>
+<span class="nv">$FHS</span>/data/<span class="nv">$SRCNAME</span>/pre_processing/model_images/chs1-16_model_image.fits
+</pre></div>
+</div>
+</section>
+<section id="direction-independent-effect-die-estimates">
+<h3>Direction-independent effect (DIE) estimates<a class="headerlink" href="#direction-independent-effect-die-estimates" title="Permalink to this headline"></a></h3>
+<p>DIE estimates from a pre-processing step to be incorporated in the measurement operator. These are stored in <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: calibration: DIE, physical channel frequency id: 1, dataset nametag: $MSTAG</span>
+<span class="nv">$FHS</span>/data/<span class="nv">$SRCNAME</span>/pre_processing/cal_solutions/<span class="nv">$MSTAG</span>/chs1_cal_solutions.mat
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files contain the following field</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;DIEs&quot;</span><span class="w"> </span><span class="c">% (double complex vector) multiplicative gains, of the same size as the data.</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="direction-dependent-effect-dde-estimates">
+<h3>Direction-dependent effect (DDE) estimates<a class="headerlink" href="#direction-dependent-effect-dde-estimates" title="Permalink to this headline"></a></h3>
+<p>DDE estimates from a pre-processing can be exploited to obtain a more accurate measurement operator. These are 1D kernels in the spatial Fourier domain, provided for each visibility as the result of the convolution of the calibration kernels of the associated antenna pair. Since DDE estimates are provided in the spatial Fourier domain, the  DDE calibration pre-processing step must have been performed over the exact same field of view of interest. On a further note, the Fourier shifting convention must be exactly the same as the one adopted for the NUFFT interpolation kernel. Finally, DDE solutions have the same support size.</p>
+<p>DDE estimates are stored in <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: calibration: DDE, physical channel frequency id: 1, dataset nametag: $MSTAG</span>
+<span class="nv">$FHS</span>/data/<span class="nv">$SRCNAME</span>/pre_processing/cal_solutions/<span class="nv">$MSTAG</span>/chs1_cal_solutions.mat
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">.mat</span></code> files contain the following field</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;DDEs&quot;</span><span class="w"> </span><span class="c">% (complex array), each row corresponds to a DDE kernel, associated with a visibility.</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="default.html" class="btn btn-neutral float-left" title="Default parameters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="_src/src.html" class="btn btn-neutral float-right" title="src package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+  <title>Index &mdash; Faceted-HyperSARA  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -26,9 +26,6 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> Faceted-HyperSARA
           </a>
-              <div class="version">
-                mnras_real_data-390-g13deaa4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -46,6 +43,7 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Optional input datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_src/src.html">src package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_lib/lib.html">lib package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_imaging/imaging.html">imaging package</a></li>
@@ -131,8 +129,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_src/src.fhs.html#src.fhs.facetHyperSARA">facetHyperSARA() (in module src.fhs)</a>
 </li>
-      <li><a href="_src/src.fhs.html#src.fhs.facetHyperSARA2">facetHyperSARA2() (in module src.fhs)</a>
-</li>
       <li><a href="_lib/lib.utils.html#lib.utils.fb_nnls">fb_nnls() (in module lib.utils)</a>
 </li>
       <li><a href="_lib/lib.utils.html#lib.utils.fb_nnls_blocks">fb_nnls_blocks() (in module lib.utils)</a>
@@ -141,10 +137,10 @@
 </li>
       <li><a href="_src/src.fhs.html#src.fhs.fhs_initialize_data_worker">fhs_initialize_data_worker() (in module src.fhs)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_src/src.fhs.html#src.fhs.fhs_initialize_dual_and_weights">fhs_initialize_dual_and_weights() (in module src.fhs)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_src/src.fhs.html#src.fhs.fhs_initialize_facet_dual">fhs_initialize_facet_dual() (in module src.fhs)</a>
 </li>
       <li><a href="_src/src.fhs.html#src.fhs.fhs_setup_priors">fhs_setup_priors() (in module src.fhs)</a>
@@ -333,25 +329,27 @@
 </li>
       <li><a href="_lib/lib.utils.html#lib.utils.util_gen_data_fidelity_bounds2">util_gen_data_fidelity_bounds2() (in module lib.utils)</a>
 </li>
-      <li><a href="_lib/lib.operators.html#lib.operators.util_gen_dr_measurement_operator">util_gen_dr_measurement_operator() (in module lib.operators)</a>
-</li>
-      <li><a href="_lib/lib.operators.html#lib.operators.util_gen_measurement_operator">util_gen_measurement_operator() (in module lib.operators)</a>
-</li>
       <li><a href="_lib/lib.operators.html#lib.operators.util_gen_measurement_operator_synth">util_gen_measurement_operator_synth() (in module lib.operators)</a>
 </li>
       <li><a href="_lib/lib.generate_data.html#lib.generate_data.util_gen_measurements">util_gen_measurements() (in module lib.generate_data)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_lib/lib.generate_data.html#lib.generate_data.util_gen_measurements_sigma">util_gen_measurements_sigma() (in module lib.generate_data)</a>
 </li>
       <li><a href="_lib/lib.generate_data.html#lib.generate_data.util_gen_measurements_snr">util_gen_measurements_snr() (in module lib.generate_data)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_lib/lib.generate_data.html#lib.generate_data.util_gen_measurements_snr_new">util_gen_measurements_snr_new() (in module lib.generate_data)</a>
 </li>
       <li><a href="_lib/lib.generate_data.html#lib.generate_data.util_gen_sampling_pattern">util_gen_sampling_pattern() (in module lib.generate_data)</a>
 </li>
+      <li><a href="_lib/lib.operators.html#lib.operators.util_load_data_gen_dr_measurement_operator">util_load_data_gen_dr_measurement_operator() (in module lib.operators)</a>
+</li>
+      <li><a href="_lib/lib.operators.html#lib.operators.util_load_data_gen_measurement_operator">util_load_data_gen_measurement_operator() (in module lib.operators)</a>
+</li>
       <li><a href="_lib/lib.utils.html#lib.utils.util_operator_norm">util_operator_norm() (in module lib.utils)</a>
+</li>
+      <li><a href="_lib/lib.utils.html#lib.utils.util_rearrange_channels">util_rearrange_channels() (in module lib.utils)</a>
 </li>
       <li><a href="_lib/lib.utils.html#lib.utils.util_set_parpool">util_set_parpool() (in module lib.utils)</a>
 </li>
@@ -369,7 +367,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

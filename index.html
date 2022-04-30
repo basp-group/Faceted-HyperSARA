@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Faceted-HyperSARA &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+  <title>Faceted-HyperSARA &mdash; Faceted-HyperSARA  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,9 +29,6 @@
         <div class="wy-side-nav-search" >
             <a href="#" class="icon icon-home"> Faceted-HyperSARA
           </a>
-              <div class="version">
-                mnras_real_data-390-g13deaa4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -49,6 +46,7 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Optional input datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_src/src.html">src package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_lib/lib.html">lib package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_imaging/imaging.html">imaging package</a></li>
@@ -83,19 +81,20 @@
 <h1>Faceted-HyperSARA<a class="headerlink" href="#faceted-hypersara" title="Permalink to this headline"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA</span></code> is a MATLAB library for radio-interferometric wideband intensity imaging. The library offers a collection of utility functions and scripts from data extraction from an RI measurement set <code class="docutils literal notranslate"><span class="pre">MS</span> <span class="pre">Table</span></code> to the reconstruction of a wideband intensity image over the field of view and frequency range of interest. The library contains an implementation of algorithms from the “SARA” family (SARA <span id="id1">[<a class="reference internal" href="biblio.html#id4" title="R. E. Carrillo, J. D. McEwen, and Y. Wiaux. Sparsity averaging reweighted analysis (SARA): a novel algorithm for radio-interferometric imaging. Monthly Notices of the Royal Astronomical Society, 426(2):1223–1234, 2012.">Carrillo2012</a>, <a class="reference internal" href="biblio.html#id11" title="A. Onose, A. Dabbech, and Y. Wiaux. An accelerated splitting algorithm for radio-interferometric imaging: when natural and uniform weighting meet. Monthly Notices of the Royal Astronomical Society, 469(1):938–949, 2017.">Onose2017</a>]</span>,
 HyperSARA <span id="id2">[<a class="reference internal" href="biblio.html#id2" title="Abdullah Abdulaziz, Arwa Dabbech, and Yves Wiaux. Wideband super-resolution imaging in radio interferometry via low rankness and joint average sparsity models (HyperSARA). Monthly Notices of the Royal Astronomical Society, 489(1):1230–1248, 2019.">Abdulaziz2019</a>]</span> and Faceted HyperSARA
-<span id="id3">[<a class="reference internal" href="biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span>). The follwing features, crucial to achieve high precision imaging from large data volumes, are supported.</p>
+<span id="id3">[<a class="reference internal" href="biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span>). The following features, crucial to achieve high precision imaging from large data volumes, are supported.</p>
 <ul class="simple">
-<li><p>data dimensionality reduction via visibility gridding <span id="id4">[<a class="reference internal" href="biblio.html#id9" title="S. V. Kartik, R. E. Carrillo, J.-P. Thiran, and Y. Wiaux. A Fourier dimensionality reduction model for big data interferometric imaging. Monthly Notices of the Royal Astronomical Society, 480(2):2382–2400, 2017. doi:10.1093/mnras/stx531.">Kartik2017</a>]</span>;</p></li>
+<li><p>data dimensionality reduction via a visibility gridding-based scheme <span id="id4">[<a class="reference internal" href="biblio.html#id9" title="S. V. Kartik, R. E. Carrillo, J.-P. Thiran, and Y. Wiaux. A Fourier dimensionality reduction model for big data interferometric imaging. Monthly Notices of the Royal Astronomical Society, 480(2):2382–2400, 2017. doi:10.1093/mnras/stx531.">Kartik2017</a>]</span>;</p></li>
 <li><p>correction of the <span class="math notranslate nohighlight">\(w\)</span>-term via <span class="math notranslate nohighlight">\(w\)</span>-projection <span id="id5">[<a class="reference internal" href="biblio.html#id16" title="Arwa Dabbech, Laura Wolz, Luke Pratley, Jason D McEwen, and Yves Wiaux. The w-effect in interferometric imaging: from a fast sparse measurement operator to superresolution. Monthly Notices of the Royal Astronomical Society, 471(4):4300–4313, Jul. 2017.">Dabbech2017</a>]</span>;</p></li>
 <li><p>incorporation of available compact Fourier models of the direction dependent effects (DDEs) in the measurement operator <span id="id6">[<a class="reference internal" href="biblio.html#id7" title="A. Dabbech, A. Repetti, R. A. Perley, O. M. Smirnov, and Y. Wiaux. Cygnus A jointly calibrated and imaged via non-convex optimization from VLA data. Monthly Notices of the Royal Astronomical Society, 506(4):4855-4876, 07 2021. doi:10.1093/mnras/stab1903.">Dabbech2021</a>]</span>.</p></li>
+<li><p>estimation of the effective noise level when reliable noise estimates are not available, due to imperfect calibration.</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA</span></code> relies on two auxiliary submodules:</p>
 <ol class="arabic simple">
 <li><p><a class="reference external" href="https://github.com/basp-group/RI-measurement-operator">RI-measurement-operator</a> for the formation of the radio-interferometric measurement operator;</p></li>
 <li><p><a class="reference external" href="https://github.com/basp-group/SARA-dictionary">SARA-dictionary</a> for the implementation of the sparsity priors.</p></li>
 </ol>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>This project is still under active development.</p>
 </div>
 <div class="toctree-wrapper compound">
@@ -121,6 +120,12 @@ HyperSARA <span id="id2">[<a class="reference internal" href="biblio.html#id2" t
 <li class="toctree-l1"><a class="reference internal" href="default.html">Default parameters</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="default.html#user-defined-parameters">User-defined parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="default.html#inner-algorithmic-parameters">Inner algorithmic parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Optional input datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="input.html#directory-description">Directory description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input.html#general-remarks">General remarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input.html#input-datasets">Input datasets</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="_src/src.html">src package</a><ul>
@@ -167,7 +172,7 @@ HyperSARA <span id="id2">[<a class="reference internal" href="biblio.html#id2" t
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

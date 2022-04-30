@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src package &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+  <title>src package &mdash; Faceted-HyperSARA  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Module src.fhs" href="src.fhs.html" />
-    <link rel="prev" title="Default parameters" href="../default.html" /> 
+    <link rel="prev" title="Optional input datasets" href="../input.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -30,9 +30,6 @@
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
           </a>
-              <div class="version">
-                mnras_real_data-390-g13deaa4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -50,6 +47,7 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../input.html">Optional input datasets</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">src package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src.fhs.html">Module src.fhs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.heuristics.html">Module src.heuristics</a></li>
@@ -108,7 +106,7 @@
 <span id="api-src"></span><h2><a class="toc-backref" href="#id5">API src</a><a class="headerlink" href="#module-src" title="Permalink to this headline"></a></h2>
 <dl class="mat function">
 <dt class="sig sig-object mat" id="src.apply_adjoint_operator">
-<span class="sig-prename descclassname"><span class="pre">src.</span></span><span class="sig-name descname"><span class="pre">apply_adjoint_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.apply_adjoint_operator" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.</span></span><span class="sig-name descname"><span class="pre">apply_adjoint_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">Lambda</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.apply_adjoint_operator" title="Permalink to this definition"></a></dt>
 <dd><p>Apply part of the adjoint measurment operator (before the scaled
 inverse discrete Fourier transform involved in the non-uniform FFT
 <span id="id1">[<a class="reference internal" href="../biblio.html#id8" title="Jeffrey A. Fessler and Bradley P. Sutton. Nonuniform fast Fourier transforms using min-max interpolation. IEEE Trans. Signal Process., 51(2):560–574, Januray 2003.">Fessler2003</a>]</span>).</p>
@@ -117,7 +115,7 @@ inverse discrete Fourier transform involved in the non-uniform FFT
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>y</strong> (<em>complex[:]</em>) – Input data array (data-block).</p></li>
 <li><p><strong>G</strong> (<em>sparse array</em>) – Gridding matrix (including noise whitening operator).</p></li>
-<li><p><strong>Sigma</strong> (<em>double[:]</em>) – Reduction operator.</p></li>
+<li><p><strong>Lambda</strong> (<em>double[:]</em>) – Reduction operator.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -131,7 +129,7 @@ inverse discrete Fourier transform involved in the non-uniform FFT
 
 <dl class="mat function">
 <dt class="sig sig-object mat" id="src.apply_direct_operator">
-<span class="sig-prename descclassname"><span class="pre">src.</span></span><span class="sig-name descname"><span class="pre">apply_direct_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Fx</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.apply_direct_operator" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.</span></span><span class="sig-name descname"><span class="pre">apply_direct_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Fx</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">Lambda</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.apply_direct_operator" title="Permalink to this definition"></a></dt>
 <dd><p>Apply part of the direct measurement operator (after the scaled discrete
 Fourier transform involved in the non-uniform FFT <span id="id2">[<a class="reference internal" href="../biblio.html#id8" title="Jeffrey A. Fessler and Bradley P. Sutton. Nonuniform fast Fourier transforms using min-max interpolation. IEEE Trans. Signal Process., 51(2):560–574, Januray 2003.">Fessler2003</a>]</span>).</p>
 <dl class="field-list simple">
@@ -139,7 +137,7 @@ Fourier transform involved in the non-uniform FFT <span id="id2">[<a class="refe
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Fx</strong> (<em>complex[:]</em>) – Scaled discrete Fourier transform of a 2d array <span class="math notranslate nohighlight">\(x\)</span>.</p></li>
 <li><p><strong>G</strong> (<em>complex[:, :]</em>) – Gridding matrix (including noise whitening operator).</p></li>
-<li><p><strong>Sigma</strong> (<em>double[:]</em>) – Reduction operator.</p></li>
+<li><p><strong>Lambda</strong> (<em>double[:]</em>) – Reduction operator.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -159,7 +157,7 @@ Fourier transform involved in the non-uniform FFT <span id="id2">[<a class="refe
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>double[:, :, :]</em>) – Input wideband image cube.</p></li>
-<li><p><strong>A</strong> (<em>lambda function</em>) – Lambda function to compute the scaled Fourier transform of each slice
+<li><p><strong>A</strong> (<em>anonymous function</em>) – anonymous function to compute the scaled Fourier transform of each slice
 of the image</p></li>
 <li><p><strong>No</strong> (<em>int</em>) – Total number of pixels in the oversampled spatial Fourier plane.</p></li>
 </ul>
@@ -176,7 +174,7 @@ slice of <code class="docutils literal notranslate"><span class="pre">x</span></
 
 <dl class="mat function">
 <dt class="sig sig-object mat" id="src.compute_residual_images">
-<span class="sig-prename descclassname"><span class="pre">src.</span></span><span class="sig-name descname"><span class="pre">compute_residual_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.compute_residual_images" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.</span></span><span class="sig-name descname"><span class="pre">compute_residual_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">flag_visibility_gridding</span></em>, <em class="sig-param"><span class="pre">Lambda</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.compute_residual_images" title="Permalink to this definition"></a></dt>
 <dd><p>Compute residual images.</p>
 <p>Compute the residual image for each spectral channel.</p>
 <dl class="field-list simple">
@@ -189,7 +187,7 @@ slice of <code class="docutils literal notranslate"><span class="pre">x</span></
 <li><p><strong>G</strong> (<em>cell</em>) – Blocked gridding matrix <code class="docutils literal notranslate"><span class="pre">{L}{nblocks}</span></code>.</p></li>
 <li><p><strong>W</strong> (<em>cell</em>) – Masking operators (selection of data blocks) <code class="docutils literal notranslate"><span class="pre">{L}{nblocks}</span></code>.</p></li>
 <li><p><strong>flag_visibility_gridding</strong> (<em>bool</em>) – Flag to activate data dimensionality reduction via visibility gridding.</p></li>
-<li><p><strong>Sigma</strong> (<em>cell</em>) – Dimensionality reduction weights <code class="docutils literal notranslate"><span class="pre">{L}{nblocks}</span></code>.</p></li>
+<li><p><strong>Lambda</strong> (<em>cell</em>) – Dimensionality reduction weights <code class="docutils literal notranslate"><span class="pre">{L}{nblocks}</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -197,8 +195,8 @@ slice of <code class="docutils literal notranslate"><span class="pre">x</span></
 <li><p><strong>residual_image</strong> (<em>double[:, :, :]</em>) – Residual image cube <code class="docutils literal notranslate"><span class="pre">[N(1),</span> <span class="pre">N(2),</span> <span class="pre">L]</span></code>, normalised by the peak of
 the PSF following convention in RI.</p></li>
 <li><p><em>————————————————————————-%</em></p></li>
-<li><p><strong>Code</strong> (<em>P.-A. Thouvenin.</em>)</p></li>
-<li><p><strong>Last revised</strong> (<em>[08/08/2019]</em>)</p></li>
+<li><p><strong>Code</strong> (<em>P.-A. Thouvenin, A. Dabbech</em>)</p></li>
+<li><p><strong>Last revised</strong> (<em>[01/04/2022]</em>)</p></li>
 <li><p><em>————————————————————————-%</em></p></li>
 </ul>
 </p>
@@ -295,7 +293,7 @@ of data nodes (with preconditioning -&gt; projection onto an ellipsoid).</p>
 
 <dl class="mat function">
 <dt class="sig sig-object mat" id="src.update_dual_data_fidelity">
-<span class="sig-prename descclassname"><span class="pre">src.</span></span><span class="sig-name descname"><span class="pre">update_dual_data_fidelity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">v2</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">Fx_old</span></em>, <em class="sig-param"><span class="pre">proj</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">pU</span></em>, <em class="sig-param"><span class="pre">epsilon</span></em>, <em class="sig-param"><span class="pre">elipse_proj_max_iter</span></em>, <em class="sig-param"><span class="pre">elipse_proj_min_iter</span></em>, <em class="sig-param"><span class="pre">elipse_proj_eps</span></em>, <em class="sig-param"><span class="pre">sigma22</span></em>, <em class="sig-param"><span class="pre">flag_dimensionality_reduction</span></em>, <em class="sig-param"><span class="pre">Sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.update_dual_data_fidelity" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.</span></span><span class="sig-name descname"><span class="pre">update_dual_data_fidelity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">v2</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">Fx_old</span></em>, <em class="sig-param"><span class="pre">proj</span></em>, <em class="sig-param"><span class="pre">A</span></em>, <em class="sig-param"><span class="pre">At</span></em>, <em class="sig-param"><span class="pre">G</span></em>, <em class="sig-param"><span class="pre">W</span></em>, <em class="sig-param"><span class="pre">pU</span></em>, <em class="sig-param"><span class="pre">epsilon</span></em>, <em class="sig-param"><span class="pre">elipse_proj_max_iter</span></em>, <em class="sig-param"><span class="pre">elipse_proj_min_iter</span></em>, <em class="sig-param"><span class="pre">elipse_proj_eps</span></em>, <em class="sig-param"><span class="pre">sigma22</span></em>, <em class="sig-param"><span class="pre">flag_dimensionality_reduction</span></em>, <em class="sig-param"><span class="pre">Lambda</span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.update_dual_data_fidelity" title="Permalink to this definition"></a></dt>
 <dd><p>Update the data fidelity term in the preconditioned primal-dual algorithm.</p>
 <p>Update the data fidelity terms owned by each worked involved in the group
 of data nodes (with preconditioning <span class="math notranslate nohighlight">\(\rightarrow\)</span> projection onto
@@ -321,7 +319,7 @@ starting point <code class="docutils literal notranslate"><span class="pre">{L}{
 <li><p><strong>elipse_proj_eps</strong> (<em>double</em>) – Stopping criterion for the projection.</p></li>
 <li><p><strong>sigma22</strong> (<em>double[:]</em>) – Step-size for the update of the dual variable (tau*sigma2).</p></li>
 <li><p><strong>flag_dimensionality_reduction</strong> (<em>bool</em>) – Flag to activate DR functionality.</p></li>
-<li><p><strong>Sigma</strong> (<em>cell</em>) – Dimensionality reduction weights {L}{nblocks}.</p></li>
+<li><p><strong>Lambda</strong> (<em>cell</em>) – Dimensionality reduction weights {L}{nblocks}.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -346,14 +344,14 @@ starting point <code class="docutils literal notranslate"><span class="pre">{L}{
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../default.html" class="btn btn-neutral float-left" title="Default parameters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../input.html" class="btn btn-neutral float-left" title="Optional input datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="src.fhs.html" class="btn btn-neutral float-right" title="Module src.fhs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

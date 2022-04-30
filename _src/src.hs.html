@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Module src.hs &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+  <title>Module src.hs &mdash; Faceted-HyperSARA  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,9 +30,6 @@
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
           </a>
-              <div class="version">
-                mnras_real_data-390-g13deaa4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -50,6 +47,7 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../input.html">Optional input datasets</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="src.html">src package</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="src.fhs.html">Module src.fhs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.heuristics.html">Module src.heuristics</a></li>
@@ -353,6 +351,8 @@ data experiments) [M*N, L].</p></li>
 <dl class="simple">
 <dt>param.verbose (string)</dt><dd><p>Print log or not</p>
 </dd>
+<dt>param.save_intermediate_results_mat (bool)</dt><dd><p>Flag to save all estimates in a <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file after each re-weighted</p>
+</dd>
 <dt>param.nu0 (double)</dt><dd><p>Norm of the splitting operator used to defined the low-rankness dual
 variable (identity, thus fixed to 1).</p>
 </dd>
@@ -429,6 +429,22 @@ in the reweighting scheme) from which to restart the algorithm
 (<code class="docutils literal notranslate"><span class="pre">param.init_t_start</span> <span class="pre">=</span> <span class="pre">param.init_reweight_last_iter_step</span> <span class="pre">+</span> <span class="pre">1</span></code>).</p>
 </dd>
 </dl>
+<ul class="simple">
+<li><p>The following fileds are involved in the adaptive estimation of the
+noise level</p></li>
+</ul>
+<dl class="simple">
+<dt>param.flag_adjust_noise (bool)</dt><dd><p>Flag to activate the adaptive procedure to estimate the noise level.</p>
+</dd>
+<dt>param.pdfb_adjust_noise_min_iter (int)</dt><dd><p>Minimum number of iterations  to enable the adjustement of the
+estimate of the noise level.</p>
+</dd>
+<dt>param.pdfb_adjust_noise_rel_var (double)</dt><dd><p>Tolerance relative variation (reweighting) to  to enable the adjustement of the
+estimate of the noise level.</p>
+</dd>
+<dt>param.pdfb_adjust_noise_start_iter (int)</dt><dd><p>Number of iterations to force triggering noise adjustement.</p>
+</dd>
+</dl>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -494,7 +510,7 @@ corresponding to a data block).</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

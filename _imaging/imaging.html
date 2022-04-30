@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>imaging package &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+  <title>imaging package &mdash; Faceted-HyperSARA  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,9 +30,6 @@
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
           </a>
-              <div class="version">
-                mnras_real_data-390-g13deaa4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -50,6 +47,7 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../input.html">Optional input datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_src/src.html">src package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_lib/lib.html">lib package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">imaging package</a></li>
@@ -85,7 +83,7 @@
 <p>Collection of scripts to launch the proposed imaging pipeline on synthetic or real data.</p>
 <dl class="mat function">
 <dt class="sig sig-object mat" id="imaging.imaging">
-<span class="sig-prename descclassname"><span class="pre">imaging.</span></span><span class="sig-name descname"><span class="pre">imaging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">srcName</span></em>, <em class="sig-param"><span class="pre">datasetsNames</span></em>, <em class="sig-param"><span class="pre">dataFilename</span></em>, <em class="sig-param"><span class="pre">effChans2Image</span></em>, <em class="sig-param"><span class="pre">param_solver</span></em>, <em class="sig-param"><span class="pre">param_global</span></em>, <em class="sig-param"><span class="pre">param_nufft</span></em>, <em class="sig-param"><span class="pre">param_precond</span></em>, <em class="sig-param"><span class="pre">dict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#imaging.imaging" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">imaging.</span></span><span class="sig-name descname"><span class="pre">imaging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">srcName</span></em>, <em class="sig-param"><span class="pre">datasetsNames</span></em>, <em class="sig-param"><span class="pre">dataFilename</span></em>, <em class="sig-param"><span class="pre">effChans2Image</span></em>, <em class="sig-param"><span class="pre">param_solver</span></em>, <em class="sig-param"><span class="pre">param_global</span></em>, <em class="sig-param"><span class="pre">param_nufft</span></em>, <em class="sig-param"><span class="pre">param_precond</span></em>, <em class="sig-param"><span class="pre">param_wproj</span></em>, <em class="sig-param"><span class="pre">dict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#imaging.imaging" title="Permalink to this definition"></a></dt>
 <dd><p>Main function to run any algorithm from the SARA family using the
 configuration provided in <a class="reference internal" href="../default.html#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a>.
 The approaches are Faceted HyperSARA, HyperSARA and SARA.</p>
@@ -94,13 +92,13 @@ The approaches are Faceted HyperSARA, HyperSARA and SARA.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>srcName</strong> (<em>string</em>) – Name of the target source to be reconstructed as specified during
 data extraction, used to get the data and generate output files.</p></li>
-<li><p><strong>dataSetsNames</strong> (<em>cell of string</em>) – Names of the different datasets used (e.g., in the cases of
+<li><p><strong>dataSetsNames</strong> (<em>cell of string</em>) – Names of the different datasets to be imaged (e.g., in the cases of
 different acquisition configurations or different observation times),
-to be set to <code class="docutils literal notranslate"><span class="pre">{''}</span></code> if one data set is imaged or no name tag of
-the MS is given during data extraction.</p></li>
+to be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code> if one data set is imaged and no name tag of
+the associated <code class="docutils literal notranslate"><span class="pre">MS</span></code> is given during data extraction.</p></li>
 <li><p><strong>dataFilenames</strong> (<em>cell of string</em>) – Function handle taking a channel index as an input and returning the
-name of the associated data <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file (one file per frequency channel),
-following the nomenclature adopted during data extraction .</p></li>
+name of the associated data <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file (one file per frequency channel
+per dataset), following the nomenclature adopted during data extraction.</p></li>
 <li><p><strong>effChans2Image</strong> (<em>cell array</em>) – Cell array containing the ids of the physical (input) channels to be
 concatenated for each effective (output) channel.</p></li>
 <li><p><strong>param_global</strong> (<em>struct</em>) – Global imaging pipeline parameters (see
@@ -110,8 +108,11 @@ the default value corresponding to 2 times the resolution of the
 observation (given by the longest baseline at the highest frequency).</p></li>
 <li><p><strong>param_global.im_Nx</strong> (<em>int</em>) – Image dimension (x axis, dimension 2).</p></li>
 <li><p><strong>param_global.im_Ny</strong> (<em>int</em>) – Image dimension (y axis, dimension 1).</p></li>
+<li><p><strong>param_global.adjust_flag_noise</strong> (<em>bool</em>) – Flag to activate adaptive estimation of the noise level &amp; paramerter
+adjustment.</p></li>
 <li><p><strong>param_global.measop_flag_visibility_gridding</strong> (<em>bool</em>) – Flag to activate data dimensionality reduction via visibility gridding in the
 definition of the measurement operator.</p></li>
+<li><p><strong>param_global.data_flag_apply_imaging_weights</strong> (<em>bool</em>) – Flag to read and apply imaging weights (e.g. Briggs, uniform) to data.</p></li>
 <li><p><strong>param_global.algo_solver</strong> (string (<code class="docutils literal notranslate"><span class="pre">&quot;sara&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>).) – Selected solver.</p></li>
 <li><p><strong>param_global.facet_subcubeInd</strong> (<em>int</em>) – Index of the spectral facet to be reconstructed (set to -1 or 0 to
 deactivate spectral faceting).</p></li>
@@ -134,35 +135,67 @@ regularization term in <code class="docutils literal notranslate"><span class="p
 <li><p><strong>param_global.reg_gam_bar</strong> (<em>double</em>) – Additional multiplicative factor affecting  low-rankness prior
 regularization parameter. Active only in <code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code>.</p></li>
 <li><p><strong>param_global.reg_flag_reweight</strong> (<em>int</em>) – Flag to activate re-weighting.</p></li>
-<li><p><strong>param_global.reg_nReweights</strong> (<em>int</em>) – Maximum number of reweighting steps.</p></li>
+<li><p><strong>param_global.reg_nReweights</strong> (<em>int</em>) – Maximum number of reweight.</p></li>
 <li><p><strong>param_global.algo_flag_computeOperatorNorm</strong> (<em>bool</em>) – Flag to trigger the computation of the norm of the (preconditionned) measurement
 operator. Default set to <code class="docutils literal notranslate"><span class="pre">true</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">false</span></code>,
 MATLAB will look for a file where this
 quantity has been saved (save and computation steps are triggered in
 <a class="reference internal" href="#imaging.imaging" title="imaging.imaging"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">imaging.imaging()</span></code></a>).</p></li>
+<li><p><strong>param_global.algo_flag_saveOperatorNorm</strong> (<em>bool</em>) – Flag to save the norm of the (preconditionned) measurement
+operator. Default set to <code class="docutils literal notranslate"><span class="pre">false</span></code>. If set to <code class="docutils literal notranslate"><span class="pre">true</span></code>,
+MATLAB will save the quantity in a <code class="docutils literal notranslate"><span class="pre">.mat</span></code> file.</p></li>
 <li><p><strong>param_global.algo_flag_solveMinimization</strong> (<em>bool</em>) – Flag triggering the solver (<code class="docutils literal notranslate"><span class="pre">&quot;fhs&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hs&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;sara&quot;</span></code>).</p></li>
 <li><p><strong>param_global.ncores_data</strong> (<em>int</em>) – Number of cores handlig the data fidelity terms (data cores). For
 Faceted HyperSARA, the total number of cores used
 is <code class="docutils literal notranslate"><span class="pre">Qx*Qy</span> <span class="pre">+</span> <span class="pre">ncores_data</span> <span class="pre">+</span> <span class="pre">1</span></code>. For SARA and HyperSARA, represents
 the number of cores used for the parallelization.</p></li>
-<li><p><strong>param_global.parcluster</strong> (<em>string</em>) – Name of the parallel parcluster profile to launch the parpool. By default <code class="docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code> profile
-is used. The user should set it to the name of the slurm parcluster
-profile created on his/her HPC machine, if prefered.</p></li>
-<li><p><strong>param_global.preproc_filename_l2bounds</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
-returning a string corresponding to the name of a file
-containing pre-computed <span class="math notranslate nohighlight">\(\ell_2\)</span> bounds. If not used, must be set
-to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
-<li><p><strong>param_global.preproc_filename_model</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
+<li><p><strong>param_global.parcluster</strong> (<em>string</em>) – Name of the parallel parcluster profile to launch the parpool.
+By default <code class="docutils literal notranslate"><span class="pre">&quot;local&quot;</span></code> profile  is used. The user should set it to
+the name of the slurm parcluster profile created on his/her HPC
+machine, if prefered.</p></li>
+<li><p><strong>param_global.preproc_filename_noise_std</strong> (<em>anonymous function</em>) – Function handle, taking the indices of the physical channel, and the
+and the dataset, returning a string corresponding to the name of a file
+containing noise statistics obtained from a pre-processing step.
+Expected vars: <code class="docutils literal notranslate"><span class="pre">sigma</span></code>: the standard deviation of the noise,
+<code class="docutils literal notranslate"><span class="pre">RESIDUAL</span></code>: (optional) the residual visibilities from a pre-processing
+step. If not used, should be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><strong>param_global.preproc_filename_cal_solutions</strong> (<em>anonymous function</em>) – Function handle, taking the indices of the physical channel and the
+dataset, and returning a string corresponding to the name of a file
+containing DDE/DIE calibration solutions.
+Expected var: <code class="docutils literal notranslate"><span class="pre">DDEs</span></code>: complex array if DDE calibration and
+<code class="docutils literal notranslate"><span class="pre">DIEs</span></code>: complex vector if DIE calibration . If not used, should be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
+<li><p><strong>param_global.preproc_filename_model</strong> (<em>anonymous function</em>) – Function handle, taking the indices of the first and last physical channels,
+associated with an effective (output) channel, and
 returning the name of a file containing a model image to be used to
 initialize the reconstruction algorithm. If not used, should be set to
 <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
-<li><p><strong>param_global.preproc_filename_die</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
-returning a string corresponding to the name of a file containing
-DIE calibration constants. If not used, must be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
-<li><p><strong>param_global.preproc_filename_dde</strong> (<em>anonymous function</em>) – Function handle, taking the index of the first and last physical channels, and
-returning a string corresponding to the name of a file containing
-DDE calibration constants. If not used, must be set to <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
 </ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>All the results will be stored in a directory of th</p></li>
+<li><p>Examples to set the input (physical) and output (effective) channels IDs:</p></li>
+</ul>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">%% Name of the dataset to be imaged</span><span class="w"></span>
+<span class="c">% example a: one dataset -name tag is not compulsory:</span><span class="w"></span>
+<span class="n">datasetNames</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="s">&#39;&#39;</span><span class="p">};</span><span class="w"></span>
+<span class="c">% example b: two data sets from two configurations of the VLA</span><span class="w"></span>
+<span class="n">datasetNames</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="s">&#39;CYGA-ConfigA&#39;</span><span class="p">,</span><span class="s">&#39;CYGA-ConfigC&#39;</span><span class="p">};</span><span class="w"></span>
+
+<span class="c">%% Indices of the &#39;physical&#39; channels to be concatenated</span><span class="w"></span>
+<span class="c">% example a: two effective channels, containing two &#39;physical&#39;</span><span class="w"></span>
+<span class="c">% channels each</span><span class="w"></span>
+<span class="n">effChans2Image</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]};</span><span class="w"></span>
+<span class="c">% example b: one channel effective channel with one physical channel</span><span class="w"></span>
+<span class="n">effChans2Image</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{[</span><span class="mi">1</span><span class="p">]};</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<p>Deprecated fields</p>
+<dl class="simple">
+<dt>param_global.reg_flag_homotopy<span class="classifier">int</span></dt><dd><p>Flag to activate homotopy strategy in the re-weighting scheme.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -283,7 +316,7 @@ affecting the clean data <cite>y0</cite>.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
