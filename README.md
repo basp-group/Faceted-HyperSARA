@@ -34,7 +34,7 @@ The following features, crucial to achieve high precision imaging from large dat
 
 ## Dependencies 
 
-``Faceted-HyperSARA`` relies on two auxiliary submodules (see [installation](install) section):
+``Faceted-HyperSARA`` relies on two auxiliary submodules (see [installation](#install) section):
 
 1. [`RI-measurement-operator`](https://github.com/basp-group/RI-measurement-operator) for the formation of the radio-interferometric measurement operator;
 2. [`SARA-dictionary`](https://github.com/basp-group/SARA-dictionary) for the implementation of the sparsity priors.
