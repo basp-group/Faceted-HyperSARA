@@ -1,5 +1,5 @@
 function residual_image = compute_residual_images(x, y, A, At, ...
-    G, W, flag_visibility_gridding, Sigma)
+    G, W, flag_visibility_gridding, Lambda)
 % Compute residual images.
 %
 % Compute the residual image for each spectral channel.
@@ -20,7 +20,7 @@ function residual_image = compute_residual_images(x, y, A, At, ...
 %     Masking operators (selection of data blocks) ``{L}{nblocks}``.
 % flag_visibility_gridding : bool
 %     Flag to activate data dimensionality reduction via visibility gridding.
-% Sigma : cell
+% Lambda : cell
 %     Dimensionality reduction weights ``{L}{nblocks}``.
 %
 % Returns
@@ -31,53 +31,53 @@ function residual_image = compute_residual_images(x, y, A, At, ...
 %
 % -------------------------------------------------------------------------%
 %%
-% Code: P.-A. Thouvenin.
-% Last revised: [08/08/2019]
+% Code: P.-A. Thouvenin, A. Dabbech
+% Last revised: [01/04/2022]
 % -------------------------------------------------------------------------%
 %%
 
 n_channels = size(x, 3);
 residual_image = zeros(size(x));
-dirac = sparse(size(x, 1)*0.5 +1, size(x, 2)*0.5 +1 ,1,size(x, 1),size(x, 2));
+dirac = sparse(size(x, 1) * 0.5 + 1, size(x, 2) * 0.5 + 1, 1, size(x, 1), size(x, 2));
 
 if flag_visibility_gridding % H  = G' +G;  G is  a lower tril matrix
     for i = 1:n_channels
-        %get residual image
+        % get residual image
         Fx = A(x(:, :, i));
         r = zeros(numel(Fx), 1);
         for j = 1:length(G{i})
             if istril(G{i}{j})
                 FxSlice = Fx(W{i}{j});
-                res_f = Sigma{i}{j} .* (y{i}{j} - ...
-                    (Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})')));
+                res_f = Lambda{i}{j} .* (y{i}{j} - ...
+                    (Lambda{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})')));
                 FxSlice = [];
                 r(W{i}{j}) = r(W{i}{j}) + (res_f' *  G{i}{j})' + G{i}{j} *  res_f;
             else
-                r(W{i}{j}) = r(W{i}{j}) + G{i}{j}' * (Sigma{i}{j} .*  ...
-                    (y{i}{j} - (Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})))));
+                r(W{i}{j}) = r(W{i}{j}) + G{i}{j}' * (Lambda{i}{j} .*  ...
+                    (y{i}{j} - (Lambda{i}{j} .* (G{i}{j} * Fx(W{i}{j})))));
             end
-        end,  clear Fx  res_f;
+        end;  clear Fx  res_f;
         residual_image(:, :, i) = real(At(r));
         clear r;
-        
+
         % get psf peak
         Fxdirac = A(full(dirac));
         r = zeros(numel(Fxdirac), 1);
         for j = 1:length(G{i})
             if istril(G{i}{j})
                 FxSlice = Fxdirac(W{i}{j});
-                res_f = (Sigma{i}{j}.^2) .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})');
+                res_f = (Lambda{i}{j}.^2) .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})');
                 FxSlice = [];
                 r(W{i}{j}) = r(W{i}{j}) +  (res_f' *  G{i}{j})'  +  G{i}{j} *  res_f;
             else
                 r(W{i}{j}) = r(W{i}{j}) + G{i}{j}' * ...
-                    ((Sigma{i}{j}.^2) .* (G{i}{j} * Fxdirac(W{i}{j})));
+                    ((Lambda{i}{j}.^2) .* (G{i}{j} * Fxdirac(W{i}{j})));
             end
-        end,  clear  Fxdirac  res_f;
+        end;  clear  Fxdirac  res_f;
         % normalise  residual image
-        residual_image(:, :, i) =residual_image(:, :, i)./(max(max(real(At(r)))));
+        residual_image(:, :, i) = residual_image(:, :, i) ./ (max(max(real(At(r)))));
         clear r;
-        
+
     end
 else
     for i = 1:n_channels
@@ -89,7 +89,7 @@ else
         end; clear Fx u2;
         residual_image(:, :, i) = real(At(r));
         clear r;
-        
+
         % get peak of psf
         Fxdirac = A(full(dirac));
         r = zeros(numel(Fxdirac), 1);
@@ -97,7 +97,7 @@ else
             r(W{i}{j}) = r(W{i}{j}) + G{i}{j}' * (G{i}{j} * Fxdirac(W{i}{j}));
         end; clear Fxdirac u2;
         % normalise residual image
-        residual_image(:, :, i) = residual_image(:, :, i)./(max(max(real(At(r)))));
+        residual_image(:, :, i) = residual_image(:, :, i) ./ (max(max(real(At(r)))));
         clear r;
     end
 end

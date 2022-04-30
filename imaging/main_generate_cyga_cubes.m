@@ -14,7 +14,7 @@
 %
 % .. note::
 %
-%    Cubes and additional informations for the synthetic data experiments 
+%    Cubes and additional informations for the synthetic data experiments
 %    are saved by default in the folder ``Faceted-HyperSARA/data/``.
 %
 

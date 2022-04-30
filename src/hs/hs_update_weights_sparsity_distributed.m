@@ -33,8 +33,8 @@ w = zeros(size(weights, 1), size(x, 3));
 for l = 1:size(x, 3)
     w(:, l) = Psit(x(:, :, l));
 end
-d_ = sum(abs(w).^2, 2);
-d = gplus(d_);
+d_ = sum(abs(w).^2, 2); clear w;
+d = gplus(d_); clear d_;
 d = sqrt(d);
 upsilon = sig * reweight_alpha;
 weights = upsilon ./ (upsilon + d);

@@ -14,21 +14,53 @@ All parameters which explicitly require to be set by the user are defined in the
 
 .. mat:autoscript:: imaging.main_input_imaging
 
+Default values of the parameters listed below are included in ``imaging/default_parameters.json``. These will be utilised unless the user updates them directly or alternatively specifies them in :mat:scpt:`imaging.main_input_imaging`, in such case, they will be overwritten.
+
+.. admonition:: Global parameters
+
+    reg_flag_reweighting: true
+        Flag to activate the re-weighting procedure. 
+    measop_flag_wproj: false
+        Flag to activate `w`-projection.
+    measop_flag_visibility_gridding: false
+        Flag to activate visibility gridding for data dimensionality reduction.
+    adjust_flag_noise: false
+        Flag to estimate the effective noise level on the fly, activate only when reliable noise estimates are not available.
+    data_flag_apply_imaging_weights: false
+        Flag to apply imaging weights to the data (such as uniform or Briggs, if available) and to incorporate them in the measurement operator. Natural weighting is adopted by default.
+    algo_flag_computeOperatorNorm: true 
+        Flag to compute the spectral norm of the measurement operator.
+    algo_flag_saveOperatorNorm: true
+        Flag to save the spectral norm of the measurement operator.
+    algo_flag_solveMinimization: true
+        Flag to run imaging.
+    parcluster: "local"
+        Name of the parcluster profile.
+    preproc_filename_noise_std: []
+        Filename of the estimated noise level.
+    preproc_filename_cal_solutions: []
+        Filename of the DDE calibration kernels. 
+    preproc_filename_model: []
+        Filename of the initial image estimate.
+            
+  
+
 
 Inner algorithmic parameters
 ----------------------------
 
-The parameters listed below, defined in the ``imaging/default_parameters.json`` file, specify the configuration in which the reweighting scheme and the primal-dual forward-backward (PDFB) algorithm are applied in the selected imaging approach. 
+The parameters listed below, defined in the ``imaging/default_parameters.json`` file, specify the configuration in which the reweighting scheme and the primal-dual forward-backward (PDFB) algorithm are applied in the selected imaging approach. They also include the parameters involved in the `w`-projection to update the measurement operator, and the parameters involved in the estimation of the noise level on the fly in the PDFB algorithm, when available noise statistics are unreliable. 
+
+
+Default values can be overwritten by providing the name of a new ``.json`` file to the :mat:scpt:`imaging.main_input_imaging` configuration script (see the variable ``json_filename``). Note that all the fields specified in ``imaging/default_parameters.json`` are required to be able to run the imaging pipeline.
 
 .. warning::
-    Users are encouraged to use the default values provided in ``imaging/default_parameters.json``, unless precisely aware of their impact on the reconstruction process.
+    The user is encouraged to use the default values provided in ``imaging/default_parameters.json`` (particularly the list provided below) unless precisely aware of their impact on the reconstruction process.
 
-Default values can be bypassed by providing the name of a new ``.json`` file to the :mat:scpt:`imaging.main_input_imaging` configuration script (see the variable ``json_filename`` in l. 136). Note that all the fields specified in ``imaging/default_parameters.json`` are required to be able to run the imaging pipeline.
+
 
 .. admonition:: Reweighting scheme :cite:p:`Candes2009`
 
-    flag_reweighting : true
-        Flag indicating whether the reweighting scheme is activated or not.
     min_iter : 1
         Minimum number of reweighting iterations.
     max_iter : 10
@@ -108,12 +140,29 @@ Default values can be bypassed by providing the name of a new ``.json`` file to 
 
     See associated documentation in the `SARA-dictionary <https://basp-group.github.io/SARA-dictionary/index.html>`_ module.
 
+.. admonition:: Noise estimation on the fly
+
+    min_iter : 100
+        Minimum number of iterations.
+    rel_var : 1e-3
+        Tolerance to adjust the noise estimate.
+    start_iter: 500
+        Iteration numbers to force triggering the noise estimation.
+    change_percentage: 0.5
+        The weight of the update w.r.t the l2 norm of the residual data.
+    start_change_percentage: 0.1
+        The weight of the update w.r.t the l2 norm of the residual data, if noise level update triggered at `start_iter` .
+    
+
+
+
 
 .. admonition:: :math:`w`-projection parameters :cite:p:`Dabbech2017`
 
-    measop_flag_wproj : false
-        Flag to activate :math:`w`-correction.
     measop_wprojCEnergyL2 : 0.9999
         Sparsification levels for the :math:`w` kernel, to be selected in the interval :math:`[0.99, 1]`. 
     measop_wprojGEnergyL2 : 0.9999
         Sparsification levels for convolution kernels involved in the degridding matrix :math:`G` after :math:`w`-correction. To be selected in the interval :math:`[0.99, 1]`.
+
+
+

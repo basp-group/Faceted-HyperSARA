@@ -5,8 +5,8 @@ function Fx = apply_scaled_fourier_transform(x, A, No)
 % ----------
 % x : double[:, :, :]
 %     Input wideband image cube.
-% A : lambda function
-%     Lambda function to compute the scaled Fourier transform of each slice
+% A : anonymous function
+%     anonymous function to compute the scaled Fourier transform of each slice
 %     of the image
 % No : int
 %     Total number of pixels in the oversampled spatial Fourier plane.

@@ -1,6 +1,6 @@
 function [param_global, param_solver, param_nufft, ...
-   param_precond, dict] = ...
-    read_json_configuration(json_filename, param_global)
+   param_precond, param_wproj, dict] = ...
+    read_json_configuration(json_filename)
 % Read algorithmic configuration parameters defined in an input ``.json``
 % file.
 %
@@ -8,23 +8,20 @@ function [param_global, param_solver, param_nufft, ...
 % ----------
 % json_filename : string
 %     Name of the .json configuration file.
-% param_global : struct
-%     Global parameter structure containing the following elements.
-%
 % Returns
 % -------
 % param_global : struct
 %     Structure containing global configuration parameters.
 % param_solver : struct
 %     Structure containing solver parameters (reweighting scheme, PDFB,
-%     projection onto the ellipsoid).
+%     projection onto the ellipsoid, noise estimation on the fly).
 % param_nufft : struct
 %     Structure containing the non-uniform FFT parameters.
-% param_blocking : struct
-%     Structure containing blocking parameters.
 % param_precond : struct
 %     Structure containing parameters used to define the preconditioning
 %     matrix involved in the PDFB algorithm.
+% param_wproj : struct
+%     Structure containing `w`-projection parameters.
 % dict : struct
 %     Structure defining the SARA dictionary.
 %
@@ -56,6 +53,17 @@ function [param_global, param_solver, param_nufft, ...
 %     Min. number of iterations, 1.
 % param_solver.elipse_proj_eps  (int)
 %     Precision of the projection onto the ellipsoid, 1e-8.
+% param_solver.adjust_noise_min_iter (int)
+%     Min number of iterations, 100.
+% param_solver.adjust_noise_rel_var (double)
+%     Tolerance to adjust the noise estimate, 1e-3.
+% param_solver.adjust_noise_start_iter (int)
+%     Iteration number to force triggering the noise estimation, 500.
+% param_solver.adjust_noise_change_percentage (int)
+%     The weight of the update w.r.t the l2 norm of the residual data, 0.5.
+% param_solver.adjust_noise_start_change_percentage (int)
+%     The weight of the update w.r.t the l2 norm of the residual data,
+%     if adjustment triggered at ``adjust_noise_start_iter``, 0.1 .
 % param_nufft.ox  (int)
 %     Oversampling factor (axis x), defaults to 2.
 % param_nufft.oy  (int)
@@ -68,22 +76,6 @@ function [param_global, param_solver, param_nufft, ...
 %     Name of the nufft interpolation kernel, defaults to "minmax:tuned".
 %     Possible options are ``"minmax:tuned"``, ``"minmax:kb"`` or
 %     ``"kaiser"``, see ...
-% param_blocking.use_density_partitioning  (bool)
-%     Density-based blocking.
-% param_blocking.density_partitioning_no  (int)
-%     Number of blocks.
-% param_blocking.use_uniform_partitioning  (bool)
-%     Uniform blocking.
-% param_blocking.uniform_partitioning_no  (int)
-%     Number of blocks
-% param_blocking.use_equal_partitioning  (bool)
-%     Equal-size blocking.
-% param_blocking.equal_partitioning_no  (int)
-%     Number of blocks.
-% param_blocking.use_manual_partitioning  (bool)
-%     Manual blocking.
-% param_blocking.use_manual_frequency_partitioning  (bool)
-%     Manual frequency blocking.
 % param_precond.N  (int)
 %     Number of pixels in the image.
 % param_precond.Nox  (int)
@@ -103,7 +95,52 @@ function [param_global, param_solver, param_nufft, ...
 %     Length of each wavelet filter considered for the SARA dictionary (0
 %     by convention for the Dirac basis).
 %
-
+% param_wproj.measop_wprojCEnergyL2 (double)
+%     Energy level of the `w`-kernel to be conserved, if `w`-projection is
+%     enabled
+% param_wproj.measop_wprojGEnergyL2 (double)
+%     Energy level  to be conserved of the kernel resulting from the
+%     the convolution between the `w`-kernel and the NUFFT kernel, if
+%     `w`-projection is enabled.
+% param_global_aux.measop_flag_wproj (bool)
+%     Flag to activate `w`-correction via `w`-projection, false.
+% param_global_aux.measop_flag_visibility_gridding (bool)
+%     Flag to activate visibility gridding for data dimensionality
+%     reduction, false.
+% param_global_aux.adjust_flag_noise (bool)
+%     Flag to activate noise estimation on the fly in the case of
+%     unreliable noise statistics.
+% param_global_aux.parcluster (string)
+%     Name of the parallel parcluster profile to launch the parpool. By
+%     default  ``"local"`` profile is used. The user should set it to the
+%     name of the slurm parcluster profile created on his/her HPC machine,
+%     if prefered.
+% param_global_aux.algo_flag_computeOperatorNorm (bool)
+%     Flag to activate computation of the measurement operator norm,
+%     default, true.
+% param_global_aux.algo_flag_saveOperatorNorm (bool)
+%     Flag to activate saving of the measurement operator norm,
+%     default, false.
+% param_global_aux.algo_flag_solveMinimization (bool)
+%     Flag to trigger the solver, true.
+% param_global_aux.preproc_filename_noise_std : anonymous function
+%     Function handle, taking the indices of the physical channel
+%     and the dataset, and returning a string corresponding to the name of a file
+%     containing noise statistics obtained from a pre-processing step.
+%     Expected vars: ``sigma``: the standard deviation of the noise,
+%     ``RESIDUAL``: (optional) the residual visibilities from a pre-processing
+%     step, default  ``[]``.
+% param_global_aux.preproc_filename_cal_solutions : anonymous function
+%     Function handle, taking the indices of the physical channel and the
+%     dataset, and returning a string corresponding to the name of a file
+%     containing DDE/DIE calibration solutions.
+%     Expected var: ``DDEs``: complex array if DDE calibration and
+%     ``DIEs``: complex vector if DIE calibration, default  ``[]``.
+% param_global_aux.preproc_filename_model : anonymous function
+%     Function handle, taking the indices of the first and last physical channels,
+%     associated with an effective (output) channel, and
+%     returning the name of a file containing a model image to be used to
+%     initialize the reconstruction algorithm, default  ``[]``.
 %
 % Deprecated fields
 %
@@ -128,7 +165,22 @@ function [param_global, param_solver, param_nufft, ...
 % param_nnls.beta  (double)
 %     Regularization parameter NNLS.
 %
-
+% param_blocking.use_density_partitioning  (bool)
+%     Density-based blocking.
+% param_blocking.density_partitioning_no  (int)
+%     Number of blocks.
+% param_blocking.use_uniform_partitioning  (bool)
+%     Uniform blocking.
+% param_blocking.uniform_partitioning_no  (int)
+%     Number of blocks
+% param_blocking.use_equal_partitioning  (bool)
+%     Equal-size blocking.
+% param_blocking.equal_partitioning_no  (int)
+%     Number of blocks.
+% param_blocking.use_manual_partitioning  (bool)
+%     Manual blocking.
+% param_blocking.use_manual_frequency_partitioning  (bool)
+%     Manual frequency blocking.
 %% Parsing json file
 fid = fopen(json_filename);
 raw = fread(fid, inf);
@@ -157,18 +209,17 @@ strcat('pdfb_', fieldnames(config{1, 1}.pdfb)));
 % * Projection onto the ellipsoid
 param_proj = cell2struct(struct2cell(config{1, 1}.proj), ...
 strcat('elipse_proj_', fieldnames(config{1, 1}.proj)));
+% * noise estimation
 
+param_noise = cell2struct(struct2cell(config{1, 1}.noise_estimation), ...
+strcat('adjust_noise_', fieldnames(config{1, 1}.noise_estimation)));
 % combining the 3 structures (reweighting, pdfb, proj)
-param_solver = cell2struct([struct2cell(param_reweighting); struct2cell(param_pdfb); struct2cell(param_proj)], ...
-    [fieldnames(param_reweighting); fieldnames(param_pdfb); fieldnames(param_proj)]);
+param_solver = cell2struct([struct2cell(param_reweighting); struct2cell(param_pdfb); struct2cell(param_proj); struct2cell(param_noise)], ...
+    [fieldnames(param_reweighting); fieldnames(param_pdfb); fieldnames(param_proj); fieldnames(param_noise)]);
 param_solver.verbose = config{1, 1}.verbose;
+param_solver.save_intermediate_results_mat = config{1, 1}.save_intermediate_results_mat;
 
-if ~isfield(param_global, 'reg_nReweights')
-    param_global.reg_nReweights = 5;
-end
-param_solver.reweighting_max_iter = max(param_global.reg_nReweights, param_solver.reweighting_min_iter + 1);
-
-% * Adaptive epsilon (deactivated)
+% * Adaptive epsilon (replaced by noise estimation)
 % param_solver.use_adapt_eps = 0;
 % % minimum num of iter before stating adjustment
 % param_solver.adapt_eps_start = 200;
@@ -187,35 +238,26 @@ param_solver.reweighting_max_iter = max(param_global.reg_nReweights, param_solve
 % * NUFFT (gridding parameters)
 param_nufft = config{2, 1}.nufft;
 
-% * Blocking
-% param_blocking = config{2, 1}.blocking;
-% % partition (symetrically) of the data to nodes (frequency ranges)
-% param_blocking.fpartition = [icdf('norm', 0.25, 0, pi / 4), 0, ...
-%     icdf('norm', 0.75, 0, pi / 4), pi];
-
 % * Preconditioning
 % set weighting type
-param_precond = config{2, 1}.preconditioning;
-% number of pixels in the image
-param_precond.N = param_global.im_Nx * param_global.im_Ny;
-% number of Fourier points (oversampled plane)
-param_precond.Nox = param_nufft.ox * param_global.im_Nx;
-param_precond.Noy = param_nufft.oy * param_global.im_Ny;
-
-% * NNLS
-% if ~isfield(param_global, 'generate_eps_nnls'); param_global.generate_eps_nnls = false; end
-% param_nnls = config{2, 1}.nnls;
+param_precond = config{2, 1}.preconditioning; % number of pixels in the image
+% ! moved to imaging.m
+% % param_precond.N = param_global.im_Nx * param_global.im_Ny; % number of Fourier points (oversampled plane)
+% param_precond.Nox = param_nufft.ox * param_global.im_Nx;
+% param_precond.Noy = param_nufft.oy * param_global.im_Ny;
 
 % * Wproj
-% FoV info
-% param_wproj.FoVx = sin(pixelSize * Nx * pi / 180 / 3600);
-% param_wproj.FoVy = sin(pixelSize * Ny * pi / 180 / 3600);
-% param_wproj.uGridSize = 1 / (param_nufft.ox * param_wproj.FoVx);
-% param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
+param_wproj = cell2struct(struct2cell(config{2, 1}.wproj), ...
+ fieldnames(config{2, 1}.wproj));
 
 % * SARA dictionary
-% if ~isfield(param_global, 'level'); param_global.wavelet_level = 4;  end
-% if ~isfield(param_global, 'basis'); param_global.wavelet_basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};  end
 dict = config{2, 1}.sara;
+
+% * Auxilliary global parameters
+param_global_aux = cell2struct(struct2cell(config{3, 1}.aux_global), ...
+ fieldnames(config{3, 1}.aux_global));
+% combining 2 structures (param_global, param_global_aux)
+param_global = cell2struct(struct2cell(param_global_aux), ...
+     fieldnames(param_global_aux));
 
 end

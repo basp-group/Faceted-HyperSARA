@@ -1,4 +1,4 @@
-function y = HS_forward_operator_precond_G(x, G, W, A, aW, flag_visibility_gridding, Sigma)
+function y = HS_forward_operator_precond_G(x, G, W, A, aW, flag_visibility_gridding, Lambda)
     % Apply the forward preconditioned wideband measurement operator
     % (with or w/o data dimensionality reduction, adjoint of
     % :mat:func:`lib.operators.HS_adjoint_operator_precond_G`).
@@ -18,7 +18,7 @@ function y = HS_forward_operator_precond_G(x, G, W, A, aW, flag_visibility_gridd
     %     channel and data block within a channel).
     % flag_visibility_gridding : bool
     %     Flag indicating whether data dimensionality reduction via visibility gridding is considered.
-    % Sigma : cell of cell of double[:]
+    % Lambda : cell of cell of double[:]
     %     Weighting matrix involved in data dimensionality reduction via visibility gridding.
     %
     % Returns
@@ -29,9 +29,9 @@ function y = HS_forward_operator_precond_G(x, G, W, A, aW, flag_visibility_gridd
 
     if ~exist('flag_visibility_gridding', 'var')
         flag_visibility_gridding = 0;
-        Sigma = [];
-    elseif ~exist('Sigma', 'var')
-        Sigma = [];
+        Lambda = [];
+    elseif ~exist('Lambda', 'var')
+        Lambda = [];
     end
 
     [~, ~, c] = size(x);
@@ -43,9 +43,9 @@ function y = HS_forward_operator_precond_G(x, G, W, A, aW, flag_visibility_gridd
         for j = 1:length(G{i})
             if flag_visibility_gridding
                 if  istril(G{i}{j})
-                    y{i}{j} = (sqrt(aW{i}{j}) .* (Sigma{i}{j})) .* (G{i}{j} * Fx(W{i}{j}) + G{i}{j}' * Fx(W{i}{j}));
+                    y{i}{j} = (sqrt(aW{i}{j}) .* (Lambda{i}{j})) .* (G{i}{j} * Fx(W{i}{j}) + G{i}{j}' * Fx(W{i}{j}));
                 else
-                    y{i}{j} = (sqrt(aW{i}{j}) .* (Sigma{i}{j})) .* (G{i}{j} * Fx(W{i}{j}));
+                    y{i}{j} = (sqrt(aW{i}{j}) .* (Lambda{i}{j})) .* (G{i}{j} * Fx(W{i}{j}));
                 end
 
             else

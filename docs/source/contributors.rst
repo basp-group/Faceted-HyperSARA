@@ -14,4 +14,3 @@ Past contributors
 -----------------
 
 - `Abdullah Abdulaziz <https://scholar.google.co.za/citations?hl=en&user=stKgBN0AAAAJ&view_op=list_works&sortby=pubdate>`_
-- `Alexandru Onose <https://scholar.google.fr/citations?user=ePKEnWgAAAAJ&hl=fr>`_

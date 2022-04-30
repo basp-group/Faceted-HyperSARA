@@ -1,5 +1,5 @@
-function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm(...
-    G, W, A, At, aW, Ny, Nx, tol, max_iter, flag_visibility_gridding, Sigma)
+function [Anorm, squared_operator_norm, rel_var, squared_precond_operator_norm, rel_var_precond] = util_operator_norm( ...
+                                                                                                                      G, W, A, At, aW, Ny, Nx, tol, max_iter, flag_visibility_gridding, Sigma)
     % [extended_summary]
     %
     % Parameters

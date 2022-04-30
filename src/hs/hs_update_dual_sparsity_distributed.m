@@ -38,10 +38,7 @@ function [v1, g1] = hs_update_dual_sparsity_distributed(v1, Psit, Psi, ...
 % Last revised: [08/08/2019]
 % -------------------------------------------------------------------------%
 %%
-
 r1 = zeros(size(v1));
-g1 = zeros(size(xhat));
-
 for l = 1:size(xhat, 3)
     r1(:, l) = v1(:, l) + Psit(xhat(:, :, l));
 end
@@ -50,7 +47,8 @@ l2 = gplus(l2_);
 l2 = sqrt(l2);
 l2_soft = max(l2 - beta1 * weights1, 0) ./ (l2 + eps);
 v1 = r1 - (l2_soft .* r1);
-
+clear r1;
+g1 = zeros(size(xhat));
 for l = 1:size(xhat, 3)
     g1(:, :, l) = sigma1 * Psi(v1(:, l));
 end

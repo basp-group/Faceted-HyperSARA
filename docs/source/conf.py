@@ -25,8 +25,8 @@ sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 # -- Project information -----------------------------------------------------
 
 project = "Faceted-HyperSARA"
-copyright = "2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz"
-author = "P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz"
+copyright = "2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux"
+author = "P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux"
 
 # The full version, including alpha/beta/rc tags
 release = re.sub('^v', '', os.popen('git describe').read().strip())

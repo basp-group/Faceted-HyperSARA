@@ -1,6 +1,6 @@
 function imaging(srcName, datasetsNames, dataFilename, ...
-     effChans2Image, param_solver, param_global, ...
-    param_nufft, param_precond, dict)
+    effChans2Image, param_solver, param_global, ...
+    param_nufft, param_precond, param_wproj, dict)
 % Main function to run any algorithm from the SARA family using the
 % configuration provided in :mat:scpt:`imaging.main_input_imaging`.
 % The approaches are Faceted HyperSARA, HyperSARA and SARA.
@@ -11,14 +11,14 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 %     Name of the target source to be reconstructed as specified during
 %     data extraction, used to get the data and generate output files.
 % dataSetsNames: cell of string
-%     Names of the different datasets used (e.g., in the cases of
+%     Names of the different datasets to be imaged (e.g., in the cases of
 %     different acquisition configurations or different observation times),
-%     to be set to ``{''}`` if one data set is imaged or no name tag of 
-%     the MS is given during data extraction. 
+%     to be set to ``[]`` if one data set is imaged and no name tag of
+%     the associated ``MS`` is given during data extraction.
 % dataFilenames: cell of string
 %     Function handle taking a channel index as an input and returning the
-%     name of the associated data ``.mat`` file (one file per frequency channel),
-%     following the nomenclature adopted during data extraction .
+%     name of the associated data ``.mat`` file (one file per frequency channel
+%     per dataset), following the nomenclature adopted during data extraction.
 % effChans2Image: cell array
 %     Cell array containing the ids of the physical (input) channels to be
 %     concatenated for each effective (output) channel.
@@ -33,9 +33,14 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 %     Image dimension (x axis, dimension 2).
 % param_global.im_Ny : int
 %     Image dimension (y axis, dimension 1).
+% param_global.adjust_flag_noise : bool
+%     Flag to activate adaptive estimation of the noise level & paramerter
+%     adjustment.
 % param_global.measop_flag_visibility_gridding : bool
 %     Flag to activate data dimensionality reduction via visibility gridding in the
 %     definition of the measurement operator.
+% param_global.data_flag_apply_imaging_weights : bool
+%     Flag to read and apply imaging weights (e.g. Briggs, uniform) to data.
 % param_global.algo_solver : string (``"sara"``, ``"hs"`` or ``"fhs"``).
 %     Selected solver.
 % param_global.facet_subcubeInd: int
@@ -51,7 +56,7 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 %     ``"fhs"``.
 % param_global.facet_overlap_fraction : double[2]
 %     Fraction of the total size of facet overlapping with a neighbouring
-%     facet along each axis (y and x) for the faceted low-rankness prior. 
+%     facet along each axis (y and x) for the faceted low-rankness prior.
 %     Active only in ``"fhs"``. Will be reset
 %     automatically to ``[0, 0]`` if the spatial faceting is not active in ``"fhs"``
 %     along at least one dimension(i.e., ``param_global.facet_Qy = 1`` and/or ``param_global.facet_Qx = 1``).
@@ -60,22 +65,26 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 %     prior. Active only in ``"fhs"``.
 % param_global.reg_gam : double
 %     Additional multiplicative factor affecting the joint average sparsity
-%     regularization term in ``"fhs"`` and ``"hs"``. Additional 
+%     regularization term in ``"fhs"`` and ``"hs"``. Additional
 %     multiplicative factor affecting the average sparsity
 %     regularization term in ``"sara"``.
 % param_global.reg_gam_bar : double
-%    Additional multiplicative factor affecting  low-rankness prior 
+%    Additional multiplicative factor affecting  low-rankness prior
 %    regularization parameter. Active only in ``"fhs"`` and ``"hs"``.
 % param_global.reg_flag_reweight : int
 %     Flag to activate re-weighting.
-% param_global.reg_nReweights : int
-%     Maximum number of reweighting steps.
+% param_global.reg_nReweights: int
+%     Maximum number of reweight.
 % param_global.algo_flag_computeOperatorNorm : bool
 %     Flag to trigger the computation of the norm of the (preconditionned) measurement
 %     operator. Default set to ``true``. If set to ``false``,
 %     MATLAB will look for a file where this
 %     quantity has been saved (save and computation steps are triggered in
 %     :mat:func:`imaging.imaging`).
+% param_global.algo_flag_saveOperatorNorm : bool
+%     Flag to save the norm of the (preconditionned) measurement
+%     operator. Default set to ``false``. If set to ``true``,
+%     MATLAB will save the quantity in a ``.mat`` file.
 % param_global.algo_flag_solveMinimization : bool
 %     Flag triggering the solver (``"fhs"``, ``"hs"`` or ``"sara"``).
 % param_global.ncores_data : int
@@ -84,28 +93,29 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 %     is ``Qx*Qy + ncores_data + 1``. For SARA and HyperSARA, represents
 %     the number of cores used for the parallelization.
 % param_global.parcluster : string
-%     Name of the parallel parcluster profile to launch the parpool. By default ``"local"`` profile
-%     is used. The user should set it to the name of the slurm parcluster
-%     profile created on his/her HPC machine, if prefered. 
-% param_global.preproc_filename_l2bounds : anonymous function
-%     Function handle, taking the index of the first and last physical channels, and
-%     returning a string corresponding to the name of a file
-%     containing pre-computed :math:`\ell_2` bounds. If not used, must be set
-%     to ``[]``.
+%     Name of the parallel parcluster profile to launch the parpool.
+%     By default ``"local"`` profile  is used. The user should set it to
+%     the name of the slurm parcluster profile created on his/her HPC
+%     machine, if prefered.
+% param_global.preproc_filename_noise_std : anonymous function
+%     Function handle, taking the indices of the physical channel, and the
+%     and the dataset, returning a string corresponding to the name of a file
+%     containing noise statistics obtained from a pre-processing step.
+%     Expected vars: ``sigma``: the standard deviation of the noise,
+%     ``RESIDUAL``: (optional) the residual visibilities from a pre-processing
+%     step. If not used, should be set to ``[]``.
+% param_global.preproc_filename_cal_solutions : anonymous function
+%     Function handle, taking the indices of the physical channel and the
+%     dataset, and returning a string corresponding to the name of a file
+%     containing DDE/DIE calibration solutions.
+%     Expected var: ``DDEs``: complex array if DDE calibration and
+%     ``DIEs``: complex vector if DIE calibration . If not used, should be set to ``[]``.
 % param_global.preproc_filename_model : anonymous function
-%     Function handle, taking the index of the first and last physical channels, and
+%     Function handle, taking the indices of the first and last physical channels,
+%     associated with an effective (output) channel, and
 %     returning the name of a file containing a model image to be used to
 %     initialize the reconstruction algorithm. If not used, should be set to
 %     ``[]``.
-% param_global.preproc_filename_die : anonymous function
-%     Function handle, taking the index of the first and last physical channels, and
-%     returning a string corresponding to the name of a file containing
-%     DIE calibration constants. If not used, must be set to ``[]``.
-% param_global.preproc_filename_dde : anonymous function
-%     Function handle, taking the index of the first and last physical channels, and
-%     returning a string corresponding to the name of a file containing
-%     DDE calibration constants. If not used, must be set to ``[]``.
-
 % Note
 % ----
 % - All the results will be stored in a directory of th
@@ -127,7 +137,6 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 %     effChans2Image = {[1]};
 %
 %
-
 %
 % Deprecated fields
 %
@@ -137,8 +146,13 @@ function imaging(srcName, datasetsNames, dataFilename, ...
 
 % ------------------------------------------------------------------------%
 % ------------------------------------------------------------------------%
+%% constant
+speed_of_light = 299792458;
+default_superresolution = 2;
 %% Paths
 format compact;
+% Project dir.
+if ~isfield(param_global, 'main_dir'); param_global.main_dir = [pwd, filesep]; end
 project_dir = param_global.main_dir;
 fprintf('\nMain project dir. is %s: ', project_dir);
 current_dir = pwd;
@@ -157,38 +171,17 @@ addpath([project_dir, filesep, 'lib', filesep, 'RI-measurement-operator', filese
 addpath([project_dir, filesep, 'lib', filesep, 'SARA-dictionary', filesep, 'src']);
 addpath([project_dir, filesep, 'src']);
 addpath([project_dir, filesep, 'src', filesep, 'heuristics', filesep]);
-%
-algo_solver = param_global.algo_solver;
-if strcmp(algo_solver, 'sara')
-    addpath([project_dir, filesep, 'src', filesep, 'sara']);
-elseif strcmp(algo_solver, 'hs')
-    addpath([project_dir, filesep, 'src', filesep, 'hs', filesep]);
-elseif strcmp(algo_solver, 'fhs')
-    addpath([project_dir, filesep, 'src', filesep, 'fhs', filesep]);
-end
-% setting paths to results and reference image cube
-results_path = fullfile(project_dir,'results', srcName);
-mkdir(results_path);
-auxiliary_path = fullfile(results_path, algo_solver);
-mkdir(auxiliary_path);
-fprintf('\nINFO: results will be saved in: \n %s .\n', auxiliary_path);
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
-%% constant
-speed_of_light = 299792458;
-facet_dim_min  = 256;
-default_superresolution = 2;
-%% check input params : @PA in light of the new structure of params, many of these fields will be deleted I guess ..
+%% check input params
 % Image resolution & dimensions
 % ! parameters and default values (keep only what is required)
-if ~isfield(param_global, 'im_Nx');  param_global.im_Nx = 2048; end
-if ~isfield(param_global, 'im_Ny');  param_global.im_Ny = 2048; end
 if ~isfield(param_global, 'im_pixelSize');  param_global.im_pixelSize = []; end
 
 % Prior: sparsity dict.
 if ~isfield(dict, 'nlevel'); dict.nlevel = 4;  end
 if ~isfield(dict, 'basis')
-    dict.basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};  
+    dict.basis = {'db1', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db8', 'self'};
     dict.filter_length = [2, 4, 6, 8, 10, 12, 14, 16, 0];
 end
 
@@ -217,122 +210,142 @@ if ~isfield(param_global, 'facet_Qc'); param_global.facet_Qc = 1; end
 if ~isfield(param_global, 'facet_window_type'); param_global.facet_window_type = 'triangular'; end
 if ~isfield(param_global, 'facet_overlap_fraction'); param_global.facet_overlap_fraction = [0.2, 0.2]; end
 
-
 % Prior: reg params
 if ~isfield(param_global, 'reg_gam'); param_global.reg_gam = 1;  end
 if ~isfield(param_global, 'reg_gam_bar'); param_global.reg_gam_bar = 1;  end
-if ~isfield(param_global, 'reg_flag_reweighting'); param_global.reg_flag_reweighting = 1; end
+if ~isfield(param_global, 'reg_flag_reweighting'); param_global.reg_flag_reweighting = true; end
 
-
-if param_global.reg_flag_reweighting &&  ~isfield(param_global, 'reg_nReweights')
-    param_global.reg_nReweights = 5;
+if param_global.reg_flag_reweighting &&  ~isfield(param_global, 'reg_nReweights') && ~isfield(param_solver, 'reweighting_max_iter')
+    param_solver.reweighting_max_iter = 10;
+elseif isfield(param_global, 'reg_nReweights')
+    % overwrite the default value set in .json file
+    param_solver.reweighting_max_iter = param_global.reg_nReweights;
 end
-% if ~isfield(param_global, 'reg_flag_homotopy'); param_global.reg_flag_homotopy = 0; end
-% Data blocks
-% if ~isfield(param_global, 'generate_eps_nnls'); param_global.generate_eps_nnls = false; end
-% if ~isfield(param_global, 'data_nDataBlk');  param_global.data_nDataBlk = []; end
-% if ~isfield(param_global, 'data_sizeDataBlk');  param_global.data_sizeDataBlk = []; end
-% if isempty(param_global.data_sizeDataBlk) && isempty (param_global.data_nDataBlk)
-%     param_global.data_sizeDataBlk = 2e5;
-% end
+
+% Noise level adjustement
+if ~isfield(param_global, 'adjust_flag_noise'); param_global.adjust_flag_noise = false; end
 
 % Algo
-if ~isfield(param_global, 'algo_solver')
-    if numel(effChans2Image)>1,  param_global.algo_solver = 'fhs';
-    else, param_global.algo_solver = 'sara';
-    end
+if numel(effChans2Image) == 1
+    param_global.algo_solver = 'sara';
+    fprintf('\nMonochromatic imaging: `SARA` approach is used for imaging.');
+elseif ~isfield(param_global, 'algo_solver')
+    param_global.algo_solver = 'fhs';
+    fprintf('\nWideband imaging: `Faceted HyperSARA` approach is used for imaging.');
+elseif numel(effChans2Image) > 1 && strcmp(param_global.algo_solver, 'sara')
+    param_global.algo_solver = 'fhs';
+    fprintf('\nWideband imaging: `Faceted HyperSARA` approach is used for imaging.');
 end
 if ~isfield(param_global, 'algo_flag_solveMinimization'); param_global.algo_flag_solveMinimization = true; end
 if ~isfield(param_global, 'algo_flag_computeOperatorNorm'); param_global.algo_flag_computeOperatorNorm = true; end
+if ~isfield(param_global, 'algo_flag_saveOperatorNorm'); param_global.algo_flag_saveOperatorNorm = false; end
+
 if ~isfield(param_global, 'algo_ncores_data'); param_global.algo_ncores_data = numel(effChans2Image);  end
 
-% Measurement operator
+% Measurement operator: visibility gridding
 if ~isfield(param_global, 'measop_flag_visibility_gridding'); param_global.measop_flag_visibility_gridding = false; end
-if ~isfield(param_global, 'measop_flag_wproj'); param_global.measop_flag_wproj = []; end
-if param_global.measop_flag_wproj
-    if ~isfield(param_global, 'measop_wprojCEnergyL2'); param_global.measop_wprojCEnergyL2 = 1 - 1e-4; end
-    if ~isfield(param_global, 'measop_wprojGEnergyL2'); param_global.measop_wprojGEnergyL2 = 1 - 1e-4; end
+
+% data and measurement operator : imaging weights
+if ~isfield(param_global, 'data_flag_apply_imaging_weights'); param_global.data_flag_apply_imaging_weights = false; end
+
+% Measurement operator: W-projection
+if ~isfield(param_wproj, 'measop_flag_wproj'); param_wproj.measop_flag_wproj = false; end
+if param_wproj.measop_flag_wproj
+    if ~isfield(param_wproj, 'measop_wprojCEnergyL2'); param_wproj.measop_wprojCEnergyL2 = 1 - 1e-4; end
+    if ~isfield(param_wproj, 'measop_wprojGEnergyL2'); param_wproj.measop_wprojGEnergyL2 = 1 - 1e-4; end
 else
-    param_global.measop_wprojCEnergyL2 = 1;
-    param_global.measop_wprojGEnergyL2 = 1;
+    param_wproj.measop_wprojCEnergyL2 = 1;
+    param_wproj.measop_wprojGEnergyL2 = 1;
 end
 
-% Project dir.
-if ~isfield(param_global, 'main_dir'); param_global.main_dir = [pwd, filesep]; end
-
-% Input filenames
+% Input filenames from pre-processing
 if ~isfield(param_global, 'preproc_filename_model'); param_global.preproc_filename_model = []; end
-if ~isfield(param_global, 'preproc_filename_l2bounds'); param_global.preproc_filename_l2bounds = []; end
-if ~isfield(param_global, 'preproc_filename_die'); param_global.preproc_filename_die = []; end
-if ~isfield(param_global, 'preproc_filename_dde'); param_global.preproc_filename_dde = []; end
+if ~isfield(param_global, 'preproc_filename_noise_std'); param_global.preproc_filename_noise_std = []; end
+if ~isfield(param_global, 'preproc_filename_cal_solutions'); param_global.preproc_filename_cal_solutions = []; end
+
 % Output filenames
-if ~isfield(param_global, 'exp_type'); param_global.exp_type = '';  end %  AD: maybe remove?
+if ~isfield(param_global, 'exp_type'); param_global.exp_type = '';  end %
 
 % name of the parallel parcluster profile
 if ~isfield(param_global, 'parcluster'); param_global.parcluster = 'local';
-end 
+end
+%% rest of the paths -----------------------------------------------------------------%
+% ------------------------------------------------------------------------%
+algo_solver = param_global.algo_solver;
+switch algo_solver
+    case 'sara'
+        addpath([project_dir, filesep, 'src', filesep, 'sara']);
+    case 'hs'
+        addpath([project_dir, filesep, 'src', filesep, 'hs', filesep]);
+    case 'fhs'
+        addpath([project_dir, filesep, 'src', filesep, 'fhs', filesep]);
+end
+% setting paths to results and reference image cube
+results_path = fullfile(project_dir, 'results', srcName);
+mkdir(results_path);
+auxiliary_path = fullfile(results_path, algo_solver);
+mkdir(auxiliary_path);
+fprintf('\nINFO: results will be saved in: \n %s .\n', auxiliary_path);
 
-
-% -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
 %% get params
 % image dimensions & resolution
 Nx = param_global.im_Nx;
 Ny = param_global.im_Ny;
 pixelSize  = param_global.im_pixelSize;
-if isempty (pixelSize)
-    imResolution = 'nominal';
-else
-    imResolution = 'user_defined';
+if isempty(pixelSize); imResolution = 'nominal';
+else; imResolution = 'user_defined';
 end
 switch imResolution
     case 'nominal'
-        fprintf('\nWARNING: pixelsize not found, default is considered.\n');
+        fprintf('\nWARNING: pixelsize not found, default is considered.');
     otherwise
         fprintf('\nINFO: pixelsize: %f arcsec.\n', pixelSize);
 end
 % Prior: wideband facet related
 subcubeInd = param_global.facet_subcubeInd;
-Qx = param_global.facet_Qx;
-Qy = param_global.facet_Qy;
-Qc = param_global.facet_Qc;
-window_type = param_global.facet_window_type;
-overlap_fraction = param_global.facet_overlap_fraction;
+% Prior: faceting: de-activate for SARA & HyperSARA
+% fix faceting parameters in case these are not consistent with the
+% selected algorithm
+switch algo_solver
+
+    case 'fhs'
+        Qx = param_global.facet_Qx;
+        Qy = param_global.facet_Qy;
+        Qc = param_global.facet_Qc;
+        window_type = param_global.facet_window_type;
+        overlap_fraction = param_global.facet_overlap_fraction;
+    otherwise
+        window_type = 'none';
+        Qc = 1;
+        Qx = 1;
+        Qy = 1;
+        overlap_fraction = [0 0];
+end
+
 % Prior: reg params
 gam = param_global.reg_gam;
 gam_bar =  param_global.reg_gam_bar;
 flag_reweighting = param_global.reg_flag_reweighting;
-if flag_reweighting
-    reg_nReweights = param_global.reg_nReweights;
+if flag_reweighting;  reg_nReweights = param_global.reg_nReweights;
 end
+
+% Noise estimation
+adjust_flag_noise = param_global.adjust_flag_noise;
+
 % Measurement operator settings
 flag_visibility_gridding = param_global.measop_flag_visibility_gridding; % data reduction
-param_wproj.do = param_global.measop_flag_wproj; % w projection
-if isempty(param_global.measop_flag_wproj)
-    param_wproj.do = 0;
-end
-param_wproj.CEnergyL2 = param_global.measop_wprojCEnergyL2; % w projection
-param_wproj.GEnergyL2 = param_global.measop_wprojGEnergyL2; % w projection
+% data and measurement operator
+flag_apply_imaging_weights = param_global.data_flag_apply_imaging_weights;
 % Algo
 ncores_data = param_global.algo_ncores_data;
 flag_computeOperatorNorm = param_global.algo_flag_computeOperatorNorm;
+flag_saveOperatorNorm = param_global.algo_flag_saveOperatorNorm;
 flag_solveMinimization =  param_global.algo_flag_solveMinimization;
 % Pre-processing step
-param_preproc.filename_die  = param_global.preproc_filename_die;
-param_preproc.filename_dde  = param_global.preproc_filename_dde;
-param_preproc.filename_l2bounds = param_global.preproc_filename_l2bounds;
-param_preproc.filename_model = param_global.preproc_filename_model;
-param_preproc.subcube = subcubeInd;
-param_preproc.done = (~isempty(param_preproc.filename_l2bounds)) * ~isempty(param_preproc.filename_model) * (~isempty(param_preproc.filename_die) || ~isempty(param_preproc.filename_dde));
-filename_l2bounds = param_global.preproc_filename_l2bounds; % available l2bounds
-flag_calib.die = 0;
-flag_calib.dde = 0;
-ddes = [];
-if ~isempty(param_preproc.filename_die)
-    flag_calib.die = 1;
-elseif ~isempty(param_preproc.filename_dde)
-    flag_calib.dde = 1;
-end
+param_preproc_files.dde  = param_global.preproc_filename_cal_solutions;
+param_preproc_files.noise_std = param_global.preproc_filename_noise_std;
+filename_init_model = param_global.preproc_filename_model;
 
 % parcluster
 parcluster = param_global.parcluster;
@@ -343,9 +356,10 @@ disp('Imaging configuration');
 disp(['Source name: ', srcName]);
 disp(['Image cube size: ', num2str(Ny), ' x ', num2str(Nx), ' x ', num2str(numel(effChans2Image))]);
 disp(['Algorithm version: ', algo_solver]);
-disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
-disp(['Number of spectral facets Qc : ', num2str(Qc)]);
+
 if ~strcmp(algo_solver, 'sara')
+    disp(['Number of facets Qy x Qx : ', num2str(Qy), ' x ', num2str(Qx)]);
+    disp(['Number of spectral facets Qc : ', num2str(Qc)]);
     disp(['Overlap fraction: ', strjoin(strsplit(num2str(overlap_fraction)), ', ')]);
 end
 % -------------------------------------------------------------------------%
@@ -368,89 +382,16 @@ if strcmp(imResolution, 'nominal')
     end; clear dataloaded;
     spatialBandwidth = 2 * maxProjBaseline;
     pixelSize = (180 / pi) * 3600 / (default_superresolution * spatialBandwidth);
-    fprintf('\nINFO: default pixelsize: %f arcsec, that is %d x nominal resolution at the highest freq.',pixelSize, default_superresolution);
+    fprintf('\nINFO: default pixelsize: %f arcsec, that is %d x nominal resolution at the highest freq.', pixelSize, default_superresolution);
 end
 halfSpatialBandwidth = (180 / pi) * 3600 / (pixelSize) / 2;
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
-%% image cube initialisation: load if available otherwise set to 0
-switch algo_solver
-    case 'sara'
-        xinit = zeros(Ny, Nx);
-        if ~isempty(param_preproc.filename_model)
-            fprintf('\nLoading  available image estimate  ...');
-            try xinit = fitsread(param_preproc.filename_model(effChans2Image{1}(1), effChans2Image{1}(end)));
-                if  ~(size(xinit, 1) == Ny && size(xinit, 2) == Nx)
-                    xinit = zeros(Ny, Nx);
-                    fprintf('\nWARNING: init. image not found.');
-                else; fprintf('\nINFO: init. image found.');
-                end
-            catch ; fprintf('\nWARNING: init. image not found.');
-            end
-        end
-    otherwise
-        xinit = zeros(N, nEffectiveChans);
-        if ~isempty(param_preproc.filename_model)
-            fprintf('\nLoading  available image estimate  ...');
-            for  iEffCh =  1:nEffectiveChans
-                try  xinit(:, iEffCh) = reshape(fitsread(param_preproc.filename_model(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end))), N, 1);
-                    fprintf('\nINFO: init. image found.');
-                catch ; fprintf('\nWARNING: init. image not found.');
-                end
-            end
-        end
-end
-% -------------------------------------------------------------------------%
-% -------------------------------------------------------------------------%
-%% l2 bounds: load if available otherwise compute later
-flag_l2bounds_compute = 1; % default, will be updated below..
-if isempty(filename_l2bounds)
-    % assuming Chi squared dist.
-    fprintf('\nINFO: l2 bounds will be computed based on the assumption of a chi squared distribution.\n');
-else
-    fprintf('\nLoading estimates of the l2-bounds ...');
-    for iEffCh = 1:nEffectiveChans
-        tmpfile=filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end));
-        if isfile(tmpfile)
-            l2EffChansloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'sigmac', 'l2bounds');
-            if ~flag_visibility_gridding
-                for iCh = 1:numel(effChans2Image{iEffCh})
-                    for idSet = 1:nDataSets
-                        try % get bounds
-                            l2bounds{iEffCh}{iCh}{idSet} = l2EffChansloaded.l2bounds{idSet, iCh};
-                            flag_l2bounds_compute = 0;
-                            fprintf('\nINFO: l2 bounds loaded successfully.');
-                        catch
-                            fprintf('\nWARNING: l2 bounds not found. \nChi squared distribution is assumed to determine the l2 bounds.');
-                            flag_l2bounds_compute = 1;
-                        end
-                    end
-                end
-            else
-                try  l2bounds{iEffCh}{1}{1} =  l2EffChansloaded.l2bounds.gridded; % one single block assumed if reduced data
-                    fprintf('\nINFO: l2 bounds loaded successfully.\n');
-                catch
-                    fprintf('\nWARNING: l2 bounds not found. \nChi squared distribution is assumed to determine the l2 bounds.\n');
-                    flag_l2bounds_compute = 1;
-                end
-            end
-            if ~flag_l2bounds_compute
-                try % get noise std
-                    if ~flag_visibility_gridding
-                        global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac);
-                    else;  global_sigma_noise(iEffCh, 1) = full(l2EffChansloaded.sigmac.gridded);
-                    end
-                catch ;  global_sigma_noise(iEffCh, 1) = 1;
-                    flag_l2bounds_compute = 1; % assuming a chi squared dist.
-                    fprintf('\nWARNING: global sigma noise not found, will assume white data.\n');
-                end
-                
-            end
-        else
-            fprintf('\nWARNING: l2 bounds file not found: %s ',tmpfile);
-            flag_l2bounds_compute = 1;
-        end
-    end
+%% check noise estimation
+if isempty(param_preproc_files.noise_std)
+    flag_noise_theoretical = 1;
+    fprintf('\nINFO: theoretical noise assumed.\n');
+else; flag_noise_theoretical = 0;
 end
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
@@ -466,438 +407,280 @@ switch algo_solver
     otherwise
         error('Undefined algo_solver (available options: ''sara'',''hs'',''fhs'')');
 end
-%% Get faceting parameter (spectral + spatial)
-% fix faceting parameters in case these are not consistent with the
-% selected algorithm
-if strcmp(algo_solver, 'sara')
-    window_type = 'none';
-    Qc = 1; % nEffectiveChans;
-    Qx = 1;
-    Qy = 1;
-elseif strcmp(algo_solver, 'hs')
-    window_type = 'none';
-    Qx = 1;
-    Qy = 1;
-end
-Q = Qx * Qy;
+%% Get faceting parameter (spectral + spatial) & index of channels from the subcube to be handled on each data worker
 
-% convert fraction of overlap between consecutive facets into a number of pixels
-overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
-if ~strcmp(algo_solver, 'sara')
-    fprintf('\nINFO: faceting: number of pixels in overlap: [%s]\n', strjoin(strsplit(num2str(overlap_size))));
-end
-% index of channels from the subcube to be handled on each data worker
-if strcmp(algo_solver, 'sara')
-    % for SARA, parallelization is only active over the different wavelet
-    % dictionaries composing the SARA prior
-    ncores = numel(dict.basis);
-    ncores_data = ncores;
-else
-   freqRangeCores = split_range(ncores_data, nEffectiveChans);
+switch algo_solver
+    case 'sara'
+        % for SARA, parallelization is only active over the different wavelet
+        % dictionaries composing the SARA prior
+        ncores = numel(dict.basis);
+        ncores_data = ncores;
+    otherwise
+        freqRangeCores = split_range(ncores_data, nEffectiveChans);
+        % convert fraction of overlap between consecutive facets into a number of pixels
+        overlap_size = get_overlap_size([Ny, Nx], [Qy, Qx], overlap_fraction);
+        fprintf('\nINFO: faceting: number of pixels in overlap: [%s]\n', strjoin(strsplit(num2str(overlap_size))));
+
 end
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
-%%  FoV info
+%%  FoV info for w-proj
 param_wproj.FoVx = sin(pixelSize * Nx * pi / 180 / 3600);
 param_wproj.FoVy = sin(pixelSize * Ny * pi / 180 / 3600);
 param_wproj.uGridSize = 1 / (param_nufft.ox * param_wproj.FoVx);
 param_wproj.vGridSize = 1 / (param_nufft.oy * param_wproj.FoVy);
+param_wproj.halfSpatialBandwidth = halfSpatialBandwidth;
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
-%% setup parpool
-try delete(gcp('nocreate'));
-end
+%% Preconditionning params
+param_precond.N = param_global.im_Nx * param_global.im_Ny; % number of Fourier points (oversampled plane)
+param_precond.Nox = param_nufft.ox * param_global.im_Nx;
+param_precond.Noy = param_nufft.oy * param_global.im_Ny; %% Setup measurement operator and load data
 
-hpc_cluster = util_set_parpool(algo_solver, ncores_data, Qx * Qy, parcluster);
+%% Measurement operator
+if isempty(flag_apply_imaging_weights); flag_apply_imaging_weights = false;
+end
+param_nufft.flag_apply_imaging_weights = flag_apply_imaging_weights;
+
 % -------------------------------------------------------------------------%
 % -------------------------------------------------------------------------%
-%% Setup measurement operator and load data
+%% Building the measurement operator
 switch algo_solver
     case 'sara'
         for iEffCh = 1:nEffectiveChans
-            ddes = [];
-            %% if die/dde calib, get dies/ddes
-            if flag_calib.die
-                tmpfile = param_preproc.filename_die(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end));
-                if isfile(tmpfile)
-                    dieloaded = load(param_preproc.filename_die(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DIEs');
-                else
-                    fprintf('\nWARNING: DIEs file not found: %s ',tmpfile);
-                    dieloaded = [];
-                end
-            elseif flag_calib.dde
-                tmpfile = param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end));
-                if isfile(tmpfile)
-                    ddeloaded = load(param_preproc.filename_dde(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'DDEs');
-                else
-                    fprintf('\nWARNING: DDEs file not found: %s ',tmpfile);
-                    ddeloaded = [];
-                end
-            end
-            %% if data reduction and residual data available, load them
-            if flag_visibility_gridding
-                try
-                    DR_residualdataloaded = load(filename_l2bounds(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end)), 'RESIDUAL_DATA');
-                catch ; flag_l2bounds_compute = 1;
-                end
-            end
+            noise_std = []; noise_full_vect = []; dieloaded = []; Lambda = []; % init to avoid errors
             for iCh = 1:numel(effChans2Image{iEffCh})
                 for idSet = 1:nDataSets
-                    dataloaded = load(dataFilename(idSet, effChans2Image{iEffCh}(iCh)), 'u', 'v', 'w', 'nW', 'y', 'frequency');
-                    frequency = dataloaded.frequency;
-                    % u v  are in units of the wavelength and will be
-                    % normalised between [-pi,pi] for the NUFFT
-                    u{iEffCh, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth ;
-                    dataloaded.u = [];
-                    v{iEffCh, 1}{iCh}{idSet} = -double(dataloaded.v(:))* pi / halfSpatialBandwidth;
-                    dataloaded.v = [];
-                    w{iEffCh, 1}{iCh}{idSet} = double(dataloaded.w(:));
-                    dataloaded.w = [];
-                    nW{iEffCh, 1}{iCh}{idSet} = double(dataloaded.nW(:)); % nW: sqrt(natural weights)
-                    dataloaded.nW = [];
-                    y{iEffCh, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{iEffCh, 1}{iCh}{idSet}; % data whitening
-                    dataloaded.y = [];
-
-                    if flag_calib.die && ~isempty(dieloaded)
-                        % if die calib, correct data
-                        y{iEffCh, 1}{iCh}{idSet} = y{iEffCh, 1}{iCh}{idSet} ./ dieloaded.DIEs{idSet, iCh};
-                        dieloaded.DIEs{idSet, iCh} = [];
-                    elseif flag_calib.dde && ~isempty(ddeloaded)
-                        % dde calib
-                        ddes{iEffCh, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
-                        ddeloaded.DDEs{idSet, iCh} = [];
-                    end
-                    if flag_visibility_gridding
-                        % if residual data are available, use them to get
-                        % l2 bounds.
-                        try preproc_residuals{iEffCh, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
-                            DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh} = [];
-                        catch ;  preproc_residuals = [];
+                    %% get data & nW (natural weights) & Dies (if available) for now
+                    if flag_apply_imaging_weights
+                        dataloaded = load(dataFilename(idSet, effChans2Image{iEffCh}(iCh)), 'nW', 'y', 'nWimag');
+                        try y{iEffCh, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* double(dataloaded.nW(:)) .*  sqrt(double(dataloaded.nWimag(:))); % data whitening
+                        catch ; fprintf('\nWARNING: imaging weights could not be applied.');
+                            flag_apply_imaging_weights = false;
+                            y{iEffCh, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* double(dataloaded.nW(:));
                         end
+                    else
+                        dataloaded = load(dataFilename(idSet, effChans2Image{iEffCh}(iCh)), 'nW', 'y');
+                        y{iEffCh, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* double(dataloaded.nW(:));
                     end
-                    %% Compute l2bounds if not found
-                    if flag_l2bounds_compute
-                        global_sigma_noise(iEffCh, 1) = 1;
-                        tmp_nmeas = numel(y{iEffCh, 1}{iCh}{idSet});
-                        l2bounds{iEffCh, 1}{iCh}{idSet} =  sqrt(tmp_nmeas + 2 * sqrt(tmp_nmeas));
+                    % data whitening by applying the square root of the weights
+                    clear dataloaded;
+                    %% get noise STD of the physical channels & l2 bounds (if no visibility gridding)
+
+                    tmp_nmeas = numel(y{iEffCh, 1}{iCh}{idSet});
+                    chi_square_bound = sqrt(tmp_nmeas + 2 * sqrt(tmp_nmeas));
+                    if ~flag_noise_theoretical
+
+                        tmpfile = param_preproc_files.noise_std(idSet, effChans2Image{iEffCh}(iCh));
+                        if isfile(tmpfile)
+                            try noiseEffChansloaded = load(tmpfile, 'sigma');
+                                if ~flag_visibility_gridding
+                                    % case: no visibility gridding:
+                                    l2bounds{iEffCh, 1}{iCh}{idSet} =  chi_square_bound * noiseEffChansloaded.sigma;
+                                else
+                                    % case: visibility gridding: get std of the noise data to be
+                                    % used later for the  estimation of the noise std
+                                    % after visibility gridding
+                                    noise_std{iEffCh, 1}{iCh, 1}{idSet, 1} = noiseEffChansloaded.sigma;
+                                end
+                                noise_full_vect = [noise_full_vect; noiseEffChansloaded.sigma * (randn(tmp_nmeas, 1) + 1i * randn(tmp_nmeas, 1)) / sqrt(2)];
+                            catch
+                                flag_noise_theoretical = 1;
+                                l2bounds{iEffCh, 1}{iCh}{idSet} = chi_square_bound;
+                                fprintf('\nWARNING: failed to load `sigma` from the noise file.');
+                            end
+                        else; fprintf('\nWARNING: noise statistics file not found: %s ', tmpfile);
+                            flag_noise_theoretical = 1;
+                        end
+                    elseif  ~flag_visibility_gridding
+                        % case: no visibility gridding: compute l2bounds if
+                        % not available
+                        l2bounds{iEffCh, 1}{iCh}{idSet} = chi_square_bound;
                     end
+
                 end
             end
-
-            %% re-structure data; collapse cells
-            u{iEffCh, 1} = vertcat(u{iEffCh, 1}{:}); u{iEffCh, 1} = u{iEffCh, 1}(:);
-            v{iEffCh, 1} = vertcat(v{iEffCh, 1}{:}); v{iEffCh, 1} = v{iEffCh, 1}(:);
-            w{iEffCh, 1} = vertcat(w{iEffCh, 1}{:}); w{iEffCh, 1} = w{iEffCh, 1}(:);
-            nW{iEffCh, 1} = vertcat(nW{iEffCh, 1}{:}); nW{iEffCh, 1} = nW{iEffCh, 1}(:);
-            y{iEffCh, 1} = vertcat(y{iEffCh, 1}{:}); y{iEffCh, 1} =  y{iEffCh, 1}(:);
-            l2bounds{iEffCh, 1} = vertcat(l2bounds{iEffCh, 1}{:});
-            l2bounds{iEffCh, 1} = l2bounds{iEffCh, 1}(:);
-
-            if flag_calib.dde && ~isempty(ddes)
-                ddes{iEffCh, 1} = vertcat(ddes{iEffCh, 1}{:});
-                ddes{iEffCh, 1} =  ddes{iEffCh, 1}(:);
-            end
-
-            if flag_visibility_gridding
-                % if residual data are available
-                if exist('preproc_residuals', 'var')
-                    preproc_residuals{iEffCh, 1} = vertcat(preproc_residuals{iEffCh, 1}{:});
-                    preproc_residuals{iEffCh, 1} = preproc_residuals{iEffCh, 1}(:);
-                end
+            %% noise STD of the effective channel
+            if flag_noise_theoretical
+                global_sigma_noise(iEffCh, 1) = 1;
+                fprintf('\nINFO: theoretical noise assumed: sigma %f.\n', global_sigma_noise(iEffCh, 1));
+            else
+                global_sigma_noise(iEffCh, 1) = std(noise_full_vect);
+                clear noise_full_vect;
+                fprintf('\nINFO: user input: corrected sigma %f.\n', global_sigma_noise(iEffCh, 1));
             end
         end
-
+        %% get measurement op.
         if flag_visibility_gridding
             % one data block & one channel after visibility gridding (DR)
             % ! `G` is the holographic matrix
-            % get the reduced data vector `y` and the weighting
-            % matrix `Sigma` involved in visibility gridding
-            [A, At, G, W, aW, Sigma, y, noise] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
-                1, Nx, Ny, param_nufft, param_wproj, preproc_residuals, ddes);
-            % (DR) get the computed l2 bounds from the continuous residual
-            % data if available
-            if isfield(noise, 'l2bounds') && isfield(noise, 'sigma')
-                for iEffCh = 1:nEffectiveChans
-                    l2bounds{iEffCh}{1} = noise.l2bounds{iEffCh}{1};
-                    global_sigma_noise(iEffCh, 1) = noise.sigma{iEffCh};
-                end
-            elseif ~isempty(preproc_residuals)
-                  fprintf('\nWARNING: computing l2 bounds from the given residual data failed. ');
+            % get the reduced data vector `y`, the weighting
+            % matrix `Lambda` involved in visibility gridding and
+            % the l2 bounds computed from a realisation of a random
+            % variable (variance from user or theoretical assumed)
+            [A, At, G, W, aW, Lambda, y, noise] = util_load_data_gen_dr_measurement_operator(y, dataFilename, effChans2Image, ...
+                nDataSets, Nx, Ny, param_nufft, param_wproj, noise_std, param_preproc_files);
+            % get the l2-bounds after gridding the noise
+            for iEffCh = 1:nEffectiveChans
+                l2bounds{iEffCh}{1} = noise.l2bounds{iEffCh}{1};
+                global_sigma_noise(iEffCh, 1) = noise.sigma{iEffCh};
             end
         else
-            [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
-                 1, Nx, Ny, param_nufft, param_wproj, param_precond, ddes);
-            Sigma = [];
+            % re-structure data & l2 bounds; collapse cells
+            for iEffCh = 1:nEffectiveChans
+                y{iEffCh, 1} = vertcat(y{iEffCh, 1}{:}); y{iEffCh, 1} = y{iEffCh, 1}(:);
+                l2bounds{iEffCh, 1} = vertcat(l2bounds{iEffCh, 1}{:}); l2bounds{iEffCh, 1} = l2bounds{iEffCh, 1}(:);
+            end
+            [A, At, G, W, aW] = util_load_data_gen_measurement_operator(dataFilename, effChans2Image, nDataSets, ...
+                Nx, Ny, param_nufft, param_wproj, param_precond, param_preproc_files.dde);
         end
-        clear u v w nW ddes;
-        dirty = compute_residual_images(zeros(Ny,Nx), y, A, At, ...
-                         G, W, flag_visibility_gridding, Sigma);
+        % get dirty image
+        dirty = compute_residual_images(zeros(Ny, Nx), y, A, At, G, W, flag_visibility_gridding, Lambda);
+        % setup parpool
+        try delete(gcp('nocreate')); end
+        hpc_cluster = util_set_parpool('sara', ncores_data, 1, parcluster);
 
     otherwise % 'hs' or 'fhs'
-        % create the measurement operator operator in parallel (depending on
-        % the algorithm used)
-        Sigma = Composite();
-        if strcmp(algo_solver, 'hs')
-            spmd
-                ddes = []; preproc_residuals = [];
-                local_fc = (freqRangeCores(labindex, 1):freqRangeCores(labindex, 2));
+        %% setup parpool
+        try delete(gcp('nocreate')); end
+        hpc_cluster = util_set_parpool(algo_solver, ncores_data, Qx * Qy, parcluster);
+
+        % create the measurement operator operator in parallel
+        data_first_labindex_minus_1 = Qx * Qy * strcmp(algo_solver, 'fhs'); % index of last prior worker
+        spmd
+            Lambda = [];
+            if labindex > data_first_labindex_minus_1 % define operator on data workers only
+                local_fc = (freqRangeCores(labindex - data_first_labindex_minus_1, 1):freqRangeCores(labindex - data_first_labindex_minus_1, 2));
                 effChans2Image_lab = (effChans2Image(local_fc));
                 for ifc  = 1:numel(local_fc)
-                    %% if die/ddes calib, get dies/ddes                    
-                    if flag_calib.die
-                        tmpfile =param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end));
-                        if isfile(tmpfile)
-                            dieloaded = load(param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DIEs');
-                        else
-                            fprintf('\nWARNING: DIEs file not found: %s ',tmpfile);
-                            dieloaded = [];
-                        end
-                    elseif flag_calib.dde
-                        tmpfile =param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end));
-                        if isfile(tmpfile)
-                            ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
-                        else
-                            fprintf('\nWARNING: DDEs file not found: %s ',tmpfile);
-                            ddeloaded = [];
-                        end
-                    end
-                    
-                    %% if data reduction and residual data available, load them
-                    if flag_visibility_gridding
-                        try
-                            DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
-                        catch ; flag_l2bounds_compute = 1;
-                        end
-                    end
+                    noise_full_vect = []; dieloaded = []; noise_std = [];
                     for iCh = 1:numel(effChans2Image_lab{ifc})
+                        fprintf('\nChannel %d,', effChans2Image_lab{ifc}(iCh));
                         for idSet = 1:nDataSets
-                            %% load data
-                            dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w', 'nW', 'y', 'frequency');
-                            frequency = dataloaded.frequency;
-                            % u v  are in units of the wavelength and will be normalised between [-pi,pi] for the NUFFT
-                            u{ifc, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;
-                            dataloaded.u = [];
-                            v{ifc, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi/ halfSpatialBandwidth;
-                            dataloaded.v = [];
-                            w{ifc, 1}{iCh}{idSet} = double(dataloaded.w(:));
-                            dataloaded.w = [];
-                            nW{ifc, 1}{iCh}{idSet} = double(dataloaded.nW(:)); % sqrt(natural weights)
-                            dataloaded.nW = [];
-                            y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{ifc, 1}{iCh}{idSet}; % data whitening
-                            dataloaded.y = [];
-                            % Output of the pre-processing step if any
-                            if flag_calib.die && ~isempty(dieloaded)
-                                % if die calib, correct data
-                                y{ifc, 1}{iCh}{idSet} = y{ifc, 1}{iCh}{idSet} ./ dieloaded.DIEs{idSet, iCh};
-                                dieloaded.DIEs{idSet, iCh} = [];
-                            elseif flag_calib.dde  && ~isempty(ddeloaded)
-                                % if dde calib, get ddes
-                                ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
-                                ddeloaded.DDEs{idSet, iCh} = [];
-                            end
-                            if flag_visibility_gridding
-                                % if residual data are available, use them to get
-                                % l2 bounds.
-                                try preproc_residuals{ifc, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
-                                    DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh} = [];
-                                catch ; preproc_residuals = [];
+                            % get data & apply nW (natural weights)
+                            if flag_apply_imaging_weights
+                                dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'nW', 'y', 'frequency', 'nWimag');
+                                try y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .*  double(dataloaded.nW(:)) .*  sqrt(double(dataloaded.nWimag(:))); % data whitening
+                                catch ; fprintf('\nWARNING: imaging weights could not be applied.');
+                                    y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .*  double(dataloaded.nW(:));
                                 end
+                            else
+                                dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'nW', 'y', 'frequency');
+                                y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .*  double(dataloaded.nW(:)); % data whitening
                             end
 
-                            %% Compute l2bounds if not found
-                            if flag_l2bounds_compute
-                                global_sigma_noise_cmpst = 1;
-                                tmp_nmeas = numel(y{ifc, 1}{iCh}{idSet});
-                                l2bounds{ifc, 1}{iCh}{idSet} =  sqrt(tmp_nmeas + 2 * sqrt(tmp_nmeas));
+                            frequency =  dataloaded.frequency;
+
+                            dataloaded = [];
+                            % get noise STD of the physical channels & l2 bounds (if no visibility gridding)
+                            tmp_nmeas = numel(y{ifc, 1}{iCh}{idSet});
+                            chi_square_bound = sqrt(tmp_nmeas + 2 * sqrt(tmp_nmeas));
+                            if ~flag_noise_theoretical
+                                tmpfile = param_preproc_files.noise_std(idSet, effChans2Image_lab{ifc}(iCh));
+                                if isfile(tmpfile)
+                                    try noiseEffChansloaded = load(tmpfile, 'sigma');
+                                        if ~flag_visibility_gridding
+                                            % case: no visibility gridding:
+                                            l2bounds{ifc, 1}{iCh}{idSet} =  chi_square_bound * noiseEffChansloaded.sigma;
+                                        else
+                                            % case:  visibility gridding: get std of the noise data to be
+                                            % used later for the  estimation of the noise level
+                                            % after visibility gridding
+                                            noise_std{ifc, 1}{iCh, 1}{idSet, 1} = noiseEffChansloaded.sigma;
+                                        end
+                                        noise_full_vect = [noise_full_vect; ...
+                                            noiseEffChansloaded.sigma * (randn(tmp_nmeas, 1) + 1i * randn(tmp_nmeas, 1)) / sqrt(2)];
+                                    catch
+                                        flag_noise_theoretical = 1;
+                                        fprintf('\nWARNING: failed to load `sigma` from the noise file.');
+                                        l2bounds{ifc, 1}{iCh}{idSet} = chi_square_bound;
+                                    end
+                                else;  fprintf('\nWARNING: noise statistics file not found: %s ', tmpfile);
+                                    flag_noise_theoretical = 1;
+                                end
+                            elseif  ~flag_visibility_gridding
+                                % case: no visibility gridding, compute l2bounds if not found
+                                l2bounds{ifc, 1}{iCh}{idSet} =  chi_square_bound;
                             end
+
                         end
                     end
-                    %% re-structure data; collapse cells
-                    u{ifc, 1} = vertcat(u{ifc, 1}{:}); u{ifc, 1} = u{ifc, 1}(:);
-                    v{ifc, 1} = vertcat(v{ifc, 1}{:}); v{ifc, 1} = v{ifc, 1}(:);
-                    w{ifc, 1} = vertcat(w{ifc, 1}{:}); w{ifc, 1} = w{ifc, 1}(:);
-                    nW{ifc, 1} = vertcat(nW{ifc, 1}{:}); nW{ifc, 1} = nW{ifc, 1}(:);
-                    y{ifc, 1} = vertcat(y{ifc, 1}{:});   y{ifc, 1} =  y{ifc, 1}(:);
-                    l2bounds{ifc, 1} = vertcat(l2bounds{ifc, 1}{:});  
-                    l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
-
-                    if flag_calib.dde && ~isempty(ddes)
-                        ddes{ifc, 1} = vertcat(ddes{ifc, 1}{:});
-                        ddes{ifc, 1} = ddes{ifc, 1}(:);
+                    % noise STD of the effective channel
+                    if flag_noise_theoretical
+                        global_sigma_noise_cmpst(ifc, 1) = 1;
+                        fprintf('\nINFO: theoretical noise assumed: sigma %f', global_sigma_noise_cmpst(ifc, 1));
+                    else
+                        global_sigma_noise_cmpst(ifc, 1) = std(noise_full_vect); noise_full_vect = [];
+                        fprintf('\nINFO: user input: corrected sigma %f', global_sigma_noise_cmpst(ifc, 1));
                     end
 
-                    if flag_visibility_gridding
-                        try preproc_residuals{ifc, 1} = vertcat(preproc_residuals{ifc, 1}{:});
-                            preproc_residuals{ifc, 1} = preproc_residuals{ifc, 1}(:);
-                        catch ; preproc_residuals = [];
-                        end
-                    end
                 end
-
+                % build the measurement operator
                 if flag_visibility_gridding
                     % one data block & one channel after visibility gridding
                     % ! `G` is the holographic matrix
-                    % get the reduced data vector `y` and the weighting
-                    % matrix `Sigma` involved in visibility gridding
-                    fprintf('\nCompute the holographic matrix  .. ');
-                    [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
-                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, preproc_residuals, ddes);
-                else
-                    % ! `G` is the degridding matrix
-                    [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
-                         numel(local_fc), Nx, Ny, param_nufft, param_wproj, param_precond, ddes);
-                    Sigma = [];
-                end;   u = []; v = []; w = []; nW = []; ddes = [];
-                dirty = compute_residual_images(squeeze(zeros(Ny,Nx,numel(y))), y, A, At, ...
-                                                G, W, flag_visibility_gridding, Sigma);
-            end
-        else
-            Sigma = Composite();
-            spmd
-                ddes = []; preproc_residuals = [];
-                % define operator on data workers only
-                if labindex > Q
-                    local_fc = (freqRangeCores(labindex - Q, 1):freqRangeCores(labindex - Q, 2));
-                    effChans2Image_lab = (effChans2Image(local_fc));
-                    for ifc  = 1:numel(local_fc)
-                        %% if die/ddes calib, get dies/ddes
-                        if flag_calib.die
-                            tmpfile =param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end));
-                            if isfile(tmpfile)
-                                dieloaded = load(param_preproc.filename_die(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DIEs');
-                            else
-                                fprintf('\nWARNING: DIEs file not found: %s ',tmpfile);
-                                dieloaded = [];
-                            end
-                        elseif flag_calib.dde
-                            tmpfile =param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end));
-                            if isfile(tmpfile)
-                                ddeloaded = load(param_preproc.filename_dde(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'DDEs');
-                            else
-                                fprintf('\nWARNING: DDEs file not found: %s ',tmpfile);
-                                ddeloaded = [];
-                            end
-                        end                        
-                        %% if data reduction and residual data available, load them
-                        if flag_visibility_gridding
-                            try
-                                DR_residualdataloaded = load(filename_l2bounds(effChans2Image{ifc}(1), effChans2Image{ifc}(end)), 'RESIDUAL_DATA');
-                            catch ; flag_l2bounds_compute = 1;
-                            end
-                        end
-                        for iCh = 1:numel(effChans2Image_lab{ifc})
-                            for idSet = 1:nDataSets
-                                %% load data
-                                dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'u', 'v', 'w', 'nW', 'y', 'frequency');
-                                frequency = dataloaded.frequency;
-                                % u v  are in units of the wavelength and will be normalised between [-pi,pi] for the NUFFT
-                                u{ifc, 1}{iCh}{idSet} = double(dataloaded.u(:)) * pi / halfSpatialBandwidth;
-                                dataloaded.u = [];
-                                v{ifc, 1}{iCh}{idSet} = -double(dataloaded.v(:)) * pi / halfSpatialBandwidth;
-                                dataloaded.v = [];
-                                w{ifc, 1}{iCh}{idSet} = double(dataloaded.w(:));
-                                dataloaded.w = [];
-                                nW{ifc, 1}{iCh}{idSet} = double(dataloaded.nW(:)); % sqrt(natural weights)
-                                dataloaded.nW = [];
-                                y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* nW{ifc, 1}{iCh}{idSet}; % data whitening
-                                dataloaded.y = [];
-                                % Output of the pre-processing step if any
-                                if flag_calib.die && ~isempty(dieloaded)
-                                    % if die calib, correct data
-                                    y{ifc, 1}{iCh}{idSet} = y{ifc, 1}{iCh}{idSet} ./ dieloaded.DIEs{idSet, iCh};
-                                    dieloaded.DIEs{idSet, iCh} = [];
-                                elseif flag_calib.dde && ~isempty(ddeloaded)
-                                    % if dde calib, get ddes
-                                    ddes{ifc, 1}{iCh}{idSet} = ddeloaded.DDEs{idSet, iCh};
-                                    ddeloaded.DDEs{idSet, iCh} = [];
-                                end
-                                if flag_visibility_gridding
-                                    % if residual data are available, use them to get
-                                    % l2 bounds.
-                                    try preproc_residuals{ifc, 1}{iCh}{idSet} = DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh};
-                                        DR_residualdataloaded.RESIDUAL_DATA{idSet, iCh} = [];
-                                    catch ; preproc_residuals = [];
-                                    end
-                                end
-
-                                %% Compute l2bounds if not found
-                                if flag_l2bounds_compute
-                                    global_sigma_noise_cmpst = 1;
-                                    tmp_nmeas = numel(y{ifc, 1}{iCh}{idSet});
-                                    l2bounds{ifc, 1}{iCh}{idSet} =  sqrt(tmp_nmeas + 2 * sqrt(tmp_nmeas));
-                                end
-                            end
-                        end
-                        %% re-structure data; collapse cells
-                        u{ifc, 1} = vertcat(u{ifc, 1}{:}); u{ifc, 1} = u{ifc, 1}(:);
-                        v{ifc, 1} = vertcat(v{ifc, 1}{:}); v{ifc, 1} = v{ifc, 1}(:);
-                        w{ifc, 1} = vertcat(w{ifc, 1}{:}); w{ifc, 1} = w{ifc, 1}(:);
-                        nW{ifc, 1} = vertcat(nW{ifc, 1}{:}); nW{ifc, 1} = nW{ifc, 1}(:);
-                        y{ifc, 1} = vertcat(y{ifc, 1}{:}); y{ifc, 1} =  y{ifc, 1}(:);
-                        l2bounds{ifc, 1} = vertcat(l2bounds{ifc, 1}{:});
-                        l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
-                        
-
-                        if flag_calib.dde && ~isempty(ddes)
-                            ddes{ifc, 1} = vertcat(ddes{ifc, 1}{:});
-                            ddes{ifc, 1} = ddes{ifc, 1}(:);
-                        end
-
-                        if flag_visibility_gridding
-                            try preproc_residuals{ifc, 1} = vertcat(preproc_residuals{ifc, 1}{:});
-                                preproc_residuals{ifc, 1} = preproc_residuals{ifc, 1}(:);
-                            catch ; preproc_residuals = [];
-                            end
-                        end
+                    % get the reduced data vector `y`, the weighting
+                    % matrix `Lambda` involved in visibility gridding
+                    % and the computed l2 bounds from a realisation of a random
+                    % variable (std from user or theoretical assumed)
+                    fprintf('\nCompute the holographic matrix  ..');
+                    [A, At, G, W, aW, Lambda, y, noise] = util_load_data_gen_dr_measurement_operator(y, dataFilename, effChans2Image_lab, ...
+                        nDataSets, Nx, Ny, param_nufft, param_wproj, noise_std, param_preproc_files);
+                    % get the l2-bounds from the gridded noise vector
+                    for ifc = 1:numel(local_fc)
+                        l2bounds{ifc}{1} = noise.l2bounds{ifc}{1};
+                        global_sigma_noise_cmpst(ifc, 1) = noise.sigma{ifc};
                     end
-
-                    if flag_visibility_gridding
-                        % one data block & one channel after visibility gridding
-                        % ! `G` is the holographic matrix
-                        % get the reduced data vector `y` and the weighting
-                        % matrix `Sigma` involved in visibility gridding
-                        fprintf('\nCompute the holographic matrix  ..');
-                        [A, At, G, W, aW, Sigma, y] = util_gen_dr_measurement_operator(y, u, v, w, nW, ...
-                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  preproc_residuals, ddes);
-                    else
-                        % ! `G` is the degridding matrix
-                        [A, At, G, W, aW] = util_gen_measurement_operator(u, v, w, nW, ...
-                            numel(local_fc), Nx, Ny, param_nufft, param_wproj,  param_precond, ddes);
-                        Sigma = [];
-                    end; u = []; v = []; w = []; nW = []; ddes = [];
-                    
-                    dirty = compute_residual_images(squeeze(zeros(Ny,Nx,numel(y))), y, A, At, ...
-                                                G, W, flag_visibility_gridding, Sigma);
+                    noise_std = [];
+                else
+                    Lambda = [];
+                    % re-structure data; collapse cells
+                    for ifc  = 1:numel(local_fc)
+                        y{ifc, 1} = vertcat(y{ifc, 1}{:}); y{ifc, 1} =  y{ifc, 1}(:);
+                        l2bounds{ifc, 1} = vertcat(l2bounds{ifc, 1}{:}); l2bounds{ifc, 1} = l2bounds{ifc, 1}(:);
+                    end
+                    % ! `G` is the degridding matrix
+                    [A, At, G, W, aW] = util_load_data_gen_measurement_operator(dataFilename, effChans2Image_lab, nDataSets, ...
+                        Nx, Ny, param_nufft, param_wproj,  param_precond, param_preproc_files.dde);
                 end
+
+                dirty = compute_residual_images(squeeze(zeros(Ny, Nx, numel(y))), y, A, At, ...
+                    G, W, flag_visibility_gridding, Lambda);
             end
-        end; clear local_fc  u v w nW dataSpWinloaded ddes;
+        end
 end
 % Free memory
-clear  param_wproj param_preproc  preproc_residuals;
-  
-fprintf('\nData loaded successfully.');
+clear  param_wproj param_preproc  local_fc preproc_*;
+fprintf('\nData loaded, and measurement operator built, successfully.');
+% -------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
+%% save dirty images
 try
     subcube_channels = 1:nEffectiveChans;
-    if strcmp(algo_solver, 'sara')
-        dirty_file= fullfile(results_path, ...
-            strcat('dirty_', algo_solver, ...
-            '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
-            '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), '.fits'));
-        fitswrite(dirty,dirty_file)
-    else
-        for k = 1:ncores_data
-            dirty_file = fullfile(results_path, strcat('dirty_',algo_solver, ...
+    switch algo_solver
+        case 'sara'
+            dirty_file = fullfile(results_path, ...
+                strcat('dirty_', algo_solver, ...
                 '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
-                '_ch', num2str(k),'.fits'));
-            dirty_tmp = dirty{data_worker_id(k)};
-            fitswrite(dirty_tmp,dirty_file)
-        end
+                '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), '.fits'));
+            fitswrite(dirty, dirty_file);
+        otherwise
+            for k = 1:ncores_data
+                dirty_file = fullfile(results_path, strcat('dirty_', algo_solver, ...
+                    '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
+                    '_ch', num2str(k), '.fits'));
+                dirty_tmp = dirty{data_worker_id(k)};
+                fitswrite(dirty_tmp, dirty_file);
+            end
     end
-    fprintf('\nDirty images saved.')
-catch, fprintf('\nWARNING: error encountered when saving dirty images.');
+    fprintf('\nDirty images saved, successfully.');
+catch
+    fprintf('\nWARNING: error encountered when saving dirty images.');
 end
-%% load l2 bounds (generate only full spectral dataset)
-
+clear dirty dirty_tmp;
+% -------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
+%% generate l2 bounds
 switch algo_solver
     case 'sara'
         % ! to be verified
@@ -907,21 +690,20 @@ switch algo_solver
         epsilons = Composite();
         for k = 1:ncores_data
             epsilons{data_worker_id(k)} = l2bounds{data_worker_id(k)};
-            if exist('global_sigma_noise_cmpst', 'var')
-                if k == 1; global_sigma_noise = global_sigma_noise_cmpst{data_worker_id(k)};
-                else; global_sigma_noise = [global_sigma_noise; global_sigma_noise_cmpst{data_worker_id(k)}];
-                end
+            if k == 1; global_sigma_noise = global_sigma_noise_cmpst{data_worker_id(k)};
+            else; global_sigma_noise = [global_sigma_noise; global_sigma_noise_cmpst{data_worker_id(k)}];
             end
         end; clear global_sigma_noise_cmpst;
 end
-
+% -------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %% Compute operator norm
 subcube_channels = 1:nEffectiveChans;
 if strcmp(algo_solver, 'sara')
     if flag_computeOperatorNorm
-        fprintf('\nINFO: computing operator''s spectral norm .. ')
-        tic
-        [Anorm, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 200, flag_visibility_gridding, Sigma); % AD: changed tolerance to 1e-6 instead of 1e-8
+        fprintf('\nINFO: computing operator''s spectral norm .. ');
+        tic;
+        [Anorm, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-6, 200, flag_visibility_gridding, Lambda); % AD: changed tolerance to 1e-6 instead of 1e-8
         save(fullfile(results_path, ...
             strcat('Anorm_', algo_solver, ...
             '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
@@ -929,7 +711,7 @@ if strcmp(algo_solver, 'sara')
             '-v7.3', 'Anorm', 'squared_operator_norm', 'rel_var', ...
             'squared_operator_norm_precond', 'rel_var_precond');
         clear rel_var;
-        fprintf('done in %d sec.\n',floor(toc))
+        fprintf('done in %d sec.\n', floor(toc));
     else
         load(fullfile(results_path, ...
             strcat('Anorm_', algo_solver, ...
@@ -939,29 +721,30 @@ if strcmp(algo_solver, 'sara')
     end
 else
     if flag_computeOperatorNorm
-        fprintf('\nINFO: computing operator''s spectral norm .. ')
-        tic
+        tic;
+        fprintf('\nINFO: computing operator''s spectral norm .. ');
         spmd
-            if labindex > Qx * Qy * strcmp(algo_solver, 'fhs')
-                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200, flag_visibility_gridding, Sigma);
+            if labindex > data_first_labindex_minus_1
+                [An, squared_operator_norm, rel_var, squared_operator_norm_precond, rel_var_precond] = util_operator_norm(G, W, A, At, aW, Ny, Nx, 1e-8, 200, flag_visibility_gridding, Lambda);
             end
         end
-        % save operator norm from the different subcubes into a single .mat
-        % file
-        opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
-            '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
-            '_L', num2str(nEffectiveChans), '.mat')), 'Writable', true);
 
+        if flag_saveOperatorNorm
+            % save operator norm from the different subcubes into a single .mat
+            % file
+            fprintf('\nINFO: measurement operator''s norm is saved. \n');
+            opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
+                '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
+                '_L', num2str(nEffectiveChans), '.mat')), 'Writable', true);
+        end
         opnormfile.squared_operator_norm = zeros(nEffectiveChans, 1);
         opnormfile.rel_var = zeros(nEffectiveChans, 1);
         opnormfile.squared_operator_norm_precond = zeros(nEffectiveChans, 1);
         opnormfile.rel_var_precond = zeros(nEffectiveChans, 1);
-
         Anorm = 0;
         for k = 1:ncores_data
             opnormfile.squared_operator_norm(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = squared_operator_norm{data_worker_id(k)};
             opnormfile.rel_var(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = rel_var{data_worker_id(k)};
-
             opnormfile.squared_operator_norm_precond(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = squared_operator_norm_precond{data_worker_id(k)};
             opnormfile.rel_var_precond(freqRangeCores(k, 1):freqRangeCores(k, 2), 1) = rel_var_precond{data_worker_id(k)};
 
@@ -971,7 +754,7 @@ else
         squared_operator_norm =   opnormfile.squared_operator_norm(subcube_channels, 1);
         squared_operator_norm_precond = opnormfile.squared_operator_norm_precond(subcube_channels, 1);
 
-        fprintf('done in %d sec.\n',floor(toc))
+        fprintf('done in %d sec.\n', floor(toc));
     else
         opnormfile = matfile(fullfile(results_path, strcat('Anorm', ...
             '_Ny', num2str(Ny), '_Nx', num2str(Nx), ...
@@ -985,6 +768,8 @@ else
 end
 
 fprintf('INFO: Convergence parameter (measurement operator''s norm squared): %e \n', Anorm);
+% -------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
 %% Setup name of results file
 
 if strcmp(algo_solver, 'sara') % AD
@@ -1003,59 +788,56 @@ else
 end
 
 warm_start = @(nEffectiveChans) strcat(temp_results_name(nEffectiveChans), '_rw', num2str(flag_reweighting), '.mat');
-%% Regularization parameters and solver
-
-% estimate noise level (set regularization parameters to the same value)
-% compute sig and sig_bar (estimate of the "noise level" in "SVD" and
+% -------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
+%% Regularization  and solver parameters
+% get the noise level (set regularization parameters to the same value)
+% compute sig and sig_bar (get  the "noise level" in "SVD" and
 % SARA space) involved in the reweighting scheme
 
-if strcmp(algo_solver, 'sara')
-    % SARA dicionary (created out of the solver for SARA)
-    dwtmode('zpd');
-    [Psi1, Psit1] = op_p_sp_wlt_basis(dict.basis, dict.nlevel, Ny, Nx);
-    P = numel(Psi1);
-    Psi = cell(P, 1);
-    Psit = cell(P, 1);
-    s = zeros(P, 1); % number of wavelet coefficients for each dictionary
-    for k = 1:P
-        f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
-        f = sprintf('%s%i},Ny,Nx);', f, k);
-        Psi{k} = eval(f);
-        s(k) = size(Psit1{k}(zeros(Ny, Nx, 1)), 1);
-        ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},s(' num2str(k) '));'];
-        Psit{k} = eval(ft);
-    end
-    % noise level / regularization parameter
-    sig = compute_noise_level_sara(global_sigma_noise, squared_operator_norm);
-    % apply multiplicative factor for the regularization parameter (if needed)
-    mu = gam * sig;
-    fprintf('Noise level: sig = %e\n', sig);
-    fprintf('Additional multiplicative regularisation factor gam = %e\n', gam);
-    fprintf('Regularization parameter mu = %e\n', mu);
-    fprintf('Algo: %s, alpha = %.4e, mu = %.4e, sig = %.4e\n', algo_solver, gam, mu, sig);
+switch algo_solver
+    case 'sara'
+        % SARA dicionary (created out of the solver for SARA)
+        dwtmode('zpd');
+        [Psi1, Psit1] = op_p_sp_wlt_basis(dict.basis, dict.nlevel, Ny, Nx);
+        P = numel(Psi1);
+        Psi = cell(P, 1);
+        Psit = cell(P, 1);
+        s = zeros(P, 1); % number of wavelet coefficients for each dictionary
+        for k = 1:P
+            f = '@(x_wave) HS_forward_sparsity(x_wave,Psi1{';
+            f = sprintf('%s%i},Ny,Nx);', f, k);
+            Psi{k} = eval(f);
+            s(k) = size(Psit1{k}(zeros(Ny, Nx, 1)), 1);
+            ft = ['@(x) HS_adjoint_sparsity(x,Psit1{' num2str(k) '},s(' num2str(k) '));'];
+            Psit{k} = eval(ft);
+        end
+        % noise level / regularization parameter
+        sig = compute_noise_level_sara(global_sigma_noise, squared_operator_norm);
+        % apply multiplicative factor for the regularization parameter (if needed)
+        mu = gam * sig;
+        fprintf('Noise level: sig = %e\n', sig);
+        fprintf('Additional multiplicative regularisation factor gam = %e\n', gam);
+        fprintf('Regularization parameter mu = %e\n', mu);
+        fprintf('Algo: %s, alpha = %.4e, mu = %.4e, sig = %.4e\n', algo_solver, gam, mu, sig);
+    otherwise
+        % noise level / regularization parameter
+        [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
+            compute_noise_level(Ny, Nx, nEffectiveChans, global_sigma_noise(:), ...
+            algo_solver, Qx, Qy, overlap_size, squared_operator_norm(:));
+        % apply multiplicative factor for the regularization parameters (if needed)
+        mu_bar = gam_bar * sig_bar;
+        mu = gam * sig;
+        fprintf('mu_chi = %.4e, sig_chi = %.4e, sig_sara = %.4e\n', mu_chi, sig_chi, sig_sara);
+        fprintf('Noise levels: sig = %.4e, sig_bar = [%.4e, %.4e]\n', sig, min(sig_bar), max(sig_bar));
+        fprintf('Additional multiplicative actors gam = %.4e, gam_bar = %.4e\n', gam, gam_bar);
+        fprintf('Regularization parameters: mu = %.4e, mu_bar = %.4e\n', mu, mu_bar);
+        fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_solver, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
 end
 
-if strcmp(algo_solver, 'hs') || strcmp(algo_solver, 'fhs')
-    % noise level / regularization parameter
-    [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
-        compute_noise_level(Ny, Nx, nEffectiveChans, global_sigma_noise(:), ...
-        algo_solver, Qx, Qy, overlap_size, squared_operator_norm(:));
-    % apply multiplicative factor for the regularization parameters (if needed)
-    mu_bar = gam_bar * sig_bar;
-    mu = gam * sig;
-    fprintf('mu_chi = %.4e, sig_chi = %.4e, sig_sara = %.4e\n', mu_chi, sig_chi, sig_sara);
-    fprintf('Noise levels: sig = %.4e, sig_bar = [%.4e, %.4e]\n', sig, min(sig_bar), max(sig_bar));
-    fprintf('Additional multiplicative actors gam = %.4e, gam_bar = %.4e\n', gam, gam_bar);
-    fprintf('Regularization parameters: mu = %.4e, mu_bar = %.4e\n', mu, mu_bar);
-    fprintf('Algo: %s, gam = %.4e, gam_bar = %.4e, mu = %.4e, mu_bar = [%.4e, %.4e]\n', algo_solver, gam, gam_bar, mu, min(mu_bar), max(mu_bar));
-end
-
-% moved here for transprancy: define parameters for the solver
-% List of default solver-specific parameters (reweighting, pdfb, ellispsoid
-% prjection, epsilon update scheme).
-% * general
-% estimate of the noise level in SARA space
-param_solver.reweighting_sig = sig;
+% additional solver params.
+param_solver.squared_operator_norm = squared_operator_norm;
+param_solver.reweighting_sig = sig; % estimate of the noise level in SARA space
 if ~strcmp(algo_solver, 'sara')
     param_solver.reweighting_sig_bar = sig_bar; % estimate of the noise level in "SVD" spaces
 end
@@ -1065,16 +847,52 @@ param_solver.nu2 = squared_operator_norm_precond; % upper bound on the norm of t
 if ~strcmp(algo_solver, 'sara')
     param_solver.gamma0 = mu_bar; % regularization parameter nuclear norm
 end
+param_solver.reweighting_flag = flag_reweighting;
+if ~flag_reweighting
+    param_solver.reweighting_max_iter = 0;
+end
 param_solver.gamma = mu; % regularization parameter l21-norm (soft th parameter) ! for SARA, take the value given as an input to the solver
 param_solver.cube_id = subcubeInd; % id of the cube to be reconstructed
-param_solver.backup_frequency = 1; % PA: checkpoint frequency! AD :????
+param_solver.backup_frequency = 1; % PA: checkpoint frequency!
 
 param_solver.alph = gam;
 param_solver.alph_bar = gam_bar;
+param_solver.adjust_flag_noise = adjust_flag_noise;
 % temp filenames
 name_checkpoint = fullfile(auxiliary_path, temp_results_name(nEffectiveChans));
 name_warmstart = fullfile(auxiliary_path, warm_start(nEffectiveChans));
-%% Solver
+% -------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
+%% image cube initialisation: load if available otherwise set to 0
+switch algo_solver
+    case 'sara'
+        xinit = zeros(Ny, Nx);
+        if ~isempty(filename_init_model)
+            fprintf('\nLoading  available image estimate  ...');
+            try xinit = fitsread(filename_init_model(effChans2Image{1}(1), effChans2Image{1}(end)));
+                if  ~(size(xinit, 1) == Ny && size(xinit, 2) == Nx)
+                    xinit = zeros(Ny, Nx);
+                    fprintf('\nWARNING: init. image with different dimensions found.');
+                else; fprintf('\nINFO: init. image loaded successfully.');
+                end
+            catch; fprintf('\nWARNING: init. image not found.');
+            end
+        end
+    otherwise
+        xinit = zeros(ImageCubeDims);
+        if ~isempty(filename_init_model)
+            fprintf('\nLoading  available image estimates  ...');
+            for  iEffCh =  1:nEffectiveChans
+                try  xinit(:, :, iEffCh) = reshape(fitsread(filename_init_model(effChans2Image{iEffCh}(1), effChans2Image{iEffCh}(end))), N, 1);
+                    fprintf('\nINFO: Effective channel ID %d: init. image loaded successfully.', iEffCh);
+                catch; fprintf('\nWARNING: Effective channel ID %d: init. image not found or wrong dimensions.', iEffCh);
+                end
+            end
+        end
+end
+% -------------------------------------------------------------------------%
+% -------------------------------------------------------------------------%
+%% Run imaging
 if flag_solveMinimization
     if strcmp(algo_solver, 'sara')
         disp('SARA');
@@ -1083,9 +901,9 @@ if flag_solveMinimization
         % ! to the number of workers for the wavelet transform (9 maximum)
         xsol = sara(y, epsilons, A, At, aW, G, W, Psi, Psit, ...
             param_solver, name_warmstart, name_checkpoint, gam, ...
-            flag_visibility_gridding, Sigma, xinit);
-        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', srcName, '_', algo_solver, ...
-            '_', num2str(pixelSize), 'asec', ...  % '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
+            flag_visibility_gridding, Lambda, xinit);
+        fitswrite(xsol, fullfile(auxiliary_path, strcat('MODEL_', srcName, '_', algo_solver, ...
+            '_', num2str(pixelSize), 'asec', ...
             '_chs', num2str(effChans2Image{1}(1)), '-', num2str(effChans2Image{1}(end)), ...
             '_gam', num2str(gam), ...
             '.fits')));
@@ -1096,9 +914,7 @@ if flag_solveMinimization
         for k = 1:ncores_data
             channel_chunks{k} = freqRangeCores(k, 1):freqRangeCores(k, 2);
         end
-
         %
-        xinit = reshape(xinit, ImageCubeDims);
         switch algo_solver
             case 'hs'
                 disp('HyperSARA');
@@ -1107,22 +923,21 @@ if flag_solveMinimization
                     A, At, aW, G, W, param_solver, ...
                     ncores_data, dict.basis, dict.nlevel, channel_chunks, ...
                     nEffectiveChans, Ny, Nx, param_nufft.oy, param_nufft.ox, ...
-                    name_warmstart, name_checkpoint, flag_visibility_gridding, Sigma, ...
+                    name_warmstart, name_checkpoint, flag_visibility_gridding, Lambda, ...
                     xinit);
             case 'fhs'
                 disp('Faceted HyperSARA');
                 disp('-----------------------------------------');
-
                 xsol = facetHyperSARA(y, epsilons, ...
                     A, At, aW, G, W, param_solver, Qx, Qy, ncores_data, ...
                     dict.basis, dict.filter_length, dict.nlevel, window_type, ...
-                    channel_chunks, nEffectiveChans, overlap_size, gam, gam_bar, ...
+                    channel_chunks, nEffectiveChans, overlap_size, ...
                     Ny, Nx, param_nufft.oy, param_nufft.ox, ...
-                    name_warmstart, name_checkpoint, flag_visibility_gridding, Sigma, ...
+                    name_warmstart, name_checkpoint, flag_visibility_gridding, Lambda, ...
                     xinit);
             otherwise; error('Unknown solver version.');
         end
-        fitswrite(xsol, fullfile(auxiliary_path, strcat('x_', srcName, '_', algo_solver, ...
+        fitswrite(xsol, fullfile(auxiliary_path, strcat('WB_MODEL_', srcName, '_', algo_solver, ...
             '_', num2str(pixelSize), 'asec', ...
             '_Qy', num2str(Qy), '_Qx', num2str(Qx), '_Qc', num2str(Qc), ...
             '_ind', num2str(subcubeInd), ...

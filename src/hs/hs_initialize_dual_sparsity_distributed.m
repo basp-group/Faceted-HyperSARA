@@ -49,7 +49,7 @@ end
 % compute part of the row-wise l2 norm
 d1_ = sum(v1.^2, 2);
 % compute sum across all workers
-d1 = gplus(d1_);
+d1 = gplus(d1_); clear d1_;
 d1 = sqrt(d1);
 upsilon = sig * reweighting_alpha;
 weights1 = upsilon ./ (upsilon + d1);

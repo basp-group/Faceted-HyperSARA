@@ -46,9 +46,9 @@ function [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
 %
 
 % compute sig and sig_bar
-sig_sara = sqrt(mean((std_noise.^2) ./ squared_operator_norm));
-mu_chi = sqrt(2) * gamma((n_channels + 1) / 2) / gamma(n_channels / 2);
-sig_chi = sqrt(n_channels - mu_chi^2);
+sig_sara = full(sqrt(mean((std_noise.^2) ./ squared_operator_norm)));
+mu_chi = full(sqrt(2) * gamma((n_channels + 1) / 2) / gamma(n_channels / 2));
+sig_chi = full(sqrt(n_channels - mu_chi^2));
 sig = sig_sara * (mu_chi + sig_chi);
 
 % compute sig_bar
@@ -85,6 +85,6 @@ else
     sig_bar = zeros(Q, 1);
     for q = 1:Q
         Noq = prod(dims_o(q, :));
-        sig_bar(q) = sqrt(Noq * sum(std_noise.^2 ./ squared_operator_norm) / min(Noq, n_channels));
+        sig_bar(q) = full(sqrt(Noq * sum(std_noise.^2 ./ squared_operator_norm) / min(Noq, n_channels)));
     end
 end

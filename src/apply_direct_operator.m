@@ -1,4 +1,4 @@
-function y = apply_direct_operator(Fx, G, Sigma)
+function y = apply_direct_operator(Fx, G, Lambda)
 % Apply part of the direct measurement operator (after the scaled discrete
 % Fourier transform involved in the non-uniform FFT :cite:p:`Fessler2003`).
 %
@@ -8,7 +8,7 @@ function y = apply_direct_operator(Fx, G, Sigma)
 %     Scaled discrete Fourier transform of a 2d array :math:`x`.
 % G : complex[:, :]
 %     Gridding matrix (including noise whitening operator).
-% Sigma : double[:]
+% Lambda : double[:]
 %     Reduction operator.
 %
 % Returns
@@ -17,6 +17,6 @@ function y = apply_direct_operator(Fx, G, Sigma)
 %     Visibility vector.
 %
 
-y = Sigma .* (G * Fx);
+y = Lambda .* (G * Fx);
 
 end

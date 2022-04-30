@@ -26,7 +26,7 @@ function weights = hs_update_weights_lowrankness_serial(x, ...
 
 [M,  N, c] = size(x);
 [~, D, ~] = svd(reshape(x, [M * N, c]), 'econ');
-d = abs(diag(D));
+d = abs(diag(D)); clear D;
 upsilon_bar = sig_bar * reweight_alpha;
 weights = upsilon_bar ./ (upsilon_bar + d);
 

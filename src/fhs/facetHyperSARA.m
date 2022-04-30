@@ -1,8 +1,8 @@
 function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
     Qx, Qy, K, wavelet, filter_length, nlevel, window_type, ...
-    spectral_chunk, n_channels, overlap_size, alph, alph_bar, ...
+    spectral_chunk, n_channels, overlap_size, ...
     M, N, oy, ox, warmstart_name, checkpoint_name, ...
-    flag_dimensionality_reduction, Sigma, ...
+    flag_dimensionality_reduction, Lambda, ...
     varargin)
 % Implementation of the Faceted HyperSARA imaging algorithm.
 %
@@ -64,10 +64,6 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % overlap_size : int[2]
 %     Overlap size between consecutive facets along each axis (y and x) for
 %     the faceted low-rankness prior.
-% alph : double
-%     Sparsity regularization parameter.
-% alph_bar : double[:]
-%     Per-facet low-rankness regularization parameter.
 % M : int
 %     Spatial image size along axis y.
 % N : int
@@ -83,7 +79,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %     throughout the iterations.
 % flag_dimensionality_reduction : bool
 %     Flag to indicate data dimensiomality reduction is used.
-% Sigma : composite, cell of complex[:, :]
+% Lambda : composite, cell of complex[:, :]
 %     Dimensionality reduction matrix. (?)
 % varargin{1} : double[:, :]
 %     Initial value for the primal variable [M*N, L].
@@ -102,7 +98,9 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %
 % param.verbose (string)
 %     Print log or not
-%
+% param.save_intermediate_results_mat (bool)
+%     Flag to save all estimates in a ``.mat`` file after each re-weighted
+%     problem. The file can be used as a warmstart.
 % param.nu0 (double)
 %     Norm of the splitting operator used to defined the faceted
 %     low-rankness dual variable (identity for ``rectangular`` window, thus
@@ -162,6 +160,20 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 %     Global iteration index (unrolled over all pdfb iterations performed
 %     in the reweighting scheme) from which to restart the algorithm
 %     (``param.init_t_start = param.init_reweight_last_iter_step + 1``).
+%
+% - The following fileds are involved in the adaptive estimation of the
+%   noise level
+%
+% param.adjust_flag_noise (bool)
+%     Flag to activate the adaptive procedure to estimate the noise level.
+% param.adjust_noise_min_iter (int)
+%     Minimum number of iterations  to enable the adjustement of the
+%     estimate of the noise level.
+% param.adjust_noise_rel_var (double)
+%     Tolerance relative variation (reweighting) to  to enable the adjustement of the
+%     estimate of the noise level.
+% param.adjust_noise_start_iter (int)
+%     Number of iterations to force triggering noise adjustement.
 %
 % - The following fileds are added to `param` in the course of the
 %   algorithm to be able to restart it from a previous state
@@ -257,7 +269,7 @@ function xsol = facetHyperSARA(y, epsilon, A, At, pU, G, W, param, ...
 % default).
 % ------------------------------------------------------------------------%
 %%
-% Code: P.-A. Thouvenin, A. Abdulaziz, M. Jiang
+% Code: P.-A. Thouvenin, A. Abdulaziz, A. Dabbech, M. Jiang
 % ------------------------------------------------------------------------%
 %%
 % Note:
@@ -358,7 +370,7 @@ if init_flag
 
     epsilon = Composite();
     for k = 1:K
-        epsilon{k} = init_m.epsilon(spectral_chunk{k}, 1);
+        epsilon(Q + k) = init_m.epsilon(k, 1);
     end
 
     if numel(varargin) > 1
@@ -419,6 +431,7 @@ for q = 1:Q
     reweighting_alphap{q} = reweighting_alpha;
 end
 % reweighting_alpha_ffp = parallel.pool.Constant(param.reweighting_alpha_ff);
+reweighting_flag = param.reweighting_flag;
 
 if isfield(param, 'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
@@ -430,11 +443,11 @@ else
 end
 
 if isfield(param, 'init_reweight_last_iter_step')
-    reweight_last_step_iter = param.init_reweight_last_iter_step;
+    redefine_min_task_last_step_iter = param.init_reweight_last_iter_step;
     fprintf('reweight_last_iter_step uploaded \n\n');
 else
     param.init_reweight_last_iter_step = 0;
-    reweight_last_step_iter = 0;
+    redefine_min_task_last_step_iter = 0;
     fprintf('reweight_last_iter_step initialized \n\n');
 end
 % ! --
@@ -486,10 +499,37 @@ else
     fprintf('v0, v1, weigths0, weights1 initialized \n\n');
 end
 
+%% Adptive noise level estimation
+if isfield(param, 'adjust_flag_noise')
+    adjust_flag_noise = param.adjust_flag_noise;
+else; adjust_flag_noise = false;
+end
+if isfield(param, 'adjust_noise_min_iter')
+    adjust_noise_min_iter = param.adjust_noise_min_iter;
+else; adjust_noise_min_iter = 100;
+end
+if isfield(param, 'adjust_noise_rel_var')
+    adjust_noise_rel_var = param.adjust_noise_rel_var;
+else; adjust_noise_rel_var = 1e-3;
+end
+if isfield(param, 'adjust_noise_start_iter')
+    adjust_noise_start_iter = param.adjust_noise_start_iter;
+else; adjust_noise_start_iter = 2000;
+end
+if isfield(param, 'adjust_noise_change_percentage')
+    adjust_noise_change_percentage = param.adjust_noise_change_percentage;
+else; adjust_noise_change_percentage = 0.5;
+end
+
+if isfield(param, 'adjust_noise_start_change_percentage')
+    adjust_noise_start_change_percentage = param.adjust_noise_start_change_percentage;
+else; adjust_noise_start_change_percentage = 0.1;
+end
 %% Data node parameters
 elipse_proj_max_iter = parallel.pool.Constant(param.elipse_proj_max_iter);
 elipse_proj_min_iter = parallel.pool.Constant(param.elipse_proj_min_iter);
 elipse_proj_eps = parallel.pool.Constant(param.elipse_proj_eps);
+
 % adapt_eps_tol_in = parallel.pool.Constant(param.adapt_eps_tol_in);
 % adapt_eps_tol_out = parallel.pool.Constant(param.adapt_eps_tol_out);
 % adapt_eps_steps = parallel.pool.Constant(param.adapt_eps_steps);
@@ -559,10 +599,14 @@ beta0 = Composite();
 for q = 1:Q
     beta0{q} = param.gamma0(q) / sigma0;
 end
-beta1 = parallel.pool.Constant(param.gamma / sigma1);
-param.alph = alph;
-param.alph_bar = alph_bar;
+% % beta1 = parallel.pool.Constant(param.gamma / sigma1);
+beta1 = (param.gamma / sigma1);
 
+% already in param!
+% param.alph = alph;
+% param.alph_bar = alph_bar;
+alph = param.alph;
+alph_bar = param.alph_bar;
 % Variables for the stopping criterion
 flag_convergence = 0;
 
@@ -657,10 +701,13 @@ fprintf('START THE LOOP MNRAS ver \n\n');
 for t = t_start:max_iter
 
     start_iter = tic;
-
+    if  adjust_flag_noise && t == 1; beta1 = 0; % de-activate prior
+    end
     spmd
+        if adjust_flag_noise && t == 1; beta0 = 0; % de-activate prior
+        end
         if labindex <= Qp.Value
-            % primal/prior nodes (1:Q)
+            % --- primal/prior nodes (1:Q)
 
             % update primal variable
             tw = tic;
@@ -676,17 +723,34 @@ for t = t_start:max_iter
             % update borders (-> versions of xhat with overlap)
             tw = tic;
             x_facet = zeros([max_dims, size(xsol_q, 3)]);
-            x_facet(overlap(1) + 1:end, overlap(2) + 1:end, :) = xhat_q;  xhat_q = []; % mem reasons
-            x_facet = comm2d_update_borders(x_facet, overlap, overlap_g_south_east, overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
-
+            if (beta1 + beta0) > 0
+                x_facet(overlap(1) + 1:end, overlap(2) + 1:end, :) = xhat_q;  xhat_q = []; % mem reasons
+                x_facet = comm2d_update_borders(x_facet, overlap, overlap_g_south_east, ...
+                    overlap_g_south, overlap_g_east, Qyp.Value, Qxp.Value);
+            end
             % update dual variables (nuclear, l21)
-            [v0_, g0] = fhs_update_dual_lowrankness(v0_, x_facet(crop_low_rank(1) + 1:end, crop_low_rank(2) + 1:end, :), apodization_window, weights0_, beta0);
-            [v1_, g1] = fhs_update_dual_sparsity(v1_, x_facet(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :), weights1_, beta1.Value, Iq, ...
-                dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
-                nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
+            if beta0 > 0 % check if prior is active
+                [v0_, g0] = fhs_update_dual_lowrankness(v0_, ...
+                    x_facet(crop_low_rank(1) + 1:end, crop_low_rank(2) + 1:end, :), ...
+                    apodization_window, weights0_, beta0);
+            end
+            if beta1 > 0 % check if prior is active
+                [v1_, g1] = fhs_update_dual_sparsity(v1_, ...
+                    x_facet(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :), ...
+                    weights1_, beta1, Iq, ...
+                    dims_q, I_overlap_q, dims_overlap_q, offsetp.Value, status_q, ...
+                    nlevelp.Value, waveletp.Value, Ncoefs_q, temLIdxs_q, ...
+                    temRIdxs_q, offsetLq, offsetRq, dims_overlap_ref_q);
+            end
+
             g = zeros(size(x_facet));
-            g(crop_low_rank(1) + 1:end, crop_low_rank(2) + 1:end, :) = sigma00.Value * g0;   g0 = []; % mem reasons
-            g(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :) = g(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :) + sigma11.Value * g1;  g1 = []; % mem reasons
+            if beta0 > 0 % check if prior is active
+                g(crop_low_rank(1) + 1:end, crop_low_rank(2) + 1:end, :) = sigma00.Value * g0;   g0 = []; % mem reasons
+            end
+            if beta1 > 0 % check if prior is active
+                g(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :) = sigma11.Value * g1 + ...
+                    g(crop_sparsity(1) + 1:end, crop_sparsity(2) + 1:end, :);  g1 = []; % mem reasons
+            end
             g = comm2d_reduce(g, overlap, Qyp.Value, Qxp.Value);
             t_op = t_op + toc(tw);
 
@@ -695,7 +759,8 @@ for t = t_start:max_iter
 
             % retrieve portions of g from the data nodes
             for k = 1:Kp.Value
-                g_q(:, :, spectral_chunkp.Value{k}) = g_q(:, :, spectral_chunkp.Value{k}) + labReceive(Qp.Value + k);
+                g_q(:, :, spectral_chunkp.Value{k}) = g_q(:, :, spectral_chunkp.Value{k}) + ...
+                    labReceive(Qp.Value + k);
             end
         else
             % data nodes (Q+1:Q+K) (no parallelisation over data blocks, just frequency)
@@ -707,7 +772,7 @@ for t = t_start:max_iter
             [v2_, g2, Fxi_old, proj_, norm_res, norm_residual_check_i, norm_epsilon_check_i] = update_dual_data_fidelity(v2_, y, xi, ...
                 Fxi_old, proj_, A, At, G, W, pU, epsilon, ...
                 elipse_proj_max_iter.Value, elipse_proj_min_iter.Value, ...
-                elipse_proj_eps.Value, sigma22, flag_dimensionality_reduction, Sigma);
+                elipse_proj_eps.Value, sigma22, flag_dimensionality_reduction, Lambda); %#ok<*ASGLU>
             t_op = toc(tw);
 
             % send portions of g2 to the prior/primal nodes
@@ -750,12 +815,15 @@ for t = t_start:max_iter
     end
     norm_epsilon_check = sqrt(norm_epsilon_check);
     norm_residual_check = sqrt(norm_residual_check);
+    %      fprintf('Iter = %i, time = %e, t_facet = %e, t_data = %e, rel_var = %e,  epsilon = %e, residual = %e\n', t, end_iter(t), t_facet(t), t_data(t), rel_val(t), norm_epsilon_check, norm_residual_check);
 
-    fprintf('Iter = %i, time = %e, t_facet = %e, t_data = %e, rel_var = %e,  epsilon = %e, residual = %e\n', t, end_iter(t), t_facet(t), t_data(t), rel_val(t), norm_epsilon_check, norm_residual_check);
+    fprintf('Iter = %i, rel_var = %e,  epsilon = %e, residual = %e\n', t, rel_val(t), norm_epsilon_check, norm_residual_check);
 
     %% Display
-    if ~mod(t, 100)
-
+    if t == 1
+        fprintf('Iter = %i, time = %e, t_facet = %e, t_data = %e, rel_var = %e,  epsilon = %e, residual = %e\n', t, end_iter(t), t_facet(t), t_data(t), rel_val(t), norm_epsilon_check, norm_residual_check);
+    elseif ~mod(t, 100)
+        fprintf('Iter = %i, time = %e, t_facet = %e, t_data = %e, rel_var = %e,  epsilon = %e, residual = %e\n', t, end_iter(t), t_facet(t), t_data(t), rel_val(t), norm_epsilon_check, norm_residual_check);
         %% compute value of the priors in parallel
         % TODO: move this block in l.619 if computing the norsm at each iteration
         spmd
@@ -804,36 +872,86 @@ for t = t_start:max_iter
         end
     end
 
-    %% Check convergence pdfb (inner solver)
-    pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ... % minimum number of pdfb iterations
-        (t - reweight_last_step_iter >= param.pdfb_max_iter || ... % maximum number of pdfb iterations reached
+    %% check conditions
+    % convergence pdfb (inner solver): condition
+    pdfb_converged = (t - redefine_min_task_last_step_iter >= param.pdfb_min_iter) && ... % minimum number of pdfb iterations
+        (t - redefine_min_task_last_step_iter >= param.pdfb_max_iter || ... % maximum number of pdfb iterations reached
         (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance * norm_epsilon_check) || ... % relative variation solution, objective and data fidelity within tolerance
         rel_val(t) <= param.pdfb_rel_var_low ... % relative variation really small and data fidelity criterion not satisfied yet
         );
 
-    %% Update epsilons (in parallel)
-    % flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update
-    %     (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
-    %     (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
+    %  Update epsilons and regularisation param: condition
+    pdfb_adjust_noise = (adjust_flag_noise  && ...% flag to activate adjustment of the noise level
+        (norm_residual_check > param.pdfb_fidelity_tolerance * norm_epsilon_check)  && ...
+        (t - redefine_min_task_last_step_iter >= param.pdfb_max_iter  || ... % trigger adjustement if  max num of pdfb iterations reached
+        (redefine_min_task_last_step_iter < 1) || ... % trigger adjustement based on the itr num
+        (rel_val(t) <= adjust_noise_rel_var && t - redefine_min_task_last_step_iter >= adjust_noise_min_iter)) ... % trigger adjustement if relative var. reached
+        );
 
-    % if flag_epsilonUpdate
-    %     spmd
-    %         if labindex > Qp.Value
-    %             [epsilon, t_block] = update_epsilon(epsilon, t, t_block, norm_res, ...
-    %                 adapt_eps_tol_in.Value, adapt_eps_tol_out.Value, adapt_eps_steps.Value, ...
-    %                 adapt_eps_change_percentage.Value);
-    %         end
-    %     end
-    % end
-    % ! --
-
-    %% Reweighting (in parallel)
-    if pdfb_converged
-        % update xsol
+    if pdfb_adjust_noise || pdfb_converged
+        %% update xsol
         for q = 1:Q
             xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = xsol_q{q};
         end
-        
+        xsol_node = Composite();
+
+        for iLab = Q + 1:numel(xsol_q)
+            xsol_node{iLab} = xsol(:, :, spectral_chunk{iLab - Q});
+        end
+    end
+
+    if pdfb_adjust_noise
+        pdfb_converged = false;
+        %% adjust noise level and resulting params.
+        spmd
+            if labindex > Qp.Value
+                for i = 1:numel(epsilon)
+                    noise_full_vect = [];
+                    for j = 1:numel(epsilon{i})
+                        if epsilon{i}{j} < ((2 - param.pdfb_fidelity_tolerance) * norm_res{i}{j})
+                            epsilon{i}{j} = (epsilon{i}{j} + norm_res{i}{j}) * adjust_noise_change_percentage;
+                        end
+                        nmeas_blk = numel(y{i}{j});
+                        sigma_noise_blk = sqrt(epsilon{i}{j}.^2 / nmeas_blk);
+                        noise_full_vect = [noise_full_vect; ...
+                            sigma_noise_blk * (randn(nmeas_blk, 1) + 1i * randn(nmeas_blk, 1)) / sqrt(2)];
+                    end
+                    global_sigma_noise_cmpst(i, 1) = std(noise_full_vect);
+                    noise_full_vect = [];
+                end
+            end
+        end
+
+        % Operator's norm
+        squared_operator_norm = param.squared_operator_norm(:);
+        global_sigma_noise  = [];
+        for i = 1:K
+            global_sigma_noise =  [global_sigma_noise; global_sigma_noise_cmpst{Q + i}];
+        end
+        % noise level / regularization parameter
+        [sig, sig_bar, mu_chi, sig_chi, sig_sara] = ...
+            compute_noise_level(M, N, K, global_sigma_noise(:), ...
+            'fhs', Qx, Qy, overlap_size, squared_operator_norm);
+        % apply multiplicative factor for the regularization parameters (if needed)
+        gamma0 = alph_bar * sig_bar;
+        gamma = alph * sig;
+        beta0 = Composite();
+        for q = 1:Q
+            beta0{q} = gamma0(q) / sigma0;
+        end
+        beta1 = gamma / sigma1; %         beta1 = parallel.pool.Constant(gamma / sigma1);
+
+        redefine_min_task_last_step_iter = t;
+
+        fprintf('mu_chi = %.4e, sig_chi = %.4e, sig_sara = %.4e\n', mu_chi, sig_chi, sig_sara);
+        fprintf('Noise levels: sig = %.4e, sig_bar = [%.4e, %.4e]\n', sig, min(sig_bar), max(sig_bar));
+        fprintf('Additional multiplicative actors gam = %.4e, gam_bar = %.4e\n', alph, alph_bar);
+        fprintf('Regularization parameters: mu = %.4e, mu_bar = %.4e\n', gamma, mean(gamma0));
+        try  fitswrite(xsol, [checkpoint_name '_tmp_wb_model_noise_adjust.fits']);
+        end
+    elseif pdfb_converged
+        adjust_flag_noise = false;
+        %% Reweighting (in parallel)
         % Evaluate relative variation for the reweighting scheme
         spmd
             if labindex <= Qp.Value
@@ -851,10 +969,11 @@ for t = t_start:max_iter
         end
         rel_x_reweighting = sqrt(rel_x_reweighting / norm_x_reweighting);
 
-        reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
+        reweighting_converged =  ~reweighting_flag || ...
+            (pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >= param.reweighting_min_iter && ...   % minimum number of reweighting iterations
             (reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached
-            rel_x_reweighting <= param.reweighting_rel_var ...         % relative variation
+            rel_x_reweighting <= param.reweighting_rel_var) ...         % relative variation
             );
 
         if reweighting_converged
@@ -863,11 +982,6 @@ for t = t_start:max_iter
         end
 
         fprintf('Reweighting: %i, relative variation: %e, reweighting parameter: %e \n\n', reweight_step_count + 1, rel_x_reweighting, reweighting_alpha);
-
-        xsol_node = Composite();
-        for iLab = Q + 1:numel(xsol_q)
-            xsol_node{iLab} = xsol(:, :, spectral_chunk{iLab - Q});
-        end
 
         spmd
             if labindex <= Qp.Value
@@ -889,9 +1003,8 @@ for t = t_start:max_iter
                 % ! --
             else
                 % compute residual image on the data nodes
-                % res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex - Qp.Value}), y, A, At, G, W, flag_dimensionality_reduction, Sigma);
-                nnz(xsol_node)
-                res_ = compute_residual_images(xsol_node, y, A, At, G, W, flag_dimensionality_reduction, Sigma); 
+                % res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex - Qp.Value}), y, A, At, G, W, flag_dimensionality_reduction, Lambda);
+                res_ = compute_residual_images(xsol_node, y, A, At, G, W, flag_dimensionality_reduction, Lambda);
                 xsol_node = []; % mem reasons
                 fprintf('\nResidual computed');
             end
@@ -925,8 +1038,7 @@ for t = t_start:max_iter
                 xlast_reweight_q = xsol_q;
             end
         end
-        
-        
+
         % retrieve value of the priors
         l21 = 0;
         nuclear = 0;
@@ -938,7 +1050,7 @@ for t = t_start:max_iter
 
         if flag_synth_data
             % get xsol back from the workers
-            
+
             sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
             SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));
             psnrh = zeros(n_channels, 1);
@@ -949,58 +1061,63 @@ for t = t_start:max_iter
             fprintf(' SNR = %e, aSNR = %e\n\n', SNR, SNR_average);
         end
 
-        if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
-            % Save parameters (matfile solution)
-            m = matfile(strcat(checkpoint_name, '_rw=', num2str(reweight_step_count), '.mat'), ...
-                'Writable', true);
-            m.param = param;
-            m.res = zeros(size(xsol));
-            m.g = zeros(size(xsol));
-            m.xsol = zeros(size(xsol));
-            m.epsilon = cell(K, 1);
-            m.v2 = cell(K, 1);
-            m.proj = cell(K, 1);
-            m.t_block = cell(K, 1);
-            m.norm_res = cell(K, 1);
-            m.v0 = cell(Q, 1);
-            m.v1 = cell(Q, 1);
-            m.weights0 = cell(Q, 1);
-            m.weights1 = cell(Q, 1);
-            % Retrieve variables from workers
-            % facet nodes
-            for q = 1:Q
-                m.v0(q, 1) = v0_(q);
-                m.v1(q, 1) = v1_(q);
-                m.weights0(q, 1) = weights0_(q);
-                m.weights1(q, 1) = weights1_(q);
-%                 m.xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = xsol_q{q};
-                m.g(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2),:) = g_q{q};
+        if (reweight_step_count == 0) || (reweight_step_count == 1) || ...
+                (~mod(reweight_step_count, param.backup_frequency))
+            % save model estimate
+            fitswrite(xsol, [checkpoint_name '_CURRENT_WB_MODEL.fits']);
+            for k = 1:K;  res(:, :, spectral_chunk{k}) = res_{Q + k};
             end
-            m.xsol= xsol ;%xsol_q{q};
+            fitswrite(res, [checkpoint_name '_CURRENT_WB_RESIDUAL.fits']);
+            clear res;
+            if param.save_intermediate_results_mat
+                m = matfile(strcat(checkpoint_name, '_rw', num2str(reweighting_flag), '.mat'), ...
+                    'Writable', true);
+                m.param = param;
+                m.res = zeros(size(xsol));
+                m.g = zeros(size(xsol));
+                m.xsol = zeros(size(xsol));
+                m.epsilon = cell(K, 1);
+                m.v2 = cell(K, 1);
+                m.proj = cell(K, 1);
+                m.t_block = cell(K, 1);
+                m.norm_res = cell(K, 1);
+                m.v0 = cell(Q, 1);
+                m.v1 = cell(Q, 1);
+                m.weights0 = cell(Q, 1);
+                m.weights1 = cell(Q, 1);
+                % Retrieve variables from workers
+                % facet nodes
+                for q = 1:Q
+                    m.v0(q, 1) = v0_(q);
+                    m.v1(q, 1) = v1_(q);
+                    m.weights0(q, 1) = weights0_(q);
+                    m.weights1(q, 1) = weights1_(q);
+                    %                 m.xsol(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = xsol_q{q};
+                    m.g(I(q, 1) + 1:I(q, 1) + dims(q, 1), I(q, 2) + 1:I(q, 2) + dims(q, 2), :) = g_q{q};
+                end
+                m.xsol = xsol; % xsol_q{q};
 
-            % data nodes
-            for k = 1:K
-                m.res(:, :, spectral_chunk{k}) = res_{Q + k};
-                res_{Q + k} = [];
-                m.v2(k, 1) = v2_(Q + k);
-                m.proj(k, 1) = proj_(Q + k);
-                m.t_block(k, 1) = t_block(Q + k);
-                m.epsilon(k, 1) = epsilon(Q + k);
-                m.norm_res(k, 1) = norm_res(Q + k);
+                % data nodes
+                for k = 1:K
+                    m.res(:, :, spectral_chunk{k}) = res_{Q + k};
+                    res_{Q + k} = [];
+                    m.v2(k, 1) = v2_(Q + k);
+                    m.proj(k, 1) = proj_(Q + k);
+                    m.t_block(k, 1) = t_block(Q + k);
+                    m.epsilon(k, 1) = epsilon(Q + k);
+                    m.norm_res(k, 1) = norm_res(Q + k);
+                end
+                m.end_iter = end_iter;
+                m.t_facet = t_facet;
+                m.t_data = t_data;
+                m.rel_val = rel_val;
+
+                if flag_synth_data
+                    m.SNR = SNR;
+                    m.SNR_average = SNR_average;
+                end
+                clear m;
             end
-            m.end_iter = end_iter;
-            m.t_facet = t_facet;
-            m.t_data = t_data;
-            m.rel_val = rel_val;
-
-            fitswrite(m.xsol, [checkpoint_name '_xsol.fits']);
-            fitswrite(m.res, [checkpoint_name '_res.fits']);
-            if flag_synth_data
-                m.SNR = SNR;
-                m.SNR_average = SNR_average;
-            end
-            clear m;
-
             % Log
             if param.verbose >= 1
                 fprintf('Backup iter: %i\n', t);
@@ -1013,7 +1130,7 @@ for t = t_start:max_iter
         end
 
         reweight_step_count = reweight_step_count + 1;
-        reweight_last_step_iter = t;
+        redefine_min_task_last_step_iter = t;
         if reweight_step_count >= param.reweighting_max_iter
             fprintf('\n\n No more reweights \n\n');
         end
@@ -1040,12 +1157,12 @@ spmd
             offsetp.Value, status_q, nlevelp.Value, waveletp.Value, Ncoefs_q, dims_overlap_ref_q, ...
             offsetLq, offsetRq, crop_sparsity, crop_low_rank, apodization_window, size(v1_));
     else
-        % res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex - Qp.Value}), y, A, At, G, W, flag_dimensionality_reduction, Sigma);
-        res_ = compute_residual_images(xsol_node, y, A, At, G, W, flag_dimensionality_reduction, Sigma); xsol_node = []; % mem reasons
+        % res_ = compute_residual_images(xsol(:, :, spectral_chunk{labindex - Qp.Value}), y, A, At, G, W, flag_dimensionality_reduction, Lambda);
+        res_ = compute_residual_images(xsol_node, y, A, At, G, W, flag_dimensionality_reduction, Lambda); xsol_node = []; % mem reasons
     end
 end; clear xsol_node;
 %  fits
-m = matfile([checkpoint_name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+m = matfile([checkpoint_name, '_rw' num2str(reweighting_flag) '.mat'], ...
     'Writable', true);
 m.param = param;
 m.res = zeros(size(xsol));
@@ -1103,8 +1220,8 @@ m.end_iter = end_iter;
 m.t_facet = t_facet;
 m.t_data = t_data;
 m.rel_val = rel_val;
-fitswrite(m.xsol, [checkpoint_name '_xsol' '.fits']);
-fitswrite(m.res, [checkpoint_name '_res' '.fits']);
+fitswrite(m.xsol, [checkpoint_name '_FINAL_WB_MODEL' '.fits']);
+fitswrite(m.res, [checkpoint_name '_FINAL_WB_RESIDUAL' '.fits']);
 if flag_synth_data
     sol = reshape(xsol(:), numel(xsol(:)) / n_channels, n_channels);
     SNR = 20 * log10(norm(X0(:)) / norm(X0(:) - sol(:)));

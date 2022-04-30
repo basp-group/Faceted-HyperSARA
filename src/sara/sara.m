@@ -1,6 +1,6 @@
 function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
     warsmtart_name, checkpoint_name, alph, ...
-    flag_dimensionality_reduction, Sigma, varargin)
+    flag_dimensionality_reduction, Lambda, varargin)
 % Implementation of the SARA imaging algorithm.
 %
 % Implementation of the reweighting / PDFB algorithm underlying the
@@ -47,7 +47,7 @@ function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
 %     Regularization parameter.
 % flag_dimensionality_reduction : [type]
 %     [description]
-% Sigma : composite, cell of complex[:, :]
+% Lambda : composite, cell of complex[:, :]
 %     Dimensionality reduction matrix. (?)
 % varargin{1} : double[:, :]
 %     Initial value for the primal variable.
@@ -66,6 +66,8 @@ function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
 %
 % param.verbose (string)
 %     Print log or not
+% param.save_intermediate_results_mat (bool)
+%     Flag to save all estimates in a ``.mat`` file after each re-weighted
 %
 % param.nu1 (double)
 %     Upper bound on the norm of the SARA operator :math:`\Psi^\dagger`.
@@ -119,6 +121,19 @@ function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
 %     in the reweighting scheme) from which to restart the algorithm
 %     (``param.init_t_start = param.init_reweight_last_iter_step + 1``).
 %
+% - The following fileds are involved in the adaptive estimation of the
+%   noise level
+%
+% param.adjust_flag_noise (bool)
+%     Flag to activate the adaptive procedure to estimate the noise level.
+% param.adjust_noise_min_iter (int)
+%     Minimum number of iterations  to enable the adjustement of the
+%     estimate of the noise level.
+% param.adjust_noise_rel_var (double)
+%     Tolerance relative variation (reweighting) to  to enable the adjustement of the
+%     estimate of the noise level.
+% param.adjust_noise_start_iter (int)
+%     Number of iterations to force triggering noise adjustement.
 %
 % Note
 % ----
@@ -190,7 +205,7 @@ function xsol = sara(y, epsilon, A, At, pU, G, W, Psi, Psit, param, ...
 
 % ------------------------------------------------------------------------%
 %%
-% Code: P.-A. Thouvenin, A. Abdulaziz, M. Jiang
+% Code: P.-A. Thouvenin, A. Abdulaziz,  A. Dabbech, M. Jiang
 % ------------------------------------------------------------------------%
 %%
 
@@ -212,6 +227,34 @@ No = size(W{1}{1}, 1);
 %     flag_homotopy = param.flag_homotopy;
 % end
 % ! --
+
+%% ! -- Adptive noise level estimation
+if isfield(param, 'adjust_flag_noise')
+    adjust_flag_noise = param.adjust_flag_noise;
+else; adjust_flag_noise = false;
+end
+if isfield(param, 'adjust_noise_min_iter')
+    adjust_noise_min_iter = param.adjust_noise_min_iter;
+else; adjust_noise_min_iter = 100;
+end
+if isfield(param, 'adjust_noise_rel_var')
+    adjust_noise_rel_var = param.adjust_noise_rel_var;
+else; adjust_noise_rel_var = 1e-3;
+end
+if isfield(param, 'adjust_noise_start_iter')
+    adjust_noise_start_iter = param.adjust_noise_start_iter;
+else; adjust_noise_start_iter = 500;
+end
+if isfield(param, 'adjust_noise_change_percentage')
+adjust_noise_change_percentage = param.adjust_noise_change_percentage;
+else; adjust_noise_change_percentage = 0.5;
+end
+
+if isfield(param, 'adjust_noise_start_change_percentage')
+adjust_noise_start_change_percentage = param.adjust_noise_start_change_percentage;
+else; adjust_noise_start_change_percentage = 0.1;
+end
+%%
 
 % Initializations
 init_flag = isfile(warsmtart_name);
@@ -272,6 +315,7 @@ reweighting_alpha = param.reweighting_alpha;
 % ! -- HOMOTOPY parameter (deactivated)
 % reweighting_alpha_ff = param.reweighting_alpha_ff;
 % ! --
+reweighting_flag = param.reweighting_flag;
 
 if isfield(param, 'init_reweight_step_count')
     reweight_step_count = param.init_reweight_step_count;
@@ -282,11 +326,11 @@ else
 end
 
 if isfield(param, 'init_reweight_last_iter_step')
-    reweight_last_step_iter = param.init_reweight_last_iter_step;
+    redefine_min_task_last_step_iter = param.init_reweight_last_iter_step;
     fprintf('reweight_last_iter_step uploaded \n\n');
 else
     param.init_reweight_last_iter_step = 0;
-    reweight_last_step_iter = 0;
+    redefine_min_task_last_step_iter = 0;
     fprintf('reweight_last_iter_step initialized \n\n');
 end
 
@@ -365,8 +409,8 @@ else
             for j = 1:numel(G{i})
                 if istril(G{i}{j})
                     FxSlice = Fx(W{i}{j});
-                    r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * FxSlice  + (FxSlice' * G{i}{j})');
-                else; r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+                    r2{i}{j} = Lambda{i}{j} .* (G{i}{j} * FxSlice  + (FxSlice' * G{i}{j})');
+                else; r2{i}{j} = Lambda{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
                 end
                 [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, zeros(size(y{i}{j})), param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
             end
@@ -477,7 +521,9 @@ fprintf('START THE LOOP MNRAS ver \n\n');
 for t = t_start:max_iter
 
     start_iter = tic;
-
+    if  adjust_flag_noise && t == 1
+        beta1 = 0;  % de-activate prior
+    end
     % update primal variable
     tw = tic;
     prev_xsol = xsol;
@@ -509,8 +555,8 @@ for t = t_start:max_iter
             for j = 1:length(G{i})
                 dummy =  (2 * Fx(W{i}{j})   - Fx_old(W{i}{j}, i));
                 if istril(G{i}{j})
-                    r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * dummy  + (dummy' * G{i}{j})');
-                else; r2{i}{j} = Sigma{i}{j} .* (G{i}{j} * dummy);
+                    r2{i}{j} = Lambda{i}{j} .* (G{i}{j} * dummy  + (dummy' * G{i}{j})');
+                else; r2{i}{j} = Lambda{i}{j} .* (G{i}{j} * dummy);
                 end
                 [proj{i}{j}, ~] = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, r2{i}{j}, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, param.elipse_proj_max_iter, param.elipse_proj_min_iter, param.elipse_proj_eps);
                 v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2{i}{j} - pU{i}{j} .* proj{i}{j};
@@ -519,15 +565,16 @@ for t = t_start:max_iter
                 % v2{i}{j} = v2{i}{j} + r2{i}{j} - proj_l2ball(v2{i}{j} + r2{i}{j}, epsilon{i}{j}, y{i}{j});
 
                 if istril(G{i}{j})
-                    u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j}) + G{i}{j} * (Sigma{i}{j} .* v2{i}{j});
-                else;   u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j});
+                    u2{i}{j} = G{i}{j}' * (Lambda{i}{j} .* v2{i}{j}) + G{i}{j} * (Lambda{i}{j} .* v2{i}{j});
+                else;   u2{i}{j} = G{i}{j}' * (Lambda{i}{j} .* v2{i}{j});
                 end
                 g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
                 % norm of residual
                 if istril(G{i}{j})
-                    norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})  + G{i}{j}' * Fx(W{i}{j}))        - y{i}{j});
-                else; norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})) - y{i}{j});
+                    norm_res{i}{j} = norm(Lambda{i}{j} .* (G{i}{j} * Fx(W{i}{j})  + G{i}{j}' * Fx(W{i}{j}))   - y{i}{j});
+                else; norm_res{i}{j} =  norm(Lambda{i}{j} .* (G{i}{j} * Fx(W{i}{j})) - y{i}{j});
                 end
+
                 residual_check(counter) = norm_res{i}{j};
                 epsilon_check(counter) = epsilon{i}{j};
                 counter = counter + 1;
@@ -589,14 +636,18 @@ for t = t_start:max_iter
     t_l11(t) = t_l11(t) / P;
     % previous_l11 = l11;
     l11 = sum(cell2mat(l11_cell));
-    fprintf('Iter = %i, Time = %e, t_l11 = %e, t_data = %e, rel_val = %e, epsilon = %e, residual = %e\n', t, end_iter(t), t_data(t), t_l11(t), rel_val(t), norm_epsilon_check, norm_residual_check);
+
+    fprintf('Iter = %i, rel_val = %e, epsilon = %e, residual = %e\n', t, rel_val(t), norm_epsilon_check, norm_residual_check);
 
     % Free memory
     Ftx = []; g1 = [];
     % rel_obj = abs(l11 - previous_l11)/previous_l11;
 
     %% Display
-    if ~mod(t, 100)
+    if t == 1
+        fprintf('Iter = %i, Time = %e, t_l11 = %e, t_data = %e, rel_val = %e, epsilon = %e, residual = %e\n', t, end_iter(t), t_data(t), t_l11(t), rel_val(t), norm_epsilon_check, norm_residual_check);
+    elseif ~mod(t, 100)
+        fprintf('Iter = %i, Time = %e, t_l11 = %e, t_data = %e, rel_val = %e, epsilon = %e, residual = %e\n', t, end_iter(t), t_data(t), t_l11(t), rel_val(t), norm_epsilon_check, norm_residual_check);
         % Log
         if param.verbose >= 1
             fprintf('Iter %i\n', t);
@@ -610,33 +661,60 @@ for t = t_start:max_iter
         end
     end
 
-    %% Check convergence pdfb (inner solver)
-    pdfb_converged = (t - reweight_last_step_iter >= param.pdfb_min_iter) && ... % minimum number of pdfb iterations
-        (t - reweight_last_step_iter >= param.pdfb_max_iter || ... % maximum number of pdfb iterations reached
-        (rel_val(t) <= param.pdfb_rel_var && norm_residual_check <= param.pdfb_fidelity_tolerance * norm_epsilon_check) || ... % relative variation and data fidelity within tolerance
+    %% check conditions
+    % convergence pdfb (inner solver): condition
+    pdfb_converged = (t - redefine_min_task_last_step_iter >= param.pdfb_min_iter) && ... % minimum number of pdfb iterations
+        (t - redefine_min_task_last_step_iter >= param.pdfb_max_iter || ... % maximum number of pdfb iterations reached
+        (rel_val(t) <= param.pdfb_rel_var) || ... % relative variation and data fidelity within tolerance
         rel_val(t) <= param.pdfb_rel_var_low ... % relative variation really small and data fidelity criterion not satisfied yet
         );
 
-    % %% Update epsilons
-    % flag_epsilonUpdate = param.use_adapt_eps && ...  % activate espilon update
-    %     (t > param.adapt_eps_start) && ...               % update allowed after a minimum of iterations in the 1st reweighting
-    %     (rel_val(t) < param.adapt_eps_rel_var);          % relative variation between 2 consecutive pdfb iterations
+    % Update epsilons and regularisation param: condition
+    pdfb_adjust_noise = (adjust_flag_noise  && ...% flag to activate adjustment of the noise level
+        (norm_residual_check > param.pdfb_fidelity_tolerance * norm_epsilon_check) && ...
+        (t - redefine_min_task_last_step_iter >= param.pdfb_max_iter  || ... % trigger adjustement if  max num of pdfb iterations reached
+        (redefine_min_task_last_step_iter <= 1 && t == adjust_noise_start_iter) || ... % trigger adjustement based on the itr num
+        (rel_val(t) <= adjust_noise_rel_var && t - redefine_min_task_last_step_iter >= adjust_noise_min_iter)) ... % trigger adjustement if relative var. reached
+        );
 
-    % if flag_epsilonUpdate
-    %     [epsilon, t_block] = update_epsilon(epsilon, t, t_block, ...
-    %         norm_res, param.adapt_eps_tol_in, param.adapt_eps_tol_out, param.adapt_eps_steps, ...
-    %         param.adapt_eps_change_percentage);
-    % end
+    if pdfb_adjust_noise
+        pdfb_converged = false;
+        %% Update epsilons and regularisation param
+        redefine_min_task_last_step_iter = t;
+        for i = 1:numel(epsilon)
+            noise_full_vect = [];
+            for j = 1:length(epsilon{i})
+                if epsilon{i}{j} < ((2 - param.pdfb_fidelity_tolerance) * norm_res{i}{j})
+                    epsilon{i}{j} = (epsilon{i}{j} + norm_res{i}{j}) * adjust_noise_change_percentage;
+                end
+                nmeas_blk = numel(y{i}{j});
+                sigma_noise_blk = sqrt(max(epsilon{i}{j}, norm_res{i}{j}).^2 / nmeas_blk);
+                noise_full_vect = [noise_full_vect; sigma_noise_blk * (randn(numel(y{i}{j}), 1) + 1i * randn(numel(y{i}{j}), 1)) / sqrt(2)];
+            end
+            global_sigma_noise(i, 1) = full(std(noise_full_vect));
+            noise_full_vect = [];
+        end
+        % noise level / regularization parameter
+        sig = compute_noise_level_sara(global_sigma_noise, param.squared_operator_norm);
 
-    %% Reweighting
-    if pdfb_converged
+        % apply multiplicative factor for the regularization parameters (if needed)
+        gamma = alph * sig;
+        fprintf('Noise level: sig = %.4e\n', sig);
+        fprintf('Regularization parameters: mu = %.4e\n', gamma);
+        beta1 = gamma / sigma1;
+%         try  fitswrite(xsol, [checkpoint_name '_xsol_l1_tmp_noise.fits']);
+%         end
+    elseif pdfb_converged
+        adjust_flag_noise = false;
+        %% Reweighting
         rel_x_reweighting = norm(xlast_reweight(:) - xsol(:)) / norm(xlast_reweight(:));
         xlast_reweight = xsol;
 
-        reweighting_converged = pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
+        reweighting_converged = ~reweighting_flag || ...
+            (pdfb_converged && ...                  % do not exit solver before the current pdfb algorithm converged
             reweight_step_count >= param.reweighting_min_iter && ...   % minimum number of reweighting iterations
             (reweight_step_count >= param.reweighting_max_iter || ... % maximum number of reweighting iterations reached
-            rel_x_reweighting <= param.reweighting_rel_var ...         % relative variation
+            rel_x_reweighting <= param.reweighting_rel_var) ...         % relative variation
             );
 
         if reweighting_converged
@@ -660,11 +738,11 @@ for t = t_start:max_iter
                 for j = 1:length(G{i})
                     if istril(G{i}{j})
                         FxSlice =  Fx(W{i}{j});
-                        res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})');
-                        u2{i}{j} = G{i}{j} * (Sigma{i}{j} .* res_f) +  ((Sigma{i}{j} .* res_f)' * G{i}{j})';
+                        res_f = y{i}{j} - Lambda{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})');
+                        u2{i}{j} = G{i}{j} * (Lambda{i}{j} .* res_f) +  ((Lambda{i}{j} .* res_f)' * G{i}{j})';
                     else
-                        res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
-                        u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* res_f);
+                        res_f = y{i}{j} - Lambda{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+                        u2{i}{j} = G{i}{j}' * (Lambda{i}{j} .* res_f);
                     end
                     g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
                 end
@@ -711,34 +789,37 @@ for t = t_start:max_iter
         end
 
         if (reweight_step_count == 0) || (reweight_step_count == 1) || (~mod(reweight_step_count, param.backup_frequency))
-            % Save parameters (matfile solution)
-            m = matfile([checkpoint_name, '_rw=' num2str(reweight_step_count) '.mat'], ...
-                'Writable', true);
-            m.param = param;
-            m.res = res;
-            m.g = g;
-            m.xsol = xsol;
-            m.epsilon = epsilon;
-            m.v2 = v2;
-            m.proj = proj;
-            m.t_block = t_block;
-            m.norm_res = norm_res;
-            m.v1 = v1;
-            m.weights1 = weights1;
-            m.res = res;
-            m.l11 = l11;
-            m.end_iter = end_iter;
-            m.t_l11 = t_l11;
-            m.t_master = t_master;
-            m.t_data = t_data;
-            m.rel_val = rel_val;
-            fitswrite(m.xsol, [checkpoint_name '_xsol' '.fits']);
-            fitswrite(m.res, [checkpoint_name '_res' '.fits']);
-            if flag_synth_data
-                m.SNR = SNR;
+            fitswrite(xsol, [checkpoint_name '_CURRENT_MODEL.fits']);
+            fitswrite(res, [checkpoint_name '_CURRENT_RESIDUAL.fits']);
+            if param.save_intermediate_results_mat
+                % Save parameters (matfile solution)
+                m = matfile([checkpoint_name, '_rw' num2str(reweighting_flag) '.mat'], ...
+                    'Writable', true);
+                m.param = param;
+                m.res = res;
+                m.g = g;
+                m.xsol = xsol;
+                m.epsilon = epsilon;
+                m.v2 = v2;
+                m.proj = proj;
+                m.t_block = t_block;
+                m.norm_res = norm_res;
+                m.v1 = v1;
+                m.weights1 = weights1;
+                m.res = res;
+                m.l11 = l11;
+                m.end_iter = end_iter;
+                m.t_l11 = t_l11;
+                m.t_master = t_master;
+                m.t_data = t_data;
+                m.rel_val = rel_val;
+                fitswrite(m.xsol, [checkpoint_name '_xsol' '.fits']);
+                fitswrite(m.res, [checkpoint_name '_res' '.fits']);
+                if flag_synth_data
+                    m.SNR = SNR;
+                end
+                clear m;
             end
-            clear m;
-
             % Log
             if param.verbose >= 1
                 fprintf('Backup iter: %i\n', t);
@@ -748,7 +829,7 @@ for t = t_start:max_iter
         end
 
         reweight_step_count = reweight_step_count + 1;
-        reweight_last_step_iter = t;
+        redefine_min_task_last_step_iter = t;
         if reweight_step_count >= param.reweighting_max_iter
             fprintf('\n\n No more reweights \n\n');
         end
@@ -763,10 +844,10 @@ if flag_dimensionality_reduction
         for j = 1:length(G{i})
             if istril(G{i}{j})
                 FxSlice = Fx(W{i}{j});
-                res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * FxSlice  +  (FxSlice' * G{i}{j})');
-                u2{i}{j} = G{i}{j} * (Sigma{i}{j} .* res_f) +  ((Sigma{i}{j} .* res_f)' * G{i}{j})';
-            else; res_f = y{i}{j} - Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
-                u2{i}{j} = G{i}{j}' * (Sigma{i}{j} .* res_f);
+                res_f = y{i}{j} - Lambda{i}{j} .* (G{i}{j} * FxSlice  +  (FxSlice' * G{i}{j})');
+                u2{i}{j} = G{i}{j} * (Lambda{i}{j} .* res_f) +  ((Lambda{i}{j} .* res_f)' * G{i}{j})';
+            else; res_f = y{i}{j} - Lambda{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+                u2{i}{j} = G{i}{j}' * (Lambda{i}{j} .* res_f);
             end
             g2(W{i}{j}) = g2(W{i}{j}) + u2{i}{j};
         end
@@ -785,7 +866,7 @@ else
     end
 end
 
-m = matfile([checkpoint_name, '_rw=' num2str(reweight_step_count) '.mat'], ...
+m = matfile([checkpoint_name, '_rw' num2str(reweighting_flag) '.mat'], ...
     'Writable', true);
 m.param = param;
 m.res = res;
@@ -811,8 +892,8 @@ m.t_l11 = t_l11;
 m.t_master = t_master;
 m.t_data = t_data;
 m.rel_val = rel_val;
-fitswrite(m.xsol, [checkpoint_name '_xsol' '.fits']);
-fitswrite(m.res, [checkpoint_name '_res' '.fits']);
+fitswrite(m.xsol, [checkpoint_name '_FINAL_MODEL' '.fits']);
+fitswrite(m.res, [checkpoint_name '_FINAL_RESIDUAL' '.fits']);
 if flag_synth_data
     SNR = 20 * log10(norm(x0(:)) / norm(x0(:) - xsol(:)));
     m.SNR = SNR;
@@ -829,7 +910,7 @@ if param.verbose > 0
     fprintf('Iter %i\n', t);
     fprintf(' L11-norm = %e, relative variation = %e\n', l11, rel_val(t));
     fprintf(' Final residual = %e\n', residual_check);
-    fprintf(' epsilon = %e\n', epsilon_check);
+    fprintf(' epsilon = %e\n', full(epsilon_check));
     if flag_synth_data
         fprintf('SNR = %e\n\n', SNR);
     end

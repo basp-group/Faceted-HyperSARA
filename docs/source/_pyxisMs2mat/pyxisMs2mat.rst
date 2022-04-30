@@ -68,6 +68,7 @@ From the terminal, execute:
 
 .. code-block:: bash
 
+   cd   $FHS/pyxisMs2mat
    pyxis MS=myms.ms  SRCNAME=cyga FIRSTCH=0  LASTCH=3 FIELDID=0 getdata_ms
 
 
@@ -109,6 +110,7 @@ From the terminal, execute:
 
 .. code-block:: bash
 
+   cd   $FHS/pyxisMs2mat
    pyxis MSLOW=mylowbandms.ms MSHIGH=myhighbandms.ms SRCNAME=cyga FIRSTCH=0 LASTCH=15 FIELDID=2  getdata_ms_concat_bandwidth
 
 Data will be saved as .mat files in the directory ``$FHS/data/cyga/``.
@@ -133,6 +135,7 @@ From the terminal, execute:
 
 .. code-block:: bash
 
+   cd   $FHS/pyxisMs2mat
    pyxis MS=myms1.ms  SRCNAME=cyga MSTAG=dataset1 FIRSTCH=0  LASTCH=12 FIELDID=0 getdata_ms \
    pyxis MS=myms2.ms  SRCNAME=cyga MSTAG=dataset2 FIRSTCH=0  LASTCH=12 FIELDID=0 getdata_ms \
    pyxis MS=mymsn.ms  SRCNAME=cyga MSTAG=datasetn FIRSTCH=0  LASTCH=12 FIELDID=0 getdata_ms \

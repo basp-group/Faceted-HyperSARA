@@ -1,9 +1,9 @@
 function [v2, Ftx, Fx_old, proj, norm_res, global_norm_res, norm_epsilon] = ...
-update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
-                            epsilon, elipse_proj_max_iter, ...
-                            elipse_proj_min_iter, ...
-                            elipse_proj_eps, sigma22, ...
-                            flag_dimensionality_reduction, Sigma)
+    update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
+    epsilon, elipse_proj_max_iter, ...
+    elipse_proj_min_iter, ...
+    elipse_proj_eps, sigma22, ...
+    flag_dimensionality_reduction, Lambda)
 % Update the data fidelity term in the preconditioned primal-dual algorithm.
 %
 % Update the data fidelity terms owned by each worked involved in the group
@@ -46,7 +46,7 @@ update_dual_data_fidelity(v2, y, x, Fx_old, proj, A, At, G, W, pU, ...
 %     Step-size for the update of the dual variable (tau*sigma2).
 % flag_dimensionality_reduction : bool
 %     Flag to activate DR functionality.
-% Sigma : cell
+% Lambda : cell
 %     Dimensionality reduction weights {L}{nblocks}.
 %
 % Returns
@@ -80,6 +80,7 @@ n_channels = size(x, 3);
 norm_res = cell(n_channels, 1);
 norm_epsilon = 0;
 global_norm_res = 0;
+sc = @(z, radius) z * (1 - min(radius / norm(z(:)), 1));
 
 if flag_dimensionality_reduction
     for i = 1:n_channels
@@ -87,33 +88,36 @@ if flag_dimensionality_reduction
         g2 = zeros(size(Fx, 1), size(Fx, 2));
         norm_res{i} = cell(length(G{i}), 1);
         for j = 1:length(G{i})
-            dummy = (2 * Fx(W{i}{j}) - Fx_old(W{i}{j}, i));
-        if istril(G{i}{j})
-                 r2 = Sigma{i}{j} .* (G{i}{j} * dummy + (dummy' * G{i}{j})');
-            else; r2 = Sigma{i}{j} .* (G{i}{j} * dummy);
-        end; clear  dummy;
-
-            proj{i}{j} = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, ...
-                                                r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, ...
-                                                elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
-            v2{i}{j} = v2{i}{j} + pU{i}{j} .* (r2 - proj{i}{j});
-
-        if istril(G{i}{j})
-             weighted_v2 = Sigma{i}{j} .* v2{i}{j};
-             u2 = (weighted_v2' * G{i}{j})' + G{i}{j} * weighted_v2;
-         clear weighted_v2;
-        else;  u2 = G{i}{j}' * (Sigma{i}{j} .* v2{i}{j});
-        end
-            g2(W{i}{j}) = g2(W{i}{j}) + u2; clear u2;
+            % no-precond.
+            FxPrev = (2 * Fx(W{i}{j}) - Fx_old(W{i}{j}, i));
             if istril(G{i}{j})
-         FxSlice = Fx(W{i}{j});
-                 norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})') - y{i}{j}, 2);
-         clear FxSlice;
-            else; norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j})) - y{i}{j}, 2);
-        end
+                v2{i}{j} = sc(v2{i}{j} + Lambda{i}{j} .* (G{i}{j} * FxPrev + (FxPrev' * G{i}{j})') - y{i}{j}, epsilon{i}{j});
+            else
+                v2{i}{j} = sc(v2{i}{j} + Lambda{i}{j} .* (G{i}{j} * FxPrev) - y{i}{j}, epsilon{i}{j});
+            end; clear FxPrev;
 
-        % norm_res{i}{j} = norm(Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}) + G{i}{j}' * Fx(W{i}{j}) ) - y{i}{j}, 2);
-        global_norm_res = global_norm_res + norm_res{i}{j}^2;
+% % % %             %preconditioning
+% % % %             proj{i}{j} = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, ...
+% % % %                 r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, ...
+% % % %                 elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
+% % % %             v2{i}{j} = v2{i}{j} + pU{i}{j} .* (r2 - proj{i}{j});
+% % % %             clear r2;
+
+            if istril(G{i}{j})
+                u2 = Lambda{i}{j} .* v2{i}{j};
+                g2(W{i}{j}) = g2(W{i}{j}) +  (u2' * G{i}{j})' + G{i}{j} * u2;
+                clear u2;
+            else;  g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * (Lambda{i}{j} .* v2{i}{j});
+            end
+
+            if istril(G{i}{j})
+                FxSlice = Fx(W{i}{j});
+                norm_res{i}{j} = sqrt(sum(abs(Lambda{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})') - y{i}{j}).^2));
+                clear FxSlice;
+            else; norm_res{i}{j} = sqrt(sum(abs(Lambda{i}{j} .* (G{i}{j} * Fx(W{i}{j})) - y{i}{j}).^2));
+            end
+
+            global_norm_res = global_norm_res + norm_res{i}{j}^2;
             norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
         end
         Fx_old(:, i) = Fx; clear Fx;
@@ -127,16 +131,16 @@ else
         for j = 1:length(G{i})
             r2 = G{i}{j} * (2 * Fx(W{i}{j}) - Fx_old(W{i}{j}, i));
             proj{i}{j} = solver_proj_elipse_fb(1 ./ pU{i}{j} .* v2{i}{j}, ...
-                                                r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, ...
-                                                elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
-            v2{i}{j} = v2{i}{j} + pU{i}{j} .* r2 - pU{i}{j} .* proj{i}{j};
-            u2 = G{i}{j}' * v2{i}{j};
-            g2(W{i}{j}) = g2(W{i}{j}) + u2;
+                r2, y{i}{j}, pU{i}{j}, epsilon{i}{j}, proj{i}{j}, ...
+                elipse_proj_max_iter, elipse_proj_min_iter, elipse_proj_eps);
+            v2{i}{j} = v2{i}{j} + pU{i}{j} .* (r2 -  proj{i}{j});
+            clear r2;
+            g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * v2{i}{j};
 
-            norm_res{i}{j} = norm(G{i}{j} * Fx(W{i}{j}) - y{i}{j}, 2);
+            norm_res{i}{j} = sqrt(sum(abs(G{i}{j} * Fx(W{i}{j}) - y{i}{j}).^2));
             global_norm_res = global_norm_res + norm_res{i}{j}^2;
             norm_epsilon = norm_epsilon + power(epsilon{i}{j}, 2);
-        end; clear u2;
+        end
         Fx_old(:, i) = Fx; clear Fx;
         Ftx(:, :, i) = sigma22(i) * real(At(g2));
     end

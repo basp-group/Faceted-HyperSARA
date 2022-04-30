@@ -28,25 +28,26 @@ function hpc_cluster = util_set_parpool(solver, ncores_data, Q, parcluster_name)
             numworkers = Q + ncores_data;
     end
 
-    hpc_cluster = parcluster(parcluster_name); 
+    hpc_cluster = parcluster(parcluster_name);
     hpc_cluster.NumWorkers = numworkers;
     hpc_cluster.NumThreads = 1;
-  
+
     % create temp. dir. if slurm parcluster profile is used
-    if ~strcmp(parcluster_name,'local')
-        
-        tempdir = [pwd,filesep,'tmp_files',filesep];
-        mkdir(tempdir)
-        try tempdir=[tempdir, getenv('SLURM_JOB_ID')];
+    if ~strcmp(parcluster_name, 'local')
+
+        tempdir = [pwd, filesep, 'tmp_files', filesep];
+        mkdir(tempdir);
+        try
+            tempdir = [tempdir, getenv('SLURM_JOB_ID')];
         end
-        mkdir(tempdir)
+        mkdir(tempdir);
         hpc_cluster.JobStorageLocation = tempdir;
     end
-   
+
     % % start the matlabpool with the requested workers
     parpool(hpc_cluster, numworkers);
-    
-    % wavelet 
+
+    % wavelet
     dwtmode('zpd', 'nodisp');
     spmd
         dwtmode('zpd', 'nodisp');

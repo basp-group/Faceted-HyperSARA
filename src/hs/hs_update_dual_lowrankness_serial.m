@@ -38,6 +38,7 @@ function [v0, g0] = hs_update_dual_lowrankness_serial(v0, xhat, ...
 xhatm = reshape(xhat, M * N, L);
 [U0, S0, V0] = svd(v0 + xhatm, 'econ');
 v0 = v0 + xhatm - (U0 * diag(max(diag(S0) - beta0 * weights0, 0)) * V0');
+clear V0 U0 S0 xhatm;
 g0 = sigma0 * reshape(v0, M, N, L);
 
 end

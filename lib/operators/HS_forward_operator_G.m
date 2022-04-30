@@ -1,4 +1,4 @@
-function y = HS_forward_operator_G(x, G, W, A, flag_visibility_gridding, Sigma)
+function y = HS_forward_operator_G(x, G, W, A, flag_visibility_gridding, Lambda)
     % Apply the forward wideband measurement operator (with or w/o
     % data dimensionality reduction, adjoint of
     % :mat:func:`lib.operators.HS_adjoint_operator_G`).
@@ -15,7 +15,7 @@ function y = HS_forward_operator_G(x, G, W, A, flag_visibility_gridding, Sigma)
     %     Weighted FFT involved in the NUFFT.
     % flag_visibility_gridding : bool
     %     Flag indicating whether data dimensionality reduction  via visibility gridding is considered.
-    % Sigma : cell of cell of double[:]
+    % Lambda : cell of cell of double[:]
     %     Weighting matrix involved in data dimensionality reduction via visibility gridding.
     %
     % Returns
@@ -26,9 +26,9 @@ function y = HS_forward_operator_G(x, G, W, A, flag_visibility_gridding, Sigma)
 
     if ~exist('flag_visibility_gridding', 'var')
         flag_visibility_gridding = 0;
-        Sigma = [];
-    elseif ~exist('Sigma', 'var')
-        Sigma = [];
+        Lambda = [];
+    elseif ~exist('Lambda', 'var')
+        Lambda = [];
     end
     [~, ~, c] = size(x);
     y = cell(c, 1);
@@ -40,10 +40,10 @@ function y = HS_forward_operator_G(x, G, W, A, flag_visibility_gridding, Sigma)
             if flag_visibility_gridding
                 if istril(G{i}{j})
                     FxSlice = Fx(W{i}{j});
-                    y{i}{j} = Sigma{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})');
+                    y{i}{j} = Lambda{i}{j} .* (G{i}{j} * FxSlice + (FxSlice' * G{i}{j})');
                     FxSlice = [];
                 else
-                    y{i}{j} = Sigma{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
+                    y{i}{j} = Lambda{i}{j} .* (G{i}{j} * Fx(W{i}{j}));
                 end
             else
                 y{i}{j} = (G{i}{j} * Fx(W{i}{j}));

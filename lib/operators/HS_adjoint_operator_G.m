@@ -1,4 +1,4 @@
-function x = HS_adjoint_operator_G(y, G, W, At, N, M, flag_visibility_gridding, Sigma)
+function x = HS_adjoint_operator_G(y, G, W, At, N, M, flag_visibility_gridding, Lambda)
     % Apply adjoint of the wideband measurement operator (with or w/o
     % data dimensionality reduction, adjoint of
     % :mat:func:`lib.operators.HS_forward_operator_G`).
@@ -19,7 +19,7 @@ function x = HS_adjoint_operator_G(y, G, W, At, N, M, flag_visibility_gridding, 
     %     Spatial dimension of the wideband image (x axis).
     % flag_visibility_gridding : bool
     %     Flag indicating whether data dimensionality reduction via visibility gridding is considered.
-    % Sigma : cell of cell of double[:]
+    % Lambda : cell of cell of double[:]
     %     Weighting matrix involved in data dimensionality reduction via visibility gridding.
     %
     % Returns
@@ -30,9 +30,9 @@ function x = HS_adjoint_operator_G(y, G, W, At, N, M, flag_visibility_gridding, 
 
     if ~exist('flag_visibility_gridding', 'var')
         flag_visibility_gridding = 0;
-        Sigma = [];
-    elseif ~exist('Sigma', 'var')
-        Sigma = [];
+        Lambda = [];
+    elseif ~exist('Lambda', 'var')
+        Lambda = [];
     end
     c = length(y);
     x = zeros(N, M, c);
@@ -44,10 +44,10 @@ function x = HS_adjoint_operator_G(y, G, W, At, N, M, flag_visibility_gridding, 
         for j = 1:length(G{i})
             if flag_visibility_gridding
                 if istril(G{i}{j})
-                    weighted_data = (Sigma{i}{j} .* y{i}{j});
+                    weighted_data = (Lambda{i}{j} .* y{i}{j});
                     g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * weighted_data  +  G{i}{j} * weighted_data;
                 else
-                    g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * (Sigma{i}{j} .* y{i}{j});
+                    g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * (Lambda{i}{j} .* y{i}{j});
                 end
             else
                 g2(W{i}{j}) = g2(W{i}{j}) + G{i}{j}' * (y{i}{j});
