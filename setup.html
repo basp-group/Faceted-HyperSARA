@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Setup &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+  <title>Setup &mdash; Faceted-HyperSARA  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,9 +29,6 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> Faceted-HyperSARA
           </a>
-              <div class="version">
-                mnras_real_data-390-g13deaa4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -54,6 +51,7 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Optional input datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_src/src.html">src package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_lib/lib.html">lib package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_imaging/imaging.html">imaging package</a></li>
@@ -90,13 +88,35 @@
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
 <section id="environment-setup">
 <h3>Environment setup<a class="headerlink" href="#environment-setup" title="Permalink to this headline"></a></h3>
-<p>Clone the current repository with all the submodules as follows</p>
+<ul class="simple">
+<li><p>If you use <code class="docutils literal notranslate"><span class="pre">https</span></code>, first edit the <code class="docutils literal notranslate"><span class="pre">.gitmodules</span></code> file as follows</p></li>
+</ul>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span>[submodule &quot;lib/SARA-dictionary&quot;]
+   path = lib/SARA-dictionary
+   url = https://github.com/basp-group/SARA-dictionary.git
+[submodule &quot;lib/RI-measurement-operator&quot;]
+   path = lib/RI-measurement-operator
+   url = https://github.com/basp-group/RI-measurement-operator.git
+</pre></div>
+</div>
+<p>You can then clone the repository with all the submodules as follows</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cloning the repo. with all the submodules:</span>
-git clone --recurse-submodules https://github.com/basp-group/Faceted-HyperSARA.git
+git clone --recurse-submodules  https://github.com/basp-group/Faceted-HyperSARA.git
 <span class="nb">cd</span> Faceted-HyperSARA
 </pre></div>
 </div>
-<p>From now on, we will refer to the full path to the <code class="docutils literal notranslate"><span class="pre">Faceted-Hyper-SARA</span></code> repository as <code class="docutils literal notranslate"><span class="pre">$FHS</span></code>.</p>
+<ul class="simple">
+<li><p>If you are using a properly configured <code class="docutils literal notranslate"><span class="pre">ssh</span></code> key for Github, you can clone the repository with all the submodules as follows</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cloning the repo. with all the submodules:</span>
+git clone --recurse-submodules git@github.com:basp-group/Faceted-HyperSARA.git
+<span class="nb">cd</span> Faceted-HyperSARA
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The full path to the <code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA</span></code> repository is referred to as <code class="docutils literal notranslate"><span class="pre">$FHS</span></code> in the rest of the documentation.</p>
+</div>
 </section>
 <section id="updating-submodules-optional">
 <h3>Updating submodules (optional)<a class="headerlink" href="#updating-submodules-optional" title="Permalink to this headline"></a></h3>
@@ -110,7 +130,7 @@ git submodule update --remote --merge <span class="c1"># fetch and merge latest 
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Note that a simple <code class="docutils literal notranslate"><span class="pre">pull</span></code> instruction from the <code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA</span></code> repository does not update the submodules if the version on which it relies has been modified. If this is the case, update the submodules with the instructions provided above.</p>
+<p>A simple <code class="docutils literal notranslate"><span class="pre">pull</span></code> instruction from the <code class="docutils literal notranslate"><span class="pre">Faceted-HyperSARA</span></code> repository does not update the submodules if the version on which it relies has been modified. If this is the case, update the submodules with the instructions provided above.</p>
 </div>
 </section>
 </section>
@@ -131,16 +151,19 @@ collection of <code class="docutils literal notranslate"><span class="pre">.mat<
 <span class="s">&quot;v&quot;</span><span class="w">  </span><span class="c">% v coordinate (in units of the wavelength)</span><span class="w"></span>
 <span class="s">&quot;w&quot;</span><span class="w">  </span><span class="c">% w coordinate (in units of the wavelength)</span><span class="w"></span>
 <span class="s">&quot;nW&quot;</span><span class="w">  </span><span class="c">% sqrt(weights)</span><span class="w"></span>
-<span class="s">&quot;nWimag&quot;</span><span class="w"> </span><span class="c">% imaging weights if available (Briggs or uniform), empty otherwise</span><span class="w"></span>
+<span class="s">&quot;nWimag&quot;</span><span class="w"> </span><span class="c">% (optional field) imaging weights if available (Briggs or uniform), empty otherwise</span><span class="w"></span>
 <span class="s">&quot;maxProjBaseline&quot;</span><span class="w">  </span><span class="c">% max projected baseline (in units of the wavelength)</span><span class="w"></span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
-<li><p>(Optional) Make a copy of <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/default_parameters.json</span></code>, and
+<li><p>(Optional) Make a copy of <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/default_parameters.json</span></code> and
 update the main algorithm parameters specified in this file (all values are
 set to default, reliable values). Documentation for all the parameters involved is given in the <a class="reference internal" href="default.html"><span class="doc">Default parameters</span></a> page.</p></li>
+<li><p>(Optional) In order to use pre-estimated calibration kernels, wideband cube
+and noise level estimates, read carefully the instructions reported in the
+<a class="reference internal" href="input.html"><span class="doc">Optional input datasets</span></a> page.</p></li>
 <li><p>Configure <a class="reference internal" href="default.html#imaging.main_input_imaging" title="imaging.main_input_imaging"><code class="xref mat mat-scpt docutils literal notranslate"><span class="pre">imaging.main_input_imaging</span></code></a> following the instructions
-provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction <code class="docutils literal notranslate"><span class="pre">%/</span> <span class="pre">TODO:</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">adjusted</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">user</span></code>.</p></li>
+provided in the documentation and the file itself. Blocks of the variables to be configured are preceded with the instruction <code class="docutils literal notranslate"><span class="pre">%/</span> <span class="pre">TODO:</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">adjusted</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">user</span></code>.</p></li>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">main_input_imaging.m</span></code> from <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/</span></code> sub-directory with MATLAB. Results will be saved in the sub-directory <code class="docutils literal notranslate"><span class="pre">$FHS/results/</span></code>.</p></li>
 </ol>
 </section>
@@ -170,12 +193,12 @@ wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
 <a class="reference internal" href="_imaging/imaging.html#imaging.main_generate_data" title="imaging.main_generate_data"><code class="xref mat mat-func docutils literal notranslate"><span class="pre">imaging.main_generate_data()</span></code></a>. The two datasets considered in <span id="id4">[<a class="reference internal" href="biblio.html#id14" title="Pierre-Antoine Thouvenin, Abdullah Abdulaziz, Arwa Dabbech, Audrey Repetti, and Yves Wiaux. Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations. Aug. 2021. arXiv:2003.07358.">Thouvenin2021</a>]</span> can be generated by running the following MATLAB instructions</p>
 <div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% generate data for the spatial faceting experiment</span><span class="w"></span>
 <span class="n">main_generate_data</span><span class="p">(</span><span class="s">&#39;default_parameters.json&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;cygA&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
-<span class="s">&#39;$FHS/data/msSpecs.mat&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;spatial&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
+<span class="s">&#39;../data/msSpecs.mat&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;spatial&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
 <span class="s">&quot;local&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
 
 <span class="c">% generate data for the spectral faceting experiment</span><span class="w"></span>
 <span class="n">main_generate_data</span><span class="p">(</span><span class="s">&#39;default_parameters.json&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;cygA&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
-<span class="s">&#39;$FHS/data/msSpecs.mat&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;spectral&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
+<span class="s">&#39;../data/msSpecs.mat&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;spectral&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="w"></span>
 <span class="s">&quot;local&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
@@ -266,7 +289,7 @@ mh_style --fix .
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

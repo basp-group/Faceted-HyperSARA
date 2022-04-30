@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyxisMs2mat package &mdash; Faceted-HyperSARA mnras_real_data-390-g13deaa4 documentation</title>
+  <title>pyxisMs2mat package &mdash; Faceted-HyperSARA  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,9 +29,6 @@
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> Faceted-HyperSARA
           </a>
-              <div class="version">
-                mnras_real_data-390-g13deaa4
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -49,6 +46,7 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../default.html">Default parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../input.html">Optional input datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_src/src.html">src package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_lib/lib.html">lib package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../_imaging/imaging.html">imaging package</a></li>
@@ -142,7 +140,8 @@
 <p>In <code class="docutils literal notranslate"><span class="pre">$FHS/imaging/main_input_imaging.m</span></code>, the user should set the name of the image cube to be reconstructed <code class="docutils literal notranslate"><span class="pre">srcName</span></code> to the same value as <code class="docutils literal notranslate"><span class="pre">$SRCNAME</span></code></p>
 </div>
 <p>From the terminal, execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pyxis <span class="nv">MS</span><span class="o">=</span>myms.ms  <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span>  <span class="nv">LASTCH</span><span class="o">=</span><span class="m">3</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">0</span> getdata_ms
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span>   <span class="nv">$FHS</span>/pyxisMs2mat
+pyxis <span class="nv">MS</span><span class="o">=</span>myms.ms  <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span>  <span class="nv">LASTCH</span><span class="o">=</span><span class="m">3</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">0</span> getdata_ms
 </pre></div>
 </div>
 <p>Data will be saved as .mat files in the directory <code class="docutils literal notranslate"><span class="pre">$FHS/data/cyga/</span></code>. In the case of a single spectral window, the outcome is as follows</p>
@@ -172,7 +171,8 @@ data/cyga/data_ch_4.mat
 </pre></div>
 </div>
 <p>From the terminal, execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pyxis <span class="nv">MSLOW</span><span class="o">=</span>mylowbandms.ms <span class="nv">MSHIGH</span><span class="o">=</span>myhighbandms.ms <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span> <span class="nv">LASTCH</span><span class="o">=</span><span class="m">15</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">2</span>  getdata_ms_concat_bandwidth
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span>   <span class="nv">$FHS</span>/pyxisMs2mat
+pyxis <span class="nv">MSLOW</span><span class="o">=</span>mylowbandms.ms <span class="nv">MSHIGH</span><span class="o">=</span>myhighbandms.ms <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span> <span class="nv">LASTCH</span><span class="o">=</span><span class="m">15</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">2</span>  getdata_ms_concat_bandwidth
 </pre></div>
 </div>
 <p>Data will be saved as .mat files in the directory <code class="docutils literal notranslate"><span class="pre">$FHS/data/cyga/</span></code>.</p>
@@ -190,7 +190,8 @@ data/cyga/data_ch_32.mat % channel <span class="m">16</span> from myhighbandms.m
 <h3>Combine different measurment sets spanning the same frequency bandwidth, with same spectral window specs<a class="headerlink" href="#combine-different-measurment-sets-spanning-the-same-frequency-bandwidth-with-same-spectral-window-specs" title="Permalink to this headline"></a></h3>
 <p>Extracting data from the channels indexed from  <cite>0</cite> to <cite>12</cite> of the source with field ID <cite>0</cite>, from <strong>all</strong> spectral windows.
 From the terminal, execute:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pyxis <span class="nv">MS</span><span class="o">=</span>myms1.ms  <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">MSTAG</span><span class="o">=</span>dataset1 <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span>  <span class="nv">LASTCH</span><span class="o">=</span><span class="m">12</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">0</span> getdata_ms <span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span>   <span class="nv">$FHS</span>/pyxisMs2mat
+pyxis <span class="nv">MS</span><span class="o">=</span>myms1.ms  <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">MSTAG</span><span class="o">=</span>dataset1 <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span>  <span class="nv">LASTCH</span><span class="o">=</span><span class="m">12</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">0</span> getdata_ms <span class="se">\</span>
 pyxis <span class="nv">MS</span><span class="o">=</span>myms2.ms  <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">MSTAG</span><span class="o">=</span>dataset2 <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span>  <span class="nv">LASTCH</span><span class="o">=</span><span class="m">12</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">0</span> getdata_ms <span class="se">\</span>
 pyxis <span class="nv">MS</span><span class="o">=</span>mymsn.ms  <span class="nv">SRCNAME</span><span class="o">=</span>cyga <span class="nv">MSTAG</span><span class="o">=</span>datasetn <span class="nv">FIRSTCH</span><span class="o">=</span><span class="m">0</span>  <span class="nv">LASTCH</span><span class="o">=</span><span class="m">12</span> <span class="nv">FIELDID</span><span class="o">=</span><span class="m">0</span> getdata_ms <span class="se">\</span>
 </pre></div>
@@ -223,7 +224,7 @@ data/cyga/datasetn/
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Jackson, Y. Wiaux, A. Abdulaziz.</p>
+    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

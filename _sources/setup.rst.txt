@@ -7,15 +7,40 @@ Installation
 Environment setup
 ^^^^^^^^^^^^^^^^^
 
-Clone the current repository with all the submodules as follows
+- If you use ``https``, first edit the ``.gitmodules`` file as follows
+
+.. code-block:: rst
+
+   [submodule "lib/SARA-dictionary"]
+      path = lib/SARA-dictionary
+      url = https://github.com/basp-group/SARA-dictionary.git
+   [submodule "lib/RI-measurement-operator"]
+      path = lib/RI-measurement-operator
+      url = https://github.com/basp-group/RI-measurement-operator.git
+
+
+You can then clone the repository with all the submodules as follows
 
 .. code-block:: bash
 
    # Cloning the repo. with all the submodules:
-   git clone --recurse-submodules https://github.com/basp-group/Faceted-HyperSARA.git
+   git clone --recurse-submodules  https://github.com/basp-group/Faceted-HyperSARA.git
    cd Faceted-HyperSARA
 
-From now on, we will refer to the full path to the ``Faceted-Hyper-SARA`` repository as ``$FHS``.
+
+- If you are using a properly configured ``ssh`` key for Github, you can clone the repository with all the submodules as follows
+
+.. code-block:: bash
+
+   # Cloning the repo. with all the submodules:
+   git clone --recurse-submodules git@github.com:basp-group/Faceted-HyperSARA.git
+   cd Faceted-HyperSARA
+
+
+.. important::
+   
+   The full path to the ``Faceted-HyperSARA`` repository is referred to as ``$FHS`` in the rest of the documentation.
+
 
 Updating submodules (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -32,7 +57,7 @@ From ``$FHS``, issue the following commands
 
 .. warning::
 
-   Note that a simple ``pull`` instruction from the ``Faceted-HyperSARA`` repository does not update the submodules if the version on which it relies has been modified. If this is the case, update the submodules with the instructions provided above.
+   A simple ``pull`` instruction from the ``Faceted-HyperSARA`` repository does not update the submodules if the version on which it relies has been modified. If this is the case, update the submodules with the instructions provided above.
 
 
 
@@ -57,18 +82,22 @@ Reconstructing an image cube from an MS-Table
    "v"  % v coordinate (in units of the wavelength)
    "w"  % w coordinate (in units of the wavelength)                       
    "nW"  % sqrt(weights)
-   "nWimag" % imaging weights if available (Briggs or uniform), empty otherwise
+   "nWimag" % (optional field) imaging weights if available (Briggs or uniform), empty otherwise
    "maxProjBaseline"  % max projected baseline (in units of the wavelength)
 
 
-2. (Optional) Make a copy of ``$FHS/imaging/default_parameters.json``, and 
+2. (Optional) Make a copy of ``$FHS/imaging/default_parameters.json`` and 
    update the main algorithm parameters specified in this file (all values are 
    set to default, reliable values). Documentation for all the parameters involved is given in the :doc:`default` page.
 
-3. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
-   provided in the documentation and the file itself. Blocks of variables to be configured are preceded with the instruction ``%/ TODO: to be adjusted by the user``.
+3. (Optional) In order to use pre-estimated calibration kernels, wideband cube
+   and noise level estimates, read carefully the instructions reported in the
+   :doc:`input` page.
 
-4. Run ``main_input_imaging.m`` from ``$FHS/imaging/`` sub-directory with MATLAB. Results will be saved in the sub-directory ``$FHS/results/``.
+4. Configure :mat:scpt:`imaging.main_input_imaging` following the instructions
+   provided in the documentation and the file itself. Blocks of the variables to be configured are preceded with the instruction ``%/ TODO: to be adjusted by the user``.
+
+5. Run ``main_input_imaging.m`` from ``$FHS/imaging/`` sub-directory with MATLAB. Results will be saved in the sub-directory ``$FHS/results/``.
 
 
 Testing the library with a synthetic dataset
@@ -103,12 +132,12 @@ To test the imaging pipeline with a synthetic data test similar to the one consi
 
       % generate data for the spatial faceting experiment
       main_generate_data('default_parameters.json', 'cygA', 8, ...
-      '$FHS/data/msSpecs.mat', 'spatial', 2, 40, false, ...
+      '../data/msSpecs.mat', 'spatial', 2, 40, false, ...
       "local", false)
 
       % generate data for the spectral faceting experiment
       main_generate_data('default_parameters.json', 'cygA', 8, ...
-      '$FHS/data/msSpecs.mat', 'spectral', 2, 40, false, ...
+      '../data/msSpecs.mat', 'spectral', 2, 40, false, ...
       "local", false)
 
 4. (Optional) Make a copy of ``$FHS/imaging/default_parameters.json``, and 
