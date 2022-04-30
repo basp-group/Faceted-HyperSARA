@@ -10,20 +10,19 @@
   - [Installation](#installation)
     - [Cloning the project](#cloning-the-project)
     - [Generating a synthetic dataset to test the library](#generating-a-synthetic-dataset-to-test-the-library)
-  - [Documentation <a name="doc"></a>](#documentation-)
+  - [Documentation](#documentation)
   - [Note to contributors](#note-to-contributors)
     - [Pushing the documentation online](#pushing-the-documentation-online)
     - [Pull request: Matlab code formatting](#pull-request-matlab-code-formatting)
 
 ## Description
 
-``Faceted-HyperSARA`` is a [fully documented]((https://basp-group.github.io/Faceted-HyperSARA/_imaging/imaging.html)) MATLAB library for radio-interferometric wideband intensity imaging. The library offers a collection of utility functions and scripts from data extraction from an RI measurement set ``MS Table`` to the reconstruction of a wideband intensity image over the field of view and frequency range of interest. The library contains an implementation of algorithms from the "SARA" family (SARA,
+``Faceted-HyperSARA`` is a [fully documented]((https://basp-group.github.io/Faceted-HyperSARA/index.html)) MATLAB library for radio-interferometric wideband intensity imaging. The library offers a collection of utility functions and scripts from data extraction from an RI measurement set ``MS Table`` to the reconstruction of a wideband intensity image over the field of view and frequency range of interest. The library contains an implementation of algorithms from the "SARA" family (SARA,
 HyperSARA and Faceted HyperSARA), and more specifically described in the following publications. 
 
 >P.-A. Thouvenin, A. Abdulaziz, A. Dabbech, A. Repetti, Y. Wiaux, Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): I. Algorithm and simulations, submitted, [preprint available online](https://arxiv.org/abs/2003.07358), March 2022.  
 >
->P.-A. Thouvenin, A. Dabbech, M. Jiang, J.-P. Thiran, A. Jackson, Y. Wiaux, 
-Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): II. Real data proof-of-concept and code, submitted, April  2022.
+>P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, J.-P. Thiran, A. Jackson, Y. Wiaux, Parallel faceted imaging in radio interferometry via proximal splitting (Faceted HyperSARA): II. Code and real data proof of concept, submitted, April  2022.
 
 The following features, crucial to achieve high precision imaging from large data volumes, are supported:
 
@@ -34,7 +33,7 @@ The following features, crucial to achieve high precision imaging from large dat
 
 ## Dependencies 
 
-``Faceted-HyperSARA`` relies on two auxiliary submodules (see [installation](#install) section):
+``Faceted-HyperSARA`` relies on two auxiliary submodules (see [installation](#installation) section):
 
 1. [`RI-measurement-operator`](https://github.com/basp-group/RI-measurement-operator) for the formation of the radio-interferometric measurement operator;
 2. [`SARA-dictionary`](https://github.com/basp-group/SARA-dictionary) for the implementation of the sparsity priors.
@@ -105,7 +104,7 @@ cd data
 wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
 ```
 
-Please refer to the [online documentation](https://basp-group.github.io/Faceted-HyperSARA/_imaging/imaging.html) to configure and run the imaging script (see [documentation](doc) section if you prefer building the documentation locally).
+Please refer to the [online documentation](https://basp-group.github.io/Faceted-HyperSARA/index.html) to configure and run the imaging script (see [documentation](#documentation) section if you prefer building the documentation locally).
 
 <!-- ## Configuration
 
@@ -120,9 +119,9 @@ python job_spatial.py
 ```
 Cirrus is configured with Matlab and python installed using the module system and uses the Slurm batch system. If your system is configured differently then the batch files (`run_simulation.slurm` in the `imaging/spatial` or `imaging/spectral` directories) will need to be altered to fit your system setup. -->
 
-## Documentation <a name="doc"></a>
+## Documentation
 
-- Full library [documentation is accessible online](https://basp-group.github.io/Faceted-HyperSARA/_imaging/imaging.html).
+- Full library [documentation is accessible online](https://basp-group.github.io/Faceted-HyperSARA/index.html).
 
 - To build the documentation on your machine, make sure the following Python packages have been installed, and issue the appropriate build command.
 
