@@ -2,7 +2,7 @@
 
 ![language](https://img.shields.io/badge/language-MATLAB-orange.svg)
 [![license](https://img.shields.io/badge/license-GPL--3.0-brightgreen.svg)](LICENSE)
-[![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://basp-group.github.io/Faceted-HyperSARA/_imaging/imaging.html)
+[![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://basp-group.github.io/Faceted-HyperSARA/index.html)
 
 - [Parallel faceted imaging in radio interferometry via proximal splitting](#parallel-faceted-imaging-in-radio-interferometry-via-proximal-splitting)
   - [Description](#description)
