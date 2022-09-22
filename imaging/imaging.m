@@ -251,11 +251,11 @@ if ~isfield(param_global, 'data_flag_apply_imaging_weights'); param_global.data_
 % Measurement operator: W-projection
 if ~isfield(param_wproj, 'measop_flag_wproj'); param_wproj.measop_flag_wproj = false; end
 if param_wproj.measop_flag_wproj
-    if ~isfield(param_wproj, 'measop_wprojCEnergyL2'); param_wproj.measop_wprojCEnergyL2 = 1 - 1e-4; end
-    if ~isfield(param_wproj, 'measop_wprojGEnergyL2'); param_wproj.measop_wprojGEnergyL2 = 1 - 1e-4; end
+    if ~isfield(param_wproj, 'CEnergyL2'); param_wproj.CEnergyL2 = 1 - 1e-4; end
+    if ~isfield(param_wproj, 'GEnergyL2'); param_wproj.GEnergyL2 = 1 - 1e-4; end
 else
-    param_wproj.measop_wprojCEnergyL2 = 1;
-    param_wproj.measop_wprojGEnergyL2 = 1;
+    param_wproj.CEnergyL2 = 1;
+    param_wproj.GEnergyL2 = 1;
 end
 
 % Input filenames from pre-processing
@@ -454,7 +454,7 @@ switch algo_solver
                     %% get data & nW (natural weights) & Dies (if available) for now
                     if flag_apply_imaging_weights
                         dataloaded = load(dataFilename(idSet, effChans2Image{iEffCh}(iCh)), 'nW', 'y', 'nWimag');
-                        try y{iEffCh, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* double(dataloaded.nW(:)) .*  sqrt(double(dataloaded.nWimag(:))); % data whitening
+                        try y{iEffCh, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* double(dataloaded.nW(:)) .* (double(dataloaded.nWimag(:))); % data whitening
                         catch ; fprintf('\nWARNING: imaging weights could not be applied.');
                             flag_apply_imaging_weights = false;
                             y{iEffCh, 1}{iCh}{idSet} = double(dataloaded.y(:)) .* double(dataloaded.nW(:));
@@ -560,7 +560,7 @@ switch algo_solver
                             % get data & apply nW (natural weights)
                             if flag_apply_imaging_weights
                                 dataloaded = load(dataFilename(idSet, effChans2Image_lab{ifc}(iCh)), 'nW', 'y', 'frequency', 'nWimag');
-                                try y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .*  double(dataloaded.nW(:)) .*  sqrt(double(dataloaded.nWimag(:))); % data whitening
+                                try y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .*  double(dataloaded.nW(:)) .*  (double(dataloaded.nWimag(:))); % data whitening
                                 catch ; fprintf('\nWARNING: imaging weights could not be applied.');
                                     y{ifc, 1}{iCh}{idSet} = double(dataloaded.y(:)) .*  double(dataloaded.nW(:));
                                 end

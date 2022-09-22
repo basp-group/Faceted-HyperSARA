@@ -273,8 +273,8 @@ lib/RI-measurement-operator/*
 *.mat
 *.fits
 pyxisMs2mat/log-emeerkatsims.txt
+imaging/archive
 imaging/cyga_main_input_imaging.m
-imaging/default_parameters.json
 imaging/imaging copy.m
 imaging/imagingm.m
 imaging/dmain_input_imaging.m

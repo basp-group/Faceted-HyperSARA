@@ -381,9 +381,9 @@ def getdata(msname, srcname, mstag, freqFirst, freqLast, srcid,  fileid0):
             # applying flags 
             frequency = freqsVect[0,ifreq]
             y = data[flag] ;  
-            u = uvw[flag, 0]; 
-            v = uvw[flag, 1]; 
-            w = uvw[flag, 2];       
+            u = uvw[flag, 0]/ (C / frequency); 
+            v = uvw[flag, 1]/ (C / frequency); 
+            w = uvw[flag, 2]/ (C / frequency);       
             nW = np.sqrt(weightI[flag]) 
             try:
                 nWimag = np.sqrt(wimagI[flag])

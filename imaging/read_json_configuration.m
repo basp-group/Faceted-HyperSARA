@@ -95,10 +95,10 @@ function [param_global, param_solver, param_nufft, ...
 %     Length of each wavelet filter considered for the SARA dictionary (0
 %     by convention for the Dirac basis).
 %
-% param_wproj.measop_wprojCEnergyL2 (double)
+% param_wproj.CEnergyL2 (double)
 %     Energy level of the `w`-kernel to be conserved, if `w`-projection is
 %     enabled
-% param_wproj.measop_wprojGEnergyL2 (double)
+% param_wproj.GEnergyL2 (double)
 %     Energy level  to be conserved of the kernel resulting from the
 %     the convolution between the `w`-kernel and the NUFFT kernel, if
 %     `w`-projection is enabled.

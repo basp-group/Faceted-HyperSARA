@@ -1,0 +1,83 @@
+[
+    {   "__comment": "Solver parameters",
+        "verbose": true,
+        "save_intermediate_results_mat": true,
+        "reweighting": {
+            "__comment": "Reweighting parameters",
+            "min_iter": 1,
+            "max_iter": 20,
+            "rel_var": 1e-4,
+            "alpha": 1,
+            "backup_frequency": 1,
+            "verbose": 2
+        },
+        "pdfb": {
+            "__comment": "PDFB parameters",
+            "min_iter": 10,
+            "max_iter": 2000,
+            "rel_var": 5e-5,
+            "fidelity_tolerance": 1.01,
+            "rel_var_low": 5e-6
+        },
+        "proj" : {
+            "__comment": "Ellipsoid projection parameters",
+            "min_iter": 1,
+            "max_iter": 20,
+            "eps": 1e-8
+        },
+        "noise_estimation": {
+            "__comment": "noise level estimation parameters",
+            "min_iter": 100,
+            "rel_var": 0.001,
+            "start_iter": 1000,
+            "change_percentage":0.5,
+            "start_change_percentage":0.1
+
+        }
+    },
+    {   "__comment": "Model parameters",
+        "nufft": {
+            "__comment": "NUFFT parameters",
+            "ox": 2,
+            "oy": 2,
+            "Kx": 7,
+            "Ky": 7,
+            "kernel": "minmax:tuned"
+        },
+        "preconditioning": {
+            "__comment": "Preconditioning parameters",
+            "gen_uniform_weight_matrix": true,
+            "uniform_weight_sub_pixels": 1
+        },
+        "sara": {
+            "__comment": "SARA dictionary parameters (always specify Dirac basis ('self') in last position if ever used, filter length of Dirac set to 0 by convention)",
+            "basis": ["db1", "db2", "db3", "db4", "db5", "db6", "db7", "db8", "self"],
+            "nlevel": 4,
+            "filter_length": [2, 4, 6, 8, 10, 12, 14, 16, 0]
+        },
+        "wproj": {
+            "__comment": "w-projection params",
+            "CEnergyL2": 0.9999,
+            "GEnergyL2": 0.9999
+        }
+        
+    },
+    {   "__comment": "Auxilliary global parameters",
+        "aux_global": {
+            "__comment": "auxiliary global params",
+
+            "reg_flag_reweighting": true,
+            "measop_flag_wproj": false,
+            "measop_flag_visibility_gridding": false,
+            "data_flag_apply_imaging_weights": false,
+            "adjust_flag_noise": false,
+            "algo_flag_computeOperatorNorm": true,
+            "algo_flag_saveOperatorNorm": true,
+            "algo_flag_solveMinimization": true,
+            "parcluster": "local",
+            "preproc_filename_noise_std": [],
+            "preproc_filename_cal_solutions": [],
+            "preproc_filename_model": []
+        }
+    }
+]

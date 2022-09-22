@@ -77,7 +77,7 @@ function [A, At, G, W, aW] = util_load_data_gen_measurement_operator(dataFilenam
                 if flag_apply_imaging_weights
                     load(dataFilename(idSet, effChans2Image{ifc}(iCh)), 'u', 'v', 'w', 'nW', 'frequency', 'nWimag');
                     try
-                        nW = double(double(nW) .* sqrt(double(nWimag)));
+                        nW = double(double(nW) .* (double(nWimag)));
                         nWimag = [];
                     catch
                         flag_apply_imaging_weights = false;
