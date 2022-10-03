@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyxisMs2mat.pyxis4DataExtraction &mdash; Faceted-HyperSARA  documentation</title>
+  <title>pyxisMs2mat.pyxis4DataExtraction &mdash; Faceted-HyperSARA 0.1.1-1-g6e7ad9b3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -26,6 +26,9 @@
         <div class="wy-side-nav-search" >
             <a href="../../index.html" class="icon icon-home"> Faceted-HyperSARA
           </a>
+              <div class="version">
+                0.1.1-1-g6e7ad9b3
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -458,9 +461,9 @@
             <span class="c1"># applying flags </span>
             <span class="n">frequency</span> <span class="o">=</span> <span class="n">freqsVect</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">ifreq</span><span class="p">]</span>
             <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">flag</span><span class="p">]</span> <span class="p">;</span>  
-            <span class="n">u</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">flag</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span> 
-            <span class="n">v</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">flag</span><span class="p">,</span> <span class="mi">1</span><span class="p">];</span> 
-            <span class="n">w</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">flag</span><span class="p">,</span> <span class="mi">2</span><span class="p">];</span>       
+            <span class="n">u</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">flag</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">/</span> <span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="n">frequency</span><span class="p">);</span> 
+            <span class="n">v</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">flag</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">/</span> <span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="n">frequency</span><span class="p">);</span> 
+            <span class="n">w</span> <span class="o">=</span> <span class="n">uvw</span><span class="p">[</span><span class="n">flag</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">/</span> <span class="p">(</span><span class="n">C</span> <span class="o">/</span> <span class="n">frequency</span><span class="p">);</span>       
             <span class="n">nW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">weightI</span><span class="p">[</span><span class="n">flag</span><span class="p">])</span> 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">nWimag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">wimagI</span><span class="p">[</span><span class="n">flag</span><span class="p">])</span>
@@ -505,7 +508,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
+    <p>&#169; Copyright 2022, P.-A. Thouvenin, A. Dabbech, M. Jiang, A. Abdulaziz, A. Jackson, Y. Wiaux.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

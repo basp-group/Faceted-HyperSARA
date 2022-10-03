@@ -106,7 +106,7 @@ Testing the library with a synthetic dataset
 To test the imaging pipeline with a synthetic data test similar to the one considered in :cite:p:`Thouvenin2021`, follow the instructions below.
 
 1. Retrieve the 
-   `S_DDE_MODEL.fits <https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits>`_ image file associated with :cite:p:`Dabbech2021`.
+   `S_DDE_MODEL.fits <https://researchportal.hw.ac.uk/en/datasets/cygnus-a-images-at-x-c-and-s-band-obtained-via-joint-calibration->`_ image file associated with :cite:p:`Dabbech2021`.
    Place the file in the ``$FHS/data/`` folder at the root of the library.
 
    .. code-block:: bash
@@ -115,7 +115,7 @@ To test the imaging pipeline with a synthetic data test similar to the one consi
       # brew install wget
       cd $FHS/
       mkdir data && cd data
-      wget -P . https://researchportal.hw.ac.uk/files/43645966/S_DDE_MODEL.fits
+      wget -P . https://researchportal.hw.ac.uk/files/43645965/S_DDE_MODEL.fits
 
 2. Generate one (or all) synthetic wideband image cube used in
    :cite:p:`Thouvenin2021` using the
