@@ -88,6 +88,9 @@ git submodule update --init --recursive # update the content of the submodules
 git submodule update --remote --merge # fetch and merge latest state of the submodule
 ```
 
+<!-- git submodule init -->
+<!-- git submodule update --remote -->
+
 ### Generating a synthetic dataset to test the library
 
 To generate the synthetic data cubes used in the spatial and spectral experiments, you will need to download the `S_DDE_MODEL.fits` image file associated with the following paper.
